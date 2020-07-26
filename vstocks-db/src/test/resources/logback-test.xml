@@ -13,4 +13,7 @@
     </root>
 
     <logger name="vstocks" level="DEBUG"/>
+
+    <logger name="org.flywaydb" level="WARN"/>
+    <logger name="com.zaxxer" level="WARN"/>
 </configuration>

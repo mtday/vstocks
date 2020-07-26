@@ -26,7 +26,7 @@ public enum Config {
 
     ;
 
-    private static final String PRODUCTION_LOCATION = "/opt/game/conf/system.properties";
+    private static final String PRODUCTION_LOCATION = "/opt/vstocks/conf/system.properties";
     private static final String DEVELOPMENT_RESOURCE = "system.properties";
 
     private static final Properties PROPERTIES = loadProperties();
