@@ -11,11 +11,11 @@ import javax.ws.rs.*;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/v1/market/{marketId}/stocks")
-public class GetAllStocks extends BaseResource {
+public class GetAllStocksForMarket extends BaseResource {
     private final ServiceFactory serviceFactory;
 
     @Inject
-    public GetAllStocks(ServiceFactory serviceFactory) {
+    public GetAllStocksForMarket(ServiceFactory serviceFactory) {
         this.serviceFactory = serviceFactory;
     }
 

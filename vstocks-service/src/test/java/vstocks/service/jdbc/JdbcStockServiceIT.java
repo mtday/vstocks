@@ -53,7 +53,7 @@ public class JdbcStockServiceIT {
 
     @Test
     public void testGetMissing() {
-        assertFalse(stockService.get("missing-id").isPresent());
+        assertFalse(stockService.get("missing", "missing").isPresent());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class JdbcStockServiceIT {
         Stock stock = new Stock().setId("id").setMarketId(market1.getId()).setSymbol("symbol").setName("name");
         assertEquals(1, stockService.add(stock));
 
-        Optional<Stock> fetched = stockService.get(stock.getId());
+        Optional<Stock> fetched = stockService.get(market1.getId(), stock.getId());
         assertTrue(fetched.isPresent());
         assertEquals(stock, fetched.get());
     }
@@ -136,21 +136,21 @@ public class JdbcStockServiceIT {
         stock.setName("updated");
         assertEquals(1, stockService.update(stock));
 
-        Optional<Stock> updated = stockService.get(stock.getId());
+        Optional<Stock> updated = stockService.get(market1.getId(), stock.getId());
         assertTrue(updated.isPresent());
         assertEquals(stock, updated.get());
     }
 
     @Test
     public void testDeleteMissing() {
-        assertEquals(0, stockService.delete("missing-id"));
+        assertEquals(0, stockService.delete("missing", "missing"));
     }
 
     @Test
     public void testDelete() {
         Stock stock = new Stock().setId("id").setMarketId(market1.getId()).setSymbol("sym").setName("name");
         assertEquals(1, stockService.add(stock));
-        assertEquals(1, stockService.delete(stock.getId()));
-        assertFalse(stockService.get(stock.getId()).isPresent());
+        assertEquals(1, stockService.delete(market1.getId(), stock.getId()));
+        assertFalse(stockService.get(market1.getId(), stock.getId()).isPresent());
     }
 }

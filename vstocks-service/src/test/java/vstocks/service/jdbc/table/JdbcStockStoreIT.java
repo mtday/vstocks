@@ -50,7 +50,7 @@ public class JdbcStockStoreIT {
     @Test
     public void testGetMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertFalse(stockStore.get(connection, "missing-id").isPresent());
+            assertFalse(stockStore.get(connection, "missing", "missing").isPresent());
         }
     }
 
@@ -62,7 +62,7 @@ public class JdbcStockStoreIT {
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<Stock> fetched = stockStore.get(connection, stock.getId());
+            Optional<Stock> fetched = stockStore.get(connection, market1.getId(), stock.getId());
             assertTrue(fetched.isPresent());
             assertEquals(stock, fetched.get());
         }
@@ -165,7 +165,7 @@ public class JdbcStockStoreIT {
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<Stock> updated = stockStore.get(connection, stock.getId());
+            Optional<Stock> updated = stockStore.get(connection, market1.getId(), stock.getId());
             assertTrue(updated.isPresent());
             assertEquals(stock, updated.get());
         }
@@ -174,7 +174,7 @@ public class JdbcStockStoreIT {
     @Test
     public void testDeleteMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(0, stockStore.delete(connection, "missing-id"));
+            assertEquals(0, stockStore.delete(connection, "missing", "missing"));
         }
     }
 
@@ -186,11 +186,11 @@ public class JdbcStockStoreIT {
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockStore.delete(connection, stock.getId()));
+            assertEquals(1, stockStore.delete(connection, market1.getId(), stock.getId()));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertFalse(stockStore.get(connection, stock.getId()).isPresent());
+            assertFalse(stockStore.get(connection, market1.getId(), stock.getId()).isPresent());
         }
     }
 

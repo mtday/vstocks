@@ -30,8 +30,8 @@ public class StockTable extends BaseTable<Stock> {
         ps.setString(++index, stock.getId());
     };
 
-    public Optional<Stock> get(Connection connection, String id) {
-        return getOne(connection, ROW_MAPPER, "SELECT * FROM stocks WHERE id = ?", id);
+    public Optional<Stock> get(Connection connection, String marketId, String stockId) {
+        return getOne(connection, ROW_MAPPER, "SELECT * FROM stocks WHERE market_id = ? AND id = ?", marketId, stockId);
     }
 
     public Results<Stock> getForMarket(Connection connection, String marketId, Page page) {
@@ -54,8 +54,8 @@ public class StockTable extends BaseTable<Stock> {
         return update(connection, UPDATE_ROW_SETTER, "UPDATE stocks SET symbol = ?, name = ? WHERE id = ?", stock);
     }
 
-    public int delete(Connection connection, String id) {
-        return update(connection, "DELETE FROM stocks WHERE id = ?", id);
+    public int delete(Connection connection, String marketId, String stockId) {
+        return update(connection, "DELETE FROM stocks WHERE market_id = ? AND id = ?", marketId, stockId);
     }
 
     public int truncate(Connection connection) {

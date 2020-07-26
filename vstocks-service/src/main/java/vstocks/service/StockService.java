@@ -7,7 +7,7 @@ import vstocks.model.Stock;
 import java.util.Optional;
 
 public interface StockService {
-    Optional<Stock> get(String id);
+    Optional<Stock> get(String marketId, String stockId);
 
     Results<Stock> getForMarket(String marketId, Page page);
 
@@ -17,5 +17,5 @@ public interface StockService {
 
     int update(Stock stock);
 
-    int delete(String id);
+    int delete(String marketId, String stockId);
 }

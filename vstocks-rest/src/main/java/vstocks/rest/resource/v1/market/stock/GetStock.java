@@ -22,7 +22,7 @@ public class GetStock extends BaseResource {
     @Produces(APPLICATION_JSON)
     public Stock getStock(@PathParam("marketId") String marketId,
                           @PathParam("stockId") String stockId) {
-        return serviceFactory.getStockService().get(stockId)
-                .orElseThrow(() -> new NotFoundException("Stock with id " + stockId + " not found"));
+        return serviceFactory.getStockService().get(marketId, stockId)
+                .orElseThrow(() -> new NotFoundException("Stock " + marketId + "/" + stockId + " not found"));
     }
 }

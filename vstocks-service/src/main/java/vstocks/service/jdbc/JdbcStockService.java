@@ -17,8 +17,8 @@ public class JdbcStockService extends BaseService implements StockService {
     }
 
     @Override
-    public Optional<Stock> get(String id) {
-        return withConnection(conn -> stockTable.get(conn, id));
+    public Optional<Stock> get(String marketId, String stockId) {
+        return withConnection(conn -> stockTable.get(conn, marketId, stockId));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class JdbcStockService extends BaseService implements StockService {
     }
 
     @Override
-    public int delete(String id) {
-        return withConnection(conn -> stockTable.delete(conn, id));
+    public int delete(String marketId, String stockId) {
+        return withConnection(conn -> stockTable.delete(conn, marketId, stockId));
     }
 }

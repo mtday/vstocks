@@ -22,6 +22,6 @@ public class GetMarket extends BaseResource {
     @Produces(APPLICATION_JSON)
     public Market getMarket(@PathParam("id") String id) {
         return serviceFactory.getMarketService().get(id)
-                .orElseThrow(() -> new NotFoundException("Market with id " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Market " + id + " not found"));
     }
 }
