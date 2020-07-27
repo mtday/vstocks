@@ -1,0 +1,22 @@
+
+# Only used during development.
+
+server.port = 8080
+server.context.path = /
+server.api.path = /api/*
+
+
+db.url = jdbc:h2:mem:vstocks
+db.driver = org.h2.Driver
+db.user = SA
+db.pass =
+db.min.idle = 4
+db.max.pool.size = 30
+db.idle.timeout = 60000
+db.connection.timeout = 20000
+
+
+twitter.api.key = TODO
+twitter.api.secret = TODO
+twitter.api.bearer = TODO
+twitter.api.callback = http://localhost:8080/api/v1/security/callback

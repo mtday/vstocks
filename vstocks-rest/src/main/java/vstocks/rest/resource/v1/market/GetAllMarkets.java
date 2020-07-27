@@ -6,6 +6,7 @@ import vstocks.rest.resource.BaseResource;
 import vstocks.service.ServiceFactory;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -14,6 +15,7 @@ import javax.ws.rs.QueryParam;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/v1/markets")
+@Singleton
 public class GetAllMarkets extends BaseResource {
     private final ServiceFactory serviceFactory;
 

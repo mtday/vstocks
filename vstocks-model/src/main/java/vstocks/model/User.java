@@ -2,11 +2,12 @@ package vstocks.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.security.Principal;
 import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
-public class User {
+public class User implements Principal {
     private String id;
     private String username;
     private String email;
@@ -23,6 +24,12 @@ public class User {
     public User setId(String id) {
         this.id = requireNonNull(id);
         return this;
+    }
+
+    @JsonIgnore
+    @Override
+    public String getName() {
+        return username;
     }
 
     public String getUsername() {

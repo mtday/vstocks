@@ -13,3 +13,5 @@ buildNumber.properties
 *.iml
 *.swo
 *.swp
+
+vstocks-config/src/main/resources/system.properties
