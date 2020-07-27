@@ -10,9 +10,8 @@ import static java.util.Objects.requireNonNull;
 public class User implements Principal {
     private String id;
     private String username;
-    private String email;
     private UserSource source;
-    private String hashedPass;
+    private String displayName;
 
     public User() {
     }
@@ -41,15 +40,6 @@ public class User implements Principal {
         return this;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public User setEmail(String email) {
-        this.email = requireNonNull(email);
-        return this;
-    }
-
     @JsonIgnore
     public UserSource getSource() {
         return source;
@@ -60,13 +50,12 @@ public class User implements Principal {
         return this;
     }
 
-    @JsonIgnore
-    public String getHashedPass() {
-        return hashedPass;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public User setHashedPass(String hashedPass) {
-        this.hashedPass = requireNonNull(hashedPass);
+    public User setDisplayName(String displayName) {
+        this.displayName = displayName;
         return this;
     }
 
@@ -88,9 +77,8 @@ public class User implements Principal {
         return "User{" +
                 "id='" + id + '\'' +
                 ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
                 ", source=" + source +
-                ", hashedPass='" + hashedPass + '\'' +
+                ", displayName='" + displayName + '\'' +
                 '}';
     }
 }

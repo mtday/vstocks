@@ -3,22 +3,16 @@
 CREATE TABLE users (
     id                 VARCHAR(36)  NOT NULL,
     username           VARCHAR(500) NOT NULL,
-    email              VARCHAR(500) NOT NULL,
     source             VARCHAR(30)  NOT NULL,
-    hashed_pass        VARCHAR(512),
-    balance            INTEGER,
+    display_name       VARCHAR(30)  NOT NULL,
 
     CONSTRAINT users_pk PRIMARY KEY (id),
-    CONSTRAINT users_unique_username UNIQUE (username),
-    CONSTRAINT users_unique_email UNIQUE (email)
+    CONSTRAINT users_unique_username_source UNIQUE (username, source)
 );
 
 CREATE INDEX idx_users_id ON users (id);
 CREATE INDEX idx_users_username ON users (username);
-CREATE INDEX idx_users_email ON users (email);
 CREATE INDEX idx_users_source ON users (source);
-CREATE INDEX idx_users_email_hashed_pass ON users (email, hashed_pass);
-CREATE INDEX idx_users_username_hashed_pass ON users (username, hashed_pass);
 
 
 CREATE TABLE markets (

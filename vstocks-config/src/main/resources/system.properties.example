@@ -16,6 +16,9 @@ db.idle.timeout = 60000
 db.connection.timeout = 20000
 
 
+user.initial.balance = 10000
+
+
 twitter.api.key = TODO
 twitter.api.secret = TODO
 twitter.api.bearer = TODO

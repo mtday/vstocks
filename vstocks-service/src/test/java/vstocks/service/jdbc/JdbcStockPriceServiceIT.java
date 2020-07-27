@@ -23,9 +23,9 @@ public class JdbcStockPriceServiceIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private MarketTable marketStore;
-    private StockTable stockStore;
-    private StockPriceTable stockPriceStore;
+    private MarketTable marketTable;
+    private StockTable stockTable;
+    private StockPriceTable stockPriceTable;
     private JdbcStockPriceService stockPriceService;
 
     private final Market market = new Market().setId("id").setName("name");
@@ -34,15 +34,15 @@ public class JdbcStockPriceServiceIT {
 
     @Before
     public void setup() throws SQLException {
-        marketStore = new MarketTable();
-        stockStore = new StockTable();
-        stockPriceStore = new StockPriceTable();
+        marketTable = new MarketTable();
+        stockTable = new StockTable();
+        stockPriceTable = new StockPriceTable();
         stockPriceService = new JdbcStockPriceService(dataSourceExternalResource.get());
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, marketStore.add(connection, market));
-            assertEquals(1, stockStore.add(connection, stock1));
-            assertEquals(1, stockStore.add(connection, stock2));
+            assertEquals(1, marketTable.add(connection, market));
+            assertEquals(1, stockTable.add(connection, stock1));
+            assertEquals(1, stockTable.add(connection, stock2));
             connection.commit();
         }
     }
@@ -50,9 +50,9 @@ public class JdbcStockPriceServiceIT {
     @After
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            stockPriceStore.truncate(connection);
-            stockStore.truncate(connection);
-            marketStore.truncate(connection);
+            stockPriceTable.truncate(connection);
+            stockTable.truncate(connection);
+            marketTable.truncate(connection);
             connection.commit();
         }
     }
@@ -69,7 +69,10 @@ public class JdbcStockPriceServiceIT {
 
         Optional<StockPrice> fetched = stockPriceService.get(stockPrice.getId());
         assertTrue(fetched.isPresent());
-        assertEquals(stockPrice, fetched.get());
+        assertEquals(stockPrice.getMarketId(), fetched.get().getMarketId());
+        assertEquals(stockPrice.getStockId(), fetched.get().getStockId());
+        assertEquals(stockPrice.getTimestamp().toEpochMilli(), fetched.get().getTimestamp().toEpochMilli());
+        assertEquals(stockPrice.getPrice(), fetched.get().getPrice());
     }
 
     @Test

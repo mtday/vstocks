@@ -27,6 +27,11 @@ public class JdbcUserBalanceService extends BaseService implements UserBalanceSe
     }
 
     @Override
+    public int setInitialBalance(UserBalance initialBalance) {
+        return withConnection(conn -> userBalanceTable.setInitialBalance(conn, initialBalance));
+    }
+
+    @Override
     public int add(UserBalance userBalance) {
         return withConnection(conn -> userBalanceTable.add(conn, userBalance));
     }

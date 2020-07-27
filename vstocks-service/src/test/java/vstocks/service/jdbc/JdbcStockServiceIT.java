@@ -22,8 +22,8 @@ public class JdbcStockServiceIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private MarketTable marketStore;
-    private StockTable stockStore;
+    private MarketTable marketTable;
+    private StockTable stockTable;
     private JdbcStockService stockService;
 
     private final Market market1 = new Market().setId("id1").setName("name1");
@@ -31,13 +31,13 @@ public class JdbcStockServiceIT {
 
     @Before
     public void setup() throws SQLException {
-        marketStore = new MarketTable();
-        stockStore = new StockTable();
+        marketTable = new MarketTable();
+        stockTable = new StockTable();
         stockService = new JdbcStockService(dataSourceExternalResource.get());
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, marketStore.add(connection, market1));
-            assertEquals(1, marketStore.add(connection, market2));
+            assertEquals(1, marketTable.add(connection, market1));
+            assertEquals(1, marketTable.add(connection, market2));
             connection.commit();
         }
     }
@@ -45,8 +45,8 @@ public class JdbcStockServiceIT {
     @After
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            stockStore.truncate(connection);
-            marketStore.truncate(connection);
+            stockTable.truncate(connection);
+            marketTable.truncate(connection);
             connection.commit();
         }
     }
@@ -63,7 +63,9 @@ public class JdbcStockServiceIT {
 
         Optional<Stock> fetched = stockService.get(market1.getId(), stock.getId());
         assertTrue(fetched.isPresent());
-        assertEquals(stock, fetched.get());
+        assertEquals(stock.getMarketId(), fetched.get().getMarketId());
+        assertEquals(stock.getSymbol(), fetched.get().getSymbol());
+        assertEquals(stock.getName(), fetched.get().getName());
     }
 
     @Test
@@ -138,7 +140,9 @@ public class JdbcStockServiceIT {
 
         Optional<Stock> updated = stockService.get(market1.getId(), stock.getId());
         assertTrue(updated.isPresent());
-        assertEquals(stock, updated.get());
+        assertEquals(stock.getMarketId(), updated.get().getMarketId());
+        assertEquals(stock.getSymbol(), updated.get().getSymbol());
+        assertEquals(stock.getName(), updated.get().getName());
     }
 
     @Test

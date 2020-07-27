@@ -16,24 +16,24 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-public class JdbcStockStoreIT {
+public class JdbcStockTableIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private MarketTable marketStore;
-    private StockTable stockStore;
+    private MarketTable marketTable;
+    private StockTable stockTable;
 
     private final Market market1 = new Market().setId("id1").setName("name1");
     private final Market market2 = new Market().setId("id2").setName("name2");
 
     @Before
     public void setup() throws SQLException {
-        marketStore = new MarketTable();
-        stockStore = new StockTable();
+        marketTable = new MarketTable();
+        stockTable = new StockTable();
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, marketStore.add(connection, market1));
-            assertEquals(1, marketStore.add(connection, market2));
+            assertEquals(1, marketTable.add(connection, market1));
+            assertEquals(1, marketTable.add(connection, market2));
             connection.commit();
         }
     }
@@ -41,8 +41,8 @@ public class JdbcStockStoreIT {
     @After
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            stockStore.truncate(connection);
-            marketStore.truncate(connection);
+            stockTable.truncate(connection);
+            marketTable.truncate(connection);
             connection.commit();
         }
     }
@@ -50,7 +50,7 @@ public class JdbcStockStoreIT {
     @Test
     public void testGetMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertFalse(stockStore.get(connection, "missing", "missing").isPresent());
+            assertFalse(stockTable.get(connection, "missing", "missing").isPresent());
         }
     }
 
@@ -58,20 +58,20 @@ public class JdbcStockStoreIT {
     public void testGetExists() throws SQLException {
         Stock stock = new Stock().setId("id").setMarketId(market1.getId()).setSymbol("symbol").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockStore.add(connection, stock));
+            assertEquals(1, stockTable.add(connection, stock));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<Stock> fetched = stockStore.get(connection, market1.getId(), stock.getId());
+            Optional<Stock> fetched = stockTable.get(connection, market1.getId(), stock.getId());
             assertTrue(fetched.isPresent());
-            assertEquals(stock, fetched.get());
+            assertEquals(stock, fetched.get()); // only compares id
         }
     }
 
     @Test
     public void testGetForMarket() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<Stock> results = stockStore.getForMarket(connection, market1.getId(), new Page());
+            Results<Stock> results = stockTable.getForMarket(connection, market1.getId(), new Page());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }
@@ -82,13 +82,13 @@ public class JdbcStockStoreIT {
         Stock stock1 = new Stock().setId("id1").setMarketId(market1.getId()).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setId("id2").setMarketId(market1.getId()).setSymbol("sym2").setName("name2");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockStore.add(connection, stock1));
-            assertEquals(1, stockStore.add(connection, stock2));
+            assertEquals(1, stockTable.add(connection, stock1));
+            assertEquals(1, stockTable.add(connection, stock2));
             connection.commit();
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<Stock> results = stockStore.getForMarket(connection, market1.getId(), new Page());
+            Results<Stock> results = stockTable.getForMarket(connection, market1.getId(), new Page());
             assertEquals(2, results.getTotal());
             assertEquals(2, results.getResults().size());
             assertTrue(results.getResults().contains(stock1));
@@ -99,7 +99,7 @@ public class JdbcStockStoreIT {
     @Test
     public void testGetAllNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<Stock> results = stockStore.getAll(connection, new Page());
+            Results<Stock> results = stockTable.getAll(connection, new Page());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }
@@ -110,13 +110,13 @@ public class JdbcStockStoreIT {
         Stock stock1 = new Stock().setId("id1").setMarketId(market1.getId()).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setId("id2").setMarketId(market2.getId()).setSymbol("sym2").setName("name2");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockStore.add(connection, stock1));
-            assertEquals(1, stockStore.add(connection, stock2));
+            assertEquals(1, stockTable.add(connection, stock1));
+            assertEquals(1, stockTable.add(connection, stock2));
             connection.commit();
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<Stock> results = stockStore.getAll(connection, new Page());
+            Results<Stock> results = stockTable.getAll(connection, new Page());
             assertEquals(2, results.getTotal());
             assertEquals(2, results.getResults().size());
             assertTrue(results.getResults().contains(stock1));
@@ -128,7 +128,7 @@ public class JdbcStockStoreIT {
     public void testAdd() throws SQLException {
         Stock stock = new Stock().setId("id").setMarketId(market1.getId()).setSymbol("sym").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockStore.add(connection, stock));
+            assertEquals(1, stockTable.add(connection, stock));
             connection.commit();
         }
     }
@@ -137,8 +137,8 @@ public class JdbcStockStoreIT {
     public void testAddConflict() throws SQLException {
         Stock stock = new Stock().setId("id").setMarketId(market1.getId()).setSymbol("sym").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockStore.add(connection, stock));
-            stockStore.add(connection, stock);
+            assertEquals(1, stockTable.add(connection, stock));
+            stockTable.add(connection, stock);
             connection.commit();
         }
     }
@@ -147,7 +147,26 @@ public class JdbcStockStoreIT {
     public void testUpdateMissing() throws SQLException {
         Stock stock = new Stock().setId("id").setMarketId(market1.getId()).setSymbol("sym").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(0, stockStore.update(connection, stock));
+            assertEquals(0, stockTable.update(connection, stock));
+        }
+    }
+
+    @Test
+    public void testUpdateNoChange() throws SQLException {
+        Stock stock = new Stock().setId("id").setMarketId(market1.getId()).setSymbol("sym").setName("name");
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, stockTable.add(connection, stock));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(0, stockTable.update(connection, stock));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Optional<Stock> updated = stockTable.get(connection, market1.getId(), stock.getId());
+            assertTrue(updated.isPresent());
+            assertEquals(stock.getSymbol(), updated.get().getSymbol());
+            assertEquals(stock.getName(), updated.get().getName());
         }
     }
 
@@ -155,26 +174,27 @@ public class JdbcStockStoreIT {
     public void testUpdate() throws SQLException {
         Stock stock = new Stock().setId("id").setMarketId(market1.getId()).setSymbol("sym").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockStore.add(connection, stock));
+            assertEquals(1, stockTable.add(connection, stock));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             stock.setSymbol("updated");
             stock.setName("updated");
-            assertEquals(1, stockStore.update(connection, stock));
+            assertEquals(1, stockTable.update(connection, stock));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<Stock> updated = stockStore.get(connection, market1.getId(), stock.getId());
+            Optional<Stock> updated = stockTable.get(connection, market1.getId(), stock.getId());
             assertTrue(updated.isPresent());
-            assertEquals(stock, updated.get());
+            assertEquals(stock.getSymbol(), updated.get().getSymbol());
+            assertEquals(stock.getName(), updated.get().getName());
         }
     }
 
     @Test
     public void testDeleteMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(0, stockStore.delete(connection, "missing", "missing"));
+            assertEquals(0, stockTable.delete(connection, "missing", "missing"));
         }
     }
 
@@ -182,15 +202,15 @@ public class JdbcStockStoreIT {
     public void testDelete() throws SQLException {
         Stock stock = new Stock().setId("id").setMarketId(market1.getId()).setSymbol("sym").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockStore.add(connection, stock));
+            assertEquals(1, stockTable.add(connection, stock));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockStore.delete(connection, market1.getId(), stock.getId()));
+            assertEquals(1, stockTable.delete(connection, market1.getId(), stock.getId()));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertFalse(stockStore.get(connection, market1.getId(), stock.getId()).isPresent());
+            assertFalse(stockTable.get(connection, market1.getId(), stock.getId()).isPresent());
         }
     }
 
@@ -199,16 +219,16 @@ public class JdbcStockStoreIT {
         Stock stock1 = new Stock().setId("id1").setMarketId(market1.getId()).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setId("id2").setMarketId(market2.getId()).setSymbol("sym2").setName("name2");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockStore.add(connection, stock1));
-            assertEquals(1, stockStore.add(connection, stock2));
+            assertEquals(1, stockTable.add(connection, stock1));
+            assertEquals(1, stockTable.add(connection, stock2));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(2, stockStore.truncate(connection));
+            assertEquals(2, stockTable.truncate(connection));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<Stock> results = stockStore.getAll(connection, new Page());
+            Results<Stock> results = stockTable.getAll(connection, new Page());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }

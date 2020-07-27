@@ -11,6 +11,8 @@ public interface UserBalanceService {
 
     Results<UserBalance> getAll(Page page);
 
+    int setInitialBalance(UserBalance initialBalance);
+
     int add(UserBalance userBalance);
 
     int update(String userId, int delta);

@@ -28,6 +28,8 @@ public class StockTable extends BaseTable<Stock> {
         ps.setString(++index, stock.getSymbol());
         ps.setString(++index, stock.getName());
         ps.setString(++index, stock.getId());
+        ps.setString(++index, stock.getSymbol());
+        ps.setString(++index, stock.getName());
     };
 
     public Optional<Stock> get(Connection connection, String marketId, String stockId) {
@@ -51,7 +53,8 @@ public class StockTable extends BaseTable<Stock> {
     }
 
     public int update(Connection connection, Stock stock) {
-        return update(connection, UPDATE_ROW_SETTER, "UPDATE stocks SET symbol = ?, name = ? WHERE id = ?", stock);
+        String sql = "UPDATE stocks SET symbol = ?, name = ? WHERE id = ? AND (symbol != ? OR name != ?)";
+        return update(connection, UPDATE_ROW_SETTER, sql, stock);
     }
 
     public int delete(Connection connection, String marketId, String stockId) {

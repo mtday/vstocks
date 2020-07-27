@@ -16,13 +16,13 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static org.junit.Assert.*;
 
-public class JdbcStockPriceStoreIT {
+public class JdbcStockPriceTableIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private MarketTable marketStore;
-    private StockTable stockStore;
-    private StockPriceTable stockPriceStore;
+    private MarketTable marketTable;
+    private StockTable stockTable;
+    private StockPriceTable stockPriceTable;
 
     private final Market market = new Market().setId("id").setName("name");
     private final Stock stock1 = new Stock().setId("id1").setMarketId(market.getId()).setSymbol("sym1").setName("name1");
@@ -30,14 +30,14 @@ public class JdbcStockPriceStoreIT {
 
     @Before
     public void setup() throws SQLException {
-        marketStore = new MarketTable();
-        stockStore = new StockTable();
-        stockPriceStore = new StockPriceTable();
+        marketTable = new MarketTable();
+        stockTable = new StockTable();
+        stockPriceTable = new StockPriceTable();
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, marketStore.add(connection, market));
-            assertEquals(1, stockStore.add(connection, stock1));
-            assertEquals(1, stockStore.add(connection, stock2));
+            assertEquals(1, marketTable.add(connection, market));
+            assertEquals(1, stockTable.add(connection, stock1));
+            assertEquals(1, stockTable.add(connection, stock2));
             connection.commit();
         }
     }
@@ -45,9 +45,9 @@ public class JdbcStockPriceStoreIT {
     @After
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            stockPriceStore.truncate(connection);
-            stockStore.truncate(connection);
-            marketStore.truncate(connection);
+            stockPriceTable.truncate(connection);
+            stockTable.truncate(connection);
+            marketTable.truncate(connection);
             connection.commit();
         }
     }
@@ -55,7 +55,7 @@ public class JdbcStockPriceStoreIT {
     @Test
     public void testGetMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertFalse(stockPriceStore.get(connection, "missing-id").isPresent());
+            assertFalse(stockPriceTable.get(connection, "missing-id").isPresent());
         }
     }
 
@@ -63,21 +63,24 @@ public class JdbcStockPriceStoreIT {
     public void testGetExists() throws SQLException {
         StockPrice stockPrice = new StockPrice().setId("id").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockPriceStore.add(connection, stockPrice));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice));
             connection.commit();
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<StockPrice> fetched = stockPriceStore.get(connection, stockPrice.getId());
+            Optional<StockPrice> fetched = stockPriceTable.get(connection, stockPrice.getId());
             assertTrue(fetched.isPresent());
-            assertEquals(stockPrice, fetched.get());
+            assertEquals(stockPrice.getMarketId(), fetched.get().getMarketId());
+            assertEquals(stockPrice.getStockId(), fetched.get().getStockId());
+            assertEquals(stockPrice.getTimestamp().toEpochMilli(), fetched.get().getTimestamp().toEpochMilli());
+            assertEquals(stockPrice.getPrice(), fetched.get().getPrice());
         }
     }
 
     @Test
     public void testGetLatestNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<StockPrice> results = stockPriceStore.getLatest(connection, singleton(stock1.getId()), new Page());
+            Results<StockPrice> results = stockPriceTable.getLatest(connection, singleton(stock1.getId()), new Page());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }
@@ -90,15 +93,15 @@ public class JdbcStockPriceStoreIT {
         StockPrice stockPrice3 = new StockPrice().setId("id3").setMarketId(market.getId()).setStockId(stock2.getId()).setTimestamp(Instant.now()).setPrice(20);
         StockPrice stockPrice4 = new StockPrice().setId("id4").setMarketId(market.getId()).setStockId(stock2.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(18);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockPriceStore.add(connection, stockPrice1));
-            assertEquals(1, stockPriceStore.add(connection, stockPrice2));
-            assertEquals(1, stockPriceStore.add(connection, stockPrice3));
-            assertEquals(1, stockPriceStore.add(connection, stockPrice4));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice1));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice2));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice3));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice4));
             connection.commit();
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<StockPrice> results = stockPriceStore.getLatest(connection, asList(stock1.getId(), stock2.getId()), new Page());
+            Results<StockPrice> results = stockPriceTable.getLatest(connection, asList(stock1.getId(), stock2.getId()), new Page());
             assertEquals(2, results.getTotal());
             assertEquals(2, results.getResults().size());
             assertTrue(results.getResults().contains(stockPrice1));
@@ -109,7 +112,7 @@ public class JdbcStockPriceStoreIT {
     @Test
     public void testGetForStockNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<StockPrice> results = stockPriceStore.getForStock(connection, stock1.getId(), new Page());
+            Results<StockPrice> results = stockPriceTable.getForStock(connection, stock1.getId(), new Page());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }
@@ -120,13 +123,13 @@ public class JdbcStockPriceStoreIT {
         StockPrice stockPrice1 = new StockPrice().setId("id1").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
         StockPrice stockPrice2 = new StockPrice().setId("id2").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockPriceStore.add(connection, stockPrice1));
-            assertEquals(1, stockPriceStore.add(connection, stockPrice2));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice1));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice2));
             connection.commit();
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<StockPrice> results = stockPriceStore.getForStock(connection, stock1.getId(), new Page());
+            Results<StockPrice> results = stockPriceTable.getForStock(connection, stock1.getId(), new Page());
             assertEquals(2, results.getTotal());
             assertEquals(2, results.getResults().size());
             assertTrue(results.getResults().contains(stockPrice1));
@@ -137,7 +140,7 @@ public class JdbcStockPriceStoreIT {
     @Test
     public void testGetAllNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<StockPrice> results = stockPriceStore.getAll(connection, new Page());
+            Results<StockPrice> results = stockPriceTable.getAll(connection, new Page());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }
@@ -148,13 +151,13 @@ public class JdbcStockPriceStoreIT {
         StockPrice stockPrice1 = new StockPrice().setId("id1").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
         StockPrice stockPrice2 = new StockPrice().setId("id2").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockPriceStore.add(connection, stockPrice1));
-            assertEquals(1, stockPriceStore.add(connection, stockPrice2));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice1));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice2));
             connection.commit();
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<StockPrice> results = stockPriceStore.getAll(connection, new Page());
+            Results<StockPrice> results = stockPriceTable.getAll(connection, new Page());
             assertEquals(2, results.getTotal());
             assertEquals(2, results.getResults().size());
             assertTrue(results.getResults().contains(stockPrice1));
@@ -166,7 +169,7 @@ public class JdbcStockPriceStoreIT {
     public void testAdd() throws SQLException {
         StockPrice stockPrice = new StockPrice().setId("id").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockPriceStore.add(connection, stockPrice));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice));
             connection.commit();
         }
     }
@@ -175,15 +178,15 @@ public class JdbcStockPriceStoreIT {
     public void testAddConflict() throws SQLException {
         StockPrice stockPrice = new StockPrice().setId("id").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockPriceStore.add(connection, stockPrice));
-            stockPriceStore.add(connection, stockPrice);
+            assertEquals(1, stockPriceTable.add(connection, stockPrice));
+            stockPriceTable.add(connection, stockPrice);
         }
     }
 
     @Test
     public void testDeleteMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(0, stockPriceStore.delete(connection, "missing-id"));
+            assertEquals(0, stockPriceTable.delete(connection, "missing-id"));
         }
     }
 
@@ -191,15 +194,15 @@ public class JdbcStockPriceStoreIT {
     public void testDelete() throws SQLException {
         StockPrice stockPrice = new StockPrice().setId("id").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockPriceStore.add(connection, stockPrice));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockPriceStore.delete(connection, stockPrice.getId()));
+            assertEquals(1, stockPriceTable.delete(connection, stockPrice.getId()));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertFalse(stockPriceStore.get(connection, stockPrice.getId()).isPresent());
+            assertFalse(stockPriceTable.get(connection, stockPrice.getId()).isPresent());
         }
     }
 
@@ -209,17 +212,17 @@ public class JdbcStockPriceStoreIT {
         StockPrice stockPrice2 = new StockPrice().setId("id2").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
         StockPrice stockPrice3 = new StockPrice().setId("id3").setMarketId(market.getId()).setStockId(stock2.getId()).setTimestamp(Instant.now()).setPrice(1000);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockPriceStore.add(connection, stockPrice1));
-            assertEquals(1, stockPriceStore.add(connection, stockPrice2));
-            assertEquals(1, stockPriceStore.add(connection, stockPrice3));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice1));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice2));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice3));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(3, stockPriceStore.truncate(connection));
+            assertEquals(3, stockPriceTable.truncate(connection));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<StockPrice> results = stockPriceStore.getAll(connection, new Page());
+            Results<StockPrice> results = stockPriceTable.getAll(connection, new Page());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }

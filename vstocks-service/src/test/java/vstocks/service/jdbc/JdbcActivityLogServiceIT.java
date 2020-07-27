@@ -23,32 +23,32 @@ public class JdbcActivityLogServiceIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private UserTable userStore;
-    private MarketTable marketStore;
-    private StockTable stockStore;
-    private ActivityLogTable activityLogStore;
+    private UserTable userTable;
+    private MarketTable marketTable;
+    private StockTable stockTable;
+    private ActivityLogTable activityLogTable;
     private JdbcActivityLogService activityLogService;
 
-    private final User user1 = new User().setId("user1").setUsername("u1").setEmail("email1").setSource(TWITTER);
-    private final User user2 = new User().setId("user2").setUsername("u2").setEmail("email2").setSource(TWITTER);
+    private final User user1 = new User().setId("user1").setUsername("u1").setSource(TWITTER).setDisplayName("U1");
+    private final User user2 = new User().setId("user2").setUsername("u2").setSource(TWITTER).setDisplayName("U2");
     private final Market market = new Market().setId("id").setName("name");
     private final Stock stock1 = new Stock().setId("id1").setMarketId(market.getId()).setSymbol("sym1").setName("name1");
     private final Stock stock2 = new Stock().setId("id2").setMarketId(market.getId()).setSymbol("sym2").setName("name2");
 
     @Before
     public void setup() throws SQLException {
-        userStore = new UserTable();
-        marketStore = new MarketTable();
-        stockStore = new StockTable();
-        activityLogStore = new ActivityLogTable();
+        userTable = new UserTable();
+        marketTable = new MarketTable();
+        stockTable = new StockTable();
+        activityLogTable = new ActivityLogTable();
         activityLogService = new JdbcActivityLogService(dataSourceExternalResource.get());
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userStore.add(connection, user1));
-            assertEquals(1, userStore.add(connection, user2));
-            assertEquals(1, marketStore.add(connection, market));
-            assertEquals(1, stockStore.add(connection, stock1));
-            assertEquals(1, stockStore.add(connection, stock2));
+            assertEquals(1, userTable.add(connection, user1));
+            assertEquals(1, userTable.add(connection, user2));
+            assertEquals(1, marketTable.add(connection, market));
+            assertEquals(1, stockTable.add(connection, stock1));
+            assertEquals(1, stockTable.add(connection, stock2));
             connection.commit();
         }
     }
@@ -56,10 +56,10 @@ public class JdbcActivityLogServiceIT {
     @After
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            activityLogStore.truncate(connection);
-            stockStore.truncate(connection);
-            marketStore.truncate(connection);
-            userStore.truncate(connection);
+            activityLogTable.truncate(connection);
+            stockTable.truncate(connection);
+            marketTable.truncate(connection);
+            userTable.truncate(connection);
             connection.commit();
         }
     }
@@ -76,7 +76,12 @@ public class JdbcActivityLogServiceIT {
 
         Optional<ActivityLog> fetched = activityLogService.get(activityLog.getId());
         assertTrue(fetched.isPresent());
-        assertEquals(activityLog, fetched.get());
+        assertEquals(activityLog.getUserId(), fetched.get().getUserId());
+        assertEquals(activityLog.getMarketId(), fetched.get().getMarketId());
+        assertEquals(activityLog.getStockId(), fetched.get().getStockId());
+        assertEquals(activityLog.getTimestamp().toEpochMilli(), fetched.get().getTimestamp().toEpochMilli());
+        assertEquals(activityLog.getShares(), fetched.get().getShares());
+        assertEquals(activityLog.getPrice(), fetched.get().getPrice());
     }
 
     @Test

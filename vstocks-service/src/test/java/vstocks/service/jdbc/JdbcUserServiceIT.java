@@ -4,42 +4,59 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.service.DataSourceExternalResource;
-import vstocks.service.jdbc.table.UserTable;
 import vstocks.model.Page;
-import vstocks.model.Password;
 import vstocks.model.Results;
 import vstocks.model.User;
+import vstocks.model.UserBalance;
+import vstocks.service.DataSourceExternalResource;
+import vstocks.service.jdbc.table.UserBalanceTable;
+import vstocks.service.jdbc.table.UserTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
-import static java.util.Locale.ENGLISH;
 import static org.junit.Assert.*;
-import static vstocks.model.UserSource.LOCAL;
 import static vstocks.model.UserSource.TWITTER;
 
 public class JdbcUserServiceIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private UserTable userStore;
+    private UserTable userTable;
+    private UserBalanceTable userBalanceTable;
+
     private JdbcUserService userService;
+    private JdbcUserBalanceService userBalanceService;
 
     @Before
     public void setup() {
-        userStore = new UserTable();
+        userTable = new UserTable();
+        userBalanceTable = new UserBalanceTable();
         userService = new JdbcUserService(dataSourceExternalResource.get());
+        userBalanceService = new JdbcUserBalanceService(dataSourceExternalResource.get());
     }
 
     @After
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            userStore.truncate(connection);
+            userBalanceTable.truncate(connection);
+            userTable.truncate(connection);
             connection.commit();
         }
+    }
+
+    @Test
+    public void testUsernameExistsMissing() {
+        assertFalse(userService.usernameExists("missing"));
+    }
+
+    @Test
+    public void testUsernameExists() {
+        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        assertEquals(1, userService.add(user));
+        assertTrue(userService.usernameExists(user.getUsername()));
     }
 
     @Test
@@ -49,58 +66,71 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testGetExists() {
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(TWITTER);
+        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
         assertEquals(1, userService.add(user));
 
         Optional<User> fetched = userService.get(user.getId());
         assertTrue(fetched.isPresent());
-        assertEquals(user, fetched.get());
+        assertEquals(user.getUsername(), fetched.get().getUsername());
+        assertEquals(user.getSource(), fetched.get().getSource());
+        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
     }
 
     @Test
     public void testLoginMissing() {
-        assertFalse(userService.login("missing-username", "missing-password").isPresent());
-    }
+        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        assertEquals(1, userService.login(user));
 
-    @Test
-    public void testLoginUsernameExistsExactMatch() {
-        String hashedPass = Password.hash("password");
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(LOCAL).setHashedPass(hashedPass);
-        assertEquals(1, userService.add(user));
-
-        Optional<User> fetched = userService.login(user.getUsername(), hashedPass);
+        Optional<User> fetched = userService.get(user.getId());
         assertTrue(fetched.isPresent());
-        assertEquals(user, fetched.get());
+        assertEquals(user.getUsername(), fetched.get().getUsername());
+        assertEquals(user.getSource(), fetched.get().getSource());
+        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
+
+        Optional<UserBalance> userBalance = userBalanceService.get(user.getId());
+        assertTrue(userBalance.isPresent());
+        assertEquals(10000, userBalance.get().getBalance());
     }
 
     @Test
-    public void testLoginUsernameExistsWrongCase() {
-        String hashedPass = Password.hash("password");
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(LOCAL).setHashedPass(hashedPass);
-        assertEquals(1, userService.add(user));
-        assertFalse(userService.login(user.getUsername().toUpperCase(ENGLISH), "HASH").isPresent());
-    }
-
-    @Test
-    public void testLoginEmailExistsExactMatch() {
-        String hashedPass = Password.hash("password");
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(LOCAL).setHashedPass(hashedPass);
+    public void testLoginExistsSame() {
+        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
         assertEquals(1, userService.add(user));
 
-        Optional<User> fetched = userService.login(user.getEmail(), hashedPass);
+        Optional<User> fetched = userService.get(user.getId());
         assertTrue(fetched.isPresent());
-        assertEquals(user, fetched.get());
+        assertEquals(user.getUsername(), fetched.get().getUsername());
+        assertEquals(user.getSource(), fetched.get().getSource());
+        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
+
+        assertEquals(0, userService.login(user));
+
+        fetched = userService.get(user.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(user.getUsername(), fetched.get().getUsername());
+        assertEquals(user.getSource(), fetched.get().getSource());
+        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
+
+        assertFalse(userBalanceService.get(user.getId()).isPresent());
     }
 
     @Test
-    public void testLoginEmailExistsWrongCase() {
-        String hashedPass = Password.hash("password");
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(LOCAL).setHashedPass(hashedPass);
+    public void testLoginExistsDifferent() {
+        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
         assertEquals(1, userService.add(user));
 
-        Optional<User> fetched = userService.login(user.getEmail().toUpperCase(ENGLISH), hashedPass);
+        User loginUser = new User().setId("id").setUsername("login").setSource(TWITTER).setDisplayName("Login");
+        assertEquals(1, userService.login(loginUser));
+
+        Optional<User> fetched = userService.get(user.getId());
         assertTrue(fetched.isPresent());
-        assertEquals(user, fetched.get());
+        assertEquals(loginUser.getUsername(), fetched.get().getUsername());
+        assertEquals(loginUser.getSource(), fetched.get().getSource());
+        assertEquals(loginUser.getDisplayName(), fetched.get().getDisplayName());
+
+        Optional<UserBalance> userBalance = userBalanceService.get(user.getId());
+        assertTrue(userBalance.isPresent());
+        assertEquals(10000, userBalance.get().getBalance());
     }
 
     @Test
@@ -112,8 +142,8 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testGetAllSome() {
-        User user1 = new User().setId("id1").setUsername("name1").setEmail("email1").setSource(TWITTER);
-        User user2 = new User().setId("id2").setUsername("name2").setEmail("email2").setSource(TWITTER);
+        User user1 = new User().setId("id1").setUsername("name1").setSource(TWITTER).setDisplayName("Name");
+        User user2 = new User().setId("id2").setUsername("name2").setSource(TWITTER).setDisplayName("Name");
         assertEquals(1, userService.add(user1));
         assertEquals(1, userService.add(user2));
 
@@ -126,11 +156,11 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testGetAllMultiplePages() {
-        User user1 = new User().setId("id1").setUsername("name1").setEmail("email1").setSource(TWITTER);
-        User user2 = new User().setId("id2").setUsername("name2").setEmail("email2").setSource(TWITTER);
-        User user3 = new User().setId("id3").setUsername("name3").setEmail("email3").setSource(TWITTER);
-        User user4 = new User().setId("id4").setUsername("name4").setEmail("email4").setSource(TWITTER);
-        User user5 = new User().setId("id5").setUsername("name5").setEmail("email5").setSource(TWITTER);
+        User user1 = new User().setId("id1").setUsername("name1").setSource(TWITTER).setDisplayName("Name");
+        User user2 = new User().setId("id2").setUsername("name2").setSource(TWITTER).setDisplayName("Name");
+        User user3 = new User().setId("id3").setUsername("name3").setSource(TWITTER).setDisplayName("Name");
+        User user4 = new User().setId("id4").setUsername("name4").setSource(TWITTER).setDisplayName("Name");
+        User user5 = new User().setId("id5").setUsername("name5").setSource(TWITTER).setDisplayName("Name");
         for (User user : asList(user1, user2, user3, user4, user5)) {
             assertEquals(1, userService.add(user));
         }
@@ -158,81 +188,46 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testAdd() {
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(TWITTER);
+        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
         assertEquals(1, userService.add(user));
     }
 
     @Test(expected = Exception.class)
     public void testAddIdConflict() {
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(TWITTER);
+        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
         assertEquals(1, userService.add(user));
-        user.setUsername("different").setEmail("different");
+        user.setUsername("different");
         userService.add(user);
     }
 
     @Test(expected = Exception.class)
     public void testAddUsernameConflict() {
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(TWITTER);
+        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
         assertEquals(1, userService.add(user));
-        user.setId("different").setEmail("different");
-        userService.add(user);
-    }
-
-    @Test(expected = Exception.class)
-    public void testAddEmailConflict() {
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(TWITTER);
-        assertEquals(1, userService.add(user));
-        user.setId("different").setUsername("different");
-        userService.add(user);
-    }
-
-    @Test(expected = Exception.class)
-    public void testAddEmailConflictDifferentCase() {
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(TWITTER);
-        assertEquals(1, userService.add(user));
-        user.setId("different").setUsername("different").setEmail("EMAIL");
+        user.setId("different");
         userService.add(user);
     }
 
     @Test
     public void testUpdateMissing() {
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(TWITTER);
+        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
         assertEquals(0, userService.update(user));
     }
 
     @Test
     public void testUpdate() {
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(TWITTER);
+        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
         assertEquals(1, userService.add(user));
 
         user.setUsername("updated");
-        user.setEmail("updated");
+        user.setDisplayName("updated");
         assertEquals(1, userService.update(user));
 
         Optional<User> updated = userService.get(user.getId());
         assertTrue(updated.isPresent());
-        assertEquals(user, updated.get());
-    }
-
-    @Test
-    public void testUpdatePasswordMissing() {
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(TWITTER);
-        assertEquals(0, userService.updatePassword(user));
-    }
-
-    @Test
-    public void testUpdatePassword() {
-        String hashedPass = Password.hash("password");
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(LOCAL).setHashedPass(hashedPass);
-        assertEquals(1, userService.add(user));
-
-        user.setSource(LOCAL);
-        user.setHashedPass(Password.hash("updated"));
-        assertEquals(1, userService.updatePassword(user));
-
-        Optional<User> updated = userService.get(user.getId());
-        assertTrue(updated.isPresent());
-        assertEquals(user, updated.get());
+        assertEquals(user.getUsername(), updated.get().getUsername());
+        assertEquals(user.getSource(), updated.get().getSource());
+        assertEquals(user.getDisplayName(), updated.get().getDisplayName());
     }
 
     @Test
@@ -242,7 +237,7 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testDelete() {
-        User user = new User().setId("id").setUsername("name").setEmail("email").setSource(TWITTER);
+        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
         assertEquals(1, userService.add(user));
         assertEquals(1, userService.delete(user.getId()));
         assertFalse(userService.get(user.getId()).isPresent());

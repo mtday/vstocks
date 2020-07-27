@@ -20,17 +20,17 @@ public class JdbcUserStockServiceIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private ActivityLogTable activityLogStore;
-    private UserTable userStore;
-    private MarketTable marketStore;
-    private StockTable stockStore;
-    private StockPriceTable stockPriceStore;
-    private UserBalanceTable userBalanceStore;
-    private UserStockTable userStockStore;
+    private ActivityLogTable activityLogTable;
+    private UserTable userTable;
+    private MarketTable marketTable;
+    private StockTable stockTable;
+    private StockPriceTable stockPriceTable;
+    private UserBalanceTable userBalanceTable;
+    private UserStockTable userStockTable;
     private JdbcUserStockService userStockService;
 
-    private final User user1 = new User().setId("user1").setUsername("u1").setEmail("email1").setSource(TWITTER);
-    private final User user2 = new User().setId("user2").setUsername("u2").setEmail("email2").setSource(TWITTER);
+    private final User user1 = new User().setId("user1").setUsername("u1").setSource(TWITTER).setDisplayName("U1");
+    private final User user2 = new User().setId("user2").setUsername("u2").setSource(TWITTER).setDisplayName("U2");
     private final UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
     private final UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
     private final Market market = new Market().setId("id").setName("name");
@@ -41,25 +41,25 @@ public class JdbcUserStockServiceIT {
 
     @Before
     public void setup() throws SQLException {
-        activityLogStore = new ActivityLogTable();
-        userStore = new UserTable();
-        marketStore = new MarketTable();
-        stockStore = new StockTable();
-        stockPriceStore = new StockPriceTable();
-        userBalanceStore = new UserBalanceTable();
-        userStockStore = new UserStockTable();
+        activityLogTable = new ActivityLogTable();
+        userTable = new UserTable();
+        marketTable = new MarketTable();
+        stockTable = new StockTable();
+        stockPriceTable = new StockPriceTable();
+        userBalanceTable = new UserBalanceTable();
+        userStockTable = new UserStockTable();
         userStockService = new JdbcUserStockService(dataSourceExternalResource.get());
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userStore.add(connection, user1));
-            assertEquals(1, userStore.add(connection, user2));
-            assertEquals(1, userBalanceStore.add(connection, userBalance1));
-            assertEquals(1, userBalanceStore.add(connection, userBalance2));
-            assertEquals(1, marketStore.add(connection, market));
-            assertEquals(1, stockStore.add(connection, stock1));
-            assertEquals(1, stockStore.add(connection, stock2));
-            assertEquals(1, stockPriceStore.add(connection, stockPrice1));
-            assertEquals(1, stockPriceStore.add(connection, stockPrice2));
+            assertEquals(1, userTable.add(connection, user1));
+            assertEquals(1, userTable.add(connection, user2));
+            assertEquals(1, userBalanceTable.add(connection, userBalance1));
+            assertEquals(1, userBalanceTable.add(connection, userBalance2));
+            assertEquals(1, marketTable.add(connection, market));
+            assertEquals(1, stockTable.add(connection, stock1));
+            assertEquals(1, stockTable.add(connection, stock2));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice1));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice2));
             connection.commit();
         }
     }
@@ -67,12 +67,12 @@ public class JdbcUserStockServiceIT {
     @After
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            userStockStore.truncate(connection);
-            stockPriceStore.truncate(connection);
-            stockStore.truncate(connection);
-            marketStore.truncate(connection);
-            userBalanceStore.truncate(connection);
-            userStore.truncate(connection);
+            userStockTable.truncate(connection);
+            stockPriceTable.truncate(connection);
+            stockTable.truncate(connection);
+            marketTable.truncate(connection);
+            userBalanceTable.truncate(connection);
+            userTable.truncate(connection);
             connection.commit();
         }
     }
@@ -89,7 +89,10 @@ public class JdbcUserStockServiceIT {
 
         Optional<UserStock> fetched = userStockService.get(userStock.getUserId(), userStock.getMarketId(), userStock.getStockId());
         assertTrue(fetched.isPresent());
-        assertEquals(userStock, fetched.get());
+        assertEquals(userStock.getUserId(), fetched.get().getUserId());
+        assertEquals(userStock.getMarketId(), fetched.get().getMarketId());
+        assertEquals(userStock.getStockId(), fetched.get().getStockId());
+        assertEquals(userStock.getShares(), fetched.get().getShares());
     }
 
     @Test
@@ -161,7 +164,7 @@ public class JdbcUserStockServiceIT {
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was updated
-            Optional<UserBalance> userBalance = userBalanceStore.get(connection, user1.getId());
+            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
             assertTrue(userBalance.isPresent());
             assertEquals(userBalance1.getBalance() - stockPrice1.getPrice(), userBalance.get().getBalance());
 
@@ -171,7 +174,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(1, userStock.get().getShares());
 
             // Make sure activity log was added
-            Results<ActivityLog> activityLogs = activityLogStore.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
             assertEquals(1, activityLogs.getTotal());
             assertEquals(1, activityLogs.getResults().size());
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
@@ -194,7 +197,7 @@ public class JdbcUserStockServiceIT {
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was updated
-            Optional<UserBalance> userBalance = userBalanceStore.get(connection, user1.getId());
+            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
             assertTrue(userBalance.isPresent());
             assertEquals(userBalance1.getBalance() - stockPrice1.getPrice(), userBalance.get().getBalance());
 
@@ -204,7 +207,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(2, userStock.get().getShares());
 
             // Make sure activity log was added
-            Results<ActivityLog> activityLogs = activityLogStore.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
             assertEquals(1, activityLogs.getTotal());
             assertEquals(1, activityLogs.getResults().size());
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
@@ -224,7 +227,7 @@ public class JdbcUserStockServiceIT {
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was NOT updated
-            Optional<UserBalance> userBalance = userBalanceStore.get(connection, user1.getId());
+            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
             assertTrue(userBalance.isPresent());
             assertEquals(userBalance1.getBalance(), userBalance.get().getBalance());
 
@@ -232,7 +235,7 @@ public class JdbcUserStockServiceIT {
             assertFalse(userStockService.get(user1.getId(), market.getId(), stock1.getId()).isPresent());
 
             // Make sure no activity log was added
-            Results<ActivityLog> activityLogs = activityLogStore.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
             assertEquals(0, activityLogs.getTotal());
             assertTrue(activityLogs.getResults().isEmpty());
         }
@@ -241,7 +244,7 @@ public class JdbcUserStockServiceIT {
     @Test
     public void testBuyStockMissingStockPrice() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            stockPriceStore.delete(connection, stockPrice1.getId());
+            stockPriceTable.delete(connection, stockPrice1.getId());
             connection.commit();
         }
 
@@ -249,7 +252,7 @@ public class JdbcUserStockServiceIT {
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was NOT updated
-            Optional<UserBalance> userBalance = userBalanceStore.get(connection, user1.getId());
+            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
             assertTrue(userBalance.isPresent());
             assertEquals(userBalance1.getBalance(), userBalance.get().getBalance());
 
@@ -257,7 +260,7 @@ public class JdbcUserStockServiceIT {
             assertFalse(userStockService.get(user1.getId(), market.getId(), stock1.getId()).isPresent());
 
             // Make sure no activity log was added
-            Results<ActivityLog> activityLogs = activityLogStore.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
             assertEquals(0, activityLogs.getTotal());
             assertTrue(activityLogs.getResults().isEmpty());
         }
@@ -269,7 +272,7 @@ public class JdbcUserStockServiceIT {
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was NOT updated
-            Optional<UserBalance> userBalance = userBalanceStore.get(connection, user1.getId());
+            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
             assertTrue(userBalance.isPresent());
             assertEquals(userBalance1.getBalance(), userBalance.get().getBalance());
 
@@ -277,7 +280,7 @@ public class JdbcUserStockServiceIT {
             assertFalse(userStockService.get(user1.getId(), market.getId(), stock1.getId()).isPresent());
 
             // Make sure no activity log was added
-            Results<ActivityLog> activityLogs = activityLogStore.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
             assertEquals(0, activityLogs.getTotal());
             assertTrue(activityLogs.getResults().isEmpty());
         }
@@ -292,7 +295,7 @@ public class JdbcUserStockServiceIT {
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was updated
-            Optional<UserBalance> userBalance = userBalanceStore.get(connection, user1.getId());
+            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
             assertTrue(userBalance.isPresent());
             assertEquals(userBalance1.getBalance() + stockPrice1.getPrice(), userBalance.get().getBalance());
 
@@ -302,7 +305,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(0, userStock.get().getShares());
 
             // Make sure activity log was added
-            Results<ActivityLog> activityLogs = activityLogStore.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
             assertEquals(1, activityLogs.getTotal());
             assertEquals(1, activityLogs.getResults().size());
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
@@ -319,7 +322,7 @@ public class JdbcUserStockServiceIT {
     @Test
     public void testSellStockMissingStockPrice() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            stockPriceStore.delete(connection, stockPrice1.getId());
+            stockPriceTable.delete(connection, stockPrice1.getId());
             connection.commit();
         }
 
@@ -330,7 +333,7 @@ public class JdbcUserStockServiceIT {
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was NOT updated
-            Optional<UserBalance> userBalance = userBalanceStore.get(connection, user1.getId());
+            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
             assertTrue(userBalance.isPresent());
             assertEquals(userBalance1.getBalance(), userBalance.get().getBalance());
 
@@ -340,7 +343,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(existingUserStock.getShares(), userStock.get().getShares());
 
             // Make sure no activity log was added
-            Results<ActivityLog> activityLogs = activityLogStore.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
             assertEquals(0, activityLogs.getTotal());
             assertTrue(activityLogs.getResults().isEmpty());
         }

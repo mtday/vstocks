@@ -15,21 +15,21 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-public class JdbcMarketStoreIT {
+public class JdbcMarketTableIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private MarketTable marketStore;
+    private MarketTable marketTable;
 
     @Before
     public void setup() {
-        marketStore = new MarketTable();
+        marketTable = new MarketTable();
     }
 
     @After
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            marketStore.truncate(connection);
+            marketTable.truncate(connection);
             connection.commit();
         }
     }
@@ -37,7 +37,7 @@ public class JdbcMarketStoreIT {
     @Test
     public void testGetMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertFalse(marketStore.get(connection, "missing-id").isPresent());
+            assertFalse(marketTable.get(connection, "missing-id").isPresent());
         }
     }
 
@@ -45,12 +45,12 @@ public class JdbcMarketStoreIT {
     public void testGetExists() throws SQLException {
         Market market = new Market().setId("id").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, marketStore.add(connection, market));
+            assertEquals(1, marketTable.add(connection, market));
             connection.commit();
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<Market> fetched = marketStore.get(connection, market.getId());
+            Optional<Market> fetched = marketTable.get(connection, market.getId());
             assertTrue(fetched.isPresent());
             assertEquals(market, fetched.get());
         }
@@ -59,7 +59,7 @@ public class JdbcMarketStoreIT {
     @Test
     public void testGetAllNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<Market> results = marketStore.getAll(connection, new Page());
+            Results<Market> results = marketTable.getAll(connection, new Page());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }
@@ -70,13 +70,13 @@ public class JdbcMarketStoreIT {
         Market market1 = new Market().setId("id1").setName("name");
         Market market2 = new Market().setId("id2").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, marketStore.add(connection, market1));
-            assertEquals(1, marketStore.add(connection, market2));
+            assertEquals(1, marketTable.add(connection, market1));
+            assertEquals(1, marketTable.add(connection, market2));
             connection.commit();
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<Market> results = marketStore.getAll(connection, new Page());
+            Results<Market> results = marketTable.getAll(connection, new Page());
             assertEquals(2, results.getTotal());
             assertEquals(2, results.getResults().size());
             assertTrue(results.getResults().contains(market1));
@@ -88,7 +88,7 @@ public class JdbcMarketStoreIT {
     public void testAdd() throws SQLException {
         Market market = new Market().setId("id").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, marketStore.add(connection, market));
+            assertEquals(1, marketTable.add(connection, market));
             connection.commit();
         }
     }
@@ -97,8 +97,8 @@ public class JdbcMarketStoreIT {
     public void testAddConflict() throws SQLException {
         Market market = new Market().setId("id").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, marketStore.add(connection, market));
-            marketStore.add(connection, market);
+            assertEquals(1, marketTable.add(connection, market));
+            marketTable.add(connection, market);
             connection.commit();
         }
     }
@@ -107,8 +107,27 @@ public class JdbcMarketStoreIT {
     public void testUpdateMissing() throws SQLException {
         Market market = new Market().setId("id").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(0, marketStore.update(connection, market));
+            assertEquals(0, marketTable.update(connection, market));
             connection.commit();
+        }
+    }
+
+    @Test
+    public void testUpdateNoChange() throws SQLException {
+        Market market = new Market().setId("id").setName("name");
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, marketTable.add(connection, market));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(0, marketTable.update(connection, market));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Optional<Market> updated = marketTable.get(connection, market.getId());
+            assertTrue(updated.isPresent());
+            assertEquals(market.getName(), updated.get().getName());
         }
     }
 
@@ -116,27 +135,26 @@ public class JdbcMarketStoreIT {
     public void testUpdate() throws SQLException {
         Market market = new Market().setId("id").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, marketStore.add(connection, market));
+            assertEquals(1, marketTable.add(connection, market));
             connection.commit();
         }
-
         market.setName("updated");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, marketStore.update(connection, market));
+            assertEquals(1, marketTable.update(connection, market));
             connection.commit();
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<Market> updated = marketStore.get(connection, market.getId());
+            Optional<Market> updated = marketTable.get(connection, market.getId());
             assertTrue(updated.isPresent());
-            assertEquals(market, updated.get());
+            assertEquals(market.getName(), updated.get().getName());
         }
     }
 
     @Test
     public void testDeleteMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(0, marketStore.delete(connection, "missing"));
+            assertEquals(0, marketTable.delete(connection, "missing"));
         }
     }
 
@@ -144,15 +162,15 @@ public class JdbcMarketStoreIT {
     public void testDelete() throws SQLException {
         Market market = new Market().setId("id").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, marketStore.add(connection, market));
+            assertEquals(1, marketTable.add(connection, market));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, marketStore.delete(connection, market.getId()));
+            assertEquals(1, marketTable.delete(connection, market.getId()));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertFalse(marketStore.get(connection, market.getId()).isPresent());
+            assertFalse(marketTable.get(connection, market.getId()).isPresent());
         }
     }
 
@@ -161,16 +179,16 @@ public class JdbcMarketStoreIT {
         Market market1 = new Market().setId("id1").setName("name");
         Market market2 = new Market().setId("id2").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, marketStore.add(connection, market1));
-            assertEquals(1, marketStore.add(connection, market2));
+            assertEquals(1, marketTable.add(connection, market1));
+            assertEquals(1, marketTable.add(connection, market2));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(2, marketStore.truncate(connection));
+            assertEquals(2, marketTable.truncate(connection));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<Market> results = marketStore.getAll(connection, new Page());
+            Results<Market> results = marketTable.getAll(connection, new Page());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }

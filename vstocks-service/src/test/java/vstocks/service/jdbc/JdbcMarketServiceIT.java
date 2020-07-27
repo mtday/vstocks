@@ -20,19 +20,19 @@ public class JdbcMarketServiceIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private MarketTable marketStore;
+    private MarketTable marketTable;
     private JdbcMarketService marketService;
 
     @Before
     public void setup() {
-        marketStore = new MarketTable();
+        marketTable = new MarketTable();
         marketService = new JdbcMarketService(dataSourceExternalResource.get());
     }
 
     @After
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            marketStore.truncate(connection);
+            marketTable.truncate(connection);
             connection.commit();
         }
     }
@@ -49,7 +49,7 @@ public class JdbcMarketServiceIT {
 
         Optional<Market> fetched = marketService.get(market.getId());
         assertTrue(fetched.isPresent());
-        assertEquals(market, fetched.get());
+        assertEquals(market.getName(), fetched.get().getName());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class JdbcMarketServiceIT {
 
         Optional<Market> updated = marketService.get(market.getId());
         assertTrue(updated.isPresent());
-        assertEquals(market, updated.get());
+        assertEquals(market.getName(), updated.get().getName());
     }
 
     @Test

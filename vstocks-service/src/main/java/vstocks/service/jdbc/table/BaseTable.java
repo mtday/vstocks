@@ -27,6 +27,20 @@ public class BaseTable<T> {
         }
     }
 
+    int getCount(Connection connection, String sql, Object... params) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            populatePreparedStatement(ps, params);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+                return 0;
+            }
+        } catch (SQLException sqlException) {
+            throw new RuntimeException("Failed to fetch count from database", sqlException);
+        }
+    }
+
     Optional<T> getOne(Connection connection, RowMapper<T> rowMapper, String sql, Object... params) {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             populatePreparedStatement(ps, params);

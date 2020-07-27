@@ -17,24 +17,24 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 import static vstocks.model.UserSource.TWITTER;
 
-public class JdbcUserBalanceStoreIT {
+public class JdbcUserBalanceTableIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private UserTable userStore;
-    private UserBalanceTable userBalanceStore;
+    private UserTable userTable;
+    private UserBalanceTable userBalanceTable;
 
-    private final User user1 = new User().setId("user1").setUsername("u1").setEmail("email1").setSource(TWITTER);
-    private final User user2 = new User().setId("user2").setUsername("u2").setEmail("email2").setSource(TWITTER);
+    private final User user1 = new User().setId("user1").setUsername("u1").setSource(TWITTER).setDisplayName("U1");
+    private final User user2 = new User().setId("user2").setUsername("u2").setSource(TWITTER).setDisplayName("U2");
 
     @Before
     public void setup() throws SQLException {
-        userStore = new UserTable();
-        userBalanceStore = new UserBalanceTable();
+        userTable = new UserTable();
+        userBalanceTable = new UserBalanceTable();
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userStore.add(connection, user1));
-            assertEquals(1, userStore.add(connection, user2));
+            assertEquals(1, userTable.add(connection, user1));
+            assertEquals(1, userTable.add(connection, user2));
             connection.commit();
         }
     }
@@ -42,8 +42,8 @@ public class JdbcUserBalanceStoreIT {
     @After
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            userBalanceStore.truncate(connection);
-            userStore.truncate(connection);
+            userBalanceTable.truncate(connection);
+            userTable.truncate(connection);
             connection.commit();
         }
     }
@@ -51,7 +51,7 @@ public class JdbcUserBalanceStoreIT {
     @Test
     public void testGetMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertFalse(userBalanceStore.get(connection, "missing-user").isPresent());
+            assertFalse(userBalanceTable.get(connection, "missing-user").isPresent());
         }
     }
 
@@ -59,21 +59,21 @@ public class JdbcUserBalanceStoreIT {
     public void testGetExists() throws SQLException {
         UserBalance userBalance = new UserBalance().setUserId(user1.getId()).setBalance(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userBalanceStore.add(connection, userBalance));
+            assertEquals(1, userBalanceTable.add(connection, userBalance));
             connection.commit();
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<UserBalance> fetched = userBalanceStore.get(connection, userBalance.getUserId());
+            Optional<UserBalance> fetched = userBalanceTable.get(connection, userBalance.getUserId());
             assertTrue(fetched.isPresent());
-            assertEquals(userBalance, fetched.get());
+            assertEquals(userBalance.getBalance(), fetched.get().getBalance());
         }
     }
 
     @Test
     public void testGetAllNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<UserBalance> results = userBalanceStore.getAll(connection, new Page());
+            Results<UserBalance> results = userBalanceTable.getAll(connection, new Page());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }
@@ -84,13 +84,13 @@ public class JdbcUserBalanceStoreIT {
         UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
         UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userBalanceStore.add(connection, userBalance1));
-            assertEquals(1, userBalanceStore.add(connection, userBalance2));
+            assertEquals(1, userBalanceTable.add(connection, userBalance1));
+            assertEquals(1, userBalanceTable.add(connection, userBalance2));
             connection.commit();
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<UserBalance> results = userBalanceStore.getAll(connection, new Page());
+            Results<UserBalance> results = userBalanceTable.getAll(connection, new Page());
             assertEquals(2, results.getTotal());
             assertEquals(2, results.getResults().size());
             assertTrue(results.getResults().contains(userBalance1));
@@ -99,10 +99,43 @@ public class JdbcUserBalanceStoreIT {
     }
 
     @Test
+    public void testSetInitialBalanceNoneExists() throws SQLException {
+        UserBalance userBalance = new UserBalance().setUserId(user1.getId()).setBalance(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userBalanceTable.setInitialBalance(connection, userBalance));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Optional<UserBalance> fetched = userBalanceTable.get(connection, userBalance.getUserId());
+            assertTrue(fetched.isPresent());
+            assertEquals(userBalance.getBalance(), fetched.get().getBalance());
+        }
+    }
+
+    @Test
+    public void testSetInitialBalanceAlreadyExists() throws SQLException {
+        UserBalance existingBalance = new UserBalance().setUserId(user1.getId()).setBalance(20);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userBalanceTable.add(connection, existingBalance));
+            connection.commit();
+        }
+        UserBalance userBalance = new UserBalance().setUserId(user1.getId()).setBalance(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(0, userBalanceTable.setInitialBalance(connection, userBalance));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Optional<UserBalance> fetched = userBalanceTable.get(connection, userBalance.getUserId());
+            assertTrue(fetched.isPresent());
+            assertEquals(existingBalance.getBalance(), fetched.get().getBalance());
+        }
+    }
+
+    @Test
     public void testAdd() throws SQLException {
         UserBalance userBalance = new UserBalance().setUserId(user1.getId()).setBalance(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userBalanceStore.add(connection, userBalance));
+            assertEquals(1, userBalanceTable.add(connection, userBalance));
             connection.commit();
         }
     }
@@ -111,8 +144,8 @@ public class JdbcUserBalanceStoreIT {
     public void testAddConflict() throws SQLException {
         UserBalance userBalance = new UserBalance().setUserId(user1.getId()).setBalance(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userBalanceStore.add(connection, userBalance));
-            userBalanceStore.add(connection, userBalance);
+            assertEquals(1, userBalanceTable.add(connection, userBalance));
+            userBalanceTable.add(connection, userBalance);
             connection.commit();
         }
     }
@@ -120,7 +153,7 @@ public class JdbcUserBalanceStoreIT {
     @Test
     public void testUpdateIncrementMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(0, userBalanceStore.update(connection, "missing-id", 10));
+            assertEquals(0, userBalanceTable.update(connection, "missing-id", 10));
             connection.commit();
         }
     }
@@ -129,15 +162,15 @@ public class JdbcUserBalanceStoreIT {
     public void testUpdateIncrement() throws SQLException {
         UserBalance userBalance = new UserBalance().setUserId(user1.getId()).setBalance(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userBalanceStore.add(connection, userBalance));
+            assertEquals(1, userBalanceTable.add(connection, userBalance));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userBalanceStore.update(connection, userBalance.getUserId(), 10));
+            assertEquals(1, userBalanceTable.update(connection, userBalance.getUserId(), 10));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<UserBalance> updated = userBalanceStore.get(connection, userBalance.getUserId());
+            Optional<UserBalance> updated = userBalanceTable.get(connection, userBalance.getUserId());
             assertTrue(updated.isPresent());
             assertEquals(20, updated.get().getBalance());
         }
@@ -146,7 +179,7 @@ public class JdbcUserBalanceStoreIT {
     @Test
     public void testUpdateDecrementMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(0, userBalanceStore.update(connection, "missing-id", -10));
+            assertEquals(0, userBalanceTable.update(connection, "missing-id", -10));
         }
     }
 
@@ -154,17 +187,17 @@ public class JdbcUserBalanceStoreIT {
     public void testUpdateDecrementTooFar() throws SQLException {
         UserBalance userBalance = new UserBalance().setUserId(user1.getId()).setBalance(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userBalanceStore.add(connection, userBalance));
+            assertEquals(1, userBalanceTable.add(connection, userBalance));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(0, userBalanceStore.update(connection, userBalance.getUserId(), -12));
+            assertEquals(0, userBalanceTable.update(connection, userBalance.getUserId(), -12));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<UserBalance> fetched = userBalanceStore.get(connection, userBalance.getUserId());
+            Optional<UserBalance> fetched = userBalanceTable.get(connection, userBalance.getUserId());
             assertTrue(fetched.isPresent());
-            assertEquals(userBalance, fetched.get()); // not updated
+            assertEquals(userBalance.getBalance(), fetched.get().getBalance()); // not updated
         }
     }
 
@@ -172,15 +205,15 @@ public class JdbcUserBalanceStoreIT {
     public void testUpdateDecrement() throws SQLException {
         UserBalance userBalance = new UserBalance().setUserId(user1.getId()).setBalance(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userBalanceStore.add(connection, userBalance));
+            assertEquals(1, userBalanceTable.add(connection, userBalance));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userBalanceStore.update(connection, userBalance.getUserId(), -8));
+            assertEquals(1, userBalanceTable.update(connection, userBalance.getUserId(), -8));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<UserBalance> fetched = userBalanceStore.get(connection, userBalance.getUserId());
+            Optional<UserBalance> fetched = userBalanceTable.get(connection, userBalance.getUserId());
             assertTrue(fetched.isPresent());
             assertEquals(2, fetched.get().getBalance());
         }
@@ -189,7 +222,7 @@ public class JdbcUserBalanceStoreIT {
     @Test
     public void testDeleteMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(0, userBalanceStore.delete(connection, "missing"));
+            assertEquals(0, userBalanceTable.delete(connection, "missing"));
             connection.commit();
         }
     }
@@ -198,15 +231,15 @@ public class JdbcUserBalanceStoreIT {
     public void testDelete() throws SQLException {
         UserBalance userBalance = new UserBalance().setUserId(user1.getId()).setBalance(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userBalanceStore.add(connection, userBalance));
+            assertEquals(1, userBalanceTable.add(connection, userBalance));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userBalanceStore.delete(connection, userBalance.getUserId()));
+            assertEquals(1, userBalanceTable.delete(connection, userBalance.getUserId()));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertFalse(userBalanceStore.get(connection, userBalance.getUserId()).isPresent());
+            assertFalse(userBalanceTable.get(connection, userBalance.getUserId()).isPresent());
         }
     }
 
@@ -215,16 +248,16 @@ public class JdbcUserBalanceStoreIT {
         UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
         UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userBalanceStore.add(connection, userBalance1));
-            assertEquals(1, userBalanceStore.add(connection, userBalance2));
+            assertEquals(1, userBalanceTable.add(connection, userBalance1));
+            assertEquals(1, userBalanceTable.add(connection, userBalance2));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(2, userBalanceStore.truncate(connection));
+            assertEquals(2, userBalanceTable.truncate(connection));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<UserBalance> results = userBalanceStore.getAll(connection, new Page());
+            Results<UserBalance> results = userBalanceTable.getAll(connection, new Page());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }

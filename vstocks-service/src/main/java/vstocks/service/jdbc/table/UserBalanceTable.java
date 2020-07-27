@@ -29,6 +29,13 @@ public class UserBalanceTable extends BaseTable<UserBalance> {
         return results(connection, ROW_MAPPER, page, query, countQuery);
     }
 
+    public int setInitialBalance(Connection connection, UserBalance initialBalance) {
+        // TODO: May need to revise this SQL when switching from H2 to another database
+        String sql = "MERGE INTO user_balances USING DUAL ON (user_id = ?) "
+                + "WHEN NOT MATCHED THEN INSERT VALUES (?, ?)";
+        return update(connection, sql, initialBalance.getUserId(), initialBalance.getUserId(), initialBalance.getBalance());
+    }
+
     public int add(Connection connection, UserBalance userBalance) {
         String sql = "INSERT INTO user_balances (user_id, balance) VALUES (?, ?)";
         return update(connection, INSERT_ROW_SETTER, sql, userBalance);
@@ -37,7 +44,7 @@ public class UserBalanceTable extends BaseTable<UserBalance> {
     public int update(Connection connection, String userId, int delta) {
         if (delta > 0) {
             // May want to do a MERGE here so an initial update with a positive delta adds the row when missing.
-            // See JdbcUserStockStore#update for an example
+            // See UserStockTable#update for an example
             return update(connection, "UPDATE user_balances SET balance = balance + ? WHERE user_id = ?", delta, userId);
         } else if (delta < 0) {
             // Don't let the balance go less than 0.

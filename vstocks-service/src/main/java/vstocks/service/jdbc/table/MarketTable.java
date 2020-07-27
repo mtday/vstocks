@@ -23,6 +23,7 @@ public class MarketTable extends BaseTable<Market> {
         int index = 0;
         ps.setString(++index, market.getName());
         ps.setString(++index, market.getId());
+        ps.setString(++index, market.getName());
     };
 
     public Optional<Market> get(Connection connection, String id) {
@@ -40,7 +41,7 @@ public class MarketTable extends BaseTable<Market> {
     }
 
     public int update(Connection connection, Market market) {
-        return update(connection, UPDATE_ROW_SETTER, "UPDATE markets SET name = ? WHERE id = ?", market);
+        return update(connection, UPDATE_ROW_SETTER, "UPDATE markets SET name = ? WHERE id = ? AND name != ?", market);
     }
 
     public int delete(Connection connection, String id) {

@@ -23,22 +23,22 @@ public class JdbcUserBalanceServiceIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private UserTable userStore;
-    private UserBalanceTable userBalanceStore;
+    private UserTable userTable;
+    private UserBalanceTable userBalanceTable;
     private JdbcUserBalanceService userBalanceService;
 
-    private final User user1 = new User().setId("user1").setUsername("u1").setEmail("email1").setSource(TWITTER);
-    private final User user2 = new User().setId("user2").setUsername("u2").setEmail("email2").setSource(TWITTER);
+    private final User user1 = new User().setId("user1").setUsername("u1").setSource(TWITTER).setDisplayName("U1");
+    private final User user2 = new User().setId("user2").setUsername("u2").setSource(TWITTER).setDisplayName("U2");
 
     @Before
     public void setup() throws SQLException {
-        userStore = new UserTable();
-        userBalanceStore = new UserBalanceTable();
+        userTable = new UserTable();
+        userBalanceTable = new UserBalanceTable();
         userBalanceService = new JdbcUserBalanceService(dataSourceExternalResource.get());
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userStore.add(connection, user1));
-            assertEquals(1, userStore.add(connection, user2));
+            assertEquals(1, userTable.add(connection, user1));
+            assertEquals(1, userTable.add(connection, user2));
             connection.commit();
         }
     }
@@ -46,8 +46,8 @@ public class JdbcUserBalanceServiceIT {
     @After
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            userBalanceStore.truncate(connection);
-            userStore.truncate(connection);
+            userBalanceTable.truncate(connection);
+            userTable.truncate(connection);
             connection.commit();
         }
     }
@@ -64,7 +64,7 @@ public class JdbcUserBalanceServiceIT {
 
         Optional<UserBalance> fetched = userBalanceService.get(userBalance.getUserId());
         assertTrue(fetched.isPresent());
-        assertEquals(userBalance, fetched.get());
+        assertEquals(userBalance.getBalance(), fetched.get().getBalance());
     }
 
     @Test
@@ -86,6 +86,29 @@ public class JdbcUserBalanceServiceIT {
         assertEquals(2, results.getResults().size());
         assertTrue(results.getResults().contains(userBalance1));
         assertTrue(results.getResults().contains(userBalance2));
+    }
+
+    @Test
+    public void testSetInitialBalanceNoneExists() {
+        UserBalance userBalance = new UserBalance().setUserId(user1.getId()).setBalance(10);
+        assertEquals(1, userBalanceService.setInitialBalance(userBalance));
+
+        Optional<UserBalance> fetched = userBalanceService.get(userBalance.getUserId());
+        assertTrue(fetched.isPresent());
+        assertEquals(10, fetched.get().getBalance());
+    }
+
+    @Test
+    public void testSetInitialBalanceAlreadyExists() {
+        UserBalance existingBalance = new UserBalance().setUserId(user1.getId()).setBalance(20);
+        assertEquals(1, userBalanceService.setInitialBalance(existingBalance));
+
+        UserBalance userBalance = new UserBalance().setUserId(user1.getId()).setBalance(10);
+        assertEquals(0, userBalanceService.setInitialBalance(userBalance));
+
+        Optional<UserBalance> fetched = userBalanceService.get(userBalance.getUserId());
+        assertTrue(fetched.isPresent());
+        assertEquals(20, fetched.get().getBalance());
     }
 
     @Test
@@ -130,7 +153,7 @@ public class JdbcUserBalanceServiceIT {
 
         Optional<UserBalance> fetched = userBalanceService.get(userBalance.getUserId());
         assertTrue(fetched.isPresent());
-        assertEquals(userBalance, fetched.get()); // not updated
+        assertEquals(userBalance.getBalance(), fetched.get().getBalance()); // not updated
     }
 
     @Test
