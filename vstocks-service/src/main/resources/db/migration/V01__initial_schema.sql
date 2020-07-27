@@ -1,7 +1,7 @@
 
 
 CREATE TABLE users (
-    id                 VARCHAR(36)  NOT NULL,
+    id                 VARCHAR(80)  NOT NULL,
     username           VARCHAR(500) NOT NULL,
     source             VARCHAR(30)  NOT NULL,
     display_name       VARCHAR(30)  NOT NULL,
@@ -16,7 +16,7 @@ CREATE INDEX idx_users_source ON users (source);
 
 
 CREATE TABLE markets (
-    id                 VARCHAR(36)  NOT NULL,
+    id                 VARCHAR(80)  NOT NULL,
     name               VARCHAR(100) NOT NULL,
 
     CONSTRAINT markets_pk PRIMARY KEY (id)
@@ -27,8 +27,8 @@ CREATE INDEX idx_markets_name ON markets (name);
 
 
 CREATE TABLE stocks (
-    id                 VARCHAR(36)  NOT NULL,
-    market_id          VARCHAR(36)  NOT NULL,
+    id                 VARCHAR(80)  NOT NULL,
+    market_id          VARCHAR(80)  NOT NULL,
     symbol             VARCHAR(100) NOT NULL,
     name               VARCHAR(100) NOT NULL,
 
@@ -44,9 +44,9 @@ CREATE INDEX idx_stocks_name ON stocks (name);
 
 
 CREATE TABLE stock_prices (
-    id                 VARCHAR(36)  NOT NULL,
-    market_id          VARCHAR(36)  NOT NULL,
-    stock_id           VARCHAR(36)  NOT NULL,
+    id                 VARCHAR(80)  NOT NULL,
+    market_id          VARCHAR(80)  NOT NULL,
+    stock_id           VARCHAR(80)  NOT NULL,
     timestamp          TIMESTAMP    NOT NULL,
     price              INTEGER      NOT NULL,
 
@@ -65,10 +65,10 @@ CREATE INDEX idx_stock_prices_timestamp ON stock_prices (timestamp);
 
 
 CREATE TABLE activity_logs (
-    id                 VARCHAR(36)  NOT NULL,
-    user_id            VARCHAR(36)  NOT NULL,
-    market_id          VARCHAR(36)  NOT NULL,
-    stock_id           VARCHAR(36)  NOT NULL,
+    id                 VARCHAR(80)  NOT NULL,
+    user_id            VARCHAR(80)  NOT NULL,
+    market_id          VARCHAR(80)  NOT NULL,
+    stock_id           VARCHAR(80)  NOT NULL,
     timestamp          TIMESTAMP    NOT NULL,
     shares             INTEGER      NOT NULL,
     price              INTEGER      NOT NULL,
@@ -91,7 +91,7 @@ CREATE INDEX idx_activity_logs_timestamp ON activity_logs (timestamp);
 
 
 CREATE TABLE user_balances (
-    user_id            VARCHAR(36)  NOT NULL,
+    user_id            VARCHAR(80)  NOT NULL,
     balance            INTEGER      NOT NULL,
 
     CONSTRAINT user_balances_pk PRIMARY KEY (user_id),
@@ -103,9 +103,9 @@ CREATE INDEX idx_user_balances_user_id ON user_balances (user_id);
 
 
 CREATE TABLE user_stocks (
-    user_id            VARCHAR(36)  NOT NULL,
-    market_id          VARCHAR(36)  NOT NULL,
-    stock_id           VARCHAR(36)  NOT NULL,
+    user_id            VARCHAR(80)  NOT NULL,
+    market_id          VARCHAR(80)  NOT NULL,
+    stock_id           VARCHAR(80)  NOT NULL,
     shares             INTEGER      NOT NULL,
 
     CONSTRAINT user_stocks_pk PRIMARY KEY (user_id, market_id, stock_id),
