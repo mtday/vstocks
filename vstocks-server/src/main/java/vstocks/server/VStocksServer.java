@@ -12,22 +12,25 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vstocks.rest.Application;
+import vstocks.tasks.MemoryUsageLoggingTask;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.concurrent.ExecutorService;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ScheduledExecutorService;
 
 import static java.util.Optional.ofNullable;
+import static java.util.concurrent.TimeUnit.*;
 import static vstocks.config.Config.*;
 
 public class VStocksServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(VStocksServer.class);
 
-    public static void main(String... args) throws InterruptedException, URISyntaxException, MalformedURLException {
+    public static void main(String... args) throws URISyntaxException, MalformedURLException {
         String contextPath = SERVER_CONTEXT_PATH.getString();
         String apiPath = SERVER_API_PATH.getString();
         int port = SERVER_PORT.getInt();
@@ -52,9 +55,17 @@ public class VStocksServer {
         handlerList.addHandler(new DefaultHandler());
 
         server.setHandler(handlerList);
-        //server.setSessionIdManager(new DefaultSessionIdManager(server));
 
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(8);
+
+        // Determine how long to delay so that our scheduled tasks all run at approximately each 10 minute mark.
+        LocalDateTime now = LocalDateTime.now();
+        int minute = now.get(ChronoField.MINUTE_OF_HOUR) % 10;
+        int second = now.get(ChronoField.SECOND_OF_MINUTE);
+        long delaySeconds = ((9 - minute) * 60) + (second > 0 ? 60 - second : 60);
+
+        executorService.scheduleAtFixedRate(new MemoryUsageLoggingTask(),
+                SECONDS.toMillis(delaySeconds % MINUTES.toSeconds(2)), MINUTES.toMillis(2), MILLISECONDS);
         executorService.submit(() -> {
             try {
                 server.start();
@@ -64,10 +75,5 @@ public class VStocksServer {
                 throw new RuntimeException("Failed to start server", failed);
             }
         });
-        executorService.shutdown();
-
-        while (!executorService.isTerminated()) {
-            executorService.awaitTermination(5, TimeUnit.SECONDS);
-        }
     }
 }
