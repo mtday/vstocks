@@ -30,10 +30,9 @@ public class UserBalanceTable extends BaseTable {
     }
 
     public int setInitialBalance(Connection connection, UserBalance initialBalance) {
-        // TODO: May need to revise this SQL when switching from H2 to another database
-        String sql = "MERGE INTO user_balances USING DUAL ON (user_id = ?) "
-                + "WHEN NOT MATCHED THEN INSERT VALUES (?, ?)";
-        return update(connection, sql, initialBalance.getUserId(), initialBalance.getUserId(), initialBalance.getBalance());
+        String sql = "INSERT INTO user_balances (user_id, balance) VALUES (?, ?) "
+                + "ON CONFLICT ON CONSTRAINT user_balances_pk DO NOTHING";
+        return update(connection, sql, initialBalance.getUserId(), initialBalance.getBalance());
     }
 
     public int add(Connection connection, UserBalance userBalance) {

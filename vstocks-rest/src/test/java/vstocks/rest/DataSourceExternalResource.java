@@ -8,10 +8,11 @@ import org.junit.rules.ExternalResource;
 import javax.sql.DataSource;
 import java.util.function.Supplier;
 
+import static java.util.Optional.ofNullable;
 import static vstocks.config.Config.*;
 
 public class DataSourceExternalResource extends ExternalResource implements Supplier<DataSource> {
-    private DataSource dataSource;
+    private HikariDataSource dataSource;
 
     @Override
     public DataSource get() {
@@ -29,5 +30,10 @@ public class DataSourceExternalResource extends ExternalResource implements Supp
 
         dataSource = new HikariDataSource(config);
         Flyway.configure().dataSource(dataSource).load().migrate();
+    }
+
+    @Override
+    public void after() {
+        ofNullable(dataSource).ifPresent(HikariDataSource::close);
     }
 }

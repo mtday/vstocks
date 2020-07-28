@@ -44,14 +44,12 @@ public class UserTable extends BaseTable {
     }
 
     public int login(Connection connection, User user) {
-        // TODO: May need to revise this SQL when switching from H2 to another database
-        String sql = "MERGE INTO users USING DUAL ON (id = ?) "
-                + "WHEN NOT MATCHED THEN INSERT VALUES (?, ?, ?, ?) "
-                + "WHEN MATCHED THEN UPDATE SET username = ?, source = ?, display_name = ? "
-                + "WHERE id = ? AND (username != ? OR source != ? OR display_name != ?)";
-        return update(connection, sql, user.getId(), user.getId(), user.getUsername(), user.getSource().name(),
-                user.getDisplayName(), user.getUsername(), user.getSource().name(), user.getDisplayName(),
-                user.getId(), user.getUsername(), user.getSource().name(), user.getDisplayName());
+        String sql = "INSERT INTO users (id, username, source, display_name) VALUES (?, ?, ?, ?) "
+                + "ON CONFLICT ON CONSTRAINT users_pk DO UPDATE SET username = EXCLUDED.username, "
+                + "source = EXCLUDED.source, display_name = EXCLUDED.display_name "
+                + "WHERE users.username != EXCLUDED.username OR users.source != EXCLUDED.source "
+                + "OR users.display_name != EXCLUDED.display_name";
+        return update(connection, sql, user.getId(), user.getUsername(), user.getSource().name(), user.getDisplayName());
     }
 
     public Results<User> getAll(Connection connection, Page page) {

@@ -6,10 +6,14 @@ server.context.path = /
 server.api.path = /api/*
 
 
-db.url = jdbc:h2:mem:vstocks
-db.driver = org.h2.Driver
-db.user = SA
-db.pass =
+# CREATE DATABASE vstockstest;
+# CREATE USER vstocks WITH PASSWORD 'vstocks';
+# GRANT ALL PRIVILEGES ON DATABASE vstockstest TO vstocks;
+
+db.url = jdbc:postgresql://localhost:5432/vstockstest
+db.driver = org.postgresql.Driver
+db.user = vstocks
+db.pass = vstocks
 db.min.idle = 4
 db.max.pool.size = 30
 db.idle.timeout = 60000

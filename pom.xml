@@ -21,7 +21,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <flyway.version>6.5.2</flyway.version>
-        <h2.version>1.4.200</h2.version>
         <hk2.version>2.6.1</hk2.version>
         <hikari.version>3.4.5</hikari.version>
         <jackson.version>2.11.1</jackson.version>
@@ -33,6 +32,7 @@
         <mockito.version>3.4.4</mockito.version>
         <pac4j-jersey.version>3.0.3</pac4j-jersey.version>
         <pac4j.version>3.8.3</pac4j.version>
+        <postgresql.version>42.2.14</postgresql.version>
         <slf4j.version>1.7.30</slf4j.version>
     </properties>
 
@@ -90,13 +90,6 @@
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>${jackson.version}</version>
-            </dependency>
-
-            <!-- H2 Database -->
-            <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2.version}</version>
             </dependency>
 
             <!-- Used for database connection pooling -->
@@ -178,6 +171,13 @@
                 <groupId>org.pac4j.jax-rs</groupId>
                 <artifactId>core</artifactId>
                 <version>${pac4j-jersey.version}</version>
+            </dependency>
+
+            <!-- PostgreSQL database -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
             </dependency>
 
             <!-- Logging -->

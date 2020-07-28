@@ -56,11 +56,9 @@ public class UserStockTable extends BaseTable {
         if (delta > 0) {
             // delta > 0 means buying the stock
             // TODO: May need to revise this SQL when switching from H2 to another database
-            String sql = "MERGE INTO user_stocks USING DUAL "
-                    + "ON (user_id = ? AND market_id = ? AND stock_id = ?) "
-                    + "WHEN NOT MATCHED THEN INSERT VALUES (?, ?, ?, ?) "
-                    + "WHEN MATCHED THEN UPDATE SET shares = shares + ?";
-            return update(connection, sql, userId, marketId, stockId, userId, marketId, stockId, delta, delta);
+            String sql = "INSERT INTO user_stocks (user_id, market_id, stock_id, shares) VALUES (?, ?, ?, ?) "
+                    + "ON CONFLICT ON CONSTRAINT user_stocks_pk DO UPDATE SET shares = user_stocks.shares + EXCLUDED.shares";
+            return update(connection, sql, userId, marketId, stockId, delta);
         } else if (delta < 0) {
             // delta < 0 means selling the stock
             // Don't let the number of shares go less than 0. Safe to do an UPDATE here since a row needs to exist
