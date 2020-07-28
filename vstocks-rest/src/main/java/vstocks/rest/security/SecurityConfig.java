@@ -12,6 +12,8 @@ public class SecurityConfig {
         TwitterClient twitterClient = new TwitterClient(TWITTER_API_KEY.getString(), TWITTER_API_SECRET.getString());
         twitterClient.setCallbackUrl(TWITTER_API_CALLBACK.getString());
 
+        org.pac4j.core.client.direct.AnonymousClient a;
+
         Config config = new Config(twitterClient);
         config.getClients().setUrlResolver(new JaxRsUrlResolver());
         config.setSessionStore(new ServletSessionStore());

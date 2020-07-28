@@ -3,7 +3,6 @@ package vstocks.rest.resource.v1.security;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
-import vstocks.model.User;
 import vstocks.rest.resource.BaseResource;
 import vstocks.service.ServiceFactory;
 
@@ -19,7 +18,6 @@ import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static vstocks.model.UserSource.TWITTER;
 
 @Path("/v1/security/login")
 @Singleton
@@ -36,12 +34,7 @@ public class Login extends BaseResource {
     @Produces(APPLICATION_JSON)
     @Pac4JSecurity(clients = "TwitterClient", authorizers = "isAuthenticated")
     public Response twitterLogin(@Context UriInfo uriInfo, @Pac4JProfile CommonProfile profile) {
-        User user = new User()
-                .setId(TWITTER.name() + ":" + profile.getId())
-                .setUsername(profile.getUsername())
-                .setSource(TWITTER)
-                .setDisplayName(profile.getDisplayName());
-        serviceFactory.getUserService().login(user);
+        serviceFactory.getUserService().login(getUser(profile));
 
         URI redirectUri = UriBuilder.fromUri(uriInfo.getRequestUri()).replacePath("/app/index.html").build();
         return Response.temporaryRedirect(redirectUri).build();

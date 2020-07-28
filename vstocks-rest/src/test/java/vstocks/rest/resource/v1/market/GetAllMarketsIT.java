@@ -1,6 +1,5 @@
 package vstocks.rest.resource.v1.market;
 
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.After;
@@ -29,25 +28,18 @@ public class GetAllMarketsIT extends JerseyTest {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private final ServiceFactory serviceFactory = new JdbcServiceFactory(dataSourceExternalResource.get());
-
     private static class MarketResultsGenericType extends GenericType<Results<Market>> {}
 
     private final Market market1 = new Market().setId("id1").setName("name1");
     private final Market market2 = new Market().setId("id2").setName("name2");
     private final Market market3 = new Market().setId("id3").setName("name3");
 
+    private ServiceFactory serviceFactory;
+
     @Override
-    protected Application configure() {
-        ResourceConfig resourceConfig = new ResourceConfig();
-        resourceConfig.register(GetAllMarkets.class);
-        resourceConfig.register(new AbstractBinder() {
-            @Override
-            protected void configure() {
-                bind(serviceFactory).to(ServiceFactory.class);
-            }
-        });
-        return new Application();
+    protected ResourceConfig configure() {
+        serviceFactory = new JdbcServiceFactory(dataSourceExternalResource.get());
+        return new Application(dataSourceExternalResource.get(), false);
     }
 
     @After

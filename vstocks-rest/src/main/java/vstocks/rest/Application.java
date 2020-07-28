@@ -8,21 +8,28 @@ import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
 import vstocks.rest.security.AccessLogFilter;
 import vstocks.rest.security.SecurityConfig;
 
+import javax.sql.DataSource;
 import javax.ws.rs.ApplicationPath;
 
 @ApplicationPath("/")
 public class Application extends ResourceConfig {
     public Application() {
+        this(null, true);
+    }
+
+    public Application(DataSource dataSource, boolean includePac4j) {
         property("jersey.config.server.wadl.disableWadl", "true");
 
         packages(true, Application.class.getPackageName());
 
         register(new AccessLogFilter());
-        register(new DependencyInjectionBinder());
+        register(new DependencyInjectionBinder(dataSource));
 
-        register(new JaxRsConfigProvider(SecurityConfig.getConfig()));
-        register(new Pac4JSecurityFeature());
-        register(new Pac4JValueFactoryProvider.Binder());
-        register(new ServletJaxRsContextFactoryProvider());
+        if (includePac4j) {
+            register(new JaxRsConfigProvider(SecurityConfig.getConfig()));
+            register(new Pac4JSecurityFeature());
+            register(new Pac4JValueFactoryProvider.Binder());
+            register(new ServletJaxRsContextFactoryProvider());
+        }
     }
 }

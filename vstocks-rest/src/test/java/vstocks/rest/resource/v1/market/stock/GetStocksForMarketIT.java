@@ -1,6 +1,5 @@
 package vstocks.rest.resource.v1.market.stock;
 
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.After;
@@ -12,7 +11,6 @@ import vstocks.model.Results;
 import vstocks.model.Stock;
 import vstocks.rest.Application;
 import vstocks.rest.DataSourceExternalResource;
-import vstocks.rest.resource.v1.market.GetAllMarkets;
 import vstocks.service.ServiceFactory;
 import vstocks.service.jdbc.JdbcServiceFactory;
 
@@ -25,11 +23,9 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class GetAllStocksForMarketIT extends JerseyTest {
+public class GetStocksForMarketIT extends JerseyTest {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
-
-    private final ServiceFactory serviceFactory = new JdbcServiceFactory(dataSourceExternalResource.get());
 
     private static class StockResultsGenericType extends GenericType<Results<Stock>> {}
 
@@ -39,17 +35,12 @@ public class GetAllStocksForMarketIT extends JerseyTest {
     private final Stock stock2 = new Stock().setId("id2").setMarketId(market1.getId()).setName("name2").setSymbol("symbol2");
     private final Stock stock3 = new Stock().setId("id3").setMarketId(market1.getId()).setName("name3").setSymbol("symbol3");
 
+    private ServiceFactory serviceFactory;
+
     @Override
-    protected Application configure() {
-        ResourceConfig resourceConfig = new ResourceConfig();
-        resourceConfig.register(GetAllMarkets.class);
-        resourceConfig.register(new AbstractBinder() {
-            @Override
-            protected void configure() {
-                bind(serviceFactory).to(ServiceFactory.class);
-            }
-        });
-        return new Application();
+    protected ResourceConfig configure() {
+        serviceFactory = new JdbcServiceFactory(dataSourceExternalResource.get());
+        return new Application(dataSourceExternalResource.get(), false);
     }
 
     @Before

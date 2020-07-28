@@ -40,7 +40,6 @@ public class User implements Principal {
         return this;
     }
 
-    @JsonIgnore
     public UserSource getSource() {
         return source;
     }

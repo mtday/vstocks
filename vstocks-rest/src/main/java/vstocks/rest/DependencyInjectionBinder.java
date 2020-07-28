@@ -9,12 +9,19 @@ import vstocks.service.jdbc.JdbcServiceFactory;
 
 import javax.sql.DataSource;
 
+import static java.util.Optional.ofNullable;
 import static vstocks.config.Config.*;
 
 public class DependencyInjectionBinder extends AbstractBinder {
+    private final DataSource dataSource;
+
+    public DependencyInjectionBinder(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     @Override
     protected void configure() {
-        bind(new JdbcServiceFactory(getDataSource())).to(ServiceFactory.class);
+        bind(new JdbcServiceFactory(ofNullable(dataSource).orElse(getDataSource()))).to(ServiceFactory.class);
     }
 
     private DataSource getDataSource() {
