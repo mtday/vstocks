@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Optional;
 
-public class StockPriceTable extends BaseTable<StockPrice> {
+public class StockPriceTable extends BaseTable {
     private static final RowMapper<StockPrice> ROW_MAPPER = rs ->
             new StockPrice()
                     .setId(rs.getString("id"))

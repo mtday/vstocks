@@ -9,12 +9,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 
-public class BaseTable<T> {
+public class BaseTable {
     private void populatePreparedStatement(PreparedStatement ps, Object... params) throws SQLException {
         for (int i = 0; i < params.length; i++) {
             if (params[i] instanceof Collection) {
@@ -41,7 +42,7 @@ public class BaseTable<T> {
         }
     }
 
-    Optional<T> getOne(Connection connection, RowMapper<T> rowMapper, String sql, Object... params) {
+    <T> Optional<T> getOne(Connection connection, RowMapper<T> rowMapper, String sql, Object... params) {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             populatePreparedStatement(ps, params);
             try (ResultSet rs = ps.executeQuery()) {
@@ -56,7 +57,22 @@ public class BaseTable<T> {
         }
     }
 
-    Results<T> results(Connection connection,
+    <T> List<T> getList(Connection connection, RowMapper<T> rowMapper, String sql, Object... params) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            populatePreparedStatement(ps, params);
+            List<T> values = new ArrayList<>();
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    values.add(rowMapper.map(rs));
+                }
+                return values;
+            }
+        } catch (SQLException sqlException) {
+            throw new RuntimeException("Failed to fetch objects from database", sqlException);
+        }
+    }
+
+    <T> Results<T> results(Connection connection,
                        RowMapper<T> rowMapper,
                        Page page,
                        String query,
@@ -94,7 +110,7 @@ public class BaseTable<T> {
         return results;
     }
 
-    int update(Connection connection, RowSetter<T> rowSetter, String sql, T object) {
+    <T> int update(Connection connection, RowSetter<T> rowSetter, String sql, T object) {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             rowSetter.set(ps, object);
             return ps.executeUpdate();

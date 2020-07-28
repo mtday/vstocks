@@ -8,7 +8,7 @@ import vstocks.model.UserSource;
 import java.sql.Connection;
 import java.util.Optional;
 
-public class UserTable extends BaseTable<User> {
+public class UserTable extends BaseTable {
     private static final RowMapper<User> ROW_MAPPER = rs ->
             new User()
                 .setId(rs.getString("id"))

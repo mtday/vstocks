@@ -8,7 +8,7 @@ import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Optional;
 
-public class ActivityLogTable extends BaseTable<ActivityLog> {
+public class ActivityLogTable extends BaseTable {
     private static final RowMapper<ActivityLog> ROW_MAPPER = rs ->
             new ActivityLog()
                     .setId(rs.getString("id"))

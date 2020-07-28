@@ -7,7 +7,7 @@ import vstocks.model.Stock;
 import java.sql.Connection;
 import java.util.Optional;
 
-public class StockTable extends BaseTable<Stock> {
+public class StockTable extends BaseTable {
     private static final RowMapper<Stock> ROW_MAPPER = rs ->
             new Stock()
                     .setMarketId(rs.getString("market_id"))

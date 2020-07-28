@@ -7,7 +7,7 @@ import vstocks.model.UserStock;
 import java.sql.Connection;
 import java.util.Optional;
 
-public class UserStockTable extends BaseTable<UserStock> {
+public class UserStockTable extends BaseTable {
     private static final RowMapper<UserStock> ROW_MAPPER = rs ->
             new UserStock()
                     .setUserId(rs.getString("user_id"))

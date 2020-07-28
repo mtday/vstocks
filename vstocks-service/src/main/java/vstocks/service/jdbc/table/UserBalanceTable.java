@@ -7,7 +7,7 @@ import vstocks.model.UserBalance;
 import java.sql.Connection;
 import java.util.Optional;
 
-public class UserBalanceTable extends BaseTable<UserBalance> {
+public class UserBalanceTable extends BaseTable {
     private static final RowMapper<UserBalance> ROW_MAPPER = rs ->
             new UserBalance()
                     .setUserId(rs.getString("user_id"))
