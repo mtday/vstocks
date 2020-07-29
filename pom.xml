@@ -13,7 +13,6 @@
         <module>vstocks-rest</module>
         <module>vstocks-server</module>
         <module>vstocks-service</module>
-        <module>vstocks-tasks</module>
     </modules>
 
     <properties>
@@ -62,11 +61,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>vstocks-service</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>vstocks-tasks</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

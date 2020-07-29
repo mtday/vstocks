@@ -1,20 +1,12 @@
 package vstocks.rest.resource.v1.market.stock;
 
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import vstocks.model.Market;
 import vstocks.model.Results;
 import vstocks.model.Stock;
-import vstocks.rest.Application;
-import vstocks.rest.DataSourceExternalResource;
-import vstocks.service.ServiceFactory;
-import vstocks.service.jdbc.JdbcServiceFactory;
+import vstocks.rest.ResourceTest;
 
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
@@ -23,42 +15,20 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class GetStocksForMarketIT extends JerseyTest {
-    @ClassRule
-    public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
-
-    private static class StockResultsGenericType extends GenericType<Results<Stock>> {}
-
+public class GetStocksForMarketIT extends ResourceTest {
     private final Market market1 = new Market().setId("id1").setName("market1");
     private final Market market2 = new Market().setId("id2").setName("market2");
     private final Stock stock1 = new Stock().setId("id1").setMarketId(market1.getId()).setName("name1").setSymbol("symbol1");
     private final Stock stock2 = new Stock().setId("id2").setMarketId(market1.getId()).setName("name2").setSymbol("symbol2");
     private final Stock stock3 = new Stock().setId("id3").setMarketId(market1.getId()).setName("name3").setSymbol("symbol3");
 
-    private ServiceFactory serviceFactory;
-
-    @Override
-    protected ResourceConfig configure() {
-        serviceFactory = new JdbcServiceFactory(dataSourceExternalResource.get());
-        return new Application(dataSourceExternalResource.get(), false);
-    }
-
     @Before
     public void setup() {
-        serviceFactory.getMarketService().add(market1);
-        serviceFactory.getMarketService().add(market2);
-        serviceFactory.getStockService().add(stock1);
-        serviceFactory.getStockService().add(stock2);
-        serviceFactory.getStockService().add(stock3);
-    }
-
-    @After
-    public void cleanup() {
-        serviceFactory.getStockService().delete(market1.getId(), stock1.getId());
-        serviceFactory.getStockService().delete(market1.getId(), stock2.getId());
-        serviceFactory.getStockService().delete(market1.getId(), stock3.getId());
-        serviceFactory.getMarketService().delete(market1.getId());
-        serviceFactory.getMarketService().delete(market2.getId());
+        getServiceFactory().getMarketService().add(market1);
+        getServiceFactory().getMarketService().add(market2);
+        getServiceFactory().getStockService().add(stock1);
+        getServiceFactory().getStockService().add(stock2);
+        getServiceFactory().getStockService().add(stock3);
     }
 
     @Test

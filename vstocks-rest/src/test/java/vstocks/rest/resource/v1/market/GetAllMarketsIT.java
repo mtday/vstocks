@@ -1,22 +1,11 @@
 package vstocks.rest.resource.v1.market;
 
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
-import org.junit.After;
-import org.junit.ClassRule;
 import org.junit.Test;
 import vstocks.model.Market;
 import vstocks.model.Results;
-import vstocks.rest.Application;
-import vstocks.rest.DataSourceExternalResource;
-import vstocks.service.ServiceFactory;
-import vstocks.service.jdbc.JdbcServiceFactory;
-import vstocks.service.jdbc.table.MarketTable;
+import vstocks.rest.ResourceTest;
 
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -24,31 +13,10 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class GetAllMarketsIT extends JerseyTest {
-    @ClassRule
-    public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
-
-    private static class MarketResultsGenericType extends GenericType<Results<Market>> {}
-
+public class GetAllMarketsIT extends ResourceTest {
     private final Market market1 = new Market().setId("id1").setName("name1");
     private final Market market2 = new Market().setId("id2").setName("name2");
     private final Market market3 = new Market().setId("id3").setName("name3");
-
-    private ServiceFactory serviceFactory;
-
-    @Override
-    protected ResourceConfig configure() {
-        serviceFactory = new JdbcServiceFactory(dataSourceExternalResource.get());
-        return new Application(dataSourceExternalResource.get(), false);
-    }
-
-    @After
-    public void cleanup() throws SQLException {
-        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            new MarketTable().truncate(connection);
-            connection.commit();
-        }
-    }
 
     @Test
     public void testAllMarketsNone() {
@@ -66,9 +34,9 @@ public class GetAllMarketsIT extends JerseyTest {
 
     @Test
     public void testAllMarketsOnePage() {
-        serviceFactory.getMarketService().add(market1);
-        serviceFactory.getMarketService().add(market2);
-        serviceFactory.getMarketService().add(market3);
+        getServiceFactory().getMarketService().add(market1);
+        getServiceFactory().getMarketService().add(market2);
+        getServiceFactory().getMarketService().add(market3);
 
         Response response = target("/v1/markets").request().get();
 
@@ -86,9 +54,9 @@ public class GetAllMarketsIT extends JerseyTest {
 
     @Test
     public void testAllMarketsSpecificPage() {
-        serviceFactory.getMarketService().add(market1);
-        serviceFactory.getMarketService().add(market2);
-        serviceFactory.getMarketService().add(market3);
+        getServiceFactory().getMarketService().add(market1);
+        getServiceFactory().getMarketService().add(market2);
+        getServiceFactory().getMarketService().add(market3);
 
         Response response = target("/v1/markets").queryParam("pageNum", 2).queryParam("pageSize", 1).request().get();
 

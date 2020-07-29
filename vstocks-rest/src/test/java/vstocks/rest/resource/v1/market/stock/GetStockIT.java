@@ -1,18 +1,11 @@
 package vstocks.rest.resource.v1.market.stock;
 
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import vstocks.model.ErrorResponse;
 import vstocks.model.Market;
 import vstocks.model.Stock;
-import vstocks.rest.Application;
-import vstocks.rest.DataSourceExternalResource;
-import vstocks.service.ServiceFactory;
-import vstocks.service.jdbc.JdbcServiceFactory;
+import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;
 
@@ -22,31 +15,14 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 
-public class GetStockIT extends JerseyTest {
-    @ClassRule
-    public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
-
+public class GetStockIT extends ResourceTest {
     private final Market market = new Market().setId("marketId").setName("market");
     private final Stock stock = new Stock().setId("stockId").setMarketId(market.getId()).setName("name").setSymbol("symbol");
 
-    private ServiceFactory serviceFactory;
-
-    @Override
-    protected ResourceConfig configure() {
-        serviceFactory = new JdbcServiceFactory(dataSourceExternalResource.get());
-        return new Application(dataSourceExternalResource.get(), false);
-    }
-
     @Before
     public void setup() {
-        serviceFactory.getMarketService().add(market);
-        serviceFactory.getStockService().add(stock);
-    }
-
-    @After
-    public void cleanup() {
-        serviceFactory.getStockService().delete(market.getId(), stock.getId());
-        serviceFactory.getMarketService().delete(market.getId());
+        getServiceFactory().getMarketService().add(market);
+        getServiceFactory().getStockService().add(stock);
     }
 
     @Test

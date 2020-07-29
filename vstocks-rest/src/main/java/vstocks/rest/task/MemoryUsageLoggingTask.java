@@ -1,13 +1,33 @@
-package vstocks.tasks;
+package vstocks.rest.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
+import java.util.concurrent.ScheduledExecutorService;
 
-public class MemoryUsageLoggingTask implements Runnable {
+import static java.util.concurrent.TimeUnit.*;
+
+public class MemoryUsageLoggingTask implements BaseTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(MemoryUsageLoggingTask.class);
+
+    @Override
+    public void schedule(ScheduledExecutorService scheduledExecutorService) {
+        // Determine how long to delay so that our scheduled task runs at approximately each even 2 minute mark.
+        LocalDateTime now = LocalDateTime.now();
+        int minute = now.get(ChronoField.MINUTE_OF_HOUR) % 10;
+        int second = now.get(ChronoField.SECOND_OF_MINUTE);
+        int millis = now.get(ChronoField.MILLI_OF_SECOND);
+        long delayMinutes = (9 - minute) * 60000;
+        long delaySeconds = (second > 0 ? 59 - second : 59) * 1000;
+        long delayMillis  = millis > 0 ? 1000 - millis : 1000;
+        long delay = (delayMinutes + delaySeconds + delayMillis) % MINUTES.toMillis(2);
+
+        scheduledExecutorService.scheduleAtFixedRate(this, delay, MINUTES.toMillis(2), MILLISECONDS);
+    }
 
     @Override
     public void run() {

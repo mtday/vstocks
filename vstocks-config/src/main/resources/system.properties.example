@@ -20,6 +20,9 @@ db.idle.timeout = 60000
 db.connection.timeout = 20000
 
 
+data.history.days = 30
+
+
 user.initial.balance = 10000
 
 
