@@ -4,6 +4,7 @@ import vstocks.model.Page;
 import vstocks.model.Results;
 import vstocks.model.StockPrice;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -19,4 +20,6 @@ public interface StockPriceService {
     int add(StockPrice stockPrice);
 
     int delete(String id);
+
+    int ageOff(Instant cutoff);
 }

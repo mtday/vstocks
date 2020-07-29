@@ -167,4 +167,21 @@ public class JdbcStockPriceServiceIT {
         assertEquals(1, stockPriceService.delete(stockPrice.getId()));
         assertFalse(stockPriceService.get(stockPrice.getId()).isPresent());
     }
+
+    @Test
+    public void testAgeOff() {
+        StockPrice stockPrice1 = new StockPrice().setId("id1").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setId("id2").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(10);
+        StockPrice stockPrice3 = new StockPrice().setId("id3").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(20)).setPrice(10);
+
+        assertEquals(1, stockPriceService.add(stockPrice1));
+        assertEquals(1, stockPriceService.add(stockPrice2));
+        assertEquals(1, stockPriceService.add(stockPrice3));
+        assertEquals(2, stockPriceService.ageOff(Instant.now().minusSeconds(5)));
+
+        Results<StockPrice> results = stockPriceService.getAll(new Page());
+        assertEquals(1, results.getTotal());
+        assertEquals(1, results.getResults().size());
+        assertEquals(stockPrice1, results.getResults().iterator().next());
+    }
 }

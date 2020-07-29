@@ -207,6 +207,30 @@ public class JdbcStockPriceTableIT {
     }
 
     @Test
+    public void testAgeOff() throws SQLException {
+        StockPrice stockPrice1 = new StockPrice().setId("id1").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setId("id2").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(10);
+        StockPrice stockPrice3 = new StockPrice().setId("id3").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(20)).setPrice(10);
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, stockPriceTable.add(connection, stockPrice1));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice2));
+            assertEquals(1, stockPriceTable.add(connection, stockPrice3));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(2, stockPriceTable.ageOff(connection, Instant.now().minusSeconds(5)));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Results<StockPrice> results = stockPriceTable.getAll(connection, new Page());
+            assertEquals(1, results.getTotal());
+            assertEquals(1, results.getResults().size());
+            assertEquals(stockPrice1, results.getResults().iterator().next());
+        }
+    }
+
+    @Test
     public void testTruncate() throws SQLException {
         StockPrice stockPrice1 = new StockPrice().setId("id1").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
         StockPrice stockPrice2 = new StockPrice().setId("id2").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);

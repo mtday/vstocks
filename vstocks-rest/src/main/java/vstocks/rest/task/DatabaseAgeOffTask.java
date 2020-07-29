@@ -4,11 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vstocks.service.ServiceFactory;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ScheduledExecutorService;
 
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static vstocks.config.Config.DATA_HISTORY_DAYS;
 
 public class DatabaseAgeOffTask implements BaseTask {
@@ -38,6 +41,8 @@ public class DatabaseAgeOffTask implements BaseTask {
     @Override
     public void run() {
         int days = DATA_HISTORY_DAYS.getInt();
-        LOGGER.info("Aging off data older than {} days", days);
+        Instant cutoff = Instant.now().truncatedTo(ChronoUnit.DAYS).minus(days, ChronoUnit.DAYS);
+        LOGGER.info("Aging off data older than {} days ({})", days, cutoff);
+        serviceFactory.getStockPriceService().ageOff(cutoff);
     }
 }

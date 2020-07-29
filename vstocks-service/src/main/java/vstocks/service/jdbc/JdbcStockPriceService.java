@@ -7,6 +7,7 @@ import vstocks.service.StockPriceService;
 import vstocks.service.jdbc.table.StockPriceTable;
 
 import javax.sql.DataSource;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -45,5 +46,10 @@ public class JdbcStockPriceService extends BaseService implements StockPriceServ
     @Override
     public int delete(String id) {
         return withConnection(conn -> stockPriceTable.delete(conn, id));
+    }
+
+    @Override
+    public int ageOff(Instant cutoff) {
+        return withConnection(conn -> stockPriceTable.ageOff(conn, cutoff));
     }
 }

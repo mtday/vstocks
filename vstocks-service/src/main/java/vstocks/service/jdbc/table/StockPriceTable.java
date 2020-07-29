@@ -6,6 +6,7 @@ import vstocks.model.StockPrice;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -62,6 +63,10 @@ public class StockPriceTable extends BaseTable {
 
     public int delete(Connection connection, String id) {
         return update(connection, "DELETE FROM stock_prices WHERE id = ?", id);
+    }
+
+    public int ageOff(Connection connection, Instant cutoff) {
+        return update(connection, "DELETE FROM stock_prices WHERE timestamp < ?", cutoff);
     }
 
     public int truncate(Connection connection) {
