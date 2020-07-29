@@ -8,6 +8,7 @@ import vstocks.service.jdbc.table.MarketTable;
 
 import javax.sql.DataSource;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class JdbcMarketService extends BaseService implements MarketService {
     private final MarketTable marketTable = new MarketTable();
@@ -24,6 +25,11 @@ public class JdbcMarketService extends BaseService implements MarketService {
     @Override
     public Results<Market> getAll(Page page) {
         return withConnection(conn -> marketTable.getAll(conn, page));
+    }
+
+    @Override
+    public int consume(Consumer<Market> consumer) {
+        return withConnection(conn -> marketTable.consume(conn, consumer));
     }
 
     @Override

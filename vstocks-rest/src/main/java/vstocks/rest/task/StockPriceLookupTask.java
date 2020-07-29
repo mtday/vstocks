@@ -3,8 +3,9 @@ package vstocks.rest.task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vstocks.service.ServiceFactory;
+import vstocks.service.StockPriceService;
 
-import java.time.Instant;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
@@ -12,14 +13,13 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static vstocks.config.Config.DATA_HISTORY_DAYS;
 
-public class DatabaseAgeOffTask implements BaseTask {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseAgeOffTask.class);
+public class StockPriceLookupTask implements BaseTask {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StockPriceLookupTask.class);
 
     private final ServiceFactory serviceFactory;
 
-    public DatabaseAgeOffTask(ServiceFactory serviceFactory) {
+    public StockPriceLookupTask(ServiceFactory serviceFactory) {
         this.serviceFactory = serviceFactory;
     }
 
@@ -40,9 +40,14 @@ public class DatabaseAgeOffTask implements BaseTask {
 
     @Override
     public void run() {
-        int days = DATA_HISTORY_DAYS.getInt();
-        Instant cutoff = Instant.now().truncatedTo(ChronoUnit.DAYS).minus(days, ChronoUnit.DAYS);
-        LOGGER.info("Aging off data older than {} days ({})", days, cutoff);
-        serviceFactory.getStockPriceService().ageOff(cutoff);
+        long start = System.currentTimeMillis();
+
+        StockPriceService stockPriceService = serviceFactory.getStockPriceService();
+        serviceFactory.getStockService().consume(stock -> {
+            LOGGER.debug("Looking up price for stock {}/{}", stock.getMarketId(), stock.getSymbol());
+        });
+
+        long stop = System.currentTimeMillis();
+        LOGGER.info("Stock Price lookup task took: {}", Duration.of(stop - start, ChronoUnit.MILLIS));
     }
 }

@@ -5,6 +5,7 @@ import vstocks.model.Results;
 import vstocks.model.UserStock;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public interface UserStockService {
     Optional<UserStock> get(String userId, String marketId, String stockId);
@@ -14,6 +15,8 @@ public interface UserStockService {
     Results<UserStock> getForStock(String stockId, Page page);
 
     Results<UserStock> getAll(Page page);
+
+    int consume(Consumer<UserStock> consumer);
 
     int buyStock(String userId, String marketId, String stockId, int shares);
 

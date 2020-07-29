@@ -4,13 +4,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.service.DataSourceExternalResource;
 import vstocks.model.Market;
 import vstocks.model.Page;
 import vstocks.model.Results;
+import vstocks.service.DataSourceExternalResource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -81,6 +83,34 @@ public class JdbcMarketTableIT {
             assertEquals(2, results.getResults().size());
             assertTrue(results.getResults().contains(market1));
             assertTrue(results.getResults().contains(market2));
+        }
+    }
+
+    @Test
+    public void testConsumeNone() throws SQLException {
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<Market> list = new ArrayList<>();
+            assertEquals(0, marketTable.consume(connection, list::add));
+            assertTrue(list.isEmpty());
+        }
+    }
+
+    @Test
+    public void testConsumeSome() throws SQLException {
+        Market market1 = new Market().setId("id1").setName("name");
+        Market market2 = new Market().setId("id2").setName("name");
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, marketTable.add(connection, market1));
+            assertEquals(1, marketTable.add(connection, market2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<Market> list = new ArrayList<>();
+            assertEquals(2, marketTable.consume(connection, list::add));
+            assertEquals(2, list.size());
+            assertTrue(list.contains(market1));
+            assertTrue(list.contains(market2));
         }
     }
 

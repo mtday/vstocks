@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
@@ -28,7 +29,7 @@ public class BaseTable {
         }
     }
 
-    int getCount(Connection connection, String sql, Object... params) {
+    protected int getCount(Connection connection, String sql, Object... params) {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             populatePreparedStatement(ps, params);
             try (ResultSet rs = ps.executeQuery()) {
@@ -42,7 +43,7 @@ public class BaseTable {
         }
     }
 
-    <T> Optional<T> getOne(Connection connection, RowMapper<T> rowMapper, String sql, Object... params) {
+    protected <T> Optional<T> getOne(Connection connection, RowMapper<T> rowMapper, String sql, Object... params) {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             populatePreparedStatement(ps, params);
             try (ResultSet rs = ps.executeQuery()) {
@@ -57,7 +58,7 @@ public class BaseTable {
         }
     }
 
-    <T> List<T> getList(Connection connection, RowMapper<T> rowMapper, String sql, Object... params) {
+    protected <T> List<T> getList(Connection connection, RowMapper<T> rowMapper, String sql, Object... params) {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             populatePreparedStatement(ps, params);
             List<T> values = new ArrayList<>();
@@ -72,12 +73,12 @@ public class BaseTable {
         }
     }
 
-    <T> Results<T> results(Connection connection,
-                       RowMapper<T> rowMapper,
-                       Page page,
-                       String query,
-                       String countQuery,
-                       Object... params) {
+    protected <T> Results<T> results(Connection connection,
+                                     RowMapper<T> rowMapper,
+                                     Page page,
+                                     String query,
+                                     String countQuery,
+                                     Object... params) {
         Results<T> results = new Results<T>().setPage(page);
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             populatePreparedStatement(ps, params);
@@ -110,7 +111,23 @@ public class BaseTable {
         return results;
     }
 
-    <T> int update(Connection connection, RowSetter<T> rowSetter, String sql, T object) {
+    protected <T> int consume(Connection connection, RowMapper<T> rowMapper, Consumer<T> consumer, String sql, Object... params) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            populatePreparedStatement(ps, params);
+            try (ResultSet rs = ps.executeQuery()) {
+                int consumed = 0;
+                while (rs.next()) {
+                    consumer.accept(rowMapper.map(rs));
+                    consumed++;
+                }
+                return consumed;
+            }
+        } catch (SQLException sqlException) {
+            throw new RuntimeException("Failed to consume objects from database", sqlException);
+        }
+    }
+
+    protected <T> int update(Connection connection, RowSetter<T> rowSetter, String sql, T object) {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             rowSetter.set(ps, object);
             return ps.executeUpdate();
@@ -119,7 +136,7 @@ public class BaseTable {
         }
     }
 
-    int update(Connection connection, String sql, Object... params) {
+    protected int update(Connection connection, String sql, Object... params) {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             populatePreparedStatement(ps, params);
             return ps.executeUpdate();

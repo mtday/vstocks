@@ -7,6 +7,7 @@ import vstocks.model.StockPrice;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public interface StockPriceService {
     Optional<StockPrice> get(String id);
@@ -16,6 +17,8 @@ public interface StockPriceService {
     Results<StockPrice> getForStock(String stockId, Page page);
 
     Results<StockPrice> getAll(Page page);
+
+    int consume(Consumer<StockPrice> consumer);
 
     int add(StockPrice stockPrice);
 

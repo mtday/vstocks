@@ -7,6 +7,7 @@ import vstocks.model.Results;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class ActivityLogTable extends BaseTable {
     private static final RowMapper<ActivityLog> ROW_MAPPER = rs ->
@@ -47,9 +48,14 @@ public class ActivityLogTable extends BaseTable {
     }
 
     public Results<ActivityLog> getAll(Connection connection, Page page) {
-        String query = "SELECT * FROM activity_logs ORDER BY user_id, market_id, stock_id, timestamp DESC LIMIT ? OFFSET ?";
+        String query = "SELECT * FROM activity_logs ORDER BY timestamp DESC, user_id, market_id, stock_id LIMIT ? OFFSET ?";
         String countQuery = "SELECT COUNT(*) FROM activity_logs";
         return results(connection, ROW_MAPPER, page, query, countQuery);
+    }
+
+    public int consume(Connection connection, Consumer<ActivityLog> consumer) {
+        String sql = "SELECT * FROM activity_logs ORDER BY timestamp DESC, user_id, market_id, stock_id";
+        return consume(connection, ROW_MAPPER, consumer, sql);
     }
 
     public int add(Connection connection, ActivityLog activityLog) {

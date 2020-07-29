@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class JdbcStockPriceService extends BaseService implements StockPriceService {
     private final StockPriceTable stockPriceTable = new StockPriceTable();
@@ -36,6 +37,11 @@ public class JdbcStockPriceService extends BaseService implements StockPriceServ
     @Override
     public Results<StockPrice> getAll(Page page) {
         return withConnection(conn -> stockPriceTable.getAll(conn, page));
+    }
+
+    @Override
+    public int consume(Consumer<StockPrice> consumer) {
+        return withConnection(conn -> stockPriceTable.consume(conn, consumer));
     }
 
     @Override

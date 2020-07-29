@@ -4,14 +4,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.service.DataSourceExternalResource;
-import vstocks.service.jdbc.table.MarketTable;
 import vstocks.model.Market;
 import vstocks.model.Page;
 import vstocks.model.Results;
+import vstocks.service.DataSourceExternalResource;
+import vstocks.service.jdbc.table.MarketTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -71,6 +73,27 @@ public class JdbcMarketServiceIT {
         assertEquals(2, results.getResults().size());
         assertTrue(results.getResults().contains(market1));
         assertTrue(results.getResults().contains(market2));
+    }
+
+    @Test
+    public void testConsumeNone() {
+        List<Market> list = new ArrayList<>();
+        assertEquals(0, marketService.consume(list::add));
+        assertTrue(list.isEmpty());
+    }
+
+    @Test
+    public void testConsumeSome() {
+        Market market1 = new Market().setId("id1").setName("name");
+        Market market2 = new Market().setId("id2").setName("name");
+        assertEquals(1, marketService.add(market1));
+        assertEquals(1, marketService.add(market2));
+
+        List<Market> list = new ArrayList<>();
+        assertEquals(2, marketService.consume(list::add));
+        assertEquals(2, list.size());
+        assertTrue(list.contains(market1));
+        assertTrue(list.contains(market2));
     }
 
     @Test

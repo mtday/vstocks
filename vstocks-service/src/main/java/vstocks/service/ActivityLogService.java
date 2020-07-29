@@ -5,6 +5,7 @@ import vstocks.model.Page;
 import vstocks.model.Results;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public interface ActivityLogService {
     Optional<ActivityLog> get(String id);
@@ -14,6 +15,8 @@ public interface ActivityLogService {
     Results<ActivityLog> getForStock(String stockId, Page page);
 
     Results<ActivityLog> getAll(Page page);
+
+    int consume(Consumer<ActivityLog> consumer);
 
     int add(ActivityLog activityLog);
 

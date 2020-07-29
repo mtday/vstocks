@@ -4,11 +4,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.service.DataSourceExternalResource;
 import vstocks.model.*;
+import vstocks.service.DataSourceExternalResource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -161,6 +163,34 @@ public class JdbcUserStockTableIT {
             assertEquals(2, results.getResults().size());
             assertTrue(results.getResults().contains(userStock1));
             assertTrue(results.getResults().contains(userStock2));
+        }
+    }
+
+    @Test
+    public void testConsumeNone() throws SQLException {
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<UserStock> list = new ArrayList<>();
+            assertEquals(0, userStockTable.consume(connection, list::add));
+            assertTrue(list.isEmpty());
+        }
+    }
+
+    @Test
+    public void testConsumeSome() throws SQLException {
+        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setShares(10);
+        UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setShares(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userStockTable.add(connection, userStock1));
+            assertEquals(1, userStockTable.add(connection, userStock2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<UserStock> list = new ArrayList<>();
+            assertEquals(2, userStockTable.consume(connection, list::add));
+            assertEquals(2, list.size());
+            assertTrue(list.contains(userStock1));
+            assertTrue(list.contains(userStock2));
         }
     }
 

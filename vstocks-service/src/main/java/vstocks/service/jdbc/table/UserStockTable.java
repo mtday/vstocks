@@ -6,6 +6,7 @@ import vstocks.model.UserStock;
 
 import java.sql.Connection;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class UserStockTable extends BaseTable {
     private static final RowMapper<UserStock> ROW_MAPPER = rs ->
@@ -44,6 +45,11 @@ public class UserStockTable extends BaseTable {
         String query = "SELECT * FROM user_stocks ORDER BY user_id, market_id, stock_id, shares DESC LIMIT ? OFFSET ?";
         String countQuery = "SELECT COUNT(*) FROM user_stocks";
         return results(connection, ROW_MAPPER, page, query, countQuery);
+    }
+
+    public int consume(Connection connection, Consumer<UserStock> consumer) {
+        String sql = "SELECT * FROM user_stocks ORDER BY user_id, market_id, stock_id, shares DESC";
+        return consume(connection, ROW_MAPPER, consumer, sql);
     }
 
     public int add(Connection connection, UserStock userStock) {

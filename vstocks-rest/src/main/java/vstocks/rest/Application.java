@@ -11,14 +11,14 @@ import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
 import vstocks.rest.security.AccessLogFilter;
 import vstocks.rest.security.SecurityConfig;
-import vstocks.rest.task.DatabaseAgeOffTask;
 import vstocks.rest.task.MemoryUsageLoggingTask;
+import vstocks.rest.task.StockPriceAgeOffTask;
+import vstocks.rest.task.StockPriceLookupTask;
 import vstocks.service.ServiceFactory;
 import vstocks.service.jdbc.JdbcServiceFactory;
 
 import javax.sql.DataSource;
 import javax.ws.rs.ApplicationPath;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -54,7 +54,8 @@ public class Application extends ResourceConfig {
         if (includeBackgroundTasks) {
             ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(8);
             new MemoryUsageLoggingTask().schedule(scheduledExecutorService);
-            new DatabaseAgeOffTask(serviceFactory).schedule(scheduledExecutorService);
+            new StockPriceAgeOffTask(serviceFactory).schedule(scheduledExecutorService);
+            new StockPriceLookupTask(serviceFactory).schedule(scheduledExecutorService);
         }
     }
 

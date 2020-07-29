@@ -5,6 +5,7 @@ import vstocks.model.Results;
 import vstocks.model.User;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public interface UserService {
     boolean usernameExists(String username);
@@ -14,6 +15,8 @@ public interface UserService {
     int login(User user);
 
     Results<User> getAll(Page page);
+
+    int consume(Consumer<User> consumer);
 
     int add(User user);
 

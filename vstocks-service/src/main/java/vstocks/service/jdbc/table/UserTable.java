@@ -1,12 +1,10 @@
 package vstocks.service.jdbc.table;
 
-import vstocks.model.Page;
-import vstocks.model.Results;
-import vstocks.model.User;
-import vstocks.model.UserSource;
+import vstocks.model.*;
 
 import java.sql.Connection;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class UserTable extends BaseTable {
     private static final RowMapper<User> ROW_MAPPER = rs ->
@@ -54,8 +52,13 @@ public class UserTable extends BaseTable {
 
     public Results<User> getAll(Connection connection, Page page) {
         return results(connection, ROW_MAPPER, page,
-                "SELECT * FROM users LIMIT ? OFFSET ?",
+                "SELECT * FROM users ORDER BY username LIMIT ? OFFSET ?",
                 "SELECT COUNT(*) FROM users");
+    }
+
+    public int consume(Connection connection, Consumer<User> consumer) {
+        String sql = "SELECT * FROM users ORDER BY username";
+        return consume(connection, ROW_MAPPER, consumer, sql);
     }
 
     public int add(Connection connection, User user) {

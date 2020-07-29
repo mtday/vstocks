@@ -8,6 +8,7 @@ import vstocks.service.jdbc.table.StockTable;
 
 import javax.sql.DataSource;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class JdbcStockService extends BaseService implements StockService {
     private final StockTable stockTable = new StockTable();
@@ -29,6 +30,11 @@ public class JdbcStockService extends BaseService implements StockService {
     @Override
     public Results<Stock> getAll(Page page) {
         return withConnection(conn -> stockTable.getAll(conn, page));
+    }
+
+    @Override
+    public int consume(Consumer<Stock> consumer) {
+        return withConnection(conn -> stockTable.consume(conn, consumer));
     }
 
     @Override

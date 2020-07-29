@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class JdbcUserStockService extends BaseService implements UserStockService {
     private final UserStockTable userStockTable = new UserStockTable();
@@ -40,6 +41,11 @@ public class JdbcUserStockService extends BaseService implements UserStockServic
     @Override
     public Results<UserStock> getAll(Page page) {
         return withConnection(conn -> userStockTable.getAll(conn, page));
+    }
+
+    @Override
+    public int consume(Consumer<UserStock> consumer) {
+        return withConnection(conn -> userStockTable.consume(conn, consumer));
     }
 
     @Override

@@ -6,6 +6,7 @@ import vstocks.model.UserBalance;
 
 import java.sql.Connection;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class UserBalanceTable extends BaseTable {
     private static final RowMapper<UserBalance> ROW_MAPPER = rs ->
@@ -27,6 +28,11 @@ public class UserBalanceTable extends BaseTable {
         String query = "SELECT * FROM user_balances ORDER BY balance DESC, user_id LIMIT ? OFFSET ?";
         String countQuery = "SELECT COUNT(*) FROM user_balances";
         return results(connection, ROW_MAPPER, page, query, countQuery);
+    }
+
+    public int consume(Connection connection, Consumer<UserBalance> consumer) {
+        String sql = "SELECT * FROM user_balances ORDER BY balance DESC, user_id";
+        return consume(connection, ROW_MAPPER, consumer, sql);
     }
 
     public int setInitialBalance(Connection connection, UserBalance initialBalance) {

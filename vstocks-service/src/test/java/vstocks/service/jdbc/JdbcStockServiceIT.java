@@ -4,16 +4,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.service.DataSourceExternalResource;
-import vstocks.service.jdbc.table.MarketTable;
-import vstocks.service.jdbc.table.StockTable;
 import vstocks.model.Market;
 import vstocks.model.Page;
 import vstocks.model.Results;
 import vstocks.model.Stock;
+import vstocks.service.DataSourceExternalResource;
+import vstocks.service.jdbc.table.MarketTable;
+import vstocks.service.jdbc.table.StockTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -108,6 +110,27 @@ public class JdbcStockServiceIT {
         assertEquals(2, results.getResults().size());
         assertTrue(results.getResults().contains(stock1));
         assertTrue(results.getResults().contains(stock2));
+    }
+
+    @Test
+    public void testConsumeNone() {
+        List<Stock> list = new ArrayList<>();
+        assertEquals(0, stockService.consume(list::add));
+        assertTrue(list.isEmpty());
+    }
+
+    @Test
+    public void testConsumeSome() {
+        Stock stock1 = new Stock().setId("id1").setMarketId(market1.getId()).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setId("id2").setMarketId(market2.getId()).setSymbol("sym2").setName("name2");
+        assertEquals(1, stockService.add(stock1));
+        assertEquals(1, stockService.add(stock2));
+
+        List<Stock> list = new ArrayList<>();
+        assertEquals(2, stockService.consume(list::add));
+        assertEquals(2, list.size());
+        assertTrue(list.contains(stock1));
+        assertTrue(list.contains(stock2));
     }
 
     @Test

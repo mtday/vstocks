@@ -4,12 +4,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.service.DataSourceExternalResource;
 import vstocks.model.*;
+import vstocks.service.DataSourceExternalResource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -166,6 +168,34 @@ public class JdbcActivityLogTableIT {
             assertEquals(2, results.getResults().size());
             assertTrue(results.getResults().contains(activityLog1));
             assertTrue(results.getResults().contains(activityLog2));
+        }
+    }
+
+    @Test
+    public void testConsumeNone() throws SQLException {
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<ActivityLog> list = new ArrayList<>();
+            assertEquals(0, activityLogTable.consume(connection, list::add));
+            assertTrue(list.isEmpty());
+        }
+    }
+
+    @Test
+    public void testConsumeSome() throws SQLException {
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, activityLogTable.add(connection, activityLog1));
+            assertEquals(1, activityLogTable.add(connection, activityLog2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<ActivityLog> list = new ArrayList<>();
+            assertEquals(2, activityLogTable.consume(connection, list::add));
+            assertEquals(2, list.size());
+            assertTrue(list.contains(activityLog1));
+            assertTrue(list.contains(activityLog2));
         }
     }
 

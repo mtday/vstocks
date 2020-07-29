@@ -4,15 +4,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import vstocks.model.*;
 import vstocks.service.DataSourceExternalResource;
 import vstocks.service.jdbc.table.MarketTable;
 import vstocks.service.jdbc.table.StockPriceTable;
 import vstocks.service.jdbc.table.StockTable;
-import vstocks.model.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
@@ -140,6 +142,27 @@ public class JdbcStockPriceServiceIT {
         assertEquals(2, results.getResults().size());
         assertTrue(results.getResults().contains(stockPrice1));
         assertTrue(results.getResults().contains(stockPrice2));
+    }
+
+    @Test
+    public void testConsumeNone() {
+        List<StockPrice> list = new ArrayList<>();
+        assertEquals(0, stockPriceService.consume(list::add));
+        assertTrue(list.isEmpty());
+    }
+
+    @Test
+    public void testConsumeSome() {
+        StockPrice stockPrice1 = new StockPrice().setId("id1").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setId("id2").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
+        assertEquals(1, stockPriceService.add(stockPrice1));
+        assertEquals(1, stockPriceService.add(stockPrice2));
+
+        List<StockPrice> list = new ArrayList<>();
+        assertEquals(2, stockPriceService.consume(list::add));
+        assertEquals(2, list.size());
+        assertTrue(list.contains(stockPrice1));
+        assertTrue(list.contains(stockPrice2));
     }
 
     @Test

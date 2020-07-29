@@ -4,16 +4,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import vstocks.model.*;
 import vstocks.service.DataSourceExternalResource;
 import vstocks.service.jdbc.table.UserBalanceTable;
 import vstocks.service.jdbc.table.UserTable;
-import vstocks.model.Page;
-import vstocks.model.Results;
-import vstocks.model.User;
-import vstocks.model.UserBalance;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -86,6 +85,27 @@ public class JdbcUserBalanceServiceIT {
         assertEquals(2, results.getResults().size());
         assertTrue(results.getResults().contains(userBalance1));
         assertTrue(results.getResults().contains(userBalance2));
+    }
+
+    @Test
+    public void testConsumeNone() {
+        List<UserBalance> list = new ArrayList<>();
+        assertEquals(0, userBalanceService.consume(list::add));
+        assertTrue(list.isEmpty());
+    }
+
+    @Test
+    public void testConsumeSome() {
+        UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
+        UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
+        assertEquals(1, userBalanceService.add(userBalance1));
+        assertEquals(1, userBalanceService.add(userBalance2));
+
+        List<UserBalance> list = new ArrayList<>();
+        assertEquals(2, userBalanceService.consume(list::add));
+        assertEquals(2, list.size());
+        assertTrue(list.contains(userBalance1));
+        assertTrue(list.contains(userBalance2));
     }
 
     @Test

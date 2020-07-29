@@ -4,14 +4,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import vstocks.model.*;
 import vstocks.service.DataSourceExternalResource;
-import vstocks.model.Page;
-import vstocks.model.Results;
-import vstocks.model.User;
-import vstocks.model.UserBalance;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -95,6 +94,34 @@ public class JdbcUserBalanceTableIT {
             assertEquals(2, results.getResults().size());
             assertTrue(results.getResults().contains(userBalance1));
             assertTrue(results.getResults().contains(userBalance2));
+        }
+    }
+
+    @Test
+    public void testConsumeNone() throws SQLException {
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<UserBalance> list = new ArrayList<>();
+            assertEquals(0, userBalanceTable.consume(connection, list::add));
+            assertTrue(list.isEmpty());
+        }
+    }
+
+    @Test
+    public void testConsumeSome() throws SQLException {
+        UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
+        UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userBalanceTable.add(connection, userBalance1));
+            assertEquals(1, userBalanceTable.add(connection, userBalance2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<UserBalance> list = new ArrayList<>();
+            assertEquals(2, userBalanceTable.consume(connection, list::add));
+            assertEquals(2, list.size());
+            assertTrue(list.contains(userBalance1));
+            assertTrue(list.contains(userBalance2));
         }
     }
 

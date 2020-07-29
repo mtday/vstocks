@@ -8,6 +8,7 @@ import vstocks.service.jdbc.table.ActivityLogTable;
 
 import javax.sql.DataSource;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class JdbcActivityLogService extends BaseService implements ActivityLogService {
     private final ActivityLogTable activityLogTable = new ActivityLogTable();
@@ -34,6 +35,11 @@ public class JdbcActivityLogService extends BaseService implements ActivityLogSe
     @Override
     public Results<ActivityLog> getAll(Page page) {
         return withConnection(conn -> activityLogTable.getAll(conn, page));
+    }
+
+    @Override
+    public int consume(Consumer<ActivityLog> consumer) {
+        return withConnection(conn -> activityLogTable.consume(conn, consumer));
     }
 
     @Override

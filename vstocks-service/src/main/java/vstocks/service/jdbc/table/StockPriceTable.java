@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class StockPriceTable extends BaseTable {
     private static final RowMapper<StockPrice> ROW_MAPPER = rs ->
@@ -54,6 +55,11 @@ public class StockPriceTable extends BaseTable {
         String query = "SELECT * FROM stock_prices ORDER BY market_id, stock_id, timestamp DESC LIMIT ? OFFSET ?";
         String countQuery = "SELECT COUNT(*) FROM stock_prices";
         return results(connection, ROW_MAPPER, page, query, countQuery);
+    }
+
+    public int consume(Connection connection, Consumer<StockPrice> consumer) {
+        String sql = "SELECT * FROM stock_prices ORDER BY market_id, stock_id, timestamp DESC";
+        return consume(connection, ROW_MAPPER, consumer, sql);
     }
 
     public int add(Connection connection, StockPrice stockPrice) {

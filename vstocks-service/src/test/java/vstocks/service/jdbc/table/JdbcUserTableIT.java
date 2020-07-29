@@ -11,6 +11,8 @@ import vstocks.service.DataSourceExternalResource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
@@ -196,6 +198,34 @@ public class JdbcUserTableIT {
             assertEquals(5, results.getTotal());
             assertEquals(1, results.getResults().size());
             assertTrue(results.getResults().contains(user5));
+        }
+    }
+
+    @Test
+    public void testConsumeNone() throws SQLException {
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<User> list = new ArrayList<>();
+            assertEquals(0, userTable.consume(connection, list::add));
+            assertTrue(list.isEmpty());
+        }
+    }
+
+    @Test
+    public void testConsumeSome() throws SQLException {
+        User user1 = new User().setId("id1").setUsername("name1").setSource(TWITTER).setDisplayName("Name");
+        User user2 = new User().setId("id2").setUsername("name2").setSource(TWITTER).setDisplayName("Name");
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userTable.add(connection, user1));
+            assertEquals(1, userTable.add(connection, user2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<User> list = new ArrayList<>();
+            assertEquals(2, userTable.consume(connection, list::add));
+            assertEquals(2, list.size());
+            assertTrue(list.contains(user1));
+            assertTrue(list.contains(user2));
         }
     }
 

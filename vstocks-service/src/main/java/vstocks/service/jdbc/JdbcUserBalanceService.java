@@ -8,6 +8,7 @@ import vstocks.service.jdbc.table.UserBalanceTable;
 
 import javax.sql.DataSource;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class JdbcUserBalanceService extends BaseService implements UserBalanceService {
     private final UserBalanceTable userBalanceTable = new UserBalanceTable();
@@ -24,6 +25,11 @@ public class JdbcUserBalanceService extends BaseService implements UserBalanceSe
     @Override
     public Results<UserBalance> getAll(Page page) {
         return withConnection(conn -> userBalanceTable.getAll(conn, page));
+    }
+
+    @Override
+    public int consume(Consumer<UserBalance> consumer) {
+        return withConnection(conn -> userBalanceTable.consume(conn, consumer));
     }
 
     @Override

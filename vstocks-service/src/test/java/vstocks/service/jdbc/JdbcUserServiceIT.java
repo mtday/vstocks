@@ -4,16 +4,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.model.Page;
-import vstocks.model.Results;
-import vstocks.model.User;
-import vstocks.model.UserBalance;
+import vstocks.model.*;
 import vstocks.service.DataSourceExternalResource;
 import vstocks.service.jdbc.table.UserBalanceTable;
 import vstocks.service.jdbc.table.UserTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
@@ -184,6 +183,27 @@ public class JdbcUserServiceIT {
         assertEquals(5, results.getTotal());
         assertEquals(1, results.getResults().size());
         assertTrue(results.getResults().contains(user5));
+    }
+
+    @Test
+    public void testConsumeNone() {
+        List<User> list = new ArrayList<>();
+        assertEquals(0, userService.consume(list::add));
+        assertTrue(list.isEmpty());
+    }
+
+    @Test
+    public void testConsumeSome() {
+        User user1 = new User().setId("id1").setUsername("name1").setSource(TWITTER).setDisplayName("Name");
+        User user2 = new User().setId("id2").setUsername("name2").setSource(TWITTER).setDisplayName("Name");
+        assertEquals(1, userService.add(user1));
+        assertEquals(1, userService.add(user2));
+
+        List<User> list = new ArrayList<>();
+        assertEquals(2, userService.consume(list::add));
+        assertEquals(2, list.size());
+        assertTrue(list.contains(user1));
+        assertTrue(list.contains(user2));
     }
 
     @Test

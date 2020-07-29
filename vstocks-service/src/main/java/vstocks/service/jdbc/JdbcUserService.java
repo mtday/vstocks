@@ -1,15 +1,13 @@
 package vstocks.service.jdbc;
 
-import vstocks.model.Page;
-import vstocks.model.Results;
-import vstocks.model.User;
-import vstocks.model.UserBalance;
+import vstocks.model.*;
 import vstocks.service.UserService;
 import vstocks.service.jdbc.table.UserBalanceTable;
 import vstocks.service.jdbc.table.UserTable;
 
 import javax.sql.DataSource;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static vstocks.config.Config.USER_INITIAL_BALANCE;
 
@@ -48,6 +46,11 @@ public class JdbcUserService extends BaseService implements UserService {
     @Override
     public Results<User> getAll(Page page) {
         return withConnection(conn -> userTable.getAll(conn, page));
+    }
+
+    @Override
+    public int consume(Consumer<User> consumer) {
+        return withConnection(conn -> userTable.consume(conn, consumer));
     }
 
     @Override
