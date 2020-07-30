@@ -61,17 +61,22 @@ public class UserStockTable extends BaseTable {
         // Need to do updates instead of inserts.
         if (delta > 0) {
             // delta > 0 means buying the stock
-            // TODO: May need to revise this SQL when switching from H2 to another database
-            String sql = "INSERT INTO user_stocks (user_id, market_id, stock_id, shares) VALUES (?, ?, ?, ?) "
+            String update = "INSERT INTO user_stocks (user_id, market_id, stock_id, shares) VALUES (?, ?, ?, ?) "
                     + "ON CONFLICT ON CONSTRAINT user_stocks_pk DO UPDATE SET shares = user_stocks.shares + EXCLUDED.shares";
-            return update(connection, sql, userId, marketId, stockId, delta);
+            return update(connection, update, userId, marketId, stockId, delta);
         } else if (delta < 0) {
             // delta < 0 means selling the stock
             // Don't let the number of shares go less than 0. Safe to do an UPDATE here since a row needs to exist
             // (the user needs to own the stock) before being able to sell.
-            String sql = "UPDATE user_stocks SET shares = shares + ? "
+            String update = "UPDATE user_stocks SET shares = shares + ? "
                     + "WHERE user_id = ? AND market_id = ? AND stock_id = ? AND shares >= ?";
-            return update(connection, sql, delta, userId, marketId, stockId, Math.abs(delta));
+            if (update(connection, update, delta, userId, marketId, stockId, Math.abs(delta)) > 0) {
+                // If the number of shares dropped to 0, delete the row.
+                String delete = "DELETE FROM user_stocks WHERE user_id = ? AND market_id = ? AND stock_id = ? AND shares = 0";
+                update(connection, delete, userId, marketId, stockId);
+                return 1;
+            }
+            return 0;
         }
         return 0;
     }

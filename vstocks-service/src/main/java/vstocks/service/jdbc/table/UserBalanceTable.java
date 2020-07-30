@@ -48,10 +48,10 @@ public class UserBalanceTable extends BaseTable {
 
     public int update(Connection connection, String userId, int delta) {
         if (delta > 0) {
-            // May want to do a MERGE here so an initial update with a positive delta adds the row when missing.
-            // See UserStockTable#update for an example
+            // Adding to the balance due to a stock sale.
             return update(connection, "UPDATE user_balances SET balance = balance + ? WHERE user_id = ?", delta, userId);
         } else if (delta < 0) {
+            // Subtracting to the balance due to a stock purchase.
             // Don't let the balance go less than 0.
             String sql = "UPDATE user_balances SET balance = balance + ? WHERE user_id = ? AND balance >= ?";
             return update(connection, sql, delta, userId, Math.abs(delta));

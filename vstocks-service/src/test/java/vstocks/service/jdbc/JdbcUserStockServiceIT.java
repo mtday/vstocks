@@ -311,7 +311,7 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testSellStockWithExistingUserStock() throws SQLException {
-        UserStock existingUserStock = new UserStock().setUserId(user1.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setShares(1);
+        UserStock existingUserStock = new UserStock().setUserId(user1.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setShares(10);
         userStockService.add(existingUserStock);
 
         assertEquals(1, userStockService.sellStock(user1.getId(), market.getId(), stock1.getId(), 1));
@@ -325,7 +325,38 @@ public class JdbcUserStockServiceIT {
             // Make sure user stock was updated
             Optional<UserStock> userStock = userStockService.get(user1.getId(), market.getId(), stock1.getId());
             assertTrue(userStock.isPresent());
-            assertEquals(0, userStock.get().getShares());
+            assertEquals(9, userStock.get().getShares());
+
+            // Make sure activity log was added
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
+            assertEquals(1, activityLogs.getTotal());
+            assertEquals(1, activityLogs.getResults().size());
+            ActivityLog activityLog = activityLogs.getResults().iterator().next();
+            assertNotNull(activityLog.getId());
+            assertEquals(user1.getId(), activityLog.getUserId());
+            assertEquals(market.getId(), activityLog.getMarketId());
+            assertEquals(stock1.getId(), activityLog.getStockId());
+            assertNotNull(activityLog.getTimestamp());
+            assertEquals(stockPrice1.getPrice(), activityLog.getPrice());
+            assertEquals(-1, activityLog.getShares());
+        }
+    }
+
+    @Test
+    public void testSellStockWithExistingUserStockDownToZero() throws SQLException {
+        UserStock existingUserStock = new UserStock().setUserId(user1.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setShares(1);
+        userStockService.add(existingUserStock);
+
+        assertEquals(1, userStockService.sellStock(user1.getId(), market.getId(), stock1.getId(), 1));
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            // Make sure user balance was updated
+            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
+            assertTrue(userBalance.isPresent());
+            assertEquals(userBalance1.getBalance() + stockPrice1.getPrice(), userBalance.get().getBalance());
+
+            // Make sure user stock was deleted, since the shares dropped to 0
+            assertFalse(userStockService.get(user1.getId(), market.getId(), stock1.getId()).isPresent());
 
             // Make sure activity log was added
             Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
@@ -383,6 +414,68 @@ public class JdbcUserStockServiceIT {
         UserStock userStock = new UserStock().setUserId(user1.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setShares(10);
         assertEquals(1, userStockService.add(userStock));
         userStockService.add(userStock);
+    }
+
+    @Test
+    public void testUpdatePositiveMissing() {
+        assertEquals(1, userStockService.update(user1.getId(), market.getId(), stock1.getId(), 10));
+
+        Optional<UserStock> fetched = userStockService.get(user1.getId(), market.getId(), stock1.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(10, fetched.get().getShares());
+    }
+
+    @Test
+    public void testUpdatePositiveExisting() {
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setShares(10);
+        assertEquals(1, userStockService.add(userStock));
+        assertEquals(1, userStockService.update(user1.getId(), market.getId(), stock1.getId(), 10));
+
+        Optional<UserStock> fetched = userStockService.get(user1.getId(), market.getId(), stock1.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(20, fetched.get().getShares());
+    }
+
+    @Test
+    public void testUpdateNegativeMissing() {
+        assertEquals(0, userStockService.update(user1.getId(), market.getId(), stock1.getId(), -10));
+        // Nothing was added
+        assertFalse(userStockService.get(user1.getId(), market.getId(), stock1.getId()).isPresent());
+    }
+
+    @Test
+    public void testUpdateNegativeExistingValid() {
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setShares(10);
+        assertEquals(1, userStockService.add(userStock));
+        assertEquals(1, userStockService.update(user1.getId(), market.getId(), stock1.getId(), -5));
+
+        Optional<UserStock> fetched = userStockService.get(user1.getId(), market.getId(), stock1.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(5, fetched.get().getShares());
+    }
+
+    @Test
+    public void testUpdateNegativeValidToZero() {
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setShares(10);
+        assertEquals(1, userStockService.add(userStock));
+        assertEquals(1, userStockService.update(user1.getId(), market.getId(), stock1.getId(), -10));
+        assertFalse(userStockService.get(user1.getId(), market.getId(), stock1.getId()).isPresent());
+    }
+
+    @Test
+    public void testUpdateNegativeExistingInvalid() {
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setShares(10);
+        assertEquals(1, userStockService.add(userStock));
+        assertEquals(0, userStockService.update(user1.getId(), market.getId(), stock1.getId(), -15));
+
+        Optional<UserStock> fetched = userStockService.get(user1.getId(), market.getId(), stock1.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(10, fetched.get().getShares()); // Not updated
+    }
+
+    @Test
+    public void testUpdateZero() {
+        assertEquals(0, userStockService.update(user1.getId(), market.getId(), stock1.getId(), 0));
     }
 
     @Test

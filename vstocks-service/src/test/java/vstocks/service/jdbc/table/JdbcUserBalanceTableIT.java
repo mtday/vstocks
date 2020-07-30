@@ -247,6 +247,14 @@ public class JdbcUserBalanceTableIT {
     }
 
     @Test
+    public void testUpdateZero() throws SQLException {
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(0, userBalanceTable.update(connection, user1.getId(), 0));
+            connection.commit();
+        }
+    }
+
+    @Test
     public void testDeleteMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(0, userBalanceTable.delete(connection, "missing"));

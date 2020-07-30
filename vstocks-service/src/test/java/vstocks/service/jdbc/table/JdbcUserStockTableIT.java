@@ -213,6 +213,109 @@ public class JdbcUserStockTableIT {
     }
 
     @Test
+    public void testUpdatePositiveMissing() throws SQLException {
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userStockTable.update(connection, user1.getId(), market.getId(), stock1.getId(), 10));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Optional<UserStock> fetched = userStockTable.get(connection, user1.getId(), market.getId(), stock1.getId());
+            assertTrue(fetched.isPresent());
+            assertEquals(10, fetched.get().getShares());
+        }
+    }
+
+    @Test
+    public void testUpdatePositiveExisting() throws SQLException {
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setShares(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userStockTable.add(connection, userStock));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userStockTable.update(connection, user1.getId(), market.getId(), stock1.getId(), 10));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Optional<UserStock> fetched = userStockTable.get(connection, user1.getId(), market.getId(), stock1.getId());
+            assertTrue(fetched.isPresent());
+            assertEquals(20, fetched.get().getShares());
+        }
+    }
+
+    @Test
+    public void testUpdateNegativeMissing() throws SQLException {
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(0, userStockTable.update(connection, user1.getId(), market.getId(), stock1.getId(), -10));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            // Nothing was added
+            assertFalse(userStockTable.get(connection, user1.getId(), market.getId(), stock1.getId()).isPresent());
+        }
+    }
+
+    @Test
+    public void testUpdateNegativeExistingValid() throws SQLException {
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setShares(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userStockTable.add(connection, userStock));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userStockTable.update(connection, user1.getId(), market.getId(), stock1.getId(), -5));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Optional<UserStock> fetched = userStockTable.get(connection, user1.getId(), market.getId(), stock1.getId());
+            assertTrue(fetched.isPresent());
+            assertEquals(5, fetched.get().getShares());
+        }
+    }
+
+    @Test
+    public void testUpdateNegativeValidToZero() throws SQLException {
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setShares(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userStockTable.add(connection, userStock));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userStockTable.update(connection, user1.getId(), market.getId(), stock1.getId(), -10));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertFalse(userStockTable.get(connection, user1.getId(), market.getId(), stock1.getId()).isPresent());
+        }
+    }
+
+    @Test
+    public void testUpdateNegativeExistingInvalid() throws SQLException {
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarketId(market.getId()).setStockId(stock1.getId()).setShares(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userStockTable.add(connection, userStock));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(0, userStockTable.update(connection, user1.getId(), market.getId(), stock1.getId(), -15));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Optional<UserStock> fetched = userStockTable.get(connection, user1.getId(), market.getId(), stock1.getId());
+            assertTrue(fetched.isPresent());
+            assertEquals(10, fetched.get().getShares()); // Not updated
+        }
+    }
+
+    @Test
+    public void testUpdateZero() throws SQLException {
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(0, userStockTable.update(connection, user1.getId(), market.getId(), stock1.getId(), 0));
+            connection.commit();
+        }
+    }
+
+    @Test
     public void testDeleteMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(0, userStockTable.delete(connection, "missing-id", "missing-id", "missing-id"));

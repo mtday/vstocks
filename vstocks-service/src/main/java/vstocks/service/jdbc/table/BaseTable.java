@@ -7,7 +7,6 @@ import java.sql.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -55,21 +54,6 @@ public class BaseTable {
             }
         } catch (SQLException sqlException) {
             throw new RuntimeException("Failed to fetch object from database", sqlException);
-        }
-    }
-
-    protected <T> List<T> getList(Connection connection, RowMapper<T> rowMapper, String sql, Object... params) {
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            populatePreparedStatement(ps, params);
-            List<T> values = new ArrayList<>();
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    values.add(rowMapper.map(rs));
-                }
-                return values;
-            }
-        } catch (SQLException sqlException) {
-            throw new RuntimeException("Failed to fetch objects from database", sqlException);
         }
     }
 
