@@ -17,13 +17,14 @@ public abstract class BaseResource {
     }
 
     protected User getUser(CommonProfile commonProfile) {
-        return ofNullable(commonProfile).map(profile -> {
-            UserSource userSource = UserSource.fromClientName(profile.getClientName());
-            return new User()
-                    .setId(userSource.name() + ":" + profile.getId())
-                    .setUsername(profile.getUsername())
-                    .setSource(userSource)
-                    .setDisplayName(profile.getDisplayName());
-        }).orElse(null);
+        return ofNullable(commonProfile).flatMap(profile ->
+                UserSource.fromClientName(profile.getClientName()).map(userSource ->
+                        new User()
+                                .setId(userSource.getAbbreviation() + ":" + profile.getId())
+                                .setUsername(profile.getUsername())
+                                .setSource(userSource)
+                                .setDisplayName(profile.getDisplayName())
+                )
+        ).orElse(null);
     }
 }

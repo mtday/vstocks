@@ -20,6 +20,8 @@ public class BaseTable {
                 // only collections containing strings are supported
                 Object[] param = ((Collection<?>) params[i]).toArray();
                 ps.setArray(i + 1, ps.getConnection().createArrayOf("varchar", param));
+            } else if (params[i] instanceof Enum) {
+                ps.setString(i + 1, ((Enum<?>) params[i]).name());
             } else if (params[i] instanceof Instant) {
                 ps.setTimestamp(i + 1, Timestamp.from((Instant) params[i]));
             } else {

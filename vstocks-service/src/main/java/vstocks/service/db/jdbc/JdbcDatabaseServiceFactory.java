@@ -6,7 +6,6 @@ import javax.sql.DataSource;
 
 public class JdbcDatabaseServiceFactory implements DatabaseServiceFactory {
     private final ActivityLogService activityLogService;
-    private final MarketService marketService;
     private final StockPriceService stockPriceService;
     private final StockService stockService;
     private final UserBalanceService userBalanceService;
@@ -15,7 +14,6 @@ public class JdbcDatabaseServiceFactory implements DatabaseServiceFactory {
 
     public JdbcDatabaseServiceFactory(DataSource dataSource) {
         this.activityLogService = new JdbcActivityLogService(dataSource);
-        this.marketService = new JdbcMarketService(dataSource);
         this.stockPriceService = new JdbcStockPriceService(dataSource);
         this.stockService = new JdbcStockService(dataSource);
         this.userBalanceService = new JdbcUserBalanceService(dataSource);
@@ -26,11 +24,6 @@ public class JdbcDatabaseServiceFactory implements DatabaseServiceFactory {
     @Override
     public ActivityLogService getActivityLogService() {
         return activityLogService;
-    }
-
-    @Override
-    public MarketService getMarketService() {
-        return marketService;
     }
 
     @Override

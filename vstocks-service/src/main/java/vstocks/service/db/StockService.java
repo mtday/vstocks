@@ -1,5 +1,6 @@
 package vstocks.service.db;
 
+import vstocks.model.Market;
 import vstocks.model.Page;
 import vstocks.model.Results;
 import vstocks.model.Stock;
@@ -8,9 +9,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public interface StockService {
-    Optional<Stock> get(String marketId, String stockId);
+    Optional<Stock> get(Market market, String stockId);
 
-    Results<Stock> getForMarket(String marketId, Page page);
+    Results<Stock> getForMarket(Market market, Page page);
 
     Results<Stock> getAll(Page page);
 
@@ -20,5 +21,5 @@ public interface StockService {
 
     int update(Stock stock);
 
-    int delete(String marketId, String stockId);
+    int delete(Market market, String stockId);
 }

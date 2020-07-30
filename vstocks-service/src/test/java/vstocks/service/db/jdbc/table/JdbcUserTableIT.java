@@ -17,7 +17,7 @@ import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
-import static vstocks.model.UserSource.TWITTER;
+import static vstocks.model.UserSource.TwitterClient;
 
 public class JdbcUserTableIT {
     @ClassRule
@@ -47,7 +47,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testUsernameExists() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
@@ -66,7 +66,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testGetExists() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
@@ -82,7 +82,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testLoginMissing() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.login(connection, user));
             connection.commit();
@@ -98,7 +98,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testLoginExistsSame() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
@@ -118,12 +118,12 @@ public class JdbcUserTableIT {
 
     @Test
     public void testLoginExistsDifferent() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
         }
-        User loginUser = new User().setId("id").setUsername("login").setSource(TWITTER).setDisplayName("Login");
+        User loginUser = new User().setId("id").setUsername("login").setSource(TwitterClient).setDisplayName("Login");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.login(connection, loginUser));
             connection.commit();
@@ -149,8 +149,8 @@ public class JdbcUserTableIT {
 
     @Test
     public void testGetAllSome() throws SQLException {
-        User user1 = new User().setId("id1").setUsername("name1").setSource(TWITTER).setDisplayName("Name");
-        User user2 = new User().setId("id2").setUsername("name2").setSource(TWITTER).setDisplayName("Name");
+        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
+        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user1));
             assertEquals(1, userTable.add(connection, user2));
@@ -167,11 +167,11 @@ public class JdbcUserTableIT {
 
     @Test
     public void testGetAllMultiplePages() throws SQLException {
-        User user1 = new User().setId("id1").setUsername("name1").setSource(TWITTER).setDisplayName("Name");
-        User user2 = new User().setId("id2").setUsername("name2").setSource(TWITTER).setDisplayName("Name");
-        User user3 = new User().setId("id3").setUsername("name3").setSource(TWITTER).setDisplayName("Name");
-        User user4 = new User().setId("id4").setUsername("name4").setSource(TWITTER).setDisplayName("Name");
-        User user5 = new User().setId("id5").setUsername("name5").setSource(TWITTER).setDisplayName("Name");
+        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
+        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
+        User user3 = new User().setId("id3").setUsername("name3").setSource(TwitterClient).setDisplayName("Name");
+        User user4 = new User().setId("id4").setUsername("name4").setSource(TwitterClient).setDisplayName("Name");
+        User user5 = new User().setId("id5").setUsername("name5").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             for (User user : asList(user1, user2, user3, user4, user5)) {
                 assertEquals(1, userTable.add(connection, user));
@@ -212,8 +212,8 @@ public class JdbcUserTableIT {
 
     @Test
     public void testConsumeSome() throws SQLException {
-        User user1 = new User().setId("id1").setUsername("name1").setSource(TWITTER).setDisplayName("Name");
-        User user2 = new User().setId("id2").setUsername("name2").setSource(TWITTER).setDisplayName("Name");
+        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
+        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user1));
             assertEquals(1, userTable.add(connection, user2));
@@ -231,7 +231,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testAdd() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
@@ -240,7 +240,7 @@ public class JdbcUserTableIT {
 
     @Test(expected = Exception.class)
     public void testAddIdConflict() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             user.setUsername("different");
@@ -251,7 +251,7 @@ public class JdbcUserTableIT {
 
     @Test(expected = Exception.class)
     public void testAddUsernameConflict() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             user.setId("different");
@@ -262,7 +262,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testUpdateMissing() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(0, userTable.update(connection, user));
         }
@@ -270,7 +270,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testUpdateNoChange() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
@@ -291,7 +291,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testUpdate() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
@@ -321,7 +321,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testDelete() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
@@ -337,8 +337,8 @@ public class JdbcUserTableIT {
 
     @Test
     public void testTruncate() throws SQLException {
-        User user1 = new User().setId("id1").setUsername("name1").setSource(TWITTER).setDisplayName("Name");
-        User user2 = new User().setId("id2").setUsername("name2").setSource(TWITTER).setDisplayName("Name");
+        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
+        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user1));
             assertEquals(1, userTable.add(connection, user2));

@@ -1,19 +1,26 @@
 package vstocks.model;
 
-public enum UserSource {
-    TWITTER,
-    FACEBOOK,
-    GOOGLE;
+import java.util.Arrays;
+import java.util.Optional;
 
-    public static UserSource fromClientName(String clientName) {
-        switch (clientName) {
-            case "TwitterClient":
-                return TWITTER;
-            case "FacebookClient":
-                return FACEBOOK;
-            case "GoogleClient":
-                return GOOGLE;
-        }
-        throw new RuntimeException("Unrecognized client: " + clientName);
+public enum UserSource {
+    TwitterClient("TW"),
+    FacebookClient("FB"),
+    GoogleClient("GO");
+
+    private final String abbreviation;
+
+    UserSource(String abbreviation) {
+        this.abbreviation = abbreviation;
+    }
+
+    public String getAbbreviation() {
+        return abbreviation;
+    }
+
+    public static Optional<UserSource> fromClientName(String clientName) {
+        return Arrays.stream(values())
+                .filter(market -> market.getAbbreviation().equalsIgnoreCase(clientName) || market.name().equalsIgnoreCase(clientName))
+                .findFirst();
     }
 }

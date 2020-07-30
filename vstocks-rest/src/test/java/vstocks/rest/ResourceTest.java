@@ -15,6 +15,7 @@ import vstocks.service.db.jdbc.table.*;
 import javax.ws.rs.core.GenericType;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class ResourceTest extends JerseyTest {
     @ClassRule
@@ -35,7 +36,6 @@ public class ResourceTest extends JerseyTest {
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             new ActivityLogTable().truncate(connection);
-            new MarketTable().truncate(connection);
             new StockPriceTable().truncate(connection);
             new StockTable().truncate(connection);
             new UserBalanceTable().truncate(connection);
@@ -58,6 +58,6 @@ public class ResourceTest extends JerseyTest {
         return databaseServiceFactory;
     }
 
-    public static class MarketResultsGenericType extends GenericType<Results<Market>> {}
+    public static class MarketListGenericType extends GenericType<List<Market>> {}
     public static class StockResultsGenericType extends GenericType<Results<Stock>> {}
 }

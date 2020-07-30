@@ -44,7 +44,7 @@ public class StockPriceLookupTask implements BaseTask {
 
         StockPriceService stockPriceService = databaseServiceFactory.getStockPriceService();
         databaseServiceFactory.getStockService().consume(stock -> {
-            LOGGER.debug("Looking up price for stock {}/{}", stock.getMarketId(), stock.getSymbol());
+            LOGGER.debug("Looking up price for stock {}/{}", stock.getMarket(), stock.getSymbol());
         });
 
         long stop = System.currentTimeMillis();

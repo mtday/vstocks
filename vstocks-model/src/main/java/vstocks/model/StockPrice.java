@@ -7,7 +7,7 @@ import static java.util.Objects.requireNonNull;
 
 public class StockPrice {
     private String id;
-    private String marketId;
+    private Market market;
     private String stockId;
     private Instant timestamp;
     private int price;
@@ -24,12 +24,12 @@ public class StockPrice {
         return this;
     }
 
-    public String getMarketId() {
-        return marketId;
+    public Market getMarket() {
+        return market;
     }
 
-    public StockPrice setMarketId(String marketId) {
-        this.marketId = marketId;
+    public StockPrice setMarket(Market market) {
+        this.market = market;
         return this;
     }
 
@@ -77,7 +77,7 @@ public class StockPrice {
     public String toString() {
         return "SymbolPrice{" +
                 "id='" + id + '\'' +
-                ", marketId='" + marketId + '\'' +
+                ", market=" + market +
                 ", stockId='" + stockId + '\'' +
                 ", timestamp=" + timestamp +
                 ", price=" + price +

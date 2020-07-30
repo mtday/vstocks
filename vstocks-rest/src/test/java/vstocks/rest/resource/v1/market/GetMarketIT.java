@@ -12,6 +12,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
+import static vstocks.model.Market.TWITTER;
 
 public class GetMarketIT extends ResourceTest {
     @Test
@@ -27,17 +28,24 @@ public class GetMarketIT extends ResourceTest {
     }
 
     @Test
-    public void testMarketExists() {
-        Market market = new Market().setId("id").setName("name");
-        getDatabaseServiceFactory().getMarketService().add(market);
-
-        Response response = target("/v1/market/id").request().get();
+    public void testMarketExistsExactMatch() {
+        Response response = target("/v1/market/TWITTER").request().get();
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
         Market fetched = response.readEntity(Market.class);
-        assertEquals(market.getId(), fetched.getId());
-        assertEquals(market.getName(), fetched.getName());
+        assertEquals(TWITTER, fetched);
+    }
+
+    @Test
+    public void testMarketExistsWrongCase() {
+        Response response = target("/v1/market/twitter").request().get();
+
+        assertEquals(OK.getStatusCode(), response.getStatus());
+        assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
+
+        Market fetched = response.readEntity(Market.class);
+        assertEquals(TWITTER, fetched);
     }
 }

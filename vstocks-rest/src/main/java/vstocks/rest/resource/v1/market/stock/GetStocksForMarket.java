@@ -1,5 +1,6 @@
 package vstocks.rest.resource.v1.market.stock;
 
+import vstocks.model.Market;
 import vstocks.model.Results;
 import vstocks.model.Stock;
 import vstocks.rest.resource.BaseResource;
@@ -26,6 +27,8 @@ public class GetStocksForMarket extends BaseResource {
     public Results<Stock> getAllStocks(@PathParam("marketId") String marketId,
                                        @QueryParam("pageNum") Integer pageNum,
                                        @QueryParam("pageSize") Integer pageSize) {
-        return databaseServiceFactory.getStockService().getForMarket(marketId, getPage(pageNum, pageSize));
+        Market market = Market.from(marketId)
+                .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
+        return databaseServiceFactory.getStockService().getForMarket(market, getPage(pageNum, pageSize));
     }
 }

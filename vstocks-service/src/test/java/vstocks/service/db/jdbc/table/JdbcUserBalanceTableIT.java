@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
-import static vstocks.model.UserSource.TWITTER;
+import static vstocks.model.UserSource.TwitterClient;
 
 public class JdbcUserBalanceTableIT {
     @ClassRule
@@ -23,8 +23,8 @@ public class JdbcUserBalanceTableIT {
     private UserTable userTable;
     private UserBalanceTable userBalanceTable;
 
-    private final User user1 = new User().setId("user1").setUsername("u1").setSource(TWITTER).setDisplayName("U1");
-    private final User user2 = new User().setId("user2").setUsername("u2").setSource(TWITTER).setDisplayName("U2");
+    private final User user1 = new User().setId("user1").setUsername("u1").setSource(TwitterClient).setDisplayName("U1");
+    private final User user2 = new User().setId("user2").setUsername("u2").setSource(TwitterClient).setDisplayName("U2");
 
     @Before
     public void setup() throws SQLException {

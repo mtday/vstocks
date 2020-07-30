@@ -5,8 +5,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import vstocks.service.db.DataSourceExternalResource;
 
-import java.sql.SQLException;
-
 import static org.junit.Assert.assertNotNull;
 
 public class JdbcDatabaseServiceFactoryIT {
@@ -16,14 +14,13 @@ public class JdbcDatabaseServiceFactoryIT {
     private JdbcDatabaseServiceFactory databaseServiceFactory;
 
     @Before
-    public void setup() throws SQLException {
+    public void setup() {
         databaseServiceFactory = new JdbcDatabaseServiceFactory(dataSourceExternalResource.get());
     }
 
     @Test
     public void test() {
         assertNotNull(databaseServiceFactory.getActivityLogService());
-        assertNotNull(databaseServiceFactory.getMarketService());
         assertNotNull(databaseServiceFactory.getStockPriceService());
         assertNotNull(databaseServiceFactory.getStockService());
         assertNotNull(databaseServiceFactory.getUserBalanceService());

@@ -6,7 +6,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import vstocks.model.*;
 import vstocks.service.db.DataSourceExternalResource;
-import vstocks.service.db.jdbc.table.MarketTable;
 import vstocks.service.db.jdbc.table.StockPriceTable;
 import vstocks.service.db.jdbc.table.StockTable;
 
@@ -20,29 +19,26 @@ import java.util.Optional;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static org.junit.Assert.*;
+import static vstocks.model.Market.TWITTER;
 
 public class JdbcStockPriceServiceIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private MarketTable marketTable;
     private StockTable stockTable;
     private StockPriceTable stockPriceTable;
     private JdbcStockPriceService stockPriceService;
 
-    private final Market market = new Market().setId("id").setName("name");
-    private final Stock stock1 = new Stock().setId("id1").setMarketId(market.getId()).setSymbol("sym1").setName("name1");
-    private final Stock stock2 = new Stock().setId("id2").setMarketId(market.getId()).setSymbol("sym2").setName("name2");
+    private final Stock stock1 = new Stock().setId("id1").setMarket(TWITTER).setSymbol("sym1").setName("name1");
+    private final Stock stock2 = new Stock().setId("id2").setMarket(TWITTER).setSymbol("sym2").setName("name2");
 
     @Before
     public void setup() throws SQLException {
-        marketTable = new MarketTable();
         stockTable = new StockTable();
         stockPriceTable = new StockPriceTable();
         stockPriceService = new JdbcStockPriceService(dataSourceExternalResource.get());
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, marketTable.add(connection, market));
             assertEquals(1, stockTable.add(connection, stock1));
             assertEquals(1, stockTable.add(connection, stock2));
             connection.commit();
@@ -54,7 +50,6 @@ public class JdbcStockPriceServiceIT {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             stockPriceTable.truncate(connection);
             stockTable.truncate(connection);
-            marketTable.truncate(connection);
             connection.commit();
         }
     }
@@ -66,12 +61,12 @@ public class JdbcStockPriceServiceIT {
 
     @Test
     public void testGetExists() {
-        StockPrice stockPrice = new StockPrice().setId("id").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
+        StockPrice stockPrice = new StockPrice().setId("id").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
         assertEquals(1, stockPriceService.add(stockPrice));
 
         Optional<StockPrice> fetched = stockPriceService.get(stockPrice.getId());
         assertTrue(fetched.isPresent());
-        assertEquals(stockPrice.getMarketId(), fetched.get().getMarketId());
+        assertEquals(stockPrice.getMarket(), fetched.get().getMarket());
         assertEquals(stockPrice.getStockId(), fetched.get().getStockId());
         assertEquals(stockPrice.getTimestamp().toEpochMilli(), fetched.get().getTimestamp().toEpochMilli());
         assertEquals(stockPrice.getPrice(), fetched.get().getPrice());
@@ -86,10 +81,10 @@ public class JdbcStockPriceServiceIT {
 
     @Test
     public void testGetLatestSome() {
-        StockPrice stockPrice1 = new StockPrice().setId("id1").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setId("id2").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
-        StockPrice stockPrice3 = new StockPrice().setId("id3").setMarketId(market.getId()).setStockId(stock2.getId()).setTimestamp(Instant.now()).setPrice(20);
-        StockPrice stockPrice4 = new StockPrice().setId("id4").setMarketId(market.getId()).setStockId(stock2.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(18);
+        StockPrice stockPrice1 = new StockPrice().setId("id1").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setId("id2").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
+        StockPrice stockPrice3 = new StockPrice().setId("id3").setMarket(TWITTER).setStockId(stock2.getId()).setTimestamp(Instant.now()).setPrice(20);
+        StockPrice stockPrice4 = new StockPrice().setId("id4").setMarket(TWITTER).setStockId(stock2.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(18);
         assertEquals(1, stockPriceService.add(stockPrice1));
         assertEquals(1, stockPriceService.add(stockPrice2));
         assertEquals(1, stockPriceService.add(stockPrice3));
@@ -111,8 +106,8 @@ public class JdbcStockPriceServiceIT {
 
     @Test
     public void testGetForStockSome() {
-        StockPrice stockPrice1 = new StockPrice().setId("id1").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setId("id2").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
+        StockPrice stockPrice1 = new StockPrice().setId("id1").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setId("id2").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
         assertEquals(1, stockPriceService.add(stockPrice1));
         assertEquals(1, stockPriceService.add(stockPrice2));
 
@@ -132,8 +127,8 @@ public class JdbcStockPriceServiceIT {
 
     @Test
     public void testGetAllSome() {
-        StockPrice stockPrice1 = new StockPrice().setId("id1").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setId("id2").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
+        StockPrice stockPrice1 = new StockPrice().setId("id1").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setId("id2").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
         assertEquals(1, stockPriceService.add(stockPrice1));
         assertEquals(1, stockPriceService.add(stockPrice2));
 
@@ -153,8 +148,8 @@ public class JdbcStockPriceServiceIT {
 
     @Test
     public void testConsumeSome() {
-        StockPrice stockPrice1 = new StockPrice().setId("id1").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setId("id2").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
+        StockPrice stockPrice1 = new StockPrice().setId("id1").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setId("id2").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
         assertEquals(1, stockPriceService.add(stockPrice1));
         assertEquals(1, stockPriceService.add(stockPrice2));
 
@@ -167,13 +162,13 @@ public class JdbcStockPriceServiceIT {
 
     @Test
     public void testAdd() {
-        StockPrice stockPrice = new StockPrice().setId("id").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
+        StockPrice stockPrice = new StockPrice().setId("id").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
         assertEquals(1, stockPriceService.add(stockPrice));
     }
 
     @Test(expected = Exception.class)
     public void testAddConflict() {
-        StockPrice stockPrice = new StockPrice().setId("id").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
+        StockPrice stockPrice = new StockPrice().setId("id").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
         assertEquals(1, stockPriceService.add(stockPrice));
         stockPriceService.add(stockPrice);
     }
@@ -185,7 +180,7 @@ public class JdbcStockPriceServiceIT {
 
     @Test
     public void testDelete() {
-        StockPrice stockPrice = new StockPrice().setId("id").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
+        StockPrice stockPrice = new StockPrice().setId("id").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
         assertEquals(1, stockPriceService.add(stockPrice));
         assertEquals(1, stockPriceService.delete(stockPrice.getId()));
         assertFalse(stockPriceService.get(stockPrice.getId()).isPresent());
@@ -193,9 +188,9 @@ public class JdbcStockPriceServiceIT {
 
     @Test
     public void testAgeOff() {
-        StockPrice stockPrice1 = new StockPrice().setId("id1").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setId("id2").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(10);
-        StockPrice stockPrice3 = new StockPrice().setId("id3").setMarketId(market.getId()).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(20)).setPrice(10);
+        StockPrice stockPrice1 = new StockPrice().setId("id1").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setId("id2").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(10);
+        StockPrice stockPrice3 = new StockPrice().setId("id3").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now().minusSeconds(20)).setPrice(10);
 
         assertEquals(1, stockPriceService.add(stockPrice1));
         assertEquals(1, stockPriceService.add(stockPrice2));

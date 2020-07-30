@@ -17,7 +17,7 @@ import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
-import static vstocks.model.UserSource.TWITTER;
+import static vstocks.model.UserSource.TwitterClient;
 
 public class JdbcUserServiceIT {
     @ClassRule
@@ -53,7 +53,7 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testUsernameExists() {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         assertEquals(1, userService.add(user));
         assertTrue(userService.usernameExists(user.getUsername()));
     }
@@ -65,7 +65,7 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testGetExists() {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         assertEquals(1, userService.add(user));
 
         Optional<User> fetched = userService.get(user.getId());
@@ -77,7 +77,7 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testLoginMissing() {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         assertEquals(1, userService.login(user));
 
         Optional<User> fetched = userService.get(user.getId());
@@ -93,7 +93,7 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testLoginExistsSame() {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         assertEquals(1, userService.add(user));
 
         Optional<User> fetched = userService.get(user.getId());
@@ -115,10 +115,10 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testLoginExistsDifferent() {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         assertEquals(1, userService.add(user));
 
-        User loginUser = new User().setId("id").setUsername("login").setSource(TWITTER).setDisplayName("Login");
+        User loginUser = new User().setId("id").setUsername("login").setSource(TwitterClient).setDisplayName("Login");
         assertEquals(1, userService.login(loginUser));
 
         Optional<User> fetched = userService.get(user.getId());
@@ -141,8 +141,8 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testGetAllSome() {
-        User user1 = new User().setId("id1").setUsername("name1").setSource(TWITTER).setDisplayName("Name");
-        User user2 = new User().setId("id2").setUsername("name2").setSource(TWITTER).setDisplayName("Name");
+        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
+        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
         assertEquals(1, userService.add(user1));
         assertEquals(1, userService.add(user2));
 
@@ -155,11 +155,11 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testGetAllMultiplePages() {
-        User user1 = new User().setId("id1").setUsername("name1").setSource(TWITTER).setDisplayName("Name");
-        User user2 = new User().setId("id2").setUsername("name2").setSource(TWITTER).setDisplayName("Name");
-        User user3 = new User().setId("id3").setUsername("name3").setSource(TWITTER).setDisplayName("Name");
-        User user4 = new User().setId("id4").setUsername("name4").setSource(TWITTER).setDisplayName("Name");
-        User user5 = new User().setId("id5").setUsername("name5").setSource(TWITTER).setDisplayName("Name");
+        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
+        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
+        User user3 = new User().setId("id3").setUsername("name3").setSource(TwitterClient).setDisplayName("Name");
+        User user4 = new User().setId("id4").setUsername("name4").setSource(TwitterClient).setDisplayName("Name");
+        User user5 = new User().setId("id5").setUsername("name5").setSource(TwitterClient).setDisplayName("Name");
         for (User user : asList(user1, user2, user3, user4, user5)) {
             assertEquals(1, userService.add(user));
         }
@@ -194,8 +194,8 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testConsumeSome() {
-        User user1 = new User().setId("id1").setUsername("name1").setSource(TWITTER).setDisplayName("Name");
-        User user2 = new User().setId("id2").setUsername("name2").setSource(TWITTER).setDisplayName("Name");
+        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
+        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
         assertEquals(1, userService.add(user1));
         assertEquals(1, userService.add(user2));
 
@@ -208,13 +208,13 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testAdd() {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         assertEquals(1, userService.add(user));
     }
 
     @Test(expected = Exception.class)
     public void testAddIdConflict() {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         assertEquals(1, userService.add(user));
         user.setUsername("different");
         userService.add(user);
@@ -222,7 +222,7 @@ public class JdbcUserServiceIT {
 
     @Test(expected = Exception.class)
     public void testAddUsernameConflict() {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         assertEquals(1, userService.add(user));
         user.setId("different");
         userService.add(user);
@@ -230,13 +230,13 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testUpdateMissing() {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         assertEquals(0, userService.update(user));
     }
 
     @Test
     public void testUpdate() {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         assertEquals(1, userService.add(user));
 
         user.setUsername("updated");
@@ -257,7 +257,7 @@ public class JdbcUserServiceIT {
 
     @Test
     public void testDelete() {
-        User user = new User().setId("id").setUsername("name").setSource(TWITTER).setDisplayName("Name");
+        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
         assertEquals(1, userService.add(user));
         assertEquals(1, userService.delete(user.getId()));
         assertFalse(userService.get(user.getId()).isPresent());

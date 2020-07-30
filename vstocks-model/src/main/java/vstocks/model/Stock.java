@@ -6,7 +6,7 @@ import static java.util.Objects.requireNonNull;
 
 public class Stock {
     private String id;
-    private String marketId;
+    private Market market;
     private String symbol;
     private String name;
 
@@ -22,12 +22,12 @@ public class Stock {
         return this;
     }
 
-    public String getMarketId() {
-        return marketId;
+    public Market getMarket() {
+        return market;
     }
 
-    public Stock setMarketId(String marketId) {
-        this.marketId = marketId;
+    public Stock setMarket(Market market) {
+        this.market = market;
         return this;
     }
 
@@ -66,7 +66,7 @@ public class Stock {
     public String toString() {
         return "Symbol{" +
                 "id='" + id + '\'' +
-                ", marketId='" + marketId + '\'' +
+                ", market=" + market +
                 ", symbol='" + symbol + '\'' +
                 ", name='" + name + '\'' +
                 '}';

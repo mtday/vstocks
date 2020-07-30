@@ -6,7 +6,7 @@ import java.util.Objects;
 public class ActivityLog {
     private String id;
     private String userId;
-    private String marketId;
+    private Market market;
     private String stockId;
     private Instant timestamp;
     private int shares;
@@ -33,12 +33,12 @@ public class ActivityLog {
         return this;
     }
 
-    public String getMarketId() {
-        return marketId;
+    public Market getMarket() {
+        return market;
     }
 
-    public ActivityLog setMarketId(String marketId) {
-        this.marketId = marketId;
+    public ActivityLog setMarket(Market market) {
+        this.market = market;
         return this;
     }
 
@@ -96,7 +96,7 @@ public class ActivityLog {
         return "ActivityLog{" +
                 "id='" + id + '\'' +
                 ", userId='" + userId + '\'' +
-                ", marketId='" + marketId + '\'' +
+                ", market=" + market +
                 ", stockId='" + stockId + '\'' +
                 ", timestamp=" + timestamp +
                 ", shares=" + shares +

@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class UserStock {
     private String userId;
-    private String marketId;
+    private Market market;
     private String stockId;
     private int shares;
 
@@ -20,12 +20,12 @@ public class UserStock {
         return this;
     }
 
-    public String getMarketId() {
-        return marketId;
+    public Market getMarket() {
+        return market;
     }
 
-    public UserStock setMarketId(String marketId) {
-        this.marketId = marketId;
+    public UserStock setMarket(Market market) {
+        this.market = market;
         return this;
     }
 
@@ -53,20 +53,20 @@ public class UserStock {
         if (o == null || getClass() != o.getClass()) return false;
         UserStock userStock = (UserStock) o;
         return Objects.equals(userId, userStock.userId) &&
-                Objects.equals(marketId, userStock.marketId) &&
+                market == userStock.market &&
                 Objects.equals(stockId, userStock.stockId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, marketId, stockId);
+        return Objects.hash(userId, market, stockId);
     }
 
     @Override
     public String toString() {
         return "UserStock{" +
                 "userId='" + userId + '\'' +
-                ", marketId='" + marketId + '\'' +
+                ", market=" + market +
                 ", stockId='" + stockId + '\'' +
                 ", shares=" + shares +
                 '}';

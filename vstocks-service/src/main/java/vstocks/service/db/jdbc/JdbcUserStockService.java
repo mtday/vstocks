@@ -24,8 +24,8 @@ public class JdbcUserStockService extends BaseService implements UserStockServic
     }
 
     @Override
-    public Optional<UserStock> get(String userId, String marketId, String stockId) {
-        return withConnection(conn -> userStockTable.get(conn, userId, marketId, stockId));
+    public Optional<UserStock> get(String userId, Market market, String stockId) {
+        return withConnection(conn -> userStockTable.get(conn, userId, market, stockId));
     }
 
     @Override
@@ -49,18 +49,18 @@ public class JdbcUserStockService extends BaseService implements UserStockServic
     }
 
     @Override
-    public int buyStock(String userId, String marketId, String stockId, int shares) {
+    public int buyStock(String userId, Market market, String stockId, int shares) {
         return withConnection(conn -> {
             Optional<StockPrice> stockPrice = stockPriceTable.getLatest(conn, stockId);
             if (stockPrice.isPresent()) {
                 int price = stockPrice.get().getPrice();
                 int cost = price * shares;
                 if (userBalanceTable.update(conn, userId, -cost) > 0
-                        && userStockTable.update(conn, userId, marketId, stockId, shares) > 0) {
+                        && userStockTable.update(conn, userId, market, stockId, shares) > 0) {
                     ActivityLog activityLog = new ActivityLog()
                             .setId(UUID.randomUUID().toString())
                             .setUserId(userId)
-                            .setMarketId(marketId)
+                            .setMarket(market)
                             .setStockId(stockId)
                             .setTimestamp(Instant.now())
                             .setPrice(price)
@@ -77,18 +77,18 @@ public class JdbcUserStockService extends BaseService implements UserStockServic
     }
 
     @Override
-    public int sellStock(String userId, String marketId, String stockId, int shares) {
+    public int sellStock(String userId, Market market, String stockId, int shares) {
         return withConnection(conn -> {
             Optional<StockPrice> stockPrice = stockPriceTable.getLatest(conn, stockId);
             if (stockPrice.isPresent()) {
                 int price = stockPrice.get().getPrice();
                 int cost = price * shares;
                 if (userBalanceTable.update(conn, userId, cost) > 0
-                        && userStockTable.update(conn, userId, marketId, stockId, -shares) > 0) {
+                        && userStockTable.update(conn, userId, market, stockId, -shares) > 0) {
                     ActivityLog activityLog = new ActivityLog()
                             .setId(UUID.randomUUID().toString())
                             .setUserId(userId)
-                            .setMarketId(marketId)
+                            .setMarket(market)
                             .setStockId(stockId)
                             .setTimestamp(Instant.now())
                             .setPrice(price)
@@ -110,12 +110,12 @@ public class JdbcUserStockService extends BaseService implements UserStockServic
     }
 
     @Override
-    public int update(String userId, String marketId, String stockId, int delta) {
-        return withConnection(conn -> userStockTable.update(conn, userId, marketId, stockId, delta));
+    public int update(String userId, Market market, String stockId, int delta) {
+        return withConnection(conn -> userStockTable.update(conn, userId, market, stockId, delta));
     }
 
     @Override
-    public int delete(String userId, String marketId, String stockId) {
-        return withConnection(conn -> userStockTable.delete(conn, userId, marketId, stockId));
+    public int delete(String userId, Market market, String stockId) {
+        return withConnection(conn -> userStockTable.delete(conn, userId, market, stockId));
     }
 }

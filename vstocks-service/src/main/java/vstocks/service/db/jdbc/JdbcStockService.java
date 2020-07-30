@@ -1,5 +1,6 @@
 package vstocks.service.db.jdbc;
 
+import vstocks.model.Market;
 import vstocks.model.Page;
 import vstocks.model.Results;
 import vstocks.model.Stock;
@@ -18,13 +19,13 @@ public class JdbcStockService extends BaseService implements StockService {
     }
 
     @Override
-    public Optional<Stock> get(String marketId, String stockId) {
-        return withConnection(conn -> stockTable.get(conn, marketId, stockId));
+    public Optional<Stock> get(Market market, String stockId) {
+        return withConnection(conn -> stockTable.get(conn, market, stockId));
     }
 
     @Override
-    public Results<Stock> getForMarket(String marketId, Page page) {
-        return withConnection(conn -> stockTable.getForMarket(conn, marketId, page));
+    public Results<Stock> getForMarket(Market market, Page page) {
+        return withConnection(conn -> stockTable.getForMarket(conn, market, page));
     }
 
     @Override
@@ -48,7 +49,7 @@ public class JdbcStockService extends BaseService implements StockService {
     }
 
     @Override
-    public int delete(String marketId, String stockId) {
-        return withConnection(conn -> stockTable.delete(conn, marketId, stockId));
+    public int delete(Market market, String stockId) {
+        return withConnection(conn -> stockTable.delete(conn, market, stockId));
     }
 }

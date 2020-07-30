@@ -1,52 +1,30 @@
 package vstocks.model;
 
-import java.util.Objects;
+import java.util.Arrays;
+import java.util.Optional;
 
-import static java.util.Objects.requireNonNull;
+public enum Market {
+    TWITTER("Twitter"),
+    YOUTUBE("YouTube");
 
-public class Market {
-    private String id;
-    private String name;
+    private String displayName;
 
-    public Market() {
+    Market(String displayName) {
+        this.displayName = displayName;
     }
 
-    public String getId() {
-        return id;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public Market setId(String id) {
-        this.id = requireNonNull(id);
+    public Market setDisplayName(String displayName) {
+        this.displayName = displayName;
         return this;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public Market setName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Market market = (Market) o;
-        return Objects.equals(id, market.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    @Override
-    public String toString() {
-        return "Market{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                '}';
+    public static Optional<Market> from(String id) {
+        return Arrays.stream(values())
+                .filter(market -> market.name().equalsIgnoreCase(id) || market.getDisplayName().equalsIgnoreCase(id))
+                .findFirst();
     }
 }
