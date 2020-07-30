@@ -3,7 +3,7 @@ package vstocks.rest.resource.v1.market.stock;
 import vstocks.model.Results;
 import vstocks.model.Stock;
 import vstocks.rest.resource.BaseResource;
-import vstocks.service.ServiceFactory;
+import vstocks.service.db.DatabaseServiceFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -14,11 +14,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/v1/market/{marketId}/stocks")
 @Singleton
 public class GetStocksForMarket extends BaseResource {
-    private final ServiceFactory serviceFactory;
+    private final DatabaseServiceFactory databaseServiceFactory;
 
     @Inject
-    public GetStocksForMarket(ServiceFactory serviceFactory) {
-        this.serviceFactory = serviceFactory;
+    public GetStocksForMarket(DatabaseServiceFactory databaseServiceFactory) {
+        this.databaseServiceFactory = databaseServiceFactory;
     }
 
     @GET
@@ -26,6 +26,6 @@ public class GetStocksForMarket extends BaseResource {
     public Results<Stock> getAllStocks(@PathParam("marketId") String marketId,
                                        @QueryParam("pageNum") Integer pageNum,
                                        @QueryParam("pageSize") Integer pageSize) {
-        return serviceFactory.getStockService().getForMarket(marketId, getPage(pageNum, pageSize));
+        return databaseServiceFactory.getStockService().getForMarket(marketId, getPage(pageNum, pageSize));
     }
 }

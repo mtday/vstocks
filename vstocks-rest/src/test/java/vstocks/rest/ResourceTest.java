@@ -8,9 +8,9 @@ import org.pac4j.core.profile.CommonProfile;
 import vstocks.model.Market;
 import vstocks.model.Results;
 import vstocks.model.Stock;
-import vstocks.service.ServiceFactory;
-import vstocks.service.jdbc.JdbcServiceFactory;
-import vstocks.service.jdbc.table.*;
+import vstocks.service.db.DatabaseServiceFactory;
+import vstocks.service.db.jdbc.JdbcDatabaseServiceFactory;
+import vstocks.service.db.jdbc.table.*;
 
 import javax.ws.rs.core.GenericType;
 import java.sql.Connection;
@@ -20,11 +20,11 @@ public class ResourceTest extends JerseyTest {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private ServiceFactory serviceFactory;
+    private DatabaseServiceFactory databaseServiceFactory;
 
     @Override
     protected ResourceConfig configure() {
-        serviceFactory = new JdbcServiceFactory(dataSourceExternalResource.get());
+        databaseServiceFactory = new JdbcDatabaseServiceFactory(dataSourceExternalResource.get());
 
         Application application = new Application(dataSourceExternalResource.get(), false, false);
         application.register(new CommonProfileValueParamProvider(getCommonProfile()));
@@ -54,8 +54,8 @@ public class ResourceTest extends JerseyTest {
         return commonProfile;
     }
 
-    public ServiceFactory getServiceFactory() {
-        return serviceFactory;
+    public DatabaseServiceFactory getDatabaseServiceFactory() {
+        return databaseServiceFactory;
     }
 
     public static class MarketResultsGenericType extends GenericType<Results<Market>> {}

@@ -2,7 +2,7 @@ package vstocks.rest.resource.v1.market.stock;
 
 import vstocks.model.Stock;
 import vstocks.rest.resource.BaseResource;
-import vstocks.service.ServiceFactory;
+import vstocks.service.db.DatabaseServiceFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -13,18 +13,18 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/v1/market/{marketId}/stock/{stockId}")
 @Singleton
 public class GetStock extends BaseResource {
-    private final ServiceFactory serviceFactory;
+    private final DatabaseServiceFactory databaseServiceFactory;
 
     @Inject
-    public GetStock(ServiceFactory serviceFactory) {
-        this.serviceFactory = serviceFactory;
+    public GetStock(DatabaseServiceFactory databaseServiceFactory) {
+        this.databaseServiceFactory = databaseServiceFactory;
     }
 
     @GET
     @Produces(APPLICATION_JSON)
     public Stock getStock(@PathParam("marketId") String marketId,
                           @PathParam("stockId") String stockId) {
-        return serviceFactory.getStockService().get(marketId, stockId)
+        return databaseServiceFactory.getStockService().get(marketId, stockId)
                 .orElseThrow(() -> new NotFoundException("Stock " + marketId + "/" + stockId + " not found"));
     }
 }

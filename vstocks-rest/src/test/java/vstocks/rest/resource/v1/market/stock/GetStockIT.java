@@ -21,8 +21,8 @@ public class GetStockIT extends ResourceTest {
 
     @Before
     public void setup() {
-        getServiceFactory().getMarketService().add(market);
-        getServiceFactory().getStockService().add(stock);
+        getDatabaseServiceFactory().getMarketService().add(market);
+        getDatabaseServiceFactory().getStockService().add(stock);
     }
 
     @Test

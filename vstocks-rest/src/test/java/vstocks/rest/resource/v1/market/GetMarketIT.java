@@ -29,7 +29,7 @@ public class GetMarketIT extends ResourceTest {
     @Test
     public void testMarketExists() {
         Market market = new Market().setId("id").setName("name");
-        getServiceFactory().getMarketService().add(market);
+        getDatabaseServiceFactory().getMarketService().add(market);
 
         Response response = target("/v1/market/id").request().get();
 

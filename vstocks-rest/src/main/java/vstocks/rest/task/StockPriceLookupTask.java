@@ -2,8 +2,8 @@ package vstocks.rest.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import vstocks.service.ServiceFactory;
-import vstocks.service.StockPriceService;
+import vstocks.service.db.DatabaseServiceFactory;
+import vstocks.service.db.StockPriceService;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -17,10 +17,10 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 public class StockPriceLookupTask implements BaseTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(StockPriceLookupTask.class);
 
-    private final ServiceFactory serviceFactory;
+    private final DatabaseServiceFactory databaseServiceFactory;
 
-    public StockPriceLookupTask(ServiceFactory serviceFactory) {
-        this.serviceFactory = serviceFactory;
+    public StockPriceLookupTask(DatabaseServiceFactory databaseServiceFactory) {
+        this.databaseServiceFactory = databaseServiceFactory;
     }
 
     @Override
@@ -42,8 +42,8 @@ public class StockPriceLookupTask implements BaseTask {
     public void run() {
         long start = System.currentTimeMillis();
 
-        StockPriceService stockPriceService = serviceFactory.getStockPriceService();
-        serviceFactory.getStockService().consume(stock -> {
+        StockPriceService stockPriceService = databaseServiceFactory.getStockPriceService();
+        databaseServiceFactory.getStockService().consume(stock -> {
             LOGGER.debug("Looking up price for stock {}/{}", stock.getMarketId(), stock.getSymbol());
         });
 

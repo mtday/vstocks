@@ -14,8 +14,8 @@ import vstocks.rest.security.SecurityConfig;
 import vstocks.rest.task.MemoryUsageLoggingTask;
 import vstocks.rest.task.StockPriceAgeOffTask;
 import vstocks.rest.task.StockPriceLookupTask;
-import vstocks.service.ServiceFactory;
-import vstocks.service.jdbc.JdbcServiceFactory;
+import vstocks.service.db.DatabaseServiceFactory;
+import vstocks.service.db.jdbc.JdbcDatabaseServiceFactory;
 
 import javax.sql.DataSource;
 import javax.ws.rs.ApplicationPath;
@@ -32,7 +32,7 @@ public class Application extends ResourceConfig {
     }
 
     public Application(DataSource dataSource, boolean includePac4j, boolean includeBackgroundTasks) {
-        ServiceFactory serviceFactory = new JdbcServiceFactory(ofNullable(dataSource).orElseGet(this::getDataSource));
+        DatabaseServiceFactory databaseServiceFactory = new JdbcDatabaseServiceFactory(ofNullable(dataSource).orElseGet(this::getDataSource));
 
         property("jersey.config.server.wadl.disableWadl", "true");
         packages(true, Application.class.getPackageName());
@@ -40,7 +40,7 @@ public class Application extends ResourceConfig {
         register(new AbstractBinder() {
             @Override
             protected void configure() {
-                bind(serviceFactory).to(ServiceFactory.class);
+                bind(databaseServiceFactory).to(DatabaseServiceFactory.class);
             }
         });
 
@@ -54,8 +54,8 @@ public class Application extends ResourceConfig {
         if (includeBackgroundTasks) {
             ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(8);
             new MemoryUsageLoggingTask().schedule(scheduledExecutorService);
-            new StockPriceAgeOffTask(serviceFactory).schedule(scheduledExecutorService);
-            new StockPriceLookupTask(serviceFactory).schedule(scheduledExecutorService);
+            new StockPriceAgeOffTask(databaseServiceFactory).schedule(scheduledExecutorService);
+            new StockPriceLookupTask(databaseServiceFactory).schedule(scheduledExecutorService);
         }
     }
 

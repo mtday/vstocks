@@ -24,11 +24,11 @@ public class GetStocksForMarketIT extends ResourceTest {
 
     @Before
     public void setup() {
-        getServiceFactory().getMarketService().add(market1);
-        getServiceFactory().getMarketService().add(market2);
-        getServiceFactory().getStockService().add(stock1);
-        getServiceFactory().getStockService().add(stock2);
-        getServiceFactory().getStockService().add(stock3);
+        getDatabaseServiceFactory().getMarketService().add(market1);
+        getDatabaseServiceFactory().getMarketService().add(market2);
+        getDatabaseServiceFactory().getStockService().add(stock1);
+        getDatabaseServiceFactory().getStockService().add(stock2);
+        getDatabaseServiceFactory().getStockService().add(stock3);
     }
 
     @Test

@@ -2,7 +2,7 @@ package vstocks.rest.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import vstocks.service.ServiceFactory;
+import vstocks.service.db.DatabaseServiceFactory;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -17,10 +17,10 @@ import static vstocks.config.Config.DATA_HISTORY_DAYS;
 public class StockPriceAgeOffTask implements BaseTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(StockPriceAgeOffTask.class);
 
-    private final ServiceFactory serviceFactory;
+    private final DatabaseServiceFactory databaseServiceFactory;
 
-    public StockPriceAgeOffTask(ServiceFactory serviceFactory) {
-        this.serviceFactory = serviceFactory;
+    public StockPriceAgeOffTask(DatabaseServiceFactory databaseServiceFactory) {
+        this.databaseServiceFactory = databaseServiceFactory;
     }
 
     @Override
@@ -43,6 +43,6 @@ public class StockPriceAgeOffTask implements BaseTask {
         int days = DATA_HISTORY_DAYS.getInt();
         Instant cutoff = Instant.now().truncatedTo(ChronoUnit.DAYS).minus(days, ChronoUnit.DAYS);
         LOGGER.info("Aging off data older than {} days ({})", days, cutoff);
-        serviceFactory.getStockPriceService().ageOff(cutoff);
+        databaseServiceFactory.getStockPriceService().ageOff(cutoff);
     }
 }

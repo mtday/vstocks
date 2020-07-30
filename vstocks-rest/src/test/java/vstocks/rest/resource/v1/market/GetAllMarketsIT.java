@@ -34,9 +34,9 @@ public class GetAllMarketsIT extends ResourceTest {
 
     @Test
     public void testAllMarketsOnePage() {
-        getServiceFactory().getMarketService().add(market1);
-        getServiceFactory().getMarketService().add(market2);
-        getServiceFactory().getMarketService().add(market3);
+        getDatabaseServiceFactory().getMarketService().add(market1);
+        getDatabaseServiceFactory().getMarketService().add(market2);
+        getDatabaseServiceFactory().getMarketService().add(market3);
 
         Response response = target("/v1/markets").request().get();
 
@@ -54,9 +54,9 @@ public class GetAllMarketsIT extends ResourceTest {
 
     @Test
     public void testAllMarketsSpecificPage() {
-        getServiceFactory().getMarketService().add(market1);
-        getServiceFactory().getMarketService().add(market2);
-        getServiceFactory().getMarketService().add(market3);
+        getDatabaseServiceFactory().getMarketService().add(market1);
+        getDatabaseServiceFactory().getMarketService().add(market2);
+        getDatabaseServiceFactory().getMarketService().add(market3);
 
         Response response = target("/v1/markets").queryParam("pageNum", 2).queryParam("pageSize", 1).request().get();
 
