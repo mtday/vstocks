@@ -2,17 +2,21 @@ package vstocks.rest.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import vstocks.model.Market;
 import vstocks.model.Stock;
 import vstocks.model.StockPrice;
+import vstocks.service.StockUpdateRunnable;
 import vstocks.service.db.DatabaseServiceFactory;
 import vstocks.service.remote.RemoteStockService;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
-import java.time.Instant;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -51,41 +55,20 @@ public class StockUpdateTask implements BaseTask {
     @Override
     public void run() {
         LOGGER.info("Updating all stock prices");
-        databaseServiceFactory.getStockService().consume(stock ->
-                executorService.submit(new StockPriceUpdater(remoteStockServiceFactory, databaseServiceFactory, stock)));
-    }
-
-    private static class StockPriceUpdater implements Runnable {
-        private final RemoteStockServiceFactory remoteStockServiceFactory;
-        private final DatabaseServiceFactory databaseServiceFactory;
-        private final Stock stock;
-
-        public StockPriceUpdater(RemoteStockServiceFactory remoteStockServiceFactory,
-                                 DatabaseServiceFactory databaseServiceFactory,
-                                 Stock stock) {
-            this.remoteStockServiceFactory = remoteStockServiceFactory;
-            this.databaseServiceFactory = databaseServiceFactory;
-            this.stock = stock;
-        }
-
-        @Override
-        public void run() {
-            try {
-                RemoteStockService remoteStockService = remoteStockServiceFactory.getForMarket(stock.getMarket());
-
-                StockPrice stockPrice = new StockPrice()
-                        .setMarket(stock.getMarket())
-                        .setSymbol(stock.getSymbol())
-                        .setTimestamp(Instant.now())
-                        .setPrice(0);
-                remoteStockService.update(stock, stockPrice);
-
+        for (Market market : Market.values()) {
+            RemoteStockService remoteStockService = remoteStockServiceFactory.getForMarket(market);
+            Consumer<Entry<Stock, StockPrice>> updateConsumer = entry -> {
+                Stock stock = entry.getKey();
+                StockPrice stockPrice = entry.getValue();
+                LOGGER.info("Stock {}/{} updated price {}", stock.getMarket(), stock.getSymbol(), stockPrice.getPrice());
                 databaseServiceFactory.getStockService().update(stock);
                 databaseServiceFactory.getStockPriceService().add(stockPrice);
-
-                LOGGER.info("Stock {}/{} updated price {}", stock.getMarket(), stock.getSymbol(), stockPrice.getPrice());
-            } catch (Throwable failed) {
-                LOGGER.error("Failed to update price for stock {}", stock, failed);
+            };
+            try (StockUpdateRunnable runnable = remoteStockService.getUpdateRunnable(executorService, updateConsumer)) {
+                executorService.submit(runnable);
+                databaseServiceFactory.getStockService().consumeForMarket(market, runnable);
+            } catch (IOException e) {
+                LOGGER.error("Failed to close stock update runnable", e);
             }
         }
     }

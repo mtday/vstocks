@@ -10,9 +10,18 @@ import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 import vstocks.model.Stock;
 import vstocks.model.StockPrice;
+import vstocks.service.StockUpdateRunnable;
 import vstocks.service.remote.RemoteStockService;
 
-import java.util.List;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Map.Entry;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -46,16 +55,20 @@ public class TwitterRemoteStockService implements RemoteStockService {
     }
 
     @Override
-    public void update(Stock stock, StockPrice stockPrice) {
-        try {
-            User user = twitter.users().showUser(stock.getSymbol());
-
-            stock.setName(user.getName());
-            stockPrice.setPrice(getPrice(user));
-        } catch (TwitterException e) {
-            LOGGER.error("Failed to fetch user account {} from Twitter", stock.getSymbol(), e);
-            throw new RuntimeException(e);
-        }
+    public StockUpdateRunnable getUpdateRunnable(ExecutorService executorService,
+                                                 Consumer<Entry<Stock, StockPrice>> updateConsumer) {
+        return new TwitterStockUpdateRunnable(twitter, executorService, user -> {
+            Stock stock = new Stock()
+                    .setMarket(TWITTER)
+                    .setSymbol(user.getScreenName())
+                    .setName(user.getName());
+            StockPrice stockPrice = new StockPrice()
+                    .setMarket(TWITTER)
+                    .setSymbol(user.getScreenName())
+                    .setTimestamp(Instant.now())
+                    .setPrice(getPrice(user));
+            updateConsumer.accept(new SimpleEntry<>(stock, stockPrice));
+        });
     }
 
     @Override

@@ -41,6 +41,11 @@ public class StockTable extends BaseTable {
         return results(connection, ROW_MAPPER, page, query, countQuery, market);
     }
 
+    public int consumeForMarket(Connection connection, Market market, Consumer<Stock> consumer) {
+        String sql = "SELECT * FROM stocks WHERE market = ? ORDER BY symbol";
+        return consume(connection, ROW_MAPPER, consumer, sql, market);
+    }
+
     public Results<Stock> getAll(Connection connection, Page page) {
         String query = "SELECT * FROM stocks ORDER BY market, symbol LIMIT ? OFFSET ?";
         String countQuery = "SELECT COUNT(*) FROM stocks";

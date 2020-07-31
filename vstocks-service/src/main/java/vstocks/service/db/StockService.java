@@ -13,6 +13,8 @@ public interface StockService {
 
     Results<Stock> getForMarket(Market market, Page page);
 
+    int consumeForMarket(Market market, Consumer<Stock> consumer);
+
     Results<Stock> getAll(Page page);
 
     int consume(Consumer<Stock> consumer);

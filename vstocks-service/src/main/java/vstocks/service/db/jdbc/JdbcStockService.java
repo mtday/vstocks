@@ -29,6 +29,11 @@ public class JdbcStockService extends BaseService implements StockService {
     }
 
     @Override
+    public int consumeForMarket(Market market, Consumer<Stock> consumer) {
+        return withConnection(conn -> stockTable.consumeForMarket(conn, market, consumer));
+    }
+
+    @Override
     public Results<Stock> getAll(Page page) {
         return withConnection(conn -> stockTable.getAll(conn, page));
     }
