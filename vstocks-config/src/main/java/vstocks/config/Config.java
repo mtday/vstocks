@@ -59,12 +59,6 @@ public enum Config {
                 .orElseThrow(() -> new RuntimeException("Key missing from config: " + getKey()));
     }
 
-    public boolean getBoolean() {
-        return ofNullable(PROPERTIES.getProperty(getKey()))
-                .map(Boolean::valueOf)
-                .orElseThrow(() -> new RuntimeException("Key missing from config: " + getKey()));
-    }
-
     private String getKey() {
         return name().toLowerCase(ENGLISH).replaceAll("_", ".");
     }

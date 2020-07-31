@@ -63,9 +63,7 @@ class TwitterStockUpdateRunnable implements StockUpdateRunnable {
             }
 
             if (!batch.isEmpty()) {
-                TwitterBatchStockUpdateRunnable runnable =
-                        new TwitterBatchStockUpdateRunnable(twitter, userConsumer, batch);
-                executorService.submit(runnable);
+                executorService.submit(new TwitterStockUpdateBatchRunnable(twitter, userConsumer, batch));
             }
         }
     }

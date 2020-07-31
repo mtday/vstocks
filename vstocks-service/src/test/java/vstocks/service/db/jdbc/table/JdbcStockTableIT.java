@@ -88,6 +88,34 @@ public class JdbcStockTableIT {
     }
 
     @Test
+    public void testConsumeForMarket() throws SQLException {
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<Stock> results = new ArrayList<>();
+            assertEquals(0, stockTable.consumeForMarket(connection, TWITTER, results::add));
+            assertTrue(results.isEmpty());
+        }
+    }
+
+    @Test
+    public void testConsumeForMarketSome() throws SQLException {
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, stockTable.add(connection, stock1));
+            assertEquals(1, stockTable.add(connection, stock2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<Stock> results = new ArrayList<>();
+            assertEquals(2, stockTable.consumeForMarket(connection, TWITTER, results::add));
+            assertEquals(2, results.size());
+            assertTrue(results.contains(stock1));
+            assertTrue(results.contains(stock2));
+        }
+    }
+
+    @Test
     public void testGetAllNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             Results<Stock> results = stockTable.getAll(connection, new Page());

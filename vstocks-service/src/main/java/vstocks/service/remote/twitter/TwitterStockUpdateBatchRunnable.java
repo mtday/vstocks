@@ -11,17 +11,23 @@ import vstocks.model.Stock;
 import java.util.List;
 import java.util.function.Consumer;
 
-class TwitterBatchStockUpdateRunnable implements Runnable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TwitterBatchStockUpdateRunnable.class);
+import static java.util.Optional.ofNullable;
+
+class TwitterStockUpdateBatchRunnable implements Runnable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TwitterStockUpdateBatchRunnable.class);
 
     private final Twitter twitter;
     private final Consumer<User> userConsumer;
     private final List<Stock> stocks;
 
-    public TwitterBatchStockUpdateRunnable(Twitter twitter, Consumer<User> userConsumer, List<Stock> stocks) {
+    public TwitterStockUpdateBatchRunnable(Twitter twitter, Consumer<User> userConsumer, List<Stock> stocks) {
         this.twitter = twitter;
         this.userConsumer = userConsumer;
         this.stocks = stocks;
+    }
+
+    List<Stock> getStocks() {
+        return stocks;
     }
 
     @Override
@@ -29,7 +35,7 @@ class TwitterBatchStockUpdateRunnable implements Runnable {
         try {
             String[] usernames = stocks.stream().map(Stock::getSymbol).toArray(String[]::new);
             ResponseList<User> responseList = twitter.users().lookupUsers(usernames);
-            responseList.forEach(userConsumer);
+            ofNullable(responseList).ifPresent(list -> list.forEach(userConsumer));
         } catch (TwitterException e) {
             // Ignore user-not-found errors
             if (e.getStatusCode() != 404) {

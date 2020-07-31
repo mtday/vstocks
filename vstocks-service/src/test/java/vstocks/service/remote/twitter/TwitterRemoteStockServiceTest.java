@@ -1,6 +1,7 @@
 package vstocks.service.remote.twitter;
 
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import twitter4j.ResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -8,11 +9,22 @@ import twitter4j.User;
 import twitter4j.api.UsersResources;
 import twitter4j.conf.Configuration;
 import vstocks.model.Stock;
+import vstocks.model.StockPrice;
+import vstocks.service.StockUpdateRunnable;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -23,8 +35,6 @@ import static vstocks.model.Market.TWITTER;
 import static vstocks.service.remote.twitter.TwitterRemoteStockService.getPrice;
 
 public class TwitterRemoteStockServiceTest {
-    //private static final Logger LOGGER = LoggerFactory.getLogger(TwitterRemoteStockServiceTest.class);
-
     @Test
     public void testCreateConfiguration() {
         Configuration configuration = TwitterRemoteStockService.createConfiguration();
@@ -67,45 +77,56 @@ public class TwitterRemoteStockServiceTest {
         assertEquals(4951, getPrice(getUserWithFollowers.apply(100_000_000)));
     }
 
-    /* TODO
-    @Test
-    public void testUpdate() throws TwitterException {
+    private static User getUser(String username, int followers, String name) {
         User user = mock(User.class);
-        when(user.getName()).thenReturn("Name");
-        when(user.getFollowersCount()).thenReturn(123456);
-        UsersResources usersResources = mock(UsersResources.class);
-        when(usersResources.showUser(eq("username"))).thenReturn(user);
-        Twitter twitter = mock(Twitter.class);
-        when(twitter.users()).thenReturn(usersResources);
-
-        Stock stock = new Stock().setMarket(TWITTER).setSymbol("username").setName("User");
-        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol("username").setTimestamp(Instant.now()).setPrice(0);
-
-        TwitterRemoteStockService twitterRemoteStockService = new TwitterRemoteStockService(twitter);
-        twitterRemoteStockService.update(stock, stockPrice);
-
-        assertEquals("Name", stock.getName()); // stock name updated
-        assertEquals(getPrice(getUserWithFollowers.apply(123456)), stockPrice.getPrice()); // stock price updated
+        when(user.getScreenName()).thenReturn(username);
+        when(user.getFollowersCount()).thenReturn(followers);
+        when(user.getName()).thenReturn(name);
+        return user;
     }
 
     @Test
-    public void testUpdateUserMissing() throws TwitterException {
-        TwitterException exception = new TwitterException("message", new Exception(), 404);
+    public void testGetUpdateRunnable() throws TwitterException, ExecutionException, InterruptedException, IOException {
+        CustomResponseList<User> responseList = new CustomResponseList<>();
+        responseList.addAll(asList(getUser("user1", 50_000, "User1"), getUser("user2", 100_000, "User2")));
         UsersResources usersResources = mock(UsersResources.class);
-        when(usersResources.showUser(eq("username"))).thenThrow(exception);
+        when(usersResources.lookupUsers(ArgumentMatchers.<String>any())).thenReturn(responseList);
         Twitter twitter = mock(Twitter.class);
         when(twitter.users()).thenReturn(usersResources);
 
-        Stock stock = new Stock().setMarket(TWITTER).setSymbol("username").setName("User");
-        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol("username").setTimestamp(Instant.now()).setPrice(0);
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        List<Entry<Stock, StockPrice>> entries = new ArrayList<>();
 
         TwitterRemoteStockService twitterRemoteStockService = new TwitterRemoteStockService(twitter);
-        twitterRemoteStockService.update(stock, stockPrice);
+        Future<?> future;
+        try (StockUpdateRunnable runnable = twitterRemoteStockService.getUpdateRunnable(executorService, entries::add)) {
+            runnable.accept(new Stock().setMarket(TWITTER).setSymbol("user1").setName("User1"));
+            runnable.accept(new Stock().setMarket(TWITTER).setSymbol("user2").setName("User2"));
+            future = executorService.submit(runnable);
+        }
+        future.get();
 
-        assertEquals("User", stock.getName()); // stock name not updated
-        assertEquals(1, stockPrice.getPrice()); // stock price set to 1
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(5, SECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException interrupted) {
+            throw new RuntimeException(interrupted);
+        }
+
+        assertEquals(2, entries.size());
+
+        assertEquals("user1", entries.get(0).getKey().getSymbol());
+        assertEquals("User1", entries.get(0).getKey().getName());
+        assertEquals(239, entries.get(0).getValue().getPrice());
+        assertNotNull(entries.get(0).getValue().getTimestamp());
+
+        assertEquals("user2", entries.get(1).getKey().getSymbol());
+        assertEquals("User2", entries.get(1).getKey().getName());
+        assertEquals(455, entries.get(1).getValue().getPrice());
+        assertNotNull(entries.get(1).getValue().getTimestamp());
     }
-     */
 
     @Test
     public void testSearch() throws TwitterException {

@@ -13,13 +13,10 @@ import vstocks.model.StockPrice;
 import vstocks.service.StockUpdateRunnable;
 import vstocks.service.remote.RemoteStockService;
 
-import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 

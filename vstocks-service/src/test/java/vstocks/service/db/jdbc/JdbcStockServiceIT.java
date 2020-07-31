@@ -80,6 +80,27 @@ public class JdbcStockServiceIT {
     }
 
     @Test
+    public void testConsumeForMarket() {
+        List<Stock> results = new ArrayList<>();
+        assertEquals(0, stockService.consumeForMarket(TWITTER, results::add));
+        assertTrue(results.isEmpty());
+    }
+
+    @Test
+    public void testConsumeForMarketSome() {
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
+        assertEquals(1, stockService.add(stock1));
+        assertEquals(1, stockService.add(stock2));
+
+        List<Stock> results = new ArrayList<>();
+        assertEquals(2, stockService.consumeForMarket(TWITTER, results::add));
+        assertEquals(2, results.size());
+        assertTrue(results.contains(stock1));
+        assertTrue(results.contains(stock2));
+    }
+
+    @Test
     public void testGetAllNone() {
         Results<Stock> results = stockService.getAll(new Page());
         assertEquals(0, results.getTotal());
