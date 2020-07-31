@@ -5,6 +5,7 @@ import vstocks.model.StockPrice;
 import vstocks.service.StockUpdateRunnable;
 import vstocks.service.remote.RemoteStockService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
@@ -16,7 +17,19 @@ public class YouTubeRemoteStockService implements RemoteStockService {
     @Override
     public StockUpdateRunnable getUpdateRunnable(ExecutorService executorService,
                                                  Consumer<Entry<Stock, StockPrice>> updateConsumer) {
-        return null;
+        return new StockUpdateRunnable() {
+            @Override
+            public void accept(Stock stock) {
+            }
+
+            @Override
+            public void run() {
+            }
+
+            @Override
+            public void close() throws IOException {
+            }
+        };
     }
 
     @Override

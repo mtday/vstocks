@@ -41,6 +41,8 @@ class TwitterStockUpdateBatchRunnable implements Runnable {
             if (e.getStatusCode() != 404) {
                 LOGGER.error("Failed to lookup users", e);
             }
+        } catch (Throwable e) {
+            LOGGER.error("Unexpected error", e);
         }
     }
 }

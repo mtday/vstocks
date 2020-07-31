@@ -45,7 +45,7 @@ public class StockUpdateTask implements BaseTask {
         int millis = now.get(ChronoField.MILLI_OF_SECOND);
         long delayMinutes = (9 - minute) * 60000;
         long delaySeconds = (second > 0 ? 59 - second : 59) * 1000;
-        long delayMillis  = millis > 0 ? 1000 - millis : 1000;
+        long delayMillis = millis > 0 ? 1000 - millis : 1000;
         long delay = delayMinutes + delaySeconds + delayMillis;
 
         //scheduledExecutorService.scheduleAtFixedRate(this, delay, MINUTES.toMillis(10), MILLISECONDS);
@@ -54,22 +54,24 @@ public class StockUpdateTask implements BaseTask {
 
     @Override
     public void run() {
-        LOGGER.info("Updating all stock prices");
-        for (Market market : Market.values()) {
-            RemoteStockService remoteStockService = remoteStockServiceFactory.getForMarket(market);
-            Consumer<Entry<Stock, StockPrice>> updateConsumer = entry -> {
-                Stock stock = entry.getKey();
-                StockPrice stockPrice = entry.getValue();
-                LOGGER.info("Stock {}/{} updated price {}", stock.getMarket(), stock.getSymbol(), stockPrice.getPrice());
-                databaseServiceFactory.getStockService().update(stock);
-                databaseServiceFactory.getStockPriceService().add(stockPrice);
-            };
-            try (StockUpdateRunnable runnable = remoteStockService.getUpdateRunnable(executorService, updateConsumer)) {
-                executorService.submit(runnable);
-                databaseServiceFactory.getStockService().consumeForMarket(market, runnable);
-            } catch (IOException e) {
-                LOGGER.error("Failed to close stock update runnable", e);
+        try {
+            LOGGER.info("Updating all stock prices");
+            for (Market market : Market.values()) {
+                RemoteStockService remoteStockService = remoteStockServiceFactory.getForMarket(market);
+                Consumer<Entry<Stock, StockPrice>> updateConsumer = entry -> {
+                    databaseServiceFactory.getStockService().update(entry.getKey());
+                    databaseServiceFactory.getStockPriceService().add(entry.getValue());
+                };
+                try (StockUpdateRunnable runnable = remoteStockService.getUpdateRunnable(executorService, updateConsumer)) {
+                    executorService.submit(runnable);
+                    databaseServiceFactory.getStockService().consumeForMarket(market, runnable);
+                } catch (IOException e) {
+                    LOGGER.error("Failed to close stock update runnable", e);
+                }
             }
+            LOGGER.info("Done updating stock prices");
+        } catch (Throwable e) {
+            LOGGER.error("Unexpected error", e);
         }
     }
 }
