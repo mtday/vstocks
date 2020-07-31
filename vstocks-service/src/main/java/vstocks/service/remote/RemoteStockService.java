@@ -1,13 +1,12 @@
 package vstocks.service.remote;
 
 import vstocks.model.Stock;
+import vstocks.model.StockPrice;
 
 import java.util.List;
 
 public interface RemoteStockService {
-    int getPrice(Stock stock);
+    void update(Stock stock, StockPrice stockPrice);
 
-    void updatePrices(List<Stock> stocks);
-
-    List<Stock> search(String search, int limit);
+    List<Stock> search(String search);
 }

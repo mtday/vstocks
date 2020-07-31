@@ -13,12 +13,14 @@ import vstocks.rest.security.AccessLogFilter;
 import vstocks.rest.security.SecurityConfig;
 import vstocks.rest.task.MemoryUsageLoggingTask;
 import vstocks.rest.task.StockPriceAgeOffTask;
-import vstocks.rest.task.StockPriceLookupTask;
+import vstocks.rest.task.StockUpdateTask;
 import vstocks.service.db.DatabaseServiceFactory;
 import vstocks.service.db.jdbc.JdbcDatabaseServiceFactory;
+import vstocks.service.remote.RemoteStockServiceFactory;
 
 import javax.sql.DataSource;
 import javax.ws.rs.ApplicationPath;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -32,7 +34,9 @@ public class Application extends ResourceConfig {
     }
 
     public Application(DataSource dataSource, boolean includePac4j, boolean includeBackgroundTasks) {
-        DatabaseServiceFactory databaseServiceFactory = new JdbcDatabaseServiceFactory(ofNullable(dataSource).orElseGet(this::getDataSource));
+        RemoteStockServiceFactory remoteStockServiceFactory = new RemoteStockServiceFactory();
+        DatabaseServiceFactory databaseServiceFactory =
+                new JdbcDatabaseServiceFactory(ofNullable(dataSource).orElseGet(this::getDataSource));
 
         property("jersey.config.server.wadl.disableWadl", "true");
         packages(true, Application.class.getPackageName());
@@ -52,10 +56,14 @@ public class Application extends ResourceConfig {
         }
 
         if (includeBackgroundTasks) {
-            ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(8);
+            // This executor is used to run the scheduled background tasks.
+            ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(3);
+            // This executor is used to run stock price lookup tasks.
+            ExecutorService stockPriceLookupExecutorService = Executors.newFixedThreadPool(8);
+
             new MemoryUsageLoggingTask().schedule(scheduledExecutorService);
             new StockPriceAgeOffTask(databaseServiceFactory).schedule(scheduledExecutorService);
-            new StockPriceLookupTask(databaseServiceFactory).schedule(scheduledExecutorService);
+            new StockUpdateTask(remoteStockServiceFactory, databaseServiceFactory, stockPriceLookupExecutorService).schedule(scheduledExecutorService);
         }
     }
 

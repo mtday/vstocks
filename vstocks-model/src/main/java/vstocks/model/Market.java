@@ -5,7 +5,8 @@ import java.util.Optional;
 
 public enum Market {
     TWITTER("Twitter"),
-    YOUTUBE("YouTube");
+    YOUTUBE("YouTube"),
+    INSTAGRAM("Instagram");
 
     private String displayName;
 

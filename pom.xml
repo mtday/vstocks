@@ -33,6 +33,7 @@
         <pac4j.version>3.8.3</pac4j.version>
         <postgresql.version>42.2.14</postgresql.version>
         <slf4j.version>1.7.30</slf4j.version>
+        <twitter4j.version>4.0.7</twitter4j.version>
     </properties>
 
     <dependencyManagement>
@@ -184,6 +185,13 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
+            </dependency>
+
+            <!-- Twitter4j used to communicate with Twitter APIs -->
+            <dependency>
+                <groupId>org.twitter4j</groupId>
+                <artifactId>twitter4j-core</artifactId>
+                <version>${twitter4j.version}</version>
             </dependency>
 
             <!-- Unit Testing -->

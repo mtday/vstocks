@@ -64,7 +64,7 @@ public class Stock {
 
     @Override
     public String toString() {
-        return "Symbol{" +
+        return "Stock{" +
                 "id='" + id + '\'' +
                 ", market=" + market +
                 ", symbol='" + symbol + '\'' +

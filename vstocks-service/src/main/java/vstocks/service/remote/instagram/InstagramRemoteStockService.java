@@ -1,4 +1,4 @@
-package vstocks.service.remote.youtube;
+package vstocks.service.remote.instagram;
 
 import vstocks.model.Stock;
 import vstocks.model.StockPrice;
@@ -8,7 +8,7 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 
-public class YouTubeRemoteStockService implements RemoteStockService {
+public class InstagramRemoteStockService implements RemoteStockService {
     @Override
     public void update(Stock stock, StockPrice stockPrice) {
     }

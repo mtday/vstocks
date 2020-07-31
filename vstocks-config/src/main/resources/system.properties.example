@@ -26,7 +26,8 @@ data.history.days = 30
 user.initial.balance = 10000
 
 
-twitter.api.key = TODO
-twitter.api.secret = TODO
-twitter.api.bearer = TODO
+twitter.api.consumer.key = TODO
+twitter.api.consumer.secret = TODO
+twitter.api.accesstoken.key = TODO
+twitter.api.accesstoken.secret = TODO
 twitter.api.callback = http://localhost:8080/api/v1/security/callback
