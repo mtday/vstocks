@@ -1,5 +1,6 @@
 package vstocks.service.db.jdbc;
 
+import vstocks.model.Market;
 import vstocks.model.Page;
 import vstocks.model.Results;
 import vstocks.model.StockPrice;
@@ -20,18 +21,18 @@ public class JdbcStockPriceService extends BaseService implements StockPriceServ
     }
 
     @Override
-    public Optional<StockPrice> get(String id) {
-        return withConnection(conn -> stockPriceTable.get(conn, id));
+    public Optional<StockPrice> getLatest(Market market, String symbol) {
+        return withConnection(conn -> stockPriceTable.getLatest(conn, market, symbol));
     }
 
     @Override
-    public Results<StockPrice> getLatest(Collection<String> stockIds, Page page) {
-        return withConnection(conn -> stockPriceTable.getLatest(conn, stockIds, page));
+    public Results<StockPrice> getLatest(Market market, Collection<String> symbols, Page page) {
+        return withConnection(conn -> stockPriceTable.getLatest(conn, market, symbols, page));
     }
 
     @Override
-    public Results<StockPrice> getForStock(String stockId, Page page) {
-        return withConnection(conn -> stockPriceTable.getForStock(conn, stockId, page));
+    public Results<StockPrice> getForStock(Market market, String symbol, Page page) {
+        return withConnection(conn -> stockPriceTable.getForStock(conn, market, symbol, page));
     }
 
     @Override
@@ -47,11 +48,6 @@ public class JdbcStockPriceService extends BaseService implements StockPriceServ
     @Override
     public int add(StockPrice stockPrice) {
         return withConnection(conn -> stockPriceTable.add(conn, stockPrice));
-    }
-
-    @Override
-    public int delete(String id) {
-        return withConnection(conn -> stockPriceTable.delete(conn, id));
     }
 
     @Override

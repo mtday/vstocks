@@ -48,10 +48,10 @@ public class JdbcStockServiceIT {
 
     @Test
     public void testGetExists() {
-        Stock stock = new Stock().setId("id").setMarket(TWITTER).setSymbol("symbol").setName("name");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("symbol").setName("name");
         assertEquals(1, stockService.add(stock));
 
-        Optional<Stock> fetched = stockService.get(TWITTER, stock.getId());
+        Optional<Stock> fetched = stockService.get(TWITTER, stock.getSymbol());
         assertTrue(fetched.isPresent());
         assertEquals(stock.getMarket(), fetched.get().getMarket());
         assertEquals(stock.getSymbol(), fetched.get().getSymbol());
@@ -67,8 +67,8 @@ public class JdbcStockServiceIT {
 
     @Test
     public void testGetForMarketSome() {
-        Stock stock1 = new Stock().setId("id1").setMarket(TWITTER).setSymbol("sym1").setName("name1");
-        Stock stock2 = new Stock().setId("id2").setMarket(TWITTER).setSymbol("sym2").setName("name2");
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
         assertEquals(1, stockService.add(stock1));
         assertEquals(1, stockService.add(stock2));
 
@@ -88,8 +88,8 @@ public class JdbcStockServiceIT {
 
     @Test
     public void testGetAllSome() {
-        Stock stock1 = new Stock().setId("id1").setMarket(TWITTER).setSymbol("sym1").setName("name1");
-        Stock stock2 = new Stock().setId("id2").setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
         assertEquals(1, stockService.add(stock1));
         assertEquals(1, stockService.add(stock2));
 
@@ -109,8 +109,8 @@ public class JdbcStockServiceIT {
 
     @Test
     public void testConsumeSome() {
-        Stock stock1 = new Stock().setId("id1").setMarket(TWITTER).setSymbol("sym1").setName("name1");
-        Stock stock2 = new Stock().setId("id2").setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
         assertEquals(1, stockService.add(stock1));
         assertEquals(1, stockService.add(stock2));
 
@@ -123,33 +123,32 @@ public class JdbcStockServiceIT {
 
     @Test
     public void testAdd() {
-        Stock stock = new Stock().setId("id").setMarket(TWITTER).setSymbol("sym").setName("name");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
         assertEquals(1, stockService.add(stock));
     }
 
     @Test(expected = Exception.class)
     public void testAddConflict() {
-        Stock stock = new Stock().setId("id").setMarket(TWITTER).setSymbol("sym").setName("name");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
         assertEquals(1, stockService.add(stock));
         stockService.add(stock);
     }
 
     @Test
     public void testUpdateMissing() {
-        Stock stock = new Stock().setId("id").setMarket(TWITTER).setSymbol("sym").setName("name");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
         assertEquals(0, stockService.update(stock));
     }
 
     @Test
     public void testUpdate() {
-        Stock stock = new Stock().setId("id").setMarket(TWITTER).setSymbol("sym").setName("name");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
         assertEquals(1, stockService.add(stock));
 
-        stock.setSymbol("updated");
         stock.setName("updated");
         assertEquals(1, stockService.update(stock));
 
-        Optional<Stock> updated = stockService.get(TWITTER, stock.getId());
+        Optional<Stock> updated = stockService.get(TWITTER, stock.getSymbol());
         assertTrue(updated.isPresent());
         assertEquals(stock.getMarket(), updated.get().getMarket());
         assertEquals(stock.getSymbol(), updated.get().getSymbol());
@@ -163,9 +162,9 @@ public class JdbcStockServiceIT {
 
     @Test
     public void testDelete() {
-        Stock stock = new Stock().setId("id").setMarket(TWITTER).setSymbol("sym").setName("name");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
         assertEquals(1, stockService.add(stock));
-        assertEquals(1, stockService.delete(TWITTER, stock.getId()));
-        assertFalse(stockService.get(TWITTER, stock.getId()).isPresent());
+        assertEquals(1, stockService.delete(TWITTER, stock.getSymbol()));
+        assertFalse(stockService.get(TWITTER, stock.getSymbol()).isPresent());
     }
 }

@@ -13,19 +13,19 @@ public interface UserStockService {
 
     Results<UserStock> getForUser(String userId, Page page);
 
-    Results<UserStock> getForStock(String stockId, Page page);
+    Results<UserStock> getForStock(Market market, String symbol, Page page);
 
     Results<UserStock> getAll(Page page);
 
     int consume(Consumer<UserStock> consumer);
 
-    int buyStock(String userId, Market market, String stockId, int shares);
+    int buyStock(String userId, Market market, String symbol, int shares);
 
-    int sellStock(String userId, Market market, String stockId, int shares);
+    int sellStock(String userId, Market market, String symbol, int shares);
 
     int add(UserStock userStock);
 
-    int update(String userId, Market market, String stockId, int delta);
+    int update(String userId, Market market, String symbol, int delta);
 
-    int delete(String userId, Market market, String stockId);
+    int delete(String userId, Market market, String symbol);
 }

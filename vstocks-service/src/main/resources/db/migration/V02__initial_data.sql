@@ -1,8 +1,8 @@
 
-INSERT INTO stocks (id, market, symbol, name) VALUES
-('realDonaldTrump', 'TWITTER', 'realDonaldTrump', 'Donald J. Trump'),
-('POTUS',           'TWITTER', 'POTUS',           'President Trump'),
-('WhiteHouse',      'TWITTER', 'WhiteHouse',      'The White House'),
-('JoeBiden',        'TWITTER', 'JoeBiden',        'Joe Biden'),
-('BarackObama',     'TWITTER', 'BarackObama',     'Barack Obama');
+INSERT INTO stocks (market, symbol, name) VALUES
+('TWITTER', 'realDonaldTrump', 'Donald J. Trump'),
+('TWITTER', 'POTUS',           'President Trump'),
+('TWITTER', 'WhiteHouse',      'The White House'),
+('TWITTER', 'JoeBiden',        'Joe Biden'),
+('TWITTER', 'BarackObama',     'Barack Obama');
 

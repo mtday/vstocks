@@ -32,8 +32,8 @@ public class JdbcActivityLogServiceIT {
 
     private final User user1 = new User().setId("user1").setUsername("u1").setSource(TwitterClient).setDisplayName("U1");
     private final User user2 = new User().setId("user2").setUsername("u2").setSource(TwitterClient).setDisplayName("U2");
-    private final Stock stock1 = new Stock().setId("id1").setMarket(TWITTER).setSymbol("sym1").setName("name1");
-    private final Stock stock2 = new Stock().setId("id2").setMarket(TWITTER).setSymbol("sym2").setName("name2");
+    private final Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+    private final Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
 
     @Before
     public void setup() throws SQLException {
@@ -68,14 +68,14 @@ public class JdbcActivityLogServiceIT {
 
     @Test
     public void testGetExists() {
-        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
         assertEquals(1, activityLogService.add(activityLog));
 
         Optional<ActivityLog> fetched = activityLogService.get(activityLog.getId());
         assertTrue(fetched.isPresent());
         assertEquals(activityLog.getUserId(), fetched.get().getUserId());
         assertEquals(activityLog.getMarket(), fetched.get().getMarket());
-        assertEquals(activityLog.getStockId(), fetched.get().getStockId());
+        assertEquals(activityLog.getSymbol(), fetched.get().getSymbol());
         assertEquals(activityLog.getTimestamp().toEpochMilli(), fetched.get().getTimestamp().toEpochMilli());
         assertEquals(activityLog.getShares(), fetched.get().getShares());
         assertEquals(activityLog.getPrice(), fetched.get().getPrice());
@@ -90,8 +90,8 @@ public class JdbcActivityLogServiceIT {
 
     @Test
     public void testGetForUserSome() {
-        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
-        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock2.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
         assertEquals(1, activityLogService.add(activityLog1));
         assertEquals(1, activityLogService.add(activityLog2));
 
@@ -104,19 +104,19 @@ public class JdbcActivityLogServiceIT {
 
     @Test
     public void testGetForStockNone() {
-        Results<ActivityLog> results = activityLogService.getForStock(stock1.getId(), new Page());
+        Results<ActivityLog> results = activityLogService.getForStock(TWITTER, stock1.getSymbol(), new Page());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
 
     @Test
     public void testGetForStockSome() {
-        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
-        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
         assertEquals(1, activityLogService.add(activityLog1));
         assertEquals(1, activityLogService.add(activityLog2));
 
-        Results<ActivityLog> results = activityLogService.getForStock(stock1.getId(), new Page());
+        Results<ActivityLog> results = activityLogService.getForStock(TWITTER, stock1.getSymbol(), new Page());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertTrue(results.getResults().contains(activityLog1));
@@ -132,8 +132,8 @@ public class JdbcActivityLogServiceIT {
 
     @Test
     public void testGetAllSome() {
-        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
-        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
         assertEquals(1, activityLogService.add(activityLog1));
         assertEquals(1, activityLogService.add(activityLog2));
 
@@ -153,8 +153,8 @@ public class JdbcActivityLogServiceIT {
 
     @Test
     public void testConsumeSome() {
-        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
-        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
         assertEquals(1, activityLogService.add(activityLog1));
         assertEquals(1, activityLogService.add(activityLog2));
 
@@ -167,25 +167,25 @@ public class JdbcActivityLogServiceIT {
 
     @Test
     public void testAddPositive() {
-        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
         assertEquals(1, activityLogService.add(activityLog));
     }
 
     @Test
     public void testAddNegative() {
-        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(-5);
+        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(-5);
         assertEquals(1, activityLogService.add(activityLog));
     }
 
     @Test
     public void testAddNegativeBalanceTooLow() {
-        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(-15);
+        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(-15);
         assertEquals(1, activityLogService.add(activityLog)); // not protected at this level
     }
 
     @Test(expected = Exception.class)
     public void testAddConflict() {
-        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
         assertEquals(1, activityLogService.add(activityLog));
         activityLogService.add(activityLog);
     }
@@ -197,7 +197,7 @@ public class JdbcActivityLogServiceIT {
 
     @Test
     public void testDelete() {
-        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
         assertEquals(1, activityLogService.add(activityLog));
         assertEquals(1, activityLogService.delete(activityLog.getId()));
         assertFalse(activityLogService.get(activityLog.getId()).isPresent());

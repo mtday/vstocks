@@ -16,7 +16,7 @@ public class ActivityLogTable extends BaseTable {
                     .setId(rs.getString("id"))
                     .setUserId(rs.getString("user_id"))
                     .setMarket(Market.valueOf(rs.getString("market")))
-                    .setStockId(rs.getString("stock_id"))
+                    .setSymbol(rs.getString("symbol"))
                     .setTimestamp(rs.getTimestamp("timestamp").toInstant())
                     .setShares(rs.getInt("shares"))
                     .setPrice(rs.getInt("price"));
@@ -26,7 +26,7 @@ public class ActivityLogTable extends BaseTable {
         ps.setString(++index, activityLog.getId());
         ps.setString(++index, activityLog.getUserId());
         ps.setString(++index, activityLog.getMarket().name());
-        ps.setString(++index, activityLog.getStockId());
+        ps.setString(++index, activityLog.getSymbol());
         ps.setTimestamp(++index, Timestamp.from(activityLog.getTimestamp()));
         ps.setInt(++index, activityLog.getShares());
         ps.setInt(++index, activityLog.getPrice());
@@ -42,25 +42,25 @@ public class ActivityLogTable extends BaseTable {
         return results(connection, ROW_MAPPER, page, query, countQuery, userId);
     }
 
-    public Results<ActivityLog> getForStock(Connection connection, String stockId, Page page) {
-        String query = "SELECT * FROM activity_logs WHERE stock_id = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?";
-        String countQuery = "SELECT COUNT(*) FROM activity_logs WHERE stock_id = ?";
-        return results(connection, ROW_MAPPER, page, query, countQuery, stockId);
+    public Results<ActivityLog> getForStock(Connection connection, Market market, String symbol, Page page) {
+        String query = "SELECT * FROM activity_logs WHERE market = ? AND symbol = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?";
+        String countQuery = "SELECT COUNT(*) FROM activity_logs WHERE market = ? AND symbol = ?";
+        return results(connection, ROW_MAPPER, page, query, countQuery, market, symbol);
     }
 
     public Results<ActivityLog> getAll(Connection connection, Page page) {
-        String query = "SELECT * FROM activity_logs ORDER BY timestamp DESC, user_id, market, stock_id LIMIT ? OFFSET ?";
+        String query = "SELECT * FROM activity_logs ORDER BY timestamp DESC, user_id, market, symbol LIMIT ? OFFSET ?";
         String countQuery = "SELECT COUNT(*) FROM activity_logs";
         return results(connection, ROW_MAPPER, page, query, countQuery);
     }
 
     public int consume(Connection connection, Consumer<ActivityLog> consumer) {
-        String sql = "SELECT * FROM activity_logs ORDER BY timestamp DESC, user_id, market, stock_id";
+        String sql = "SELECT * FROM activity_logs ORDER BY timestamp DESC, user_id, market, symbol";
         return consume(connection, ROW_MAPPER, consumer, sql);
     }
 
     public int add(Connection connection, ActivityLog activityLog) {
-        String sql = "INSERT INTO activity_logs (id, user_id, market, stock_id, timestamp, shares, price) "
+        String sql = "INSERT INTO activity_logs (id, user_id, market, symbol, timestamp, shares, price) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         return update(connection, INSERT_ROW_SETTER, sql, activityLog);
     }

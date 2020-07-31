@@ -6,22 +6,12 @@ import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 
 public class StockPrice {
-    private String id;
     private Market market;
-    private String stockId;
+    private String symbol;
     private Instant timestamp;
     private int price;
 
     public StockPrice() {
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public StockPrice setId(String id) {
-        this.id = id;
-        return this;
     }
 
     public Market getMarket() {
@@ -33,12 +23,12 @@ public class StockPrice {
         return this;
     }
 
-    public String getStockId() {
-        return stockId;
+    public String getSymbol() {
+        return symbol;
     }
 
-    public StockPrice setStockId(String stockId) {
-        this.stockId = stockId;
+    public StockPrice setSymbol(String symbol) {
+        this.symbol = symbol;
         return this;
     }
 
@@ -64,21 +54,21 @@ public class StockPrice {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StockPrice stockPrice = (StockPrice) o;
-        return Objects.equals(id, stockPrice.id);
+        StockPrice that = (StockPrice) o;
+        return market == that.market &&
+                Objects.equals(symbol, that.symbol);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(market, symbol);
     }
 
     @Override
     public String toString() {
-        return "SymbolPrice{" +
-                "id='" + id + '\'' +
-                ", market=" + market +
-                ", stockId='" + stockId + '\'' +
+        return "StockPrice{" +
+                "market=" + market +
+                ", symbol='" + symbol + '\'' +
                 ", timestamp=" + timestamp +
                 ", price=" + price +
                 '}';

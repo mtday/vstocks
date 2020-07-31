@@ -21,7 +21,7 @@ public class GetUserIT extends ResourceTest {
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
         User fetched = response.readEntity(User.class);
-        assertEquals("TWITTER:12345", fetched.getId());
+        assertEquals("TW:12345", fetched.getId());
         assertEquals("username", fetched.getUsername());
         assertEquals(TwitterClient, fetched.getSource());
         assertEquals("Display Name", fetched.getDisplayName());

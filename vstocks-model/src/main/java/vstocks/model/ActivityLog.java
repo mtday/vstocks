@@ -7,7 +7,7 @@ public class ActivityLog {
     private String id;
     private String userId;
     private Market market;
-    private String stockId;
+    private String symbol;
     private Instant timestamp;
     private int shares;
     private int price;
@@ -42,12 +42,12 @@ public class ActivityLog {
         return this;
     }
 
-    public String getStockId() {
-        return stockId;
+    public String getSymbol() {
+        return symbol;
     }
 
-    public ActivityLog setStockId(String stockId) {
-        this.stockId = stockId;
+    public ActivityLog setSymbol(String symbol) {
+        this.symbol = symbol;
         return this;
     }
 
@@ -97,7 +97,7 @@ public class ActivityLog {
                 "id='" + id + '\'' +
                 ", userId='" + userId + '\'' +
                 ", market=" + market +
-                ", stockId='" + stockId + '\'' +
+                ", symbol='" + symbol + '\'' +
                 ", timestamp=" + timestamp +
                 ", shares=" + shares +
                 ", price=" + price +

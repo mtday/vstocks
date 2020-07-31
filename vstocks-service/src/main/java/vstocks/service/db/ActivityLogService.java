@@ -1,6 +1,7 @@
 package vstocks.service.db;
 
 import vstocks.model.ActivityLog;
+import vstocks.model.Market;
 import vstocks.model.Page;
 import vstocks.model.Results;
 
@@ -12,7 +13,7 @@ public interface ActivityLogService {
 
     Results<ActivityLog> getForUser(String userId, Page page);
 
-    Results<ActivityLog> getForStock(String stockId, Page page);
+    Results<ActivityLog> getForStock(Market market, String symbol, Page page);
 
     Results<ActivityLog> getAll(Page page);
 

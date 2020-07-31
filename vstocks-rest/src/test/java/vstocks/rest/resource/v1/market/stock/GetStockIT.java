@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static vstocks.model.Market.TWITTER;
 
 public class GetStockIT extends ResourceTest {
-    private final Stock stock = new Stock().setId("stockId").setMarket(TWITTER).setName("name").setSymbol("symbol");
+    private final Stock stock = new Stock().setMarket(TWITTER).setName("name").setSymbol("symbol");
 
     @Before
     public void setup() {
@@ -32,7 +32,7 @@ public class GetStockIT extends ResourceTest {
 
         ErrorResponse error = response.readEntity(ErrorResponse.class);
         assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
-        assertEquals("Stock missing/stockId not found", error.getMessage());
+        assertEquals("Market missing not found", error.getMessage());
     }
 
     @Test
@@ -44,18 +44,17 @@ public class GetStockIT extends ResourceTest {
 
         ErrorResponse error = response.readEntity(ErrorResponse.class);
         assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
-        assertEquals("Stock marketId/missing not found", error.getMessage());
+        assertEquals("Stock TWITTER/missing not found", error.getMessage());
     }
 
     @Test
     public void testMarketExists() {
-        Response response = target("/v1/market/twitter/stock/stockId").request().get();
+        Response response = target("/v1/market/twitter/stock/symbol").request().get();
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
         Stock fetched = response.readEntity(Stock.class);
-        assertEquals(stock.getId(), fetched.getId());
         assertEquals(stock.getMarket(), fetched.getMarket());
         assertEquals(stock.getName(), fetched.getName());
         assertEquals(stock.getSymbol(), fetched.getSymbol());

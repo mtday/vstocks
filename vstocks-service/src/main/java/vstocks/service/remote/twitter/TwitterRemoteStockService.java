@@ -13,7 +13,6 @@ import vstocks.model.StockPrice;
 import vstocks.service.remote.RemoteStockService;
 
 import java.util.List;
-import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -63,11 +62,7 @@ public class TwitterRemoteStockService implements RemoteStockService {
     public List<Stock> search(String search) {
         try {
             return twitter.users().searchUsers(search, 20).stream()
-                    .map(user -> new Stock()
-                                .setId(UUID.randomUUID().toString())
-                                .setMarket(TWITTER)
-                                .setSymbol(user.getScreenName())
-                                .setName(user.getName()))
+                    .map(user -> new Stock().setMarket(TWITTER).setSymbol(user.getScreenName()).setName(user.getName()))
                     .collect(toList());
         } catch (TwitterException e) {
             LOGGER.error("Failed to search twitter user accounts: {}", search, e);

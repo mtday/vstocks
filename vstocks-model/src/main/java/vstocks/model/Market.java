@@ -6,7 +6,8 @@ import java.util.Optional;
 public enum Market {
     TWITTER("Twitter"),
     YOUTUBE("YouTube"),
-    INSTAGRAM("Instagram");
+    INSTAGRAM("Instagram"),
+    TWITCH("Twitch");
 
     private String displayName;
 
@@ -23,9 +24,9 @@ public enum Market {
         return this;
     }
 
-    public static Optional<Market> from(String id) {
+    public static Optional<Market> from(String name) {
         return Arrays.stream(values())
-                .filter(market -> market.name().equalsIgnoreCase(id) || market.getDisplayName().equalsIgnoreCase(id))
+                .filter(market -> market.name().equalsIgnoreCase(name) || market.getDisplayName().equalsIgnoreCase(name))
                 .findFirst();
     }
 }

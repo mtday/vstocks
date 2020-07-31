@@ -78,8 +78,8 @@ public class TwitterRemoteStockServiceTest {
         Twitter twitter = mock(Twitter.class);
         when(twitter.users()).thenReturn(usersResources);
 
-        Stock stock = new Stock().setId("id").setMarket(TWITTER).setSymbol("username").setName("User");
-        StockPrice stockPrice = new StockPrice().setId("id").setMarket(TWITTER).setStockId("id").setTimestamp(Instant.now()).setPrice(0);
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("username").setName("User");
+        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol("username").setTimestamp(Instant.now()).setPrice(0);
 
         TwitterRemoteStockService twitterRemoteStockService = new TwitterRemoteStockService(twitter);
         twitterRemoteStockService.update(stock, stockPrice);

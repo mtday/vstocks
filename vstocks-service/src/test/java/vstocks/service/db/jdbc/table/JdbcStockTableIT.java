@@ -26,7 +26,7 @@ public class JdbcStockTableIT {
     private StockTable stockTable;
 
     @Before
-    public void setup() throws SQLException {
+    public void setup() {
         stockTable = new StockTable();
     }
 
@@ -47,13 +47,13 @@ public class JdbcStockTableIT {
 
     @Test
     public void testGetExists() throws SQLException {
-        Stock stock = new Stock().setId("id").setMarket(TWITTER).setSymbol("symbol").setName("name");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("symbol").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockTable.add(connection, stock));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<Stock> fetched = stockTable.get(connection, TWITTER, stock.getId());
+            Optional<Stock> fetched = stockTable.get(connection, TWITTER, stock.getSymbol());
             assertTrue(fetched.isPresent());
             assertEquals(stock, fetched.get()); // only compares id
         }
@@ -70,8 +70,8 @@ public class JdbcStockTableIT {
 
     @Test
     public void testGetForMarketSome() throws SQLException {
-        Stock stock1 = new Stock().setId("id1").setMarket(TWITTER).setSymbol("sym1").setName("name1");
-        Stock stock2 = new Stock().setId("id2").setMarket(TWITTER).setSymbol("sym2").setName("name2");
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockTable.add(connection, stock1));
             assertEquals(1, stockTable.add(connection, stock2));
@@ -98,8 +98,8 @@ public class JdbcStockTableIT {
 
     @Test
     public void testGetAllSome() throws SQLException {
-        Stock stock1 = new Stock().setId("id1").setMarket(TWITTER).setSymbol("sym1").setName("name1");
-        Stock stock2 = new Stock().setId("id2").setMarket(Market.YOUTUBE).setSymbol("sym2").setName("name2");
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(Market.YOUTUBE).setSymbol("sym2").setName("name2");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockTable.add(connection, stock1));
             assertEquals(1, stockTable.add(connection, stock2));
@@ -126,8 +126,8 @@ public class JdbcStockTableIT {
 
     @Test
     public void testConsumeSome() throws SQLException {
-        Stock stock1 = new Stock().setId("id1").setMarket(TWITTER).setSymbol("sym1").setName("name1");
-        Stock stock2 = new Stock().setId("id2").setMarket(Market.YOUTUBE).setSymbol("sym2").setName("name2");
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(Market.YOUTUBE).setSymbol("sym2").setName("name2");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockTable.add(connection, stock1));
             assertEquals(1, stockTable.add(connection, stock2));
@@ -145,7 +145,7 @@ public class JdbcStockTableIT {
 
     @Test
     public void testAdd() throws SQLException {
-        Stock stock = new Stock().setId("id").setMarket(TWITTER).setSymbol("sym").setName("name");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockTable.add(connection, stock));
             connection.commit();
@@ -154,7 +154,7 @@ public class JdbcStockTableIT {
 
     @Test(expected = Exception.class)
     public void testAddConflict() throws SQLException {
-        Stock stock = new Stock().setId("id").setMarket(TWITTER).setSymbol("sym").setName("name");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockTable.add(connection, stock));
             stockTable.add(connection, stock);
@@ -164,7 +164,7 @@ public class JdbcStockTableIT {
 
     @Test
     public void testUpdateMissing() throws SQLException {
-        Stock stock = new Stock().setId("id").setMarket(TWITTER).setSymbol("sym").setName("name");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(0, stockTable.update(connection, stock));
         }
@@ -172,7 +172,7 @@ public class JdbcStockTableIT {
 
     @Test
     public void testUpdateNoChange() throws SQLException {
-        Stock stock = new Stock().setId("id").setMarket(TWITTER).setSymbol("sym").setName("name");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockTable.add(connection, stock));
             connection.commit();
@@ -182,7 +182,7 @@ public class JdbcStockTableIT {
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<Stock> updated = stockTable.get(connection, TWITTER, stock.getId());
+            Optional<Stock> updated = stockTable.get(connection, TWITTER, stock.getSymbol());
             assertTrue(updated.isPresent());
             assertEquals(stock.getSymbol(), updated.get().getSymbol());
             assertEquals(stock.getName(), updated.get().getName());
@@ -191,19 +191,18 @@ public class JdbcStockTableIT {
 
     @Test
     public void testUpdate() throws SQLException {
-        Stock stock = new Stock().setId("id").setMarket(TWITTER).setSymbol("sym").setName("name");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockTable.add(connection, stock));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            stock.setSymbol("updated");
             stock.setName("updated");
             assertEquals(1, stockTable.update(connection, stock));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<Stock> updated = stockTable.get(connection, TWITTER, stock.getId());
+            Optional<Stock> updated = stockTable.get(connection, TWITTER, stock.getSymbol());
             assertTrue(updated.isPresent());
             assertEquals(stock.getSymbol(), updated.get().getSymbol());
             assertEquals(stock.getName(), updated.get().getName());
@@ -219,24 +218,24 @@ public class JdbcStockTableIT {
 
     @Test
     public void testDelete() throws SQLException {
-        Stock stock = new Stock().setId("id").setMarket(TWITTER).setSymbol("sym").setName("name");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockTable.add(connection, stock));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, stockTable.delete(connection, TWITTER, stock.getId()));
+            assertEquals(1, stockTable.delete(connection, TWITTER, stock.getSymbol()));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertFalse(stockTable.get(connection, TWITTER, stock.getId()).isPresent());
+            assertFalse(stockTable.get(connection, TWITTER, stock.getSymbol()).isPresent());
         }
     }
 
     @Test
     public void testTruncate() throws SQLException {
-        Stock stock1 = new Stock().setId("id1").setMarket(TWITTER).setSymbol("sym1").setName("name1");
-        Stock stock2 = new Stock().setId("id2").setMarket(Market.YOUTUBE).setSymbol("sym2").setName("name2");
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(Market.YOUTUBE).setSymbol("sym2").setName("name2");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockTable.add(connection, stock1));
             assertEquals(1, stockTable.add(connection, stock2));

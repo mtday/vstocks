@@ -1,6 +1,7 @@
 package vstocks.service.db.jdbc;
 
 import vstocks.model.ActivityLog;
+import vstocks.model.Market;
 import vstocks.model.Page;
 import vstocks.model.Results;
 import vstocks.service.db.ActivityLogService;
@@ -28,8 +29,8 @@ public class JdbcActivityLogService extends BaseService implements ActivityLogSe
     }
 
     @Override
-    public Results<ActivityLog> getForStock(String stockId, Page page) {
-        return withConnection(conn -> activityLogTable.getForStock(conn, stockId, page));
+    public Results<ActivityLog> getForStock(Market market, String symbol, Page page) {
+        return withConnection(conn -> activityLogTable.getForStock(conn, market, symbol, page));
     }
 
     @Override

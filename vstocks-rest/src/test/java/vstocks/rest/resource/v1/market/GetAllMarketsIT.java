@@ -12,8 +12,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static vstocks.model.Market.TWITTER;
-import static vstocks.model.Market.YOUTUBE;
+import static vstocks.model.Market.*;
 
 public class GetAllMarketsIT extends ResourceTest {
     @Test
@@ -24,8 +23,10 @@ public class GetAllMarketsIT extends ResourceTest {
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
         List<Market> results = response.readEntity(new MarketListGenericType());
-        assertEquals(2, results.size());
+        assertEquals(4, results.size());
         assertTrue(results.contains(TWITTER));
         assertTrue(results.contains(YOUTUBE));
+        assertTrue(results.contains(INSTAGRAM));
+        assertTrue(results.contains(TWITCH));
     }
 }

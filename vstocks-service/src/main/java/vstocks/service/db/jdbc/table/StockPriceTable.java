@@ -15,61 +15,53 @@ import java.util.function.Consumer;
 public class StockPriceTable extends BaseTable {
     private static final RowMapper<StockPrice> ROW_MAPPER = rs ->
             new StockPrice()
-                    .setId(rs.getString("id"))
                     .setMarket(Market.valueOf(rs.getString("market")))
-                    .setStockId(rs.getString("stock_id"))
+                    .setSymbol(rs.getString("symbol"))
                     .setTimestamp(rs.getTimestamp("timestamp").toInstant())
                     .setPrice(rs.getInt("price"));
 
     private static final RowSetter<StockPrice> INSERT_ROW_SETTER = (ps, stockPrice) -> {
         int index = 0;
-        ps.setString(++index, stockPrice.getId());
         ps.setString(++index, stockPrice.getMarket().name());
-        ps.setString(++index, stockPrice.getStockId());
+        ps.setString(++index, stockPrice.getSymbol());
         ps.setTimestamp(++index, Timestamp.from(stockPrice.getTimestamp()));
         ps.setInt(++index, stockPrice.getPrice());
     };
 
-    public Optional<StockPrice> get(Connection connection, String id) {
-        return getOne(connection, ROW_MAPPER, "SELECT * FROM stock_prices WHERE id = ?", id);
+    public Optional<StockPrice> getLatest(Connection connection, Market market, String symbol) {
+        String query = "SELECT * FROM stock_prices WHERE market = ? AND symbol = ? ORDER BY timestamp DESC LIMIT 1";
+        return getOne(connection, ROW_MAPPER, query, market, symbol);
     }
 
-    public Optional<StockPrice> getLatest(Connection connection, String stockId) {
-        String query = "SELECT * FROM stock_prices WHERE stock_id = ? ORDER BY timestamp DESC LIMIT 1";
-        return getOne(connection, ROW_MAPPER, query, stockId);
+    public Results<StockPrice> getLatest(Connection connection, Market market, Collection<String> symbols, Page page) {
+        String query = "SELECT DISTINCT ON (symbol) * FROM stock_prices WHERE market = ? AND symbol = ANY(?) "
+                + "ORDER BY symbol, timestamp DESC LIMIT ? OFFSET ?";
+        String countQuery = "SELECT COUNT(*) FROM (SELECT DISTINCT ON (symbol) * FROM stock_prices "
+                + "WHERE market = ? AND symbol = ANY(?)) AS data";
+        return results(connection, ROW_MAPPER, page, query, countQuery, market, symbols);
     }
 
-    public Results<StockPrice> getLatest(Connection connection, Collection<String> stockIds, Page page) {
-        String query = "SELECT DISTINCT ON (stock_id) * FROM stock_prices WHERE stock_id = ANY(?) "
-                + "ORDER BY stock_id, timestamp DESC LIMIT ? OFFSET ?";
-        String countQuery = "SELECT COUNT(*) FROM (SELECT DISTINCT ON (stock_id) * FROM stock_prices WHERE stock_id = ANY(?)) AS data";
-        return results(connection, ROW_MAPPER, page, query, countQuery, stockIds);
-    }
-
-    public Results<StockPrice> getForStock(Connection connection, String stockId, Page page) {
-        String query = "SELECT * FROM stock_prices WHERE stock_id = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?";
-        String countQuery = "SELECT COUNT(*) FROM stock_prices WHERE stock_id = ?";
-        return results(connection, ROW_MAPPER, page, query, countQuery, stockId);
+    public Results<StockPrice> getForStock(Connection connection, Market market, String symbol, Page page) {
+        String query = "SELECT * FROM stock_prices WHERE market = ? AND symbol = ? "
+                + "ORDER BY timestamp DESC LIMIT ? OFFSET ?";
+        String countQuery = "SELECT COUNT(*) FROM stock_prices WHERE market = ? AND symbol = ?";
+        return results(connection, ROW_MAPPER, page, query, countQuery, market, symbol);
     }
 
     public Results<StockPrice> getAll(Connection connection, Page page) {
-        String query = "SELECT * FROM stock_prices ORDER BY market, stock_id, timestamp DESC LIMIT ? OFFSET ?";
+        String query = "SELECT * FROM stock_prices ORDER BY market, symbol, timestamp DESC LIMIT ? OFFSET ?";
         String countQuery = "SELECT COUNT(*) FROM stock_prices";
         return results(connection, ROW_MAPPER, page, query, countQuery);
     }
 
     public int consume(Connection connection, Consumer<StockPrice> consumer) {
-        String sql = "SELECT * FROM stock_prices ORDER BY market, stock_id, timestamp DESC";
+        String sql = "SELECT * FROM stock_prices ORDER BY market, symbol, timestamp DESC";
         return consume(connection, ROW_MAPPER, consumer, sql);
     }
 
     public int add(Connection connection, StockPrice stockPrice) {
-        String sql = "INSERT INTO stock_prices (id, market, stock_id, timestamp, price) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO stock_prices (market, symbol, timestamp, price) VALUES (?, ?, ?, ?)";
         return update(connection, INSERT_ROW_SETTER, sql, stockPrice);
-    }
-
-    public int delete(Connection connection, String id) {
-        return update(connection, "DELETE FROM stock_prices WHERE id = ?", id);
     }
 
     public int ageOff(Connection connection, Instant cutoff) {

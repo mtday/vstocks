@@ -11,7 +11,6 @@ import vstocks.service.remote.RemoteStockServiceFactory;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -75,9 +74,8 @@ public class StockUpdateTask implements BaseTask {
                 RemoteStockService remoteStockService = remoteStockServiceFactory.getForMarket(stock.getMarket());
 
                 StockPrice stockPrice = new StockPrice()
-                        .setId(UUID.randomUUID().toString())
                         .setMarket(stock.getMarket())
-                        .setStockId(stock.getId())
+                        .setSymbol(stock.getSymbol())
                         .setTimestamp(Instant.now())
                         .setPrice(0);
                 remoteStockService.update(stock, stockPrice);

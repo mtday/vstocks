@@ -2,24 +2,12 @@ package vstocks.model;
 
 import java.util.Objects;
 
-import static java.util.Objects.requireNonNull;
-
 public class Stock {
-    private String id;
     private Market market;
     private String symbol;
     private String name;
 
     public Stock() {
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public Stock setId(String id) {
-        this.id = requireNonNull(id);
-        return this;
     }
 
     public Market getMarket() {
@@ -54,19 +42,19 @@ public class Stock {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Stock stock = (Stock) o;
-        return Objects.equals(id, stock.id);
+        return market == stock.market &&
+                Objects.equals(symbol, stock.symbol);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(market, symbol);
     }
 
     @Override
     public String toString() {
         return "Stock{" +
-                "id='" + id + '\'' +
-                ", market=" + market +
+                "market=" + market +
                 ", symbol='" + symbol + '\'' +
                 ", name='" + name + '\'' +
                 '}';

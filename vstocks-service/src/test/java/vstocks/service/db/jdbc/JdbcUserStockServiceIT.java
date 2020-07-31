@@ -34,10 +34,10 @@ public class JdbcUserStockServiceIT {
     private final User user2 = new User().setId("user2").setUsername("u2").setSource(UserSource.TwitterClient).setDisplayName("U2");
     private final UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
     private final UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
-    private final Stock stock1 = new Stock().setId("id1").setMarket(TWITTER).setSymbol("sym1").setName("name1");
-    private final Stock stock2 = new Stock().setId("id2").setMarket(TWITTER).setSymbol("sym2").setName("name2");
-    private final StockPrice stockPrice1 = new StockPrice().setId("id1").setMarket(TWITTER).setStockId(stock1.getId()).setTimestamp(Instant.now()).setPrice(10);
-    private final StockPrice stockPrice2 = new StockPrice().setId("id2").setMarket(TWITTER).setStockId(stock2.getId()).setTimestamp(Instant.now()).setPrice(20);
+    private final Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+    private final Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
+    private final StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
+    private final StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(Instant.now()).setPrice(20);
 
     @Before
     public void setup() throws SQLException {
@@ -81,14 +81,14 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testGetExists() {
-        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock));
 
-        Optional<UserStock> fetched = userStockService.get(userStock.getUserId(), userStock.getMarket(), userStock.getStockId());
+        Optional<UserStock> fetched = userStockService.get(userStock.getUserId(), userStock.getMarket(), userStock.getSymbol());
         assertTrue(fetched.isPresent());
         assertEquals(userStock.getUserId(), fetched.get().getUserId());
         assertEquals(userStock.getMarket(), fetched.get().getMarket());
-        assertEquals(userStock.getStockId(), fetched.get().getStockId());
+        assertEquals(userStock.getSymbol(), fetched.get().getSymbol());
         assertEquals(userStock.getShares(), fetched.get().getShares());
     }
 
@@ -101,8 +101,8 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testGetForUserSome() {
-        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
-        UserStock userStock2 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock2.getId()).setShares(10);
+        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
+        UserStock userStock2 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock1));
         assertEquals(1, userStockService.add(userStock2));
 
@@ -115,19 +115,19 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testGetForStockNone() {
-        Results<UserStock> results = userStockService.getForStock(stock1.getId(), new Page());
+        Results<UserStock> results = userStockService.getForStock(TWITTER, stock1.getSymbol(), new Page());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
 
     @Test
     public void testGetForStockSome() {
-        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
-        UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
+        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
+        UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock1));
         assertEquals(1, userStockService.add(userStock2));
 
-        Results<UserStock> results = userStockService.getForStock(stock1.getId(), new Page());
+        Results<UserStock> results = userStockService.getForStock(TWITTER, stock1.getSymbol(), new Page());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertTrue(results.getResults().contains(userStock1));
@@ -143,8 +143,8 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testGetAllSome() {
-        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
-        UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
+        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
+        UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock1));
         assertEquals(1, userStockService.add(userStock2));
 
@@ -164,8 +164,8 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testConsumeSome() {
-        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
-        UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
+        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
+        UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock1));
         assertEquals(1, userStockService.add(userStock2));
 
@@ -178,7 +178,7 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testBuyStockNoExistingUserStock() throws SQLException {
-        assertEquals(1, userStockService.buyStock(user1.getId(), TWITTER, stock1.getId(), 1));
+        assertEquals(1, userStockService.buyStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was updated
@@ -187,7 +187,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(userBalance1.getBalance() - stockPrice1.getPrice(), userBalance.get().getBalance());
 
             // Make sure user stock was created/updated
-            Optional<UserStock> userStock = userStockService.get(user1.getId(), TWITTER, stock1.getId());
+            Optional<UserStock> userStock = userStockService.get(user1.getId(), TWITTER, stock1.getSymbol());
             assertTrue(userStock.isPresent());
             assertEquals(1, userStock.get().getShares());
 
@@ -196,10 +196,10 @@ public class JdbcUserStockServiceIT {
             assertEquals(1, activityLogs.getTotal());
             assertEquals(1, activityLogs.getResults().size());
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
-            assertNotNull(activityLog.getId());
+            assertNotNull(activityLog.getSymbol());
             assertEquals(user1.getId(), activityLog.getUserId());
             assertEquals(TWITTER, activityLog.getMarket());
-            assertEquals(stock1.getId(), activityLog.getStockId());
+            assertEquals(stock1.getSymbol(), activityLog.getSymbol());
             assertNotNull(activityLog.getTimestamp());
             assertEquals(stockPrice1.getPrice(), activityLog.getPrice());
             assertEquals(1, activityLog.getShares());
@@ -208,10 +208,10 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testBuyStockWithExistingUserStock() throws SQLException {
-        UserStock existingUserStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(1);
+        UserStock existingUserStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1);
         userStockService.add(existingUserStock);
 
-        assertEquals(1, userStockService.buyStock(user1.getId(), TWITTER, stock1.getId(), 1));
+        assertEquals(1, userStockService.buyStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was updated
@@ -220,7 +220,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(userBalance1.getBalance() - stockPrice1.getPrice(), userBalance.get().getBalance());
 
             // Make sure user stock was created/updated
-            Optional<UserStock> userStock = userStockService.get(user1.getId(), TWITTER, stock1.getId());
+            Optional<UserStock> userStock = userStockService.get(user1.getId(), TWITTER, stock1.getSymbol());
             assertTrue(userStock.isPresent());
             assertEquals(2, userStock.get().getShares());
 
@@ -229,10 +229,10 @@ public class JdbcUserStockServiceIT {
             assertEquals(1, activityLogs.getTotal());
             assertEquals(1, activityLogs.getResults().size());
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
-            assertNotNull(activityLog.getId());
+            assertNotNull(activityLog.getSymbol());
             assertEquals(user1.getId(), activityLog.getUserId());
             assertEquals(TWITTER, activityLog.getMarket());
-            assertEquals(stock1.getId(), activityLog.getStockId());
+            assertEquals(stock1.getSymbol(), activityLog.getSymbol());
             assertNotNull(activityLog.getTimestamp());
             assertEquals(stockPrice1.getPrice(), activityLog.getPrice());
             assertEquals(1, activityLog.getShares());
@@ -241,7 +241,7 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testBuyStockBalanceTooLow() throws SQLException {
-        assertEquals(0, userStockService.buyStock(user1.getId(), TWITTER, stock1.getId(), 2));
+        assertEquals(0, userStockService.buyStock(user1.getId(), TWITTER, stock1.getSymbol(), 2));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was NOT updated
@@ -250,7 +250,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(userBalance1.getBalance(), userBalance.get().getBalance());
 
             // Make sure no user stock was created/updated
-            assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getId()).isPresent());
+            assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getSymbol()).isPresent());
 
             // Make sure no activity log was added
             Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
@@ -262,11 +262,11 @@ public class JdbcUserStockServiceIT {
     @Test
     public void testBuyStockMissingStockPrice() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            stockPriceTable.delete(connection, stockPrice1.getId());
+            stockPriceTable.truncate(connection);
             connection.commit();
         }
 
-        assertEquals(0, userStockService.buyStock(user1.getId(), TWITTER, stock1.getId(), 1));
+        assertEquals(0, userStockService.buyStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was NOT updated
@@ -275,7 +275,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(userBalance1.getBalance(), userBalance.get().getBalance());
 
             // Make sure no user stock was created/updated
-            assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getId()).isPresent());
+            assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getSymbol()).isPresent());
 
             // Make sure no activity log was added
             Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
@@ -286,7 +286,7 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testSellStockNoExistingUserStock() throws SQLException {
-        assertEquals(0, userStockService.sellStock(user1.getId(), TWITTER, stock1.getId(), 1));
+        assertEquals(0, userStockService.sellStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was NOT updated
@@ -295,7 +295,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(userBalance1.getBalance(), userBalance.get().getBalance());
 
             // Make sure no user stock was created/updated
-            assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getId()).isPresent());
+            assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getSymbol()).isPresent());
 
             // Make sure no activity log was added
             Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
@@ -306,10 +306,10 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testSellStockWithExistingUserStock() throws SQLException {
-        UserStock existingUserStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
+        UserStock existingUserStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         userStockService.add(existingUserStock);
 
-        assertEquals(1, userStockService.sellStock(user1.getId(), TWITTER, stock1.getId(), 1));
+        assertEquals(1, userStockService.sellStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was updated
@@ -318,7 +318,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(userBalance1.getBalance() + stockPrice1.getPrice(), userBalance.get().getBalance());
 
             // Make sure user stock was updated
-            Optional<UserStock> userStock = userStockService.get(user1.getId(), TWITTER, stock1.getId());
+            Optional<UserStock> userStock = userStockService.get(user1.getId(), TWITTER, stock1.getSymbol());
             assertTrue(userStock.isPresent());
             assertEquals(9, userStock.get().getShares());
 
@@ -327,10 +327,10 @@ public class JdbcUserStockServiceIT {
             assertEquals(1, activityLogs.getTotal());
             assertEquals(1, activityLogs.getResults().size());
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
-            assertNotNull(activityLog.getId());
+            assertNotNull(activityLog.getSymbol());
             assertEquals(user1.getId(), activityLog.getUserId());
             assertEquals(TWITTER, activityLog.getMarket());
-            assertEquals(stock1.getId(), activityLog.getStockId());
+            assertEquals(stock1.getSymbol(), activityLog.getSymbol());
             assertNotNull(activityLog.getTimestamp());
             assertEquals(stockPrice1.getPrice(), activityLog.getPrice());
             assertEquals(-1, activityLog.getShares());
@@ -339,10 +339,10 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testSellStockWithExistingUserStockDownToZero() throws SQLException {
-        UserStock existingUserStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(1);
+        UserStock existingUserStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1);
         userStockService.add(existingUserStock);
 
-        assertEquals(1, userStockService.sellStock(user1.getId(), TWITTER, stock1.getId(), 1));
+        assertEquals(1, userStockService.sellStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was updated
@@ -351,17 +351,17 @@ public class JdbcUserStockServiceIT {
             assertEquals(userBalance1.getBalance() + stockPrice1.getPrice(), userBalance.get().getBalance());
 
             // Make sure user stock was deleted, since the shares dropped to 0
-            assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getId()).isPresent());
+            assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getSymbol()).isPresent());
 
             // Make sure activity log was added
             Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
             assertEquals(1, activityLogs.getTotal());
             assertEquals(1, activityLogs.getResults().size());
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
-            assertNotNull(activityLog.getId());
+            assertNotNull(activityLog.getSymbol());
             assertEquals(user1.getId(), activityLog.getUserId());
             assertEquals(TWITTER, activityLog.getMarket());
-            assertEquals(stock1.getId(), activityLog.getStockId());
+            assertEquals(stock1.getSymbol(), activityLog.getSymbol());
             assertNotNull(activityLog.getTimestamp());
             assertEquals(stockPrice1.getPrice(), activityLog.getPrice());
             assertEquals(-1, activityLog.getShares());
@@ -371,14 +371,14 @@ public class JdbcUserStockServiceIT {
     @Test
     public void testSellStockMissingStockPrice() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            stockPriceTable.delete(connection, stockPrice1.getId());
+            stockPriceTable.truncate(connection);
             connection.commit();
         }
 
-        UserStock existingUserStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(5);
+        UserStock existingUserStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(5);
         userStockService.add(existingUserStock);
 
-        assertEquals(0, userStockService.sellStock(user1.getId(), TWITTER, stock1.getId(), 1));
+        assertEquals(0, userStockService.sellStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Make sure user balance was NOT updated
@@ -387,7 +387,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(userBalance1.getBalance(), userBalance.get().getBalance());
 
             // Make sure the user stock was not updated
-            Optional<UserStock> userStock = userStockService.get(user1.getId(), TWITTER, stock1.getId());
+            Optional<UserStock> userStock = userStockService.get(user1.getId(), TWITTER, stock1.getSymbol());
             assertTrue(userStock.isPresent());
             assertEquals(existingUserStock.getShares(), userStock.get().getShares());
 
@@ -400,77 +400,77 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testAdd() {
-        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock));
     }
 
     @Test(expected = Exception.class)
     public void testAddConflict() {
-        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock));
         userStockService.add(userStock);
     }
 
     @Test
     public void testUpdatePositiveMissing() {
-        assertEquals(1, userStockService.update(user1.getId(), TWITTER, stock1.getId(), 10));
+        assertEquals(1, userStockService.update(user1.getId(), TWITTER, stock1.getSymbol(), 10));
 
-        Optional<UserStock> fetched = userStockService.get(user1.getId(), TWITTER, stock1.getId());
+        Optional<UserStock> fetched = userStockService.get(user1.getId(), TWITTER, stock1.getSymbol());
         assertTrue(fetched.isPresent());
         assertEquals(10, fetched.get().getShares());
     }
 
     @Test
     public void testUpdatePositiveExisting() {
-        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock));
-        assertEquals(1, userStockService.update(user1.getId(), TWITTER, stock1.getId(), 10));
+        assertEquals(1, userStockService.update(user1.getId(), TWITTER, stock1.getSymbol(), 10));
 
-        Optional<UserStock> fetched = userStockService.get(user1.getId(), TWITTER, stock1.getId());
+        Optional<UserStock> fetched = userStockService.get(user1.getId(), TWITTER, stock1.getSymbol());
         assertTrue(fetched.isPresent());
         assertEquals(20, fetched.get().getShares());
     }
 
     @Test
     public void testUpdateNegativeMissing() {
-        assertEquals(0, userStockService.update(user1.getId(), TWITTER, stock1.getId(), -10));
+        assertEquals(0, userStockService.update(user1.getId(), TWITTER, stock1.getSymbol(), -10));
         // Nothing was added
-        assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getId()).isPresent());
+        assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getSymbol()).isPresent());
     }
 
     @Test
     public void testUpdateNegativeExistingValid() {
-        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock));
-        assertEquals(1, userStockService.update(user1.getId(), TWITTER, stock1.getId(), -5));
+        assertEquals(1, userStockService.update(user1.getId(), TWITTER, stock1.getSymbol(), -5));
 
-        Optional<UserStock> fetched = userStockService.get(user1.getId(), TWITTER, stock1.getId());
+        Optional<UserStock> fetched = userStockService.get(user1.getId(), TWITTER, stock1.getSymbol());
         assertTrue(fetched.isPresent());
         assertEquals(5, fetched.get().getShares());
     }
 
     @Test
     public void testUpdateNegativeValidToZero() {
-        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock));
-        assertEquals(1, userStockService.update(user1.getId(), TWITTER, stock1.getId(), -10));
-        assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getId()).isPresent());
+        assertEquals(1, userStockService.update(user1.getId(), TWITTER, stock1.getSymbol(), -10));
+        assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getSymbol()).isPresent());
     }
 
     @Test
     public void testUpdateNegativeExistingInvalid() {
-        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock));
-        assertEquals(0, userStockService.update(user1.getId(), TWITTER, stock1.getId(), -15));
+        assertEquals(0, userStockService.update(user1.getId(), TWITTER, stock1.getSymbol(), -15));
 
-        Optional<UserStock> fetched = userStockService.get(user1.getId(), TWITTER, stock1.getId());
+        Optional<UserStock> fetched = userStockService.get(user1.getId(), TWITTER, stock1.getSymbol());
         assertTrue(fetched.isPresent());
         assertEquals(10, fetched.get().getShares()); // Not updated
     }
 
     @Test
     public void testUpdateZero() {
-        assertEquals(0, userStockService.update(user1.getId(), TWITTER, stock1.getId(), 0));
+        assertEquals(0, userStockService.update(user1.getId(), TWITTER, stock1.getSymbol(), 0));
     }
 
     @Test
@@ -480,9 +480,9 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testDelete() {
-        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setStockId(stock1.getId()).setShares(10);
+        UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock));
-        assertEquals(1, userStockService.delete(userStock.getUserId(), userStock.getMarket(), userStock.getStockId()));
-        assertFalse(userStockService.get(userStock.getUserId(), userStock.getMarket(), userStock.getStockId()).isPresent());
+        assertEquals(1, userStockService.delete(userStock.getUserId(), userStock.getMarket(), userStock.getSymbol()));
+        assertFalse(userStockService.get(userStock.getUserId(), userStock.getMarket(), userStock.getSymbol()).isPresent());
     }
 }

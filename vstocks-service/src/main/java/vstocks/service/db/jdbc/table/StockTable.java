@@ -13,13 +13,11 @@ public class StockTable extends BaseTable {
     private static final RowMapper<Stock> ROW_MAPPER = rs ->
             new Stock()
                     .setMarket(Market.valueOf(rs.getString("market")))
-                    .setId(rs.getString("id"))
                     .setSymbol(rs.getString("symbol"))
                     .setName(rs.getString("name"));
 
     private static final RowSetter<Stock> INSERT_ROW_SETTER = (ps, stock) -> {
         int index = 0;
-        ps.setString(++index, stock.getId());
         ps.setString(++index, stock.getMarket().name());
         ps.setString(++index, stock.getSymbol());
         ps.setString(++index, stock.getName());
@@ -27,15 +25,14 @@ public class StockTable extends BaseTable {
 
     private static final RowSetter<Stock> UPDATE_ROW_SETTER = (ps, stock) -> {
         int index = 0;
-        ps.setString(++index, stock.getSymbol());
         ps.setString(++index, stock.getName());
-        ps.setString(++index, stock.getId());
+        ps.setString(++index, stock.getMarket().name());
         ps.setString(++index, stock.getSymbol());
         ps.setString(++index, stock.getName());
     };
 
-    public Optional<Stock> get(Connection connection, Market market, String stockId) {
-        return getOne(connection, ROW_MAPPER, "SELECT * FROM stocks WHERE market = ? AND id = ?", market, stockId);
+    public Optional<Stock> get(Connection connection, Market market, String symbol) {
+        return getOne(connection, ROW_MAPPER, "SELECT * FROM stocks WHERE market = ? AND symbol = ?", market, symbol);
     }
 
     public Results<Stock> getForMarket(Connection connection, Market market, Page page) {
@@ -56,16 +53,16 @@ public class StockTable extends BaseTable {
     }
 
     public int add(Connection connection, Stock stock) {
-        return update(connection, INSERT_ROW_SETTER, "INSERT INTO stocks (id, market, symbol, name) VALUES (?, ?, ?, ?)", stock);
+        return update(connection, INSERT_ROW_SETTER, "INSERT INTO stocks (market, symbol, name) VALUES (?, ?, ?)", stock);
     }
 
     public int update(Connection connection, Stock stock) {
-        String sql = "UPDATE stocks SET symbol = ?, name = ? WHERE id = ? AND (symbol != ? OR name != ?)";
+        String sql = "UPDATE stocks SET name = ? WHERE market = ? AND symbol = ? AND name != ?";
         return update(connection, UPDATE_ROW_SETTER, sql, stock);
     }
 
-    public int delete(Connection connection, Market market, String stockId) {
-        return update(connection, "DELETE FROM stocks WHERE market = ? AND id = ?", market, stockId);
+    public int delete(Connection connection, Market market, String symbol) {
+        return update(connection, "DELETE FROM stocks WHERE market = ? AND symbol = ?", market, symbol);
     }
 
     public int truncate(Connection connection) {

@@ -8,16 +8,13 @@ import javax.ws.rs.*;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-@Path("/v1/market/{id}")
+@Path("/v1/market/{market}")
 @Singleton
 public class GetMarket extends BaseResource {
     @GET
     @Produces(APPLICATION_JSON)
-    public Market getMarket(@PathParam("id") String id) {
-        try {
-            return Market.valueOf(id);
-        } catch (IllegalArgumentException bad) {
-            throw new NotFoundException("Market " + id + " not found");
-        }
+    public Market getMarket(@PathParam("market") String market) {
+        return Market.from(market)
+                .orElseThrow(() -> new NotFoundException("Market " + market + " not found"));
     }
 }
