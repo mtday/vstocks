@@ -13,10 +13,16 @@ import vstocks.service.remote.RemoteStockServiceFactory;
 
 import javax.ws.rs.core.GenericType;
 import java.util.List;
+import java.util.logging.LogManager;
 
 import static org.mockito.Mockito.mock;
 
 public abstract class ResourceTest extends JerseyTest {
+    static {
+        // Disable the java.util.logging used by the embedded webserver used in the tests
+        LogManager.getLogManager().reset();
+    }
+
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
