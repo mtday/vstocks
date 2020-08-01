@@ -1,17 +1,15 @@
 package vstocks.service.remote;
 
-import vstocks.model.Stock;
-import vstocks.model.StockPrice;
+import vstocks.model.PricedStock;
 import vstocks.service.StockUpdateRunnable;
 
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
 public interface RemoteStockService {
     StockUpdateRunnable getUpdateRunnable(ExecutorService executorService,
-                                          Consumer<Entry<Stock, StockPrice>> updateConsumer);
+                                          Consumer<PricedStock> updateConsumer);
 
-    List<Stock> search(String search, int limit);
+    List<PricedStock> search(String search, int limit);
 }

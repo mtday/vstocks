@@ -8,14 +8,13 @@ import twitter4j.TwitterException;
 import twitter4j.User;
 import twitter4j.api.UsersResources;
 import twitter4j.conf.Configuration;
+import vstocks.model.PricedStock;
 import vstocks.model.Stock;
-import vstocks.model.StockPrice;
 import vstocks.service.StockUpdateRunnable;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -95,7 +94,7 @@ public class TwitterRemoteStockServiceTest {
         when(twitter.users()).thenReturn(usersResources);
 
         ExecutorService executorService = Executors.newFixedThreadPool(3);
-        List<Entry<Stock, StockPrice>> entries = new ArrayList<>();
+        List<PricedStock> entries = new ArrayList<>();
 
         TwitterRemoteStockService twitterRemoteStockService = new TwitterRemoteStockService(twitter);
         Future<?> future;
@@ -117,15 +116,13 @@ public class TwitterRemoteStockServiceTest {
 
         assertEquals(2, entries.size());
 
-        assertEquals("user1", entries.get(0).getKey().getSymbol());
-        assertEquals("User1", entries.get(0).getKey().getName());
-        assertEquals(239, entries.get(0).getValue().getPrice());
-        assertNotNull(entries.get(0).getValue().getTimestamp());
+        assertEquals("user1", entries.get(0).getSymbol());
+        assertEquals("User1", entries.get(0).getName());
+        assertEquals(239, entries.get(0).getPrice());
 
-        assertEquals("user2", entries.get(1).getKey().getSymbol());
-        assertEquals("User2", entries.get(1).getKey().getName());
-        assertEquals(455, entries.get(1).getValue().getPrice());
-        assertNotNull(entries.get(1).getValue().getTimestamp());
+        assertEquals("user2", entries.get(1).getSymbol());
+        assertEquals("User2", entries.get(1).getName());
+        assertEquals(455, entries.get(1).getPrice());
     }
 
     @Test
@@ -133,9 +130,11 @@ public class TwitterRemoteStockServiceTest {
         User user1 = mock(User.class);
         when(user1.getScreenName()).thenReturn("user1");
         when(user1.getName()).thenReturn("User1");
+        when(user1.getFollowersCount()).thenReturn(50_000);
         User user2 = mock(User.class);
         when(user2.getScreenName()).thenReturn("user2");
         when(user2.getName()).thenReturn("User2");
+        when(user2.getFollowersCount()).thenReturn(100_000);
 
         @SuppressWarnings("unchecked")
         ResponseList<User> users = mock(ResponseList.class);
@@ -147,14 +146,15 @@ public class TwitterRemoteStockServiceTest {
         when(twitter.users()).thenReturn(usersResources);
 
         TwitterRemoteStockService twitterRemoteStockService = new TwitterRemoteStockService(twitter);
-        List<Stock> stocks = twitterRemoteStockService.search("user", 20);
+        List<PricedStock> stocks = twitterRemoteStockService.search("user", 20);
 
         assertEquals(2, stocks.size());
         assertEquals(TWITTER, stocks.get(0).getMarket());
         assertEquals("user1", stocks.get(0).getSymbol());
         assertEquals("User1", stocks.get(0).getName());
+        assertEquals(239, stocks.get(0).getPrice());
         assertEquals(TWITTER, stocks.get(1).getMarket());
         assertEquals("user2", stocks.get(1).getSymbol());
-        assertEquals("User2", stocks.get(1).getName());
+        assertEquals(455, stocks.get(1).getPrice());
     }
 }

@@ -8,15 +8,12 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
-import vstocks.model.Stock;
-import vstocks.model.StockPrice;
+import vstocks.model.PricedStock;
 import vstocks.service.StockUpdateRunnable;
 import vstocks.service.remote.RemoteStockService;
 
 import java.time.Instant;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
@@ -51,28 +48,27 @@ public class TwitterRemoteStockService implements RemoteStockService {
         return (int) (((500_000 + followers) / (1_000_000 + followers)) * 10_000 - 5_000 + 1);
     }
 
-    @Override
-    public StockUpdateRunnable getUpdateRunnable(ExecutorService executorService,
-                                                 Consumer<Entry<Stock, StockPrice>> updateConsumer) {
-        return new TwitterStockUpdateRunnable(twitter, executorService, user -> {
-            Stock stock = new Stock()
-                    .setMarket(TWITTER)
-                    .setSymbol(user.getScreenName())
-                    .setName(user.getName());
-            StockPrice stockPrice = new StockPrice()
-                    .setMarket(TWITTER)
-                    .setSymbol(user.getScreenName())
-                    .setTimestamp(Instant.now())
-                    .setPrice(getPrice(user));
-            updateConsumer.accept(new SimpleEntry<>(stock, stockPrice));
-        });
+    static PricedStock toPricedStock(User user) {
+        return new PricedStock()
+                .setMarket(TWITTER)
+                .setSymbol(user.getScreenName())
+                .setName(user.getName())
+                .setTimestamp(Instant.now())
+                .setPrice(getPrice(user));
     }
 
     @Override
-    public List<Stock> search(String search, int limit) {
+    public StockUpdateRunnable getUpdateRunnable(ExecutorService executorService,
+                                                 Consumer<PricedStock> updateConsumer) {
+        return new TwitterStockUpdateRunnable(twitter, executorService, user ->
+                updateConsumer.accept(toPricedStock(user)));
+    }
+
+    @Override
+    public List<PricedStock> search(String search, int limit) {
         try {
             return twitter.users().searchUsers(search, limit).stream()
-                    .map(user -> new Stock().setMarket(TWITTER).setSymbol(user.getScreenName()).setName(user.getName()))
+                    .map(TwitterRemoteStockService::toPricedStock)
                     .collect(toList());
         } catch (TwitterException e) {
             LOGGER.error("Failed to search twitter user accounts: {}", search, e);

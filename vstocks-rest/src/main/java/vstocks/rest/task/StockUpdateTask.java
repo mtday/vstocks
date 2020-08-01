@@ -3,8 +3,7 @@ package vstocks.rest.task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vstocks.model.Market;
-import vstocks.model.Stock;
-import vstocks.model.StockPrice;
+import vstocks.model.PricedStock;
 import vstocks.rest.Environment;
 import vstocks.service.StockUpdateRunnable;
 import vstocks.service.db.DatabaseServiceFactory;
@@ -14,7 +13,6 @@ import vstocks.service.remote.RemoteStockServiceFactory;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
@@ -58,9 +56,9 @@ public class StockUpdateTask implements BaseTask {
 
             for (Market market : Market.values()) {
                 RemoteStockService remoteStockService = remoteStockServiceFactory.getForMarket(market);
-                Consumer<Entry<Stock, StockPrice>> updateConsumer = entry -> {
-                    databaseServiceFactory.getStockService().update(entry.getKey());
-                    databaseServiceFactory.getStockPriceService().add(entry.getValue());
+                Consumer<PricedStock> updateConsumer = pricedStock -> {
+                    databaseServiceFactory.getStockService().update(pricedStock.asStock());
+                    databaseServiceFactory.getStockPriceService().add(pricedStock.asStockPrice());
                 };
                 try (StockUpdateRunnable runnable = remoteStockService.getUpdateRunnable(executorService, updateConsumer)) {
                     executorService.submit(runnable);

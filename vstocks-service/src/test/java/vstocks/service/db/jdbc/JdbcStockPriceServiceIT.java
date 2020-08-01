@@ -4,7 +4,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.model.*;
+import vstocks.model.Page;
+import vstocks.model.Results;
+import vstocks.model.Stock;
+import vstocks.model.StockPrice;
 import vstocks.service.db.DataSourceExternalResource;
 import vstocks.service.db.jdbc.table.StockPriceTable;
 import vstocks.service.db.jdbc.table.StockTable;
@@ -12,6 +15,7 @@ import vstocks.service.db.jdbc.table.StockTable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -61,7 +65,8 @@ public class JdbcStockPriceServiceIT {
 
     @Test
     public void testGetLatestExists() {
-        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         assertEquals(1, stockPriceService.add(stockPrice));
 
         Optional<StockPrice> fetched = stockPriceService.getLatest(TWITTER, stockPrice.getSymbol());
@@ -81,10 +86,11 @@ public class JdbcStockPriceServiceIT {
 
     @Test
     public void testGetLatestSome() {
-        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
-        StockPrice stockPrice3 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(Instant.now()).setPrice(20);
-        StockPrice stockPrice4 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(18);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(12);
+        StockPrice stockPrice3 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(20);
+        StockPrice stockPrice4 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(18);
         assertEquals(1, stockPriceService.add(stockPrice1));
         assertEquals(1, stockPriceService.add(stockPrice2));
         assertEquals(1, stockPriceService.add(stockPrice3));
@@ -106,8 +112,9 @@ public class JdbcStockPriceServiceIT {
 
     @Test
     public void testGetForStockSome() {
-        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(12);
         assertEquals(1, stockPriceService.add(stockPrice1));
         assertEquals(1, stockPriceService.add(stockPrice2));
 
@@ -127,8 +134,9 @@ public class JdbcStockPriceServiceIT {
 
     @Test
     public void testGetAllSome() {
-        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(12);
         assertEquals(1, stockPriceService.add(stockPrice1));
         assertEquals(1, stockPriceService.add(stockPrice2));
 
@@ -148,8 +156,9 @@ public class JdbcStockPriceServiceIT {
 
     @Test
     public void testConsumeSome() {
-        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(12);
         assertEquals(1, stockPriceService.add(stockPrice1));
         assertEquals(1, stockPriceService.add(stockPrice2));
 
@@ -162,27 +171,30 @@ public class JdbcStockPriceServiceIT {
 
     @Test
     public void testAdd() {
-        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         assertEquals(1, stockPriceService.add(stockPrice));
     }
 
     @Test(expected = Exception.class)
     public void testAddConflict() {
-        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         assertEquals(1, stockPriceService.add(stockPrice));
         stockPriceService.add(stockPrice);
     }
 
     @Test
     public void testAgeOff() {
-        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(10);
-        StockPrice stockPrice3 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now().minusSeconds(20)).setPrice(10);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(10);
+        StockPrice stockPrice3 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(20)).setPrice(10);
 
         assertEquals(1, stockPriceService.add(stockPrice1));
         assertEquals(1, stockPriceService.add(stockPrice2));
         assertEquals(1, stockPriceService.add(stockPrice3));
-        assertEquals(2, stockPriceService.ageOff(Instant.now().minusSeconds(5)));
+        assertEquals(2, stockPriceService.ageOff(now.minusSeconds(5)));
 
         Results<StockPrice> results = stockPriceService.getAll(new Page());
         assertEquals(1, results.getTotal());

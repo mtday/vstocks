@@ -31,7 +31,7 @@ CREATE INDEX idx_stocks_name ON stocks (name);
 CREATE TABLE stock_prices (
     market             VARCHAR(80)  NOT NULL,
     symbol             VARCHAR(80)  NOT NULL,
-    timestamp          TIMESTAMP    NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
     price              INTEGER      NOT NULL,
 
     CONSTRAINT stock_prices_pk PRIMARY KEY (market, symbol, timestamp),
@@ -49,7 +49,7 @@ CREATE TABLE activity_logs (
     user_id            VARCHAR(80)  NOT NULL,
     market             VARCHAR(80)  NOT NULL,
     symbol             VARCHAR(80)  NOT NULL,
-    timestamp          TIMESTAMP    NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
     shares             INTEGER      NOT NULL,
     price              INTEGER      NOT NULL,
 

@@ -2,11 +2,13 @@ package vstocks.rest.resource.v1.market.stock;
 
 import org.junit.Test;
 import vstocks.model.ErrorResponse;
+import vstocks.model.PricedStock;
 import vstocks.model.Stock;
 import vstocks.rest.ResourceTest;
 import vstocks.service.remote.RemoteStockService;
 
 import javax.ws.rs.core.Response;
+import java.time.Instant;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -23,9 +25,9 @@ import static org.mockito.Mockito.when;
 import static vstocks.model.Market.TWITTER;
 
 public class SearchStocksIT extends ResourceTest {
-    private final Stock stock1 = new Stock().setMarket(TWITTER).setName("name1").setSymbol("symbol1");
-    private final Stock stock2 = new Stock().setMarket(TWITTER).setName("name2").setSymbol("symbol2");
-    private final Stock stock3 = new Stock().setMarket(TWITTER).setName("name3").setSymbol("symbol3");
+    private final PricedStock stock1 = new PricedStock().setMarket(TWITTER).setName("name1").setSymbol("symbol1").setTimestamp(Instant.now()).setPrice(1);
+    private final PricedStock stock2 = new PricedStock().setMarket(TWITTER).setName("name2").setSymbol("symbol2").setTimestamp(Instant.now()).setPrice(2);
+    private final PricedStock stock3 = new PricedStock().setMarket(TWITTER).setName("name3").setSymbol("symbol3").setTimestamp(Instant.now()).setPrice(3);
 
     @Test
     public void testSearchStocksMarketMissing() {
@@ -81,7 +83,7 @@ public class SearchStocksIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        List<Stock> results = response.readEntity(new StockListGenericType());
+        List<PricedStock> results = response.readEntity(new PricedStockListGenericType());
         assertEquals(3, results.size());
         assertTrue(results.contains(stock1));
         assertTrue(results.contains(stock2));

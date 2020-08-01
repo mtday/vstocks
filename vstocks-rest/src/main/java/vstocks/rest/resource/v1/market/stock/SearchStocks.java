@@ -1,7 +1,7 @@
 package vstocks.rest.resource.v1.market.stock;
 
 import vstocks.model.Market;
-import vstocks.model.Stock;
+import vstocks.model.PricedStock;
 import vstocks.rest.resource.BaseResource;
 import vstocks.service.remote.RemoteStockService;
 import vstocks.service.remote.RemoteStockServiceFactory;
@@ -27,8 +27,8 @@ public class SearchStocks extends BaseResource {
 
     @GET
     @Produces(APPLICATION_JSON)
-    public List<Stock> searchStocks(@PathParam("market") String marketId,
-                                    @QueryParam("q") String search) {
+    public List<PricedStock> searchStocks(@PathParam("market") String marketId,
+                                          @QueryParam("q") String search) {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
         RemoteStockService remoteStockService = remoteStockServiceFactory.getForMarket(market);

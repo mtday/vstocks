@@ -4,12 +4,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.model.*;
+import vstocks.model.Page;
+import vstocks.model.Results;
+import vstocks.model.Stock;
+import vstocks.model.StockPrice;
 import vstocks.service.db.DataSourceExternalResource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +63,8 @@ public class JdbcStockPriceTableIT {
 
     @Test
     public void testGetExists() throws SQLException {
-        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockPriceTable.add(connection, stockPrice));
             connection.commit();
@@ -70,7 +75,7 @@ public class JdbcStockPriceTableIT {
             assertTrue(fetched.isPresent());
             assertEquals(stockPrice.getMarket(), fetched.get().getMarket());
             assertEquals(stockPrice.getSymbol(), fetched.get().getSymbol());
-            assertEquals(stockPrice.getTimestamp().toEpochMilli(), fetched.get().getTimestamp().toEpochMilli());
+            assertEquals(stockPrice.getTimestamp(), fetched.get().getTimestamp());
             assertEquals(stockPrice.getPrice(), fetched.get().getPrice());
         }
     }
@@ -86,10 +91,11 @@ public class JdbcStockPriceTableIT {
 
     @Test
     public void testGetLatestSome() throws SQLException {
-        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
-        StockPrice stockPrice3 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(Instant.now()).setPrice(20);
-        StockPrice stockPrice4 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(18);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(12);
+        StockPrice stockPrice3 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(20);
+        StockPrice stockPrice4 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(18);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockPriceTable.add(connection, stockPrice1));
             assertEquals(1, stockPriceTable.add(connection, stockPrice2));
@@ -118,8 +124,9 @@ public class JdbcStockPriceTableIT {
 
     @Test
     public void testGetForStockSome() throws SQLException {
-        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(12);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockPriceTable.add(connection, stockPrice1));
             assertEquals(1, stockPriceTable.add(connection, stockPrice2));
@@ -146,8 +153,9 @@ public class JdbcStockPriceTableIT {
 
     @Test
     public void testGetAllSome() throws SQLException {
-        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(12);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockPriceTable.add(connection, stockPrice1));
             assertEquals(1, stockPriceTable.add(connection, stockPrice2));
@@ -174,8 +182,9 @@ public class JdbcStockPriceTableIT {
 
     @Test
     public void testConsumeSome() throws SQLException {
-        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(12);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockPriceTable.add(connection, stockPrice1));
             assertEquals(1, stockPriceTable.add(connection, stockPrice2));
@@ -193,7 +202,8 @@ public class JdbcStockPriceTableIT {
 
     @Test
     public void testAdd() throws SQLException {
-        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockPriceTable.add(connection, stockPrice));
             connection.commit();
@@ -202,7 +212,8 @@ public class JdbcStockPriceTableIT {
 
     @Test(expected = Exception.class)
     public void testAddConflict() throws SQLException {
-        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockPriceTable.add(connection, stockPrice));
             stockPriceTable.add(connection, stockPrice);
@@ -211,9 +222,10 @@ public class JdbcStockPriceTableIT {
 
     @Test
     public void testAgeOff() throws SQLException {
-        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(10);
-        StockPrice stockPrice3 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now().minusSeconds(20)).setPrice(10);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(10);
+        StockPrice stockPrice3 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(20)).setPrice(10);
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockPriceTable.add(connection, stockPrice1));
@@ -222,7 +234,7 @@ public class JdbcStockPriceTableIT {
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(2, stockPriceTable.ageOff(connection, Instant.now().minusSeconds(5)));
+            assertEquals(2, stockPriceTable.ageOff(connection, now.minusSeconds(5)));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
@@ -235,9 +247,10 @@ public class JdbcStockPriceTableIT {
 
     @Test
     public void testTruncate() throws SQLException {
-        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now().minusSeconds(10)).setPrice(12);
-        StockPrice stockPrice3 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(Instant.now()).setPrice(1000);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(12);
+        StockPrice stockPrice3 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(1000);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockPriceTable.add(connection, stockPrice1));
             assertEquals(1, stockPriceTable.add(connection, stockPrice2));

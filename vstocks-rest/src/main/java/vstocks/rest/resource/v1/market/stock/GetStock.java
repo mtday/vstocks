@@ -11,7 +11,7 @@ import javax.ws.rs.*;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-@Path("/v1/market/{market}/stock/{stockId}")
+@Path("/v1/market/{market}/stock/{symbol}")
 @Singleton
 public class GetStock extends BaseResource {
     private final DatabaseServiceFactory databaseServiceFactory;
@@ -24,10 +24,10 @@ public class GetStock extends BaseResource {
     @GET
     @Produces(APPLICATION_JSON)
     public Stock getStock(@PathParam("market") String marketId,
-                          @PathParam("stockId") String stockId) {
+                          @PathParam("symbol") String symbol) {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
-        return databaseServiceFactory.getStockService().get(market, stockId)
-                .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + stockId + " not found"));
+        return databaseServiceFactory.getStockService().get(market, symbol)
+                .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + symbol + " not found"));
     }
 }

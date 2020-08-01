@@ -7,6 +7,8 @@ public interface DatabaseServiceFactory {
 
     StockService getStockService();
 
+    PricedStockService getPricedStockService();
+
     UserBalanceService getUserBalanceService();
 
     UserService getUserService();

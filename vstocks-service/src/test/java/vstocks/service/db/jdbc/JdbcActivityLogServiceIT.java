@@ -13,6 +13,7 @@ import vstocks.service.db.jdbc.table.UserTable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -68,7 +69,8 @@ public class JdbcActivityLogServiceIT {
 
     @Test
     public void testGetExists() {
-        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setShares(1).setPrice(10);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
         assertEquals(1, activityLogService.add(activityLog));
 
         Optional<ActivityLog> fetched = activityLogService.get(activityLog.getId());
@@ -76,7 +78,7 @@ public class JdbcActivityLogServiceIT {
         assertEquals(activityLog.getUserId(), fetched.get().getUserId());
         assertEquals(activityLog.getMarket(), fetched.get().getMarket());
         assertEquals(activityLog.getSymbol(), fetched.get().getSymbol());
-        assertEquals(activityLog.getTimestamp().toEpochMilli(), fetched.get().getTimestamp().toEpochMilli());
+        assertEquals(activityLog.getTimestamp(), fetched.get().getTimestamp());
         assertEquals(activityLog.getShares(), fetched.get().getShares());
         assertEquals(activityLog.getPrice(), fetched.get().getPrice());
     }

@@ -1,5 +1,7 @@
 package vstocks.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
@@ -68,6 +70,7 @@ public class Application extends ResourceConfig {
         register(new AbstractBinder() {
             @Override
             protected void configure() {
+                bind(getObjectMapper()).to(ObjectMapper.class);
                 ofNullable(environment.getDatabaseServiceFactory()).ifPresent(d -> bind(d).to(DatabaseServiceFactory.class));
                 ofNullable(environment.getRemoteStockServiceFactory()).ifPresent(r -> bind(r).to(RemoteStockServiceFactory.class));
             }
@@ -90,6 +93,10 @@ public class Application extends ResourceConfig {
             new StockPriceAgeOffTask(environment).schedule(scheduledExecutorService);
             new StockUpdateTask(environment, stockPriceLookupExecutorService).schedule(scheduledExecutorService);
         }
+    }
+
+    private static ObjectMapper getObjectMapper() {
+        return new ObjectMapper().registerModule(new JavaTimeModule());
     }
 
     private static DataSource getDataSource() {
