@@ -1,12 +1,13 @@
 package vstocks.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class Results<T> {
-    private Page page;
-    private int total;
-    private List<T> results;
+    private Page page = new Page();
+    private int total = 0;
+    private List<T> results = new ArrayList<>();
 
     public Results() {
     }

@@ -14,6 +14,7 @@ import vstocks.rest.resource.v1.market.GetAllMarkets;
 import vstocks.rest.resource.v1.market.GetMarket;
 import vstocks.rest.resource.v1.market.stock.GetStock;
 import vstocks.rest.resource.v1.market.stock.GetStocksForMarket;
+import vstocks.rest.resource.v1.market.stock.SearchStocks;
 import vstocks.rest.resource.v1.security.Callback;
 import vstocks.rest.resource.v1.security.Login;
 import vstocks.rest.resource.v1.security.Logout;
@@ -25,6 +26,7 @@ import vstocks.rest.task.StockPriceAgeOffTask;
 import vstocks.rest.task.StockUpdateTask;
 import vstocks.service.db.DatabaseServiceFactory;
 import vstocks.service.db.jdbc.JdbcDatabaseServiceFactory;
+import vstocks.service.remote.DefaultRemoteStockServiceFactory;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
 import javax.sql.DataSource;
@@ -39,18 +41,19 @@ import static vstocks.config.Config.*;
 @ApplicationPath("/")
 public class Application extends ResourceConfig {
     public Application() {
-        this(null, true, true);
+        this(new Environment()
+                        .setRemoteStockServiceFactory(new DefaultRemoteStockServiceFactory())
+                        .setDatabaseServiceFactory(new JdbcDatabaseServiceFactory(getDataSource()))
+                        .setIncludeSecurity(true)
+                        .setIncludeBackgroundTasks(true));
     }
 
-    public Application(DataSource dataSource, boolean includePac4j, boolean includeBackgroundTasks) {
-        RemoteStockServiceFactory remoteStockServiceFactory = new RemoteStockServiceFactory();
-        DatabaseServiceFactory databaseServiceFactory =
-                new JdbcDatabaseServiceFactory(ofNullable(dataSource).orElseGet(this::getDataSource));
-
+    public Application(Environment environment) {
         property("jersey.config.server.wadl.disableWadl", "true");
 
         register(GetStock.class);
         register(GetStocksForMarket.class);
+        register(SearchStocks.class);
         register(GetAllMarkets.class);
         register(GetMarket.class);
 
@@ -65,30 +68,31 @@ public class Application extends ResourceConfig {
         register(new AbstractBinder() {
             @Override
             protected void configure() {
-                bind(databaseServiceFactory).to(DatabaseServiceFactory.class);
+                ofNullable(environment.getDatabaseServiceFactory()).ifPresent(d -> bind(d).to(DatabaseServiceFactory.class));
+                ofNullable(environment.getRemoteStockServiceFactory()).ifPresent(r -> bind(r).to(RemoteStockServiceFactory.class));
             }
         });
 
-        if (includePac4j) {
+        if (environment.isIncludeSecurity()) {
             register(new JaxRsConfigProvider(SecurityConfig.getConfig()));
             register(new Pac4JSecurityFeature());
             register(new Pac4JValueFactoryProvider.Binder());
             register(new ServletJaxRsContextFactoryProvider());
         }
 
-        if (includeBackgroundTasks) {
+        if (environment.isIncludeBackgroundTasks()) {
             // This executor is used to run the scheduled background tasks.
             ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(3);
             // This executor is used to run stock price lookup tasks.
             ExecutorService stockPriceLookupExecutorService = Executors.newFixedThreadPool(8);
 
             new MemoryUsageLoggingTask().schedule(scheduledExecutorService);
-            new StockPriceAgeOffTask(databaseServiceFactory).schedule(scheduledExecutorService);
-            new StockUpdateTask(remoteStockServiceFactory, databaseServiceFactory, stockPriceLookupExecutorService).schedule(scheduledExecutorService);
+            new StockPriceAgeOffTask(environment).schedule(scheduledExecutorService);
+            new StockUpdateTask(environment, stockPriceLookupExecutorService).schedule(scheduledExecutorService);
         }
     }
 
-    private DataSource getDataSource() {
+    private static DataSource getDataSource() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(DB_URL.getString());
         config.setDriverClassName(DB_DRIVER.getString());

@@ -2,47 +2,40 @@ package vstocks.rest;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
-import org.junit.After;
 import org.junit.ClassRule;
 import org.pac4j.core.profile.CommonProfile;
 import vstocks.model.Market;
 import vstocks.model.Results;
 import vstocks.model.Stock;
 import vstocks.service.db.DatabaseServiceFactory;
-import vstocks.service.db.jdbc.JdbcDatabaseServiceFactory;
-import vstocks.service.db.jdbc.table.*;
+import vstocks.service.remote.RemoteStockServiceFactory;
 
 import javax.ws.rs.core.GenericType;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
-public class ResourceTest extends JerseyTest {
+import static org.mockito.Mockito.mock;
+
+public abstract class ResourceTest extends JerseyTest {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
     private DatabaseServiceFactory databaseServiceFactory;
+    private RemoteStockServiceFactory remoteStockServiceFactory;
 
     @Override
     protected ResourceConfig configure() {
-        databaseServiceFactory = new JdbcDatabaseServiceFactory(dataSourceExternalResource.get());
+        databaseServiceFactory = mock(DatabaseServiceFactory.class);
+        remoteStockServiceFactory = mock(RemoteStockServiceFactory.class);
 
-        Application application = new Application(dataSourceExternalResource.get(), false, false);
+        Environment environment = new Environment()
+                .setDatabaseServiceFactory(databaseServiceFactory)
+                .setRemoteStockServiceFactory(remoteStockServiceFactory)
+                .setIncludeSecurity(false) // disableds Pac4j, we include a simple profile below
+                .setIncludeBackgroundTasks(false);
+
+        Application application = new Application(environment);
         application.register(new CommonProfileValueParamProvider(getCommonProfile()));
         return application;
-    }
-
-    @After
-    public void cleanup() throws SQLException {
-        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            new ActivityLogTable().truncate(connection);
-            new StockPriceTable().truncate(connection);
-            new StockTable().truncate(connection);
-            new UserBalanceTable().truncate(connection);
-            new UserStockTable().truncate(connection);
-            new UserTable().truncate(connection);
-            connection.commit();
-        }
     }
 
     public CommonProfile getCommonProfile() {
@@ -58,6 +51,11 @@ public class ResourceTest extends JerseyTest {
         return databaseServiceFactory;
     }
 
+    public RemoteStockServiceFactory getRemoteStockServiceFactory() {
+        return remoteStockServiceFactory;
+    }
+
     public static class MarketListGenericType extends GenericType<List<Market>> {}
     public static class StockResultsGenericType extends GenericType<Results<Stock>> {}
+    public static class StockListGenericType extends GenericType<List<Stock>> {}
 }

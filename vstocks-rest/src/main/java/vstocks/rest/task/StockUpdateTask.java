@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import vstocks.model.Market;
 import vstocks.model.Stock;
 import vstocks.model.StockPrice;
+import vstocks.rest.Environment;
 import vstocks.service.StockUpdateRunnable;
 import vstocks.service.db.DatabaseServiceFactory;
 import vstocks.service.remote.RemoteStockService;
@@ -24,15 +25,11 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 public class StockUpdateTask implements BaseTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(StockUpdateTask.class);
 
-    private final RemoteStockServiceFactory remoteStockServiceFactory;
-    private final DatabaseServiceFactory databaseServiceFactory;
+    private final Environment environment;
     private final ExecutorService executorService;
 
-    public StockUpdateTask(RemoteStockServiceFactory remoteStockServiceFactory,
-                           DatabaseServiceFactory databaseServiceFactory,
-                           ExecutorService executorService) {
-        this.remoteStockServiceFactory = remoteStockServiceFactory;
-        this.databaseServiceFactory = databaseServiceFactory;
+    public StockUpdateTask(Environment environment, ExecutorService executorService) {
+        this.environment = environment;
         this.executorService = executorService;
     }
 
@@ -56,6 +53,9 @@ public class StockUpdateTask implements BaseTask {
     public void run() {
         try {
             LOGGER.info("Updating all stock prices");
+            RemoteStockServiceFactory remoteStockServiceFactory = environment.getRemoteStockServiceFactory();
+            DatabaseServiceFactory databaseServiceFactory = environment.getDatabaseServiceFactory();
+
             for (Market market : Market.values()) {
                 RemoteStockService remoteStockService = remoteStockServiceFactory.getForMarket(market);
                 Consumer<Entry<Stock, StockPrice>> updateConsumer = entry -> {

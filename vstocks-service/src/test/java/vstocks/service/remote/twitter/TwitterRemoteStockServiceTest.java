@@ -147,7 +147,7 @@ public class TwitterRemoteStockServiceTest {
         when(twitter.users()).thenReturn(usersResources);
 
         TwitterRemoteStockService twitterRemoteStockService = new TwitterRemoteStockService(twitter);
-        List<Stock> stocks = twitterRemoteStockService.search("user");
+        List<Stock> stocks = twitterRemoteStockService.search("user", 20);
 
         assertEquals(2, stocks.size());
         assertEquals(TWITTER, stocks.get(0).getMarket());

@@ -5,10 +5,10 @@ import vstocks.model.Market;
 
 import static org.junit.Assert.assertNotNull;
 
-public class RemoteStockServiceFactoryTest {
+public class DefaultRemoteStockServiceFactoryTest {
     @Test
     public void test() {
-        RemoteStockServiceFactory remoteStockServiceFactory = new RemoteStockServiceFactory();
+        RemoteStockServiceFactory remoteStockServiceFactory = new DefaultRemoteStockServiceFactory();
 
         for (Market market : Market.values()) {
             assertNotNull(remoteStockServiceFactory.getForMarket(market));

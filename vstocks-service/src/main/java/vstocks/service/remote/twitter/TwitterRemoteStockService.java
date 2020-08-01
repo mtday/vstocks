@@ -69,9 +69,9 @@ public class TwitterRemoteStockService implements RemoteStockService {
     }
 
     @Override
-    public List<Stock> search(String search) {
+    public List<Stock> search(String search, int limit) {
         try {
-            return twitter.users().searchUsers(search, 20).stream()
+            return twitter.users().searchUsers(search, limit).stream()
                     .map(user -> new Stock().setMarket(TWITTER).setSymbol(user.getScreenName()).setName(user.getName()))
                     .collect(toList());
         } catch (TwitterException e) {

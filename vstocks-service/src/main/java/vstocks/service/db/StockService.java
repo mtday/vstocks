@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public interface StockService {
-    Optional<Stock> get(Market market, String stockId);
+    Optional<Stock> get(Market market, String symbol);
 
     Results<Stock> getForMarket(Market market, Page page);
 
@@ -23,5 +23,5 @@ public interface StockService {
 
     int update(Stock stock);
 
-    int delete(Market market, String stockId);
+    int delete(Market market, String symbol);
 }

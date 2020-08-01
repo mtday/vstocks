@@ -33,7 +33,7 @@ public class TwitchRemoteStockService implements RemoteStockService {
     }
 
     @Override
-    public List<Stock> search(String search) {
+    public List<Stock> search(String search, int limit) {
         return emptyList();
     }
 }

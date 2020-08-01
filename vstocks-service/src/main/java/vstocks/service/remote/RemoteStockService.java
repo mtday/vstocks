@@ -13,5 +13,5 @@ public interface RemoteStockService {
     StockUpdateRunnable getUpdateRunnable(ExecutorService executorService,
                                           Consumer<Entry<Stock, StockPrice>> updateConsumer);
 
-    List<Stock> search(String search);
+    List<Stock> search(String search, int limit);
 }
