@@ -7,7 +7,6 @@ import org.pac4j.core.profile.CommonProfile;
 import vstocks.model.Market;
 import vstocks.model.PricedStock;
 import vstocks.model.Results;
-import vstocks.model.Stock;
 import vstocks.service.db.DatabaseServiceFactory;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
@@ -63,7 +62,6 @@ public abstract class ResourceTest extends JerseyTest {
     }
 
     public static class MarketListGenericType extends GenericType<List<Market>> {}
-    public static class StockResultsGenericType extends GenericType<Results<Stock>> {}
-    public static class StockListGenericType extends GenericType<List<Stock>> {}
+    public static class PricedStockResultsGenericType extends GenericType<Results<PricedStock>> {}
     public static class PricedStockListGenericType extends GenericType<List<PricedStock>> {}
 }

@@ -9,9 +9,9 @@ import vstocks.service.remote.RemoteStockServiceFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
-import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.WILDCARD;
 
 @Path("/v1/market/{market}/stock/{symbol}")
 @Singleton
@@ -28,21 +28,22 @@ public class AddStock extends BaseResource {
 
     @POST
     @Produces(APPLICATION_JSON)
+    @Consumes(WILDCARD)
     public PricedStock addStock(@PathParam("market") String marketId,
                                 @PathParam("symbol") String symbol) {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
 
-        List<PricedStock> stocks = remoteStockServiceFactory.getForMarket(market).search(symbol, 1);
-        if (stocks.size() == 1) {
-            PricedStock pricedStock = stocks.iterator().next();
-            if (pricedStock.getSymbol().equalsIgnoreCase(symbol)) {
-                databaseServiceFactory.getStockService().add(pricedStock.asStock());
-                databaseServiceFactory.getStockPriceService().add(pricedStock.asStockPrice());
-                return pricedStock;
-            }
-        }
+        // We use 10 here as the limit to prevent problems with the symbol being a prefix for other valid
+        // symbols. The RemoteStockService implementations should attempt to put the exact match symbol
+        // first.
+        PricedStock pricedStock = remoteStockServiceFactory.getForMarket(market).search(symbol, 10).stream()
+                .filter(ps -> ps.getSymbol().equalsIgnoreCase(symbol))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + symbol + " not found"));
 
-        throw new NotFoundException("Stock " + market + "/" + symbol + " not found");
+        databaseServiceFactory.getStockService().add(pricedStock.asStock());
+        databaseServiceFactory.getStockPriceService().add(pricedStock.asStockPrice());
+        return pricedStock;
     }
 }

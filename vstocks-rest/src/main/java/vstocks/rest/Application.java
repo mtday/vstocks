@@ -11,9 +11,11 @@ import org.pac4j.jax.rs.features.JaxRsConfigProvider;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
+import vstocks.rest.exception.BadRequestExceptionMapper;
 import vstocks.rest.exception.NotFoundExceptionMapper;
 import vstocks.rest.resource.v1.market.GetAllMarkets;
 import vstocks.rest.resource.v1.market.GetMarket;
+import vstocks.rest.resource.v1.market.stock.AddStock;
 import vstocks.rest.resource.v1.market.stock.GetStock;
 import vstocks.rest.resource.v1.market.stock.GetStocksForMarket;
 import vstocks.rest.resource.v1.market.stock.SearchStocks;
@@ -53,6 +55,7 @@ public class Application extends ResourceConfig {
     public Application(Environment environment) {
         property("jersey.config.server.wadl.disableWadl", "true");
 
+        register(AddStock.class);
         register(GetStock.class);
         register(GetStocksForMarket.class);
         register(SearchStocks.class);
@@ -65,7 +68,9 @@ public class Application extends ResourceConfig {
 
         register(GetUser.class);
 
+        register(BadRequestExceptionMapper.class);
         register(NotFoundExceptionMapper.class);
+
         register(AccessLogFilter.class);
         register(new AbstractBinder() {
             @Override

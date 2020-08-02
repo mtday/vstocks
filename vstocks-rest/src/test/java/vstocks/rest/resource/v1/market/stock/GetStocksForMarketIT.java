@@ -1,14 +1,13 @@
 package vstocks.rest.resource.v1.market.stock;
 
 import org.junit.Test;
-import vstocks.model.ErrorResponse;
-import vstocks.model.Page;
-import vstocks.model.Results;
-import vstocks.model.Stock;
+import vstocks.model.*;
 import vstocks.rest.ResourceTest;
-import vstocks.service.db.StockService;
+import vstocks.service.db.PricedStockService;
 
 import javax.ws.rs.core.Response;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static java.util.Arrays.asList;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
@@ -24,10 +23,6 @@ import static org.mockito.Mockito.when;
 import static vstocks.model.Market.TWITTER;
 
 public class GetStocksForMarketIT extends ResourceTest {
-    private final Stock stock1 = new Stock().setMarket(TWITTER).setName("name1").setSymbol("symbol1");
-    private final Stock stock2 = new Stock().setMarket(TWITTER).setName("name2").setSymbol("symbol2");
-    private final Stock stock3 = new Stock().setMarket(TWITTER).setName("name3").setSymbol("symbol3");
-
     @Test
     public void testGetForMarketMissing() {
         Response response = target("/v1/market/missing/stocks").request().get();
@@ -42,16 +37,16 @@ public class GetStocksForMarketIT extends ResourceTest {
 
     @Test
     public void testGetForMarketsNone() {
-        StockService stockService = mock(StockService.class);
-        when(stockService.getForMarket(eq(TWITTER), any())).thenReturn(new Results<>());
-        when(getDatabaseServiceFactory().getStockService()).thenReturn(stockService);
+        PricedStockService pricedStockService = mock(PricedStockService.class);
+        when(pricedStockService.getForMarket(eq(TWITTER), any())).thenReturn(new Results<>());
+        when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         Response response = target("/v1/market/twitter/stocks").request().get();
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        Results<Stock> results = response.readEntity(new StockResultsGenericType());
+        Results<PricedStock> results = response.readEntity(new PricedStockResultsGenericType());
         assertEquals(1, results.getPage().getPage());
         assertEquals(25, results.getPage().getSize());
         assertEquals(0, results.getTotal());
@@ -60,22 +55,28 @@ public class GetStocksForMarketIT extends ResourceTest {
 
     @Test
     public void testGetForMarketsOnePage() {
-        Results<Stock> results = new Results<Stock>().setPage(new Page()).setTotal(3).setResults(asList(stock1, stock2, stock3));
-        StockService stockService = mock(StockService.class);
-        when(stockService.getForMarket(eq(TWITTER), any())).thenReturn(results);
-        when(getDatabaseServiceFactory().getStockService()).thenReturn(stockService);
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        PricedStock pricedStock1 = new PricedStock().setMarket(TWITTER).setSymbol("symbol1").setName("name1").setTimestamp(now).setPrice(10);
+        PricedStock pricedStock2 = new PricedStock().setMarket(TWITTER).setSymbol("symbol2").setName("name2").setTimestamp(now).setPrice(11);
+        PricedStock pricedStock3 = new PricedStock().setMarket(TWITTER).setSymbol("symbol3").setName("name3").setTimestamp(now).setPrice(12);
+
+        Results<PricedStock> results = new Results<PricedStock>().setPage(new Page()).setTotal(3)
+                .setResults(asList(pricedStock1, pricedStock2, pricedStock3));
+        PricedStockService pricedStockService = mock(PricedStockService.class);
+        when(pricedStockService.getForMarket(eq(TWITTER), any())).thenReturn(results);
+        when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         Response response = target("/v1/market/twitter/stocks").request().get();
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        Results<Stock> fetched = response.readEntity(new StockResultsGenericType());
+        Results<PricedStock> fetched = response.readEntity(new PricedStockResultsGenericType());
         assertEquals(1, fetched.getPage().getPage());
         assertEquals(25, fetched.getPage().getSize());
         assertEquals(3, fetched.getTotal());
-        assertTrue(fetched.getResults().contains(stock1));
-        assertTrue(fetched.getResults().contains(stock2));
-        assertTrue(fetched.getResults().contains(stock3));
+        assertTrue(fetched.getResults().contains(pricedStock1));
+        assertTrue(fetched.getResults().contains(pricedStock2));
+        assertTrue(fetched.getResults().contains(pricedStock3));
     }
 }

@@ -11,6 +11,7 @@ import javax.inject.Singleton;
 import javax.ws.rs.*;
 import java.util.List;
 
+import static java.util.Optional.ofNullable;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/v1/market/{market}/stocks/search")
@@ -29,9 +30,11 @@ public class SearchStocks extends BaseResource {
     @Produces(APPLICATION_JSON)
     public List<PricedStock> searchStocks(@PathParam("market") String marketId,
                                           @QueryParam("q") String search) {
+        String symbol = ofNullable(search)
+                .orElseThrow(() -> new BadRequestException("Missing required 'q' query parameter"));
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
         RemoteStockService remoteStockService = remoteStockServiceFactory.getForMarket(market);
-        return remoteStockService.search(search, SEARCH_RESULT_LIMIT);
+        return remoteStockService.search(symbol, SEARCH_RESULT_LIMIT);
     }
 }

@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public interface UserStockService {
-    Optional<UserStock> get(String userId, Market market, String stockId);
+    Optional<UserStock> get(String userId, Market market, String symbol);
 
     Results<UserStock> getForUser(String userId, Page page);
 
