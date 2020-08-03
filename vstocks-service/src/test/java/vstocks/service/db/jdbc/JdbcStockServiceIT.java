@@ -148,11 +148,31 @@ public class JdbcStockServiceIT {
         assertEquals(1, stockService.add(stock));
     }
 
-    @Test(expected = Exception.class)
-    public void testAddConflict() {
+    @Test
+    public void testAddConflictSameName() {
         Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
         assertEquals(1, stockService.add(stock));
-        stockService.add(stock);
+        assertEquals(0, stockService.add(stock));
+
+        Optional<Stock> fetched = stockService.get(TWITTER, stock.getSymbol());
+        assertTrue(fetched.isPresent());
+        assertEquals(stock.getMarket(), fetched.get().getMarket());
+        assertEquals(stock.getSymbol(), fetched.get().getSymbol());
+        assertEquals(stock.getName(), fetched.get().getName());
+    }
+
+    @Test
+    public void testAddConflictDifferentName() {
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
+        assertEquals(1, stockService.add(stock));
+        stock.setName("updated");
+        assertEquals(1, stockService.add(stock));
+
+        Optional<Stock> fetched = stockService.get(TWITTER, stock.getSymbol());
+        assertTrue(fetched.isPresent());
+        assertEquals(stock.getMarket(), fetched.get().getMarket());
+        assertEquals(stock.getSymbol(), fetched.get().getSymbol());
+        assertEquals(stock.getName(), fetched.get().getName());
     }
 
     @Test

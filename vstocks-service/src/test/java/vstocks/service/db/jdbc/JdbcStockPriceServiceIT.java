@@ -73,7 +73,7 @@ public class JdbcStockPriceServiceIT {
         assertTrue(fetched.isPresent());
         assertEquals(stockPrice.getMarket(), fetched.get().getMarket());
         assertEquals(stockPrice.getSymbol(), fetched.get().getSymbol());
-        assertEquals(stockPrice.getTimestamp().toEpochMilli(), fetched.get().getTimestamp().toEpochMilli());
+        assertEquals(stockPrice.getTimestamp(), fetched.get().getTimestamp());
         assertEquals(stockPrice.getPrice(), fetched.get().getPrice());
     }
 
@@ -176,12 +176,35 @@ public class JdbcStockPriceServiceIT {
         assertEquals(1, stockPriceService.add(stockPrice));
     }
 
-    @Test(expected = Exception.class)
-    public void testAddConflict() {
+    @Test
+    public void testAddConflictSamePrice() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         assertEquals(1, stockPriceService.add(stockPrice));
-        stockPriceService.add(stockPrice);
+        assertEquals(0, stockPriceService.add(stockPrice));
+
+        Optional<StockPrice> fetched = stockPriceService.getLatest(TWITTER, stockPrice.getSymbol());
+        assertTrue(fetched.isPresent());
+        assertEquals(stockPrice.getMarket(), fetched.get().getMarket());
+        assertEquals(stockPrice.getSymbol(), fetched.get().getSymbol());
+        assertEquals(stockPrice.getTimestamp(), fetched.get().getTimestamp());
+        assertEquals(stockPrice.getPrice(), fetched.get().getPrice());
+    }
+
+    @Test
+    public void testAddConflictDifferentPrice() {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        assertEquals(1, stockPriceService.add(stockPrice));
+        stockPrice.setPrice(12);
+        assertEquals(1, stockPriceService.add(stockPrice));
+
+        Optional<StockPrice> fetched = stockPriceService.getLatest(TWITTER, stockPrice.getSymbol());
+        assertTrue(fetched.isPresent());
+        assertEquals(stockPrice.getMarket(), fetched.get().getMarket());
+        assertEquals(stockPrice.getSymbol(), fetched.get().getSymbol());
+        assertEquals(stockPrice.getTimestamp(), fetched.get().getTimestamp());
+        assertEquals(stockPrice.getPrice(), fetched.get().getPrice());
     }
 
     @Test

@@ -180,12 +180,15 @@ public class JdbcStockTableIT {
         }
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void testAddConflict() throws SQLException {
         Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockTable.add(connection, stock));
-            stockTable.add(connection, stock);
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(0, stockTable.add(connection, stock));
             connection.commit();
         }
     }

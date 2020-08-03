@@ -60,7 +60,9 @@ public class StockPriceTable extends BaseTable {
     }
 
     public int add(Connection connection, StockPrice stockPrice) {
-        String sql = "INSERT INTO stock_prices (market, symbol, timestamp, price) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO stock_prices (market, symbol, timestamp, price) VALUES (?, ?, ?, ?) "
+                + "ON CONFLICT ON CONSTRAINT stock_prices_pk DO UPDATE "
+                + "SET price = EXCLUDED.price WHERE stock_prices.price != EXCLUDED.price";
         return update(connection, INSERT_ROW_SETTER, sql, stockPrice);
     }
 

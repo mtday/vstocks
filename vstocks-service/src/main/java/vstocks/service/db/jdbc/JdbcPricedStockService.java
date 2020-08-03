@@ -1,9 +1,6 @@
 package vstocks.service.db.jdbc;
 
-import vstocks.model.Market;
-import vstocks.model.Page;
-import vstocks.model.PricedStock;
-import vstocks.model.Results;
+import vstocks.model.*;
 import vstocks.service.db.PricedStockService;
 import vstocks.service.db.jdbc.table.PricedStockJoin;
 
@@ -41,5 +38,10 @@ public class JdbcPricedStockService extends BaseService implements PricedStockSe
     @Override
     public int consume(Consumer<PricedStock> consumer) {
         return withConnection(conn -> pricedStockJoin.consume(conn, consumer));
+    }
+
+    @Override
+    public int add(PricedStock pricedStock) {
+        return withConnection(conn -> pricedStockJoin.add(conn, pricedStock));
     }
 }

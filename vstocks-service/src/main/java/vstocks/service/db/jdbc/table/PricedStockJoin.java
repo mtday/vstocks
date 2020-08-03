@@ -9,6 +9,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class PricedStockJoin extends BaseTable {
+    private StockTable stockTable = new StockTable();
+    private StockPriceTable stockPriceTable = new StockPriceTable();
+
     private static final RowMapper<PricedStock> ROW_MAPPER = rs -> {
         Timestamp timestamp = rs.getTimestamp("timestamp");
         Instant instant = rs.wasNull() ? Instant.now() : timestamp.toInstant();
@@ -65,5 +68,12 @@ public class PricedStockJoin extends BaseTable {
                 + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
                 + "ORDER BY s.market, s.symbol, p.timestamp DESC";
         return consume(connection, ROW_MAPPER, consumer, sql);
+    }
+
+    public int add(Connection connection, PricedStock pricedStock) {
+        int added = 0;
+        added += stockTable.add(connection, pricedStock.asStock());
+        added += stockPriceTable.add(connection, pricedStock.asStockPrice());
+        return added > 0 ? 1 : 0;
     }
 }

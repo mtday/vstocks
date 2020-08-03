@@ -4,8 +4,7 @@ import org.junit.Test;
 import vstocks.model.ErrorResponse;
 import vstocks.model.PricedStock;
 import vstocks.rest.ResourceTest;
-import vstocks.service.db.StockPriceService;
-import vstocks.service.db.StockService;
+import vstocks.service.db.PricedStockService;
 import vstocks.service.remote.RemoteStockService;
 
 import javax.ws.rs.core.Response;
@@ -29,10 +28,8 @@ import static vstocks.model.Market.TWITTER;
 public class AddStockIT extends ResourceTest {
     @Test
     public void testMarketMissing() {
-        StockService stockService = mock(StockService.class);
-        when(getDatabaseServiceFactory().getStockService()).thenReturn(stockService);
-        StockPriceService stockPriceService = mock(StockPriceService.class);
-        when(getDatabaseServiceFactory().getStockPriceService()).thenReturn(stockPriceService);
+        PricedStockService pricedStockService = mock(PricedStockService.class);
+        when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         Response response = target("/v1/market/missing/stock/symbol").request().post(entity("", APPLICATION_JSON_TYPE));
 
@@ -43,16 +40,13 @@ public class AddStockIT extends ResourceTest {
         assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
         assertEquals("Market missing not found", error.getMessage());
 
-        verify(stockService, times(0)).add(any());
-        verify(stockPriceService, times(0)).add(any());
+        verify(pricedStockService, times(0)).add(any());
     }
 
     @Test
     public void testStockMissing() {
-        StockService stockService = mock(StockService.class);
-        when(getDatabaseServiceFactory().getStockService()).thenReturn(stockService);
-        StockPriceService stockPriceService = mock(StockPriceService.class);
-        when(getDatabaseServiceFactory().getStockPriceService()).thenReturn(stockPriceService);
+        PricedStockService pricedStockService = mock(PricedStockService.class);
+        when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         RemoteStockService remoteStockService = mock(RemoteStockService.class);
         when(remoteStockService.search(eq("symbol"), eq(10))).thenReturn(emptyList());
@@ -67,8 +61,7 @@ public class AddStockIT extends ResourceTest {
         assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
         assertEquals("Stock TWITTER/symbol not found", error.getMessage());
 
-        verify(stockService, times(0)).add(any());
-        verify(stockPriceService, times(0)).add(any());
+        verify(pricedStockService, times(0)).add(any());
     }
 
     @Test
@@ -79,10 +72,8 @@ public class AddStockIT extends ResourceTest {
         when(remoteStockService.search(eq("symbol"), eq(10))).thenReturn(singletonList(pricedStock));
         when(getRemoteStockServiceFactory().getForMarket(eq(TWITTER))).thenReturn(remoteStockService);
 
-        StockService stockService = mock(StockService.class);
-        when(getDatabaseServiceFactory().getStockService()).thenReturn(stockService);
-        StockPriceService stockPriceService = mock(StockPriceService.class);
-        when(getDatabaseServiceFactory().getStockPriceService()).thenReturn(stockPriceService);
+        PricedStockService pricedStockService = mock(PricedStockService.class);
+        when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         Response response = target("/v1/market/twitter/stock/symbol").request().post(entity("", APPLICATION_JSON_TYPE));
 
@@ -96,8 +87,7 @@ public class AddStockIT extends ResourceTest {
         assertEquals(pricedStock.getTimestamp(), fetched.getTimestamp());
         assertEquals(pricedStock.getPrice(), fetched.getPrice());
 
-        verify(stockService, times(1)).add(eq(pricedStock.asStock()));
-        verify(stockPriceService, times(1)).add(eq(pricedStock.asStockPrice()));
+        verify(pricedStockService, times(1)).add(eq(pricedStock));
     }
 
     @Test
@@ -108,10 +98,8 @@ public class AddStockIT extends ResourceTest {
         when(remoteStockService.search(eq("SYMBOL"), eq(10))).thenReturn(singletonList(pricedStock));
         when(getRemoteStockServiceFactory().getForMarket(eq(TWITTER))).thenReturn(remoteStockService);
 
-        StockService stockService = mock(StockService.class);
-        when(getDatabaseServiceFactory().getStockService()).thenReturn(stockService);
-        StockPriceService stockPriceService = mock(StockPriceService.class);
-        when(getDatabaseServiceFactory().getStockPriceService()).thenReturn(stockPriceService);
+        PricedStockService pricedStockService = mock(PricedStockService.class);
+        when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         Response response = target("/v1/market/twitter/stock/SYMBOL").request().post(entity("", APPLICATION_JSON_TYPE));
 
@@ -125,8 +113,7 @@ public class AddStockIT extends ResourceTest {
         assertEquals(pricedStock.getTimestamp(), fetched.getTimestamp());
         assertEquals(pricedStock.getPrice(), fetched.getPrice());
 
-        verify(stockService, times(1)).add(eq(pricedStock.asStock()));
-        verify(stockPriceService, times(1)).add(eq(pricedStock.asStockPrice()));
+        verify(pricedStockService, times(1)).add(eq(pricedStock));
     }
 
     @Test
@@ -137,10 +124,8 @@ public class AddStockIT extends ResourceTest {
         when(remoteStockService.search(eq("sym"), eq(10))).thenReturn(singletonList(pricedStock));
         when(getRemoteStockServiceFactory().getForMarket(eq(TWITTER))).thenReturn(remoteStockService);
 
-        StockService stockService = mock(StockService.class);
-        when(getDatabaseServiceFactory().getStockService()).thenReturn(stockService);
-        StockPriceService stockPriceService = mock(StockPriceService.class);
-        when(getDatabaseServiceFactory().getStockPriceService()).thenReturn(stockPriceService);
+        PricedStockService pricedStockService = mock(PricedStockService.class);
+        when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         Response response = target("/v1/market/twitter/stock/sym").request().post(entity("", APPLICATION_JSON_TYPE));
 
@@ -151,8 +136,7 @@ public class AddStockIT extends ResourceTest {
         assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
         assertEquals("Stock TWITTER/sym not found", error.getMessage());
 
-        verify(stockService, times(0)).add(any());
-        verify(stockPriceService, times(0)).add(any());
+        verify(pricedStockService, times(0)).add(any());
     }
 
     @Test
@@ -164,10 +148,8 @@ public class AddStockIT extends ResourceTest {
         when(remoteStockService.search(eq("symbol"), eq(10))).thenReturn(asList(pricedStock1, pricedStock2));
         when(getRemoteStockServiceFactory().getForMarket(eq(TWITTER))).thenReturn(remoteStockService);
 
-        StockService stockService = mock(StockService.class);
-        when(getDatabaseServiceFactory().getStockService()).thenReturn(stockService);
-        StockPriceService stockPriceService = mock(StockPriceService.class);
-        when(getDatabaseServiceFactory().getStockPriceService()).thenReturn(stockPriceService);
+        PricedStockService pricedStockService = mock(PricedStockService.class);
+        when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         Response response = target("/v1/market/twitter/stock/symbol").request().post(entity("", APPLICATION_JSON_TYPE));
 
@@ -178,7 +160,6 @@ public class AddStockIT extends ResourceTest {
         assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
         assertEquals("Stock TWITTER/symbol not found", error.getMessage());
 
-        verify(stockService, times(0)).add(any());
-        verify(stockPriceService, times(0)).add(any());
+        verify(pricedStockService, times(0)).add(any());
     }
 }

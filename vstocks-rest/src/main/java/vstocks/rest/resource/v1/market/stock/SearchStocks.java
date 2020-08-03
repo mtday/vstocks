@@ -28,8 +28,7 @@ public class SearchStocks extends BaseResource {
 
     @GET
     @Produces(APPLICATION_JSON)
-    public List<PricedStock> searchStocks(@PathParam("market") String marketId,
-                                          @QueryParam("q") String search) {
+    public List<PricedStock> searchStocks(@PathParam("market") String marketId, @QueryParam("q") String search) {
         String symbol = ofNullable(search)
                 .orElseThrow(() -> new BadRequestException("Missing required 'q' query parameter"));
         Market market = Market.from(marketId)

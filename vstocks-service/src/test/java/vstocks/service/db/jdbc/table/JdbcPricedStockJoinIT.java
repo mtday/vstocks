@@ -306,4 +306,47 @@ public class JdbcPricedStockJoinIT {
             assertEquals(stock2Price1.getPrice(), pricedStock2.getPrice());
         }
     }
+
+    @Test
+    public void testAdd() throws SQLException {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setSymbol("symbol").setName("Name").setTimestamp(now).setPrice(10);
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, pricedStockJoin.add(connection, pricedStock));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Optional<Stock> stock = stockTable.get(connection, pricedStock.getMarket(), pricedStock.getSymbol());
+            Optional<StockPrice> stockPrice = stockPriceTable.getLatest(connection, pricedStock.getMarket(), pricedStock.getSymbol());
+
+            assertTrue(stock.isPresent());
+            assertTrue(stockPrice.isPresent());
+
+            assertEquals(pricedStock.getMarket(), stock.get().getMarket());
+            assertEquals(pricedStock.getSymbol(), stock.get().getSymbol());
+            assertEquals(pricedStock.getName(), stock.get().getName());
+            assertEquals(pricedStock.getMarket(), stockPrice.get().getMarket());
+            assertEquals(pricedStock.getSymbol(), stockPrice.get().getSymbol());
+            assertEquals(pricedStock.getTimestamp(), stockPrice.get().getTimestamp());
+            assertEquals(pricedStock.getPrice(), stockPrice.get().getPrice());
+        }
+    }
+
+    @Test
+    public void testAddAlreadyExists() throws SQLException {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setSymbol("symbol").setName("Name").setTimestamp(now).setPrice(10);
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, pricedStockJoin.add(connection, pricedStock));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(0, pricedStockJoin.add(connection, pricedStock));
+            connection.commit();
+        }
+    }
 }

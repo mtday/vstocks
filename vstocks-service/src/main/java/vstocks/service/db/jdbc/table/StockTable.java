@@ -58,7 +58,9 @@ public class StockTable extends BaseTable {
     }
 
     public int add(Connection connection, Stock stock) {
-        return update(connection, INSERT_ROW_SETTER, "INSERT INTO stocks (market, symbol, name) VALUES (?, ?, ?)", stock);
+        String sql = "INSERT INTO stocks (market, symbol, name) VALUES (?, ?, ?) ON CONFLICT ON CONSTRAINT stocks_pk "
+                + "DO UPDATE set name = EXCLUDED.name WHERE stocks.name != EXCLUDED.name";
+        return update(connection, INSERT_ROW_SETTER, sql, stock);
     }
 
     public int update(Connection connection, Stock stock) {

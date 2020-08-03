@@ -177,6 +177,16 @@ public class JdbcUserStockServiceIT {
     }
 
     @Test
+    public void testBuyStockZeroShares() {
+        assertEquals(0, userStockService.buyStock(user1.getId(), TWITTER, stock1.getSymbol(), 0));
+    }
+
+    @Test
+    public void testBuyStockNegativeShares() {
+        assertEquals(0, userStockService.buyStock(user1.getId(), TWITTER, stock1.getSymbol(), -1));
+    }
+
+    @Test
     public void testBuyStockNoExistingUserStock() throws SQLException {
         assertEquals(1, userStockService.buyStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
@@ -282,6 +292,16 @@ public class JdbcUserStockServiceIT {
             assertEquals(0, activityLogs.getTotal());
             assertTrue(activityLogs.getResults().isEmpty());
         }
+    }
+
+    @Test
+    public void testSellStockZeroShares() {
+        assertEquals(0, userStockService.sellStock(user1.getId(), TWITTER, stock1.getSymbol(), 0));
+    }
+
+    @Test
+    public void testSellStockNegativeShares() {
+        assertEquals(0, userStockService.sellStock(user1.getId(), TWITTER, stock1.getSymbol(), -1));
     }
 
     @Test

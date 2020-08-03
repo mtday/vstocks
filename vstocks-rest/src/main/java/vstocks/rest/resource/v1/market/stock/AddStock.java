@@ -29,8 +29,7 @@ public class AddStock extends BaseResource {
     @POST
     @Produces(APPLICATION_JSON)
     @Consumes(WILDCARD)
-    public PricedStock addStock(@PathParam("market") String marketId,
-                                @PathParam("symbol") String symbol) {
+    public PricedStock addStock(@PathParam("market") String marketId, @PathParam("symbol") String symbol) {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
 
@@ -42,8 +41,7 @@ public class AddStock extends BaseResource {
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + symbol + " not found"));
 
-        databaseServiceFactory.getStockService().add(pricedStock.asStock());
-        databaseServiceFactory.getStockPriceService().add(pricedStock.asStockPrice());
+        databaseServiceFactory.getPricedStockService().add(pricedStock);
         return pricedStock;
     }
 }

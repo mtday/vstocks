@@ -208,15 +208,55 @@ public class JdbcStockPriceTableIT {
             assertEquals(1, stockPriceTable.add(connection, stockPrice));
             connection.commit();
         }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Optional<StockPrice> fetched = stockPriceTable.getLatest(connection, TWITTER, stockPrice.getSymbol());
+            assertTrue(fetched.isPresent());
+            assertEquals(stockPrice.getMarket(), fetched.get().getMarket());
+            assertEquals(stockPrice.getSymbol(), fetched.get().getSymbol());
+            assertEquals(stockPrice.getTimestamp(), fetched.get().getTimestamp());
+            assertEquals(stockPrice.getPrice(), fetched.get().getPrice());
+        }
     }
 
-    @Test(expected = Exception.class)
-    public void testAddConflict() throws SQLException {
+    @Test
+    public void testAddConflictSameValue() throws SQLException {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockPriceTable.add(connection, stockPrice));
-            stockPriceTable.add(connection, stockPrice);
+            assertEquals(0, stockPriceTable.add(connection, stockPrice));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Optional<StockPrice> fetched = stockPriceTable.getLatest(connection, TWITTER, stockPrice.getSymbol());
+            assertTrue(fetched.isPresent());
+            assertEquals(stockPrice.getMarket(), fetched.get().getMarket());
+            assertEquals(stockPrice.getSymbol(), fetched.get().getSymbol());
+            assertEquals(stockPrice.getTimestamp(), fetched.get().getTimestamp());
+            assertEquals(stockPrice.getPrice(), fetched.get().getPrice());
+        }
+    }
+
+    @Test
+    public void testAddConflictDifferentValue() throws SQLException {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, stockPriceTable.add(connection, stockPrice));
+            stockPrice.setPrice(12);
+            assertEquals(1, stockPriceTable.add(connection, stockPrice));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Optional<StockPrice> fetched = stockPriceTable.getLatest(connection, TWITTER, stockPrice.getSymbol());
+            assertTrue(fetched.isPresent());
+            assertEquals(stockPrice.getMarket(), fetched.get().getMarket());
+            assertEquals(stockPrice.getSymbol(), fetched.get().getSymbol());
+            assertEquals(stockPrice.getTimestamp(), fetched.get().getTimestamp());
+            assertEquals(stockPrice.getPrice(), fetched.get().getPrice());
         }
     }
 

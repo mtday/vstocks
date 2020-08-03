@@ -15,4 +15,6 @@ public interface PricedStockService {
     Results<PricedStock> getAll(Page page);
 
     int consume(Consumer<PricedStock> consumer);
+
+    int add(PricedStock pricedStock);
 }

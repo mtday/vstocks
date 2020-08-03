@@ -50,6 +50,9 @@ public class JdbcUserStockService extends BaseService implements UserStockServic
 
     @Override
     public int buyStock(String userId, Market market, String symbol, int shares) {
+        if (shares <= 0) {
+            return 0;
+        }
         return withConnection(conn -> {
             Optional<StockPrice> stockPrice = stockPriceTable.getLatest(conn, market, symbol);
             if (stockPrice.isPresent()) {
@@ -78,6 +81,9 @@ public class JdbcUserStockService extends BaseService implements UserStockServic
 
     @Override
     public int sellStock(String userId, Market market, String symbol, int shares) {
+        if (shares <= 0) {
+            return 0;
+        }
         return withConnection(conn -> {
             Optional<StockPrice> stockPrice = stockPriceTable.getLatest(conn, market, symbol);
             if (stockPrice.isPresent()) {

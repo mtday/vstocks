@@ -276,4 +276,35 @@ public class JdbcPricedStockServiceIT {
         assertEquals(stock2Price1.getTimestamp(), pricedStock2.getTimestamp());
         assertEquals(stock2Price1.getPrice(), pricedStock2.getPrice());
     }
+
+    @Test
+    public void testAdd() {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setSymbol("symbol").setName("Name").setTimestamp(now).setPrice(10);
+
+        assertEquals(1, pricedStockService.add(pricedStock));
+
+        Optional<Stock> stock = stockService.get(pricedStock.getMarket(), pricedStock.getSymbol());
+        Optional<StockPrice> stockPrice = stockPriceService.getLatest(pricedStock.getMarket(), pricedStock.getSymbol());
+
+        assertTrue(stock.isPresent());
+        assertTrue(stockPrice.isPresent());
+
+        assertEquals(pricedStock.getMarket(), stock.get().getMarket());
+        assertEquals(pricedStock.getSymbol(), stock.get().getSymbol());
+        assertEquals(pricedStock.getName(), stock.get().getName());
+        assertEquals(pricedStock.getMarket(), stockPrice.get().getMarket());
+        assertEquals(pricedStock.getSymbol(), stockPrice.get().getSymbol());
+        assertEquals(pricedStock.getTimestamp(), stockPrice.get().getTimestamp());
+        assertEquals(pricedStock.getPrice(), stockPrice.get().getPrice());
+    }
+
+    @Test
+    public void testAddAlreadyExists() {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setSymbol("symbol").setName("Name").setTimestamp(now).setPrice(10);
+
+        assertEquals(1, pricedStockService.add(pricedStock));
+        assertEquals(0, pricedStockService.add(pricedStock));
+    }
 }
