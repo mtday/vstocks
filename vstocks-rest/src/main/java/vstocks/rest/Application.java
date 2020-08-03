@@ -15,10 +15,7 @@ import vstocks.rest.exception.BadRequestExceptionMapper;
 import vstocks.rest.exception.NotFoundExceptionMapper;
 import vstocks.rest.resource.v1.market.GetAllMarkets;
 import vstocks.rest.resource.v1.market.GetMarket;
-import vstocks.rest.resource.v1.market.stock.AddStock;
-import vstocks.rest.resource.v1.market.stock.GetStock;
-import vstocks.rest.resource.v1.market.stock.GetStocksForMarket;
-import vstocks.rest.resource.v1.market.stock.SearchStocks;
+import vstocks.rest.resource.v1.market.stock.*;
 import vstocks.rest.resource.v1.security.Callback;
 import vstocks.rest.resource.v1.security.Login;
 import vstocks.rest.resource.v1.security.Logout;
@@ -56,9 +53,11 @@ public class Application extends ResourceConfig {
         property("jersey.config.server.wadl.disableWadl", "true");
 
         register(AddStock.class);
+        register(BuyStock.class);
         register(GetStock.class);
         register(GetStocksForMarket.class);
         register(SearchStocks.class);
+        register(SellStock.class);
         register(GetAllMarkets.class);
         register(GetMarket.class);
 
