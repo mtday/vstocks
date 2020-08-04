@@ -12,6 +12,7 @@ public class JdbcDatabaseServiceFactory implements DatabaseServiceFactory {
     private final UserBalanceService userBalanceService;
     private final UserService userService;
     private final UserStockService userStockService;
+    private final PricedUserStockService pricedUserStockService;
 
     public JdbcDatabaseServiceFactory(DataSource dataSource) {
         this.activityLogService = new JdbcActivityLogService(dataSource);
@@ -21,6 +22,7 @@ public class JdbcDatabaseServiceFactory implements DatabaseServiceFactory {
         this.userBalanceService = new JdbcUserBalanceService(dataSource);
         this.userService = new JdbcUserService(dataSource);
         this.userStockService = new JdbcUserStockService(dataSource);
+        this.pricedUserStockService = new JdbcPricedUserStockService(dataSource);
     }
 
     @Override
@@ -56,5 +58,10 @@ public class JdbcDatabaseServiceFactory implements DatabaseServiceFactory {
     @Override
     public UserStockService getUserStockService() {
         return userStockService;
+    }
+
+    @Override
+    public PricedUserStockService getPricedUserStockService() {
+        return pricedUserStockService;
     }
 }

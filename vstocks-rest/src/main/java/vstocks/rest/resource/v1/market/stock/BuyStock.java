@@ -4,7 +4,7 @@ import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 import vstocks.model.Market;
-import vstocks.model.UserStock;
+import vstocks.model.PricedUserStock;
 import vstocks.rest.resource.BaseResource;
 import vstocks.service.db.DatabaseServiceFactory;
 
@@ -29,17 +29,17 @@ public class BuyStock extends BaseResource {
     @Produces(APPLICATION_JSON)
     @Consumes(WILDCARD)
     @Pac4JSecurity(authorizers = "isAuthenticated")
-    public UserStock buyStock(@PathParam("market") String marketId,
-                              @PathParam("symbol") String symbol,
-                              @PathParam("shares") int shares,
-                              @Pac4JProfile CommonProfile profile) {
+    public PricedUserStock buyStock(@PathParam("market") String marketId,
+                                    @PathParam("symbol") String symbol,
+                                    @PathParam("shares") int shares,
+                                    @Pac4JProfile CommonProfile profile) {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
         String userId = getUser(profile).getId();
         if (databaseServiceFactory.getUserStockService().buyStock(userId, market, symbol, shares) == 0) {
             throw new BadRequestException("Failed to buy " + shares + " shares of " + market + "/" + symbol + " stock");
         }
-        return databaseServiceFactory.getUserStockService().get(userId, market, symbol)
+        return databaseServiceFactory.getPricedUserStockService().get(userId, market, symbol)
                 .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + symbol + " not found"));
     }
 }

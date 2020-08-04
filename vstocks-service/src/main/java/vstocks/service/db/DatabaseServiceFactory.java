@@ -14,4 +14,6 @@ public interface DatabaseServiceFactory {
     UserService getUserService();
 
     UserStockService getUserStockService();
+
+    PricedUserStockService getPricedUserStockService();
 }

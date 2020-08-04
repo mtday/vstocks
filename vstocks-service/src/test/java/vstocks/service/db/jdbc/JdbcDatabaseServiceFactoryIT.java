@@ -27,5 +27,6 @@ public class JdbcDatabaseServiceFactoryIT {
         assertNotNull(databaseServiceFactory.getUserBalanceService());
         assertNotNull(databaseServiceFactory.getUserService());
         assertNotNull(databaseServiceFactory.getUserStockService());
+        assertNotNull(databaseServiceFactory.getPricedUserStockService());
     }
 }
