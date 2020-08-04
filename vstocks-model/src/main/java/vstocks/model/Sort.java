@@ -60,7 +60,7 @@ public class Sort {
 
     @Override
     public int hashCode() {
-        return Objects.hash(field, direction);
+        return Objects.hash(field.name(), direction.name());
     }
 
     @Override

@@ -18,7 +18,8 @@ public class PricedUserStock {
         return new UserStock()
                 .setUserId(userId)
                 .setMarket(market)
-                .setSymbol(symbol);
+                .setSymbol(symbol)
+                .setShares(shares);
     }
 
     public StockPrice asStockPrice() {
@@ -95,7 +96,7 @@ public class PricedUserStock {
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, market, symbol);
+        return Objects.hash(userId, market.name(), symbol);
     }
 
     @Override

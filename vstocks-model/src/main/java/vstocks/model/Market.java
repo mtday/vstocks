@@ -9,7 +9,7 @@ public enum Market {
     INSTAGRAM("Instagram"),
     TWITCH("Twitch");
 
-    private String displayName;
+    private final String displayName;
 
     Market(String displayName) {
         this.displayName = displayName;
@@ -17,11 +17,6 @@ public enum Market {
 
     public String getDisplayName() {
         return displayName;
-    }
-
-    public Market setDisplayName(String displayName) {
-        this.displayName = displayName;
-        return this;
     }
 
     public static Optional<Market> from(String name) {
