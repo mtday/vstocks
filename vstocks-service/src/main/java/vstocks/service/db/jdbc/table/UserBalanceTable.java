@@ -2,11 +2,19 @@ package vstocks.service.db.jdbc.table;
 
 import vstocks.model.Page;
 import vstocks.model.Results;
+import vstocks.model.Sort;
 import vstocks.model.UserBalance;
 
 import java.sql.Connection;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
+
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static vstocks.model.DatabaseField.*;
+import static vstocks.model.Sort.SortDirection.DESC;
 
 public class UserBalanceTable extends BaseTable {
     private static final RowMapper<UserBalance> ROW_MAPPER = rs ->
@@ -20,18 +28,23 @@ public class UserBalanceTable extends BaseTable {
         ps.setInt(++index, userBalance.getBalance());
     };
 
+    @Override
+    protected Set<Sort> getDefaultSort() {
+        return new HashSet<>(asList(BALANCE.toSort(DESC), USER_ID.toSort()));
+    }
+
     public Optional<UserBalance> get(Connection connection, String userId) {
         return getOne(connection, ROW_MAPPER, "SELECT * FROM user_balances WHERE user_id = ?", userId);
     }
 
-    public Results<UserBalance> getAll(Connection connection, Page page) {
-        String query = "SELECT * FROM user_balances ORDER BY balance DESC, user_id LIMIT ? OFFSET ?";
+    public Results<UserBalance> getAll(Connection connection, Page page, Set<Sort> sort) {
+        String query = format("SELECT * FROM user_balances %s LIMIT ? OFFSET ?", getSort(sort));
         String countQuery = "SELECT COUNT(*) FROM user_balances";
         return results(connection, ROW_MAPPER, page, query, countQuery);
     }
 
-    public int consume(Connection connection, Consumer<UserBalance> consumer) {
-        String sql = "SELECT * FROM user_balances ORDER BY balance DESC, user_id";
+    public int consume(Connection connection, Consumer<UserBalance> consumer, Set<Sort> sort) {
+        String sql = format("SELECT * FROM user_balances %s", getSort(sort));
         return consume(connection, ROW_MAPPER, consumer, sql);
     }
 

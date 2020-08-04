@@ -11,12 +11,14 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
+import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
+import static vstocks.model.Sort.SortDirection.DESC;
 
 public class JdbcPricedStockJoinIT {
     @ClassRule
@@ -114,14 +116,14 @@ public class JdbcPricedStockJoinIT {
     @Test
     public void testGetForMarket() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<PricedStock> results = pricedStockJoin.getForMarket(connection, TWITTER, new Page());
+            Results<PricedStock> results = pricedStockJoin.getForMarket(connection, TWITTER, new Page(), emptySet());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }
     }
 
     @Test
-    public void testGetForMarketSome() throws SQLException {
+    public void testGetForMarketSomeNoSort() throws SQLException {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
@@ -140,7 +142,7 @@ public class JdbcPricedStockJoinIT {
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<PricedStock> results = pricedStockJoin.getForMarket(connection, TWITTER, new Page());
+            Results<PricedStock> results = pricedStockJoin.getForMarket(connection, TWITTER, new Page(), emptySet());
             assertEquals(2, results.getTotal());
             assertEquals(2, results.getResults().size());
 
@@ -157,6 +159,47 @@ public class JdbcPricedStockJoinIT {
             assertEquals(stock2.getName(), pricedStock2.getName());
             assertEquals(stock2Price1.getTimestamp(), pricedStock2.getTimestamp());
             assertEquals(stock2Price1.getPrice(), pricedStock2.getPrice());
+        }
+    }
+
+    @Test
+    public void testGetForMarketSomeWithSort() throws SQLException {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
+        StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+        StockPrice stock2Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock2Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, stockTable.add(connection, stock1));
+            assertEquals(1, stockTable.add(connection, stock2));
+            assertEquals(1, stockPriceTable.add(connection, stock1Price1));
+            assertEquals(1, stockPriceTable.add(connection, stock1Price2));
+            assertEquals(1, stockPriceTable.add(connection, stock2Price1));
+            assertEquals(1, stockPriceTable.add(connection, stock2Price2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), NAME.toSort()));
+            Results<PricedStock> results = pricedStockJoin.getForMarket(connection, TWITTER, new Page(), sort);
+            assertEquals(2, results.getTotal());
+            assertEquals(2, results.getResults().size());
+
+            PricedStock pricedStock1 = results.getResults().get(0);
+            assertEquals(stock2.getMarket(), pricedStock1.getMarket());
+            assertEquals(stock2.getSymbol(), pricedStock1.getSymbol());
+            assertEquals(stock2.getName(), pricedStock1.getName());
+            assertEquals(stock2Price1.getTimestamp(), pricedStock1.getTimestamp());
+            assertEquals(stock2Price1.getPrice(), pricedStock1.getPrice());
+
+            PricedStock pricedStock2 = results.getResults().get(1);
+            assertEquals(stock1.getMarket(), pricedStock2.getMarket());
+            assertEquals(stock1.getSymbol(), pricedStock2.getSymbol());
+            assertEquals(stock1.getName(), pricedStock2.getName());
+            assertEquals(stock1Price1.getTimestamp(), pricedStock2.getTimestamp());
+            assertEquals(stock1Price1.getPrice(), pricedStock2.getPrice());
         }
     }
 
@@ -164,13 +207,13 @@ public class JdbcPricedStockJoinIT {
     public void testConsumeForMarket() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             List<PricedStock> results = new ArrayList<>();
-            assertEquals(0, pricedStockJoin.consumeForMarket(connection, TWITTER, results::add));
+            assertEquals(0, pricedStockJoin.consumeForMarket(connection, TWITTER, results::add, emptySet()));
             assertTrue(results.isEmpty());
         }
     }
 
     @Test
-    public void testConsumeForMarketSome() throws SQLException {
+    public void testConsumeForMarketSomeNoSort() throws SQLException {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
@@ -190,7 +233,7 @@ public class JdbcPricedStockJoinIT {
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             List<PricedStock> results = new ArrayList<>();
-            assertEquals(2, pricedStockJoin.consumeForMarket(connection, TWITTER, results::add));
+            assertEquals(2, pricedStockJoin.consumeForMarket(connection, TWITTER, results::add, emptySet()));
             assertEquals(2, results.size());
 
             PricedStock pricedStock1 = results.get(0);
@@ -210,16 +253,7 @@ public class JdbcPricedStockJoinIT {
     }
 
     @Test
-    public void testGetAllNone() throws SQLException {
-        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<PricedStock> results = pricedStockJoin.getAll(connection, new Page());
-            assertEquals(0, results.getTotal());
-            assertTrue(results.getResults().isEmpty());
-        }
-    }
-
-    @Test
-    public void testGetAllSome() throws SQLException {
+    public void testConsumeForMarketSomeWithSort() throws SQLException {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
@@ -238,7 +272,57 @@ public class JdbcPricedStockJoinIT {
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<PricedStock> results = pricedStockJoin.getAll(connection, new Page());
+            List<PricedStock> results = new ArrayList<>();
+            Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), NAME.toSort()));
+            assertEquals(2, pricedStockJoin.consumeForMarket(connection, TWITTER, results::add, sort));
+            assertEquals(2, results.size());
+
+            PricedStock pricedStock1 = results.get(0);
+            assertEquals(stock2.getMarket(), pricedStock1.getMarket());
+            assertEquals(stock2.getSymbol(), pricedStock1.getSymbol());
+            assertEquals(stock2.getName(), pricedStock1.getName());
+            assertEquals(stock2Price1.getTimestamp(), pricedStock1.getTimestamp());
+            assertEquals(stock2Price1.getPrice(), pricedStock1.getPrice());
+
+            PricedStock pricedStock2 = results.get(1);
+            assertEquals(stock1.getMarket(), pricedStock2.getMarket());
+            assertEquals(stock1.getSymbol(), pricedStock2.getSymbol());
+            assertEquals(stock1.getName(), pricedStock2.getName());
+            assertEquals(stock1Price1.getTimestamp(), pricedStock2.getTimestamp());
+            assertEquals(stock1Price1.getPrice(), pricedStock2.getPrice());
+        }
+    }
+
+    @Test
+    public void testGetAllNone() throws SQLException {
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Results<PricedStock> results = pricedStockJoin.getAll(connection, new Page(), emptySet());
+            assertEquals(0, results.getTotal());
+            assertTrue(results.getResults().isEmpty());
+        }
+    }
+
+    @Test
+    public void testGetAllSomeNoSort() throws SQLException {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
+        StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+        StockPrice stock2Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock2Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, stockTable.add(connection, stock1));
+            assertEquals(1, stockTable.add(connection, stock2));
+            assertEquals(1, stockPriceTable.add(connection, stock1Price1));
+            assertEquals(1, stockPriceTable.add(connection, stock1Price2));
+            assertEquals(1, stockPriceTable.add(connection, stock2Price1));
+            assertEquals(1, stockPriceTable.add(connection, stock2Price2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Results<PricedStock> results = pricedStockJoin.getAll(connection, new Page(), emptySet());
             assertEquals(2, results.getTotal());
             assertEquals(2, results.getResults().size());
 
@@ -259,16 +343,57 @@ public class JdbcPricedStockJoinIT {
     }
 
     @Test
+    public void testGetAllSomeWithSort() throws SQLException {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
+        StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+        StockPrice stock2Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock2Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, stockTable.add(connection, stock1));
+            assertEquals(1, stockTable.add(connection, stock2));
+            assertEquals(1, stockPriceTable.add(connection, stock1Price1));
+            assertEquals(1, stockPriceTable.add(connection, stock1Price2));
+            assertEquals(1, stockPriceTable.add(connection, stock2Price1));
+            assertEquals(1, stockPriceTable.add(connection, stock2Price2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), NAME.toSort()));
+            Results<PricedStock> results = pricedStockJoin.getAll(connection, new Page(), sort);
+            assertEquals(2, results.getTotal());
+            assertEquals(2, results.getResults().size());
+
+            PricedStock pricedStock1 = results.getResults().get(0);
+            assertEquals(stock2.getMarket(), pricedStock1.getMarket());
+            assertEquals(stock2.getSymbol(), pricedStock1.getSymbol());
+            assertEquals(stock2.getName(), pricedStock1.getName());
+            assertEquals(stock2Price1.getTimestamp(), pricedStock1.getTimestamp());
+            assertEquals(stock2Price1.getPrice(), pricedStock1.getPrice());
+
+            PricedStock pricedStock2 = results.getResults().get(1);
+            assertEquals(stock1.getMarket(), pricedStock2.getMarket());
+            assertEquals(stock1.getSymbol(), pricedStock2.getSymbol());
+            assertEquals(stock1.getName(), pricedStock2.getName());
+            assertEquals(stock1Price1.getTimestamp(), pricedStock2.getTimestamp());
+            assertEquals(stock1Price1.getPrice(), pricedStock2.getPrice());
+        }
+    }
+
+    @Test
     public void testConsumeNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             List<PricedStock> list = new ArrayList<>();
-            assertEquals(0, pricedStockJoin.consume(connection, list::add));
+            assertEquals(0, pricedStockJoin.consume(connection, list::add, emptySet()));
             assertTrue(list.isEmpty());
         }
     }
 
     @Test
-    public void testConsumeSome() throws SQLException {
+    public void testConsumeSomeNoSort() throws SQLException {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
@@ -288,7 +413,7 @@ public class JdbcPricedStockJoinIT {
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             List<PricedStock> results = new ArrayList<>();
-            assertEquals(2, pricedStockJoin.consume(connection, results::add));
+            assertEquals(2, pricedStockJoin.consume(connection, results::add, emptySet()));
             assertEquals(2, results.size());
 
             PricedStock pricedStock1 = results.get(0);
@@ -304,6 +429,47 @@ public class JdbcPricedStockJoinIT {
             assertEquals(stock2.getName(), pricedStock2.getName());
             assertEquals(stock2Price1.getTimestamp(), pricedStock2.getTimestamp());
             assertEquals(stock2Price1.getPrice(), pricedStock2.getPrice());
+        }
+    }
+
+    @Test
+    public void testConsumeSomeWithSort() throws SQLException {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
+        StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+        StockPrice stock2Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock2Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, stockTable.add(connection, stock1));
+            assertEquals(1, stockTable.add(connection, stock2));
+            assertEquals(1, stockPriceTable.add(connection, stock1Price1));
+            assertEquals(1, stockPriceTable.add(connection, stock1Price2));
+            assertEquals(1, stockPriceTable.add(connection, stock2Price1));
+            assertEquals(1, stockPriceTable.add(connection, stock2Price2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<PricedStock> results = new ArrayList<>();
+            Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), NAME.toSort()));
+            assertEquals(2, pricedStockJoin.consume(connection, results::add, sort));
+            assertEquals(2, results.size());
+
+            PricedStock pricedStock1 = results.get(0);
+            assertEquals(stock2.getMarket(), pricedStock1.getMarket());
+            assertEquals(stock2.getSymbol(), pricedStock1.getSymbol());
+            assertEquals(stock2.getName(), pricedStock1.getName());
+            assertEquals(stock2Price1.getTimestamp(), pricedStock1.getTimestamp());
+            assertEquals(stock2Price1.getPrice(), pricedStock1.getPrice());
+
+            PricedStock pricedStock2 = results.get(1);
+            assertEquals(stock1.getMarket(), pricedStock2.getMarket());
+            assertEquals(stock1.getSymbol(), pricedStock2.getSymbol());
+            assertEquals(stock1.getName(), pricedStock2.getName());
+            assertEquals(stock1Price1.getTimestamp(), pricedStock2.getTimestamp());
+            assertEquals(stock1Price1.getPrice(), pricedStock2.getPrice());
         }
     }
 

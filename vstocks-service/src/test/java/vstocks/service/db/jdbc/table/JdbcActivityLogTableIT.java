@@ -11,12 +11,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
+import static vstocks.model.DatabaseField.SYMBOL;
+import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.Market.TWITTER;
+import static vstocks.model.Sort.SortDirection.DESC;
 import static vstocks.model.UserSource.TwitterClient;
 
 public class JdbcActivityLogTableIT {
@@ -88,14 +91,14 @@ public class JdbcActivityLogTableIT {
     @Test
     public void testGetForUserNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<ActivityLog> results = activityLogTable.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> results = activityLogTable.getForUser(connection, user1.getId(), new Page(), emptySet());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }
     }
 
     @Test
-    public void testGetForUserSome() throws SQLException {
+    public void testGetForUserSomeNoSort() throws SQLException {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
         ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
@@ -106,25 +109,46 @@ public class JdbcActivityLogTableIT {
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<ActivityLog> results = activityLogTable.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> results = activityLogTable.getForUser(connection, user1.getId(), new Page(), emptySet());
             assertEquals(2, results.getTotal());
             assertEquals(2, results.getResults().size());
-            assertTrue(results.getResults().contains(activityLog1));
-            assertTrue(results.getResults().contains(activityLog2));
+            assertEquals(activityLog1, results.getResults().get(0));
+            assertEquals(activityLog2, results.getResults().get(1));
+        }
+    }
+
+    @Test
+    public void testGetForUserSomeWithSort() throws SQLException {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, activityLogTable.add(connection, activityLog1));
+            assertEquals(1, activityLogTable.add(connection, activityLog2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), USER_ID.toSort()));
+            Results<ActivityLog> results = activityLogTable.getForUser(connection, user1.getId(), new Page(), sort);
+            assertEquals(2, results.getTotal());
+            assertEquals(2, results.getResults().size());
+            assertEquals(activityLog2, results.getResults().get(0));
+            assertEquals(activityLog1, results.getResults().get(1));
         }
     }
 
     @Test
     public void testGetForStockNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<ActivityLog> results = activityLogTable.getForStock(connection, TWITTER, stock1.getSymbol(), new Page());
+            Results<ActivityLog> results = activityLogTable.getForStock(connection, TWITTER, stock1.getSymbol(), new Page(), emptySet());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }
     }
 
     @Test
-    public void testGetForStockSome() throws SQLException {
+    public void testGetForStockSomeNoSort() throws SQLException {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
         ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
@@ -135,25 +159,46 @@ public class JdbcActivityLogTableIT {
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<ActivityLog> results = activityLogTable.getForStock(connection, TWITTER, stock1.getSymbol(), new Page());
+            Results<ActivityLog> results = activityLogTable.getForStock(connection, TWITTER, stock1.getSymbol(), new Page(), emptySet());
             assertEquals(2, results.getTotal());
             assertEquals(2, results.getResults().size());
-            assertTrue(results.getResults().contains(activityLog1));
-            assertTrue(results.getResults().contains(activityLog2));
+            assertEquals(activityLog1, results.getResults().get(0));
+            assertEquals(activityLog2, results.getResults().get(1));
+        }
+    }
+
+    @Test
+    public void testGetForStockSomeWithSort() throws SQLException {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, activityLogTable.add(connection, activityLog1));
+            assertEquals(1, activityLogTable.add(connection, activityLog2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), USER_ID.toSort(DESC)));
+            Results<ActivityLog> results = activityLogTable.getForStock(connection, TWITTER, stock1.getSymbol(), new Page(), sort);
+            assertEquals(2, results.getTotal());
+            assertEquals(2, results.getResults().size());
+            assertEquals(activityLog2, results.getResults().get(0));
+            assertEquals(activityLog1, results.getResults().get(1));
         }
     }
 
     @Test
     public void testGetAllNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<ActivityLog> results = activityLogTable.getAll(connection, new Page());
+            Results<ActivityLog> results = activityLogTable.getAll(connection, new Page(), emptySet());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }
     }
 
     @Test
-    public void testGetAllSome() throws SQLException {
+    public void testGetAllSomeNoSort() throws SQLException {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
         ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
@@ -164,11 +209,32 @@ public class JdbcActivityLogTableIT {
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<ActivityLog> results = activityLogTable.getAll(connection, new Page());
+            Results<ActivityLog> results = activityLogTable.getAll(connection, new Page(), emptySet());
             assertEquals(2, results.getTotal());
             assertEquals(2, results.getResults().size());
-            assertTrue(results.getResults().contains(activityLog1));
-            assertTrue(results.getResults().contains(activityLog2));
+            assertEquals(activityLog1, results.getResults().get(0));
+            assertEquals(activityLog2, results.getResults().get(1));
+        }
+    }
+
+    @Test
+    public void testGetAllSomeWithSort() throws SQLException {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, activityLogTable.add(connection, activityLog1));
+            assertEquals(1, activityLogTable.add(connection, activityLog2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), USER_ID.toSort(DESC)));
+            Results<ActivityLog> results = activityLogTable.getAll(connection, new Page(), sort);
+            assertEquals(2, results.getTotal());
+            assertEquals(2, results.getResults().size());
+            assertEquals(activityLog2, results.getResults().get(0));
+            assertEquals(activityLog1, results.getResults().get(1));
         }
     }
 
@@ -176,13 +242,13 @@ public class JdbcActivityLogTableIT {
     public void testConsumeNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             List<ActivityLog> list = new ArrayList<>();
-            assertEquals(0, activityLogTable.consume(connection, list::add));
+            assertEquals(0, activityLogTable.consume(connection, list::add, emptySet()));
             assertTrue(list.isEmpty());
         }
     }
 
     @Test
-    public void testConsumeSome() throws SQLException {
+    public void testConsumeSomeNoSort() throws SQLException {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
         ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
@@ -194,10 +260,31 @@ public class JdbcActivityLogTableIT {
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             List<ActivityLog> list = new ArrayList<>();
-            assertEquals(2, activityLogTable.consume(connection, list::add));
+            assertEquals(2, activityLogTable.consume(connection, list::add, emptySet()));
             assertEquals(2, list.size());
-            assertTrue(list.contains(activityLog1));
-            assertTrue(list.contains(activityLog2));
+            assertEquals(activityLog1, list.get(0));
+            assertEquals(activityLog2, list.get(1));
+        }
+    }
+
+    @Test
+    public void testConsumeSomeWithSort() throws SQLException {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, activityLogTable.add(connection, activityLog1));
+            assertEquals(1, activityLogTable.add(connection, activityLog2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<ActivityLog> list = new ArrayList<>();
+            Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), USER_ID.toSort(DESC)));
+            assertEquals(2, activityLogTable.consume(connection, list::add, sort));
+            assertEquals(2, list.size());
+            assertEquals(activityLog2, list.get(0));
+            assertEquals(activityLog1, list.get(1));
         }
     }
 
@@ -284,7 +371,7 @@ public class JdbcActivityLogTableIT {
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<ActivityLog> results = activityLogTable.getAll(connection, new Page());
+            Results<ActivityLog> results = activityLogTable.getAll(connection, new Page(), emptySet());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }

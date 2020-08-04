@@ -26,9 +26,10 @@ public class GetStocksForMarket extends BaseResource {
     @Produces(APPLICATION_JSON)
     public Results<PricedStock> getAllStocks(@PathParam("marketId") String marketId,
                                              @QueryParam("pageNum") Integer pageNum,
-                                             @QueryParam("pageSize") Integer pageSize) {
+                                             @QueryParam("pageSize") Integer pageSize,
+                                             @QueryParam("sort") String sort) {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
-        return databaseServiceFactory.getPricedStockService().getForMarket(market, getPage(pageNum, pageSize));
+        return databaseServiceFactory.getPricedStockService().getForMarket(market, getPage(pageNum, pageSize), getSort(sort));
     }
 }

@@ -11,11 +11,13 @@ import vstocks.service.db.jdbc.table.UserTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
+import static vstocks.model.DatabaseField.*;
+import static vstocks.model.Sort.SortDirection.DESC;
 import static vstocks.model.UserSource.TwitterClient;
 
 public class JdbcUserBalanceServiceIT {
@@ -68,44 +70,74 @@ public class JdbcUserBalanceServiceIT {
 
     @Test
     public void testGetAllNone() {
-        Results<UserBalance> results = userBalanceService.getAll(new Page());
+        Results<UserBalance> results = userBalanceService.getAll(new Page(), emptySet());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
 
     @Test
-    public void testGetAllSome() {
+    public void testGetAllSomeNoSort() {
         UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
         UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
         assertEquals(1, userBalanceService.add(userBalance1));
         assertEquals(1, userBalanceService.add(userBalance2));
 
-        Results<UserBalance> results = userBalanceService.getAll(new Page());
+        Results<UserBalance> results = userBalanceService.getAll(new Page(), emptySet());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
-        assertTrue(results.getResults().contains(userBalance1));
-        assertTrue(results.getResults().contains(userBalance2));
+        assertEquals(userBalance1, results.getResults().get(0));
+        assertEquals(userBalance2, results.getResults().get(1));
+    }
+
+    @Test
+    public void testGetAllSomeWithSort() {
+        UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
+        UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
+        assertEquals(1, userBalanceService.add(userBalance1));
+        assertEquals(1, userBalanceService.add(userBalance2));
+
+        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), BALANCE.toSort()));
+        Results<UserBalance> results = userBalanceService.getAll(new Page(), sort);
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(userBalance2, results.getResults().get(0));
+        assertEquals(userBalance1, results.getResults().get(1));
     }
 
     @Test
     public void testConsumeNone() {
         List<UserBalance> list = new ArrayList<>();
-        assertEquals(0, userBalanceService.consume(list::add));
+        assertEquals(0, userBalanceService.consume(list::add, emptySet()));
         assertTrue(list.isEmpty());
     }
 
     @Test
-    public void testConsumeSome() {
+    public void testConsumeSomeNoSort() {
         UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
         UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
         assertEquals(1, userBalanceService.add(userBalance1));
         assertEquals(1, userBalanceService.add(userBalance2));
 
         List<UserBalance> list = new ArrayList<>();
-        assertEquals(2, userBalanceService.consume(list::add));
+        assertEquals(2, userBalanceService.consume(list::add, emptySet()));
         assertEquals(2, list.size());
-        assertTrue(list.contains(userBalance1));
-        assertTrue(list.contains(userBalance2));
+        assertEquals(userBalance1, list.get(0));
+        assertEquals(userBalance2, list.get(1));
+    }
+
+    @Test
+    public void testConsumeSomeWithSort() {
+        UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
+        UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
+        assertEquals(1, userBalanceService.add(userBalance1));
+        assertEquals(1, userBalanceService.add(userBalance2));
+
+        List<UserBalance> list = new ArrayList<>();
+        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), BALANCE.toSort()));
+        assertEquals(2, userBalanceService.consume(list::add, sort));
+        assertEquals(2, list.size());
+        assertEquals(userBalance2, list.get(0));
+        assertEquals(userBalance1, list.get(1));
     }
 
     @Test

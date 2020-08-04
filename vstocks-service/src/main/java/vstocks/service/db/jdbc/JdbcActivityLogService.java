@@ -1,14 +1,12 @@
 package vstocks.service.db.jdbc;
 
-import vstocks.model.ActivityLog;
-import vstocks.model.Market;
-import vstocks.model.Page;
-import vstocks.model.Results;
+import vstocks.model.*;
 import vstocks.service.db.ActivityLogService;
 import vstocks.service.db.jdbc.table.ActivityLogTable;
 
 import javax.sql.DataSource;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class JdbcActivityLogService extends BaseService implements ActivityLogService {
@@ -24,23 +22,23 @@ public class JdbcActivityLogService extends BaseService implements ActivityLogSe
     }
 
     @Override
-    public Results<ActivityLog> getForUser(String userId, Page page) {
-        return withConnection(conn -> activityLogTable.getForUser(conn, userId, page));
+    public Results<ActivityLog> getForUser(String userId, Page page, Set<Sort> sort) {
+        return withConnection(conn -> activityLogTable.getForUser(conn, userId, page, sort));
     }
 
     @Override
-    public Results<ActivityLog> getForStock(Market market, String symbol, Page page) {
-        return withConnection(conn -> activityLogTable.getForStock(conn, market, symbol, page));
+    public Results<ActivityLog> getForStock(Market market, String symbol, Page page, Set<Sort> sort) {
+        return withConnection(conn -> activityLogTable.getForStock(conn, market, symbol, page, sort));
     }
 
     @Override
-    public Results<ActivityLog> getAll(Page page) {
-        return withConnection(conn -> activityLogTable.getAll(conn, page));
+    public Results<ActivityLog> getAll(Page page, Set<Sort> sort) {
+        return withConnection(conn -> activityLogTable.getAll(conn, page, sort));
     }
 
     @Override
-    public int consume(Consumer<ActivityLog> consumer) {
-        return withConnection(conn -> activityLogTable.consume(conn, consumer));
+    public int consume(Consumer<ActivityLog> consumer, Set<Sort> sort) {
+        return withConnection(conn -> activityLogTable.consume(conn, consumer, sort));
     }
 
     @Override

@@ -11,12 +11,14 @@ import vstocks.service.db.jdbc.table.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
+import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
+import static vstocks.model.Sort.SortDirection.DESC;
 
 public class JdbcUserStockServiceIT {
     @ClassRule
@@ -94,86 +96,146 @@ public class JdbcUserStockServiceIT {
 
     @Test
     public void testGetForUserNone() {
-        Results<UserStock> results = userStockService.getForUser(user1.getId(), new Page());
+        Results<UserStock> results = userStockService.getForUser(user1.getId(), new Page(), emptySet());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
 
     @Test
-    public void testGetForUserSome() {
+    public void testGetForUserSomeNoSort() {
         UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         UserStock userStock2 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock1));
         assertEquals(1, userStockService.add(userStock2));
 
-        Results<UserStock> results = userStockService.getForUser(user1.getId(), new Page());
+        Results<UserStock> results = userStockService.getForUser(user1.getId(), new Page(), emptySet());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
-        assertTrue(results.getResults().contains(userStock1));
-        assertTrue(results.getResults().contains(userStock2));
+        assertEquals(userStock1, results.getResults().get(0));
+        assertEquals(userStock2, results.getResults().get(1));
+    }
+
+    @Test
+    public void testGetForUserSomeWithSort() {
+        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
+        UserStock userStock2 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setShares(10);
+        assertEquals(1, userStockService.add(userStock1));
+        assertEquals(1, userStockService.add(userStock2));
+
+        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), USER_ID.toSort()));
+        Results<UserStock> results = userStockService.getForUser(user1.getId(), new Page(), sort);
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(userStock2, results.getResults().get(0));
+        assertEquals(userStock1, results.getResults().get(1));
     }
 
     @Test
     public void testGetForStockNone() {
-        Results<UserStock> results = userStockService.getForStock(TWITTER, stock1.getSymbol(), new Page());
+        Results<UserStock> results = userStockService.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptySet());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
 
     @Test
-    public void testGetForStockSome() {
+    public void testGetForStockSomeNoSort() {
         UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock1));
         assertEquals(1, userStockService.add(userStock2));
 
-        Results<UserStock> results = userStockService.getForStock(TWITTER, stock1.getSymbol(), new Page());
+        Results<UserStock> results = userStockService.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptySet());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
-        assertTrue(results.getResults().contains(userStock1));
-        assertTrue(results.getResults().contains(userStock2));
+        assertEquals(userStock1, results.getResults().get(0));
+        assertEquals(userStock2, results.getResults().get(1));
+    }
+
+    @Test
+    public void testGetForStockSomeWithSort() {
+        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
+        UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
+        assertEquals(1, userStockService.add(userStock1));
+        assertEquals(1, userStockService.add(userStock2));
+
+        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), SYMBOL.toSort()));
+        Results<UserStock> results = userStockService.getForStock(TWITTER, stock1.getSymbol(), new Page(), sort);
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(userStock2, results.getResults().get(0));
+        assertEquals(userStock1, results.getResults().get(1));
     }
 
     @Test
     public void testGetAllNone() {
-        Results<UserStock> results = userStockService.getAll(new Page());
+        Results<UserStock> results = userStockService.getAll(new Page(), emptySet());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
 
     @Test
-    public void testGetAllSome() {
+    public void testGetAllSomeNoSort() {
         UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock1));
         assertEquals(1, userStockService.add(userStock2));
 
-        Results<UserStock> results = userStockService.getAll(new Page());
+        Results<UserStock> results = userStockService.getAll(new Page(), emptySet());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
-        assertTrue(results.getResults().contains(userStock1));
-        assertTrue(results.getResults().contains(userStock2));
+        assertEquals(userStock1, results.getResults().get(0));
+        assertEquals(userStock2, results.getResults().get(1));
+    }
+
+    @Test
+    public void testGetAllSomeWithSort() {
+        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
+        UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
+        assertEquals(1, userStockService.add(userStock1));
+        assertEquals(1, userStockService.add(userStock2));
+
+        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), SYMBOL.toSort()));
+        Results<UserStock> results = userStockService.getAll(new Page(), sort);
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(userStock2, results.getResults().get(0));
+        assertEquals(userStock1, results.getResults().get(1));
     }
 
     @Test
     public void testConsumeNone() {
         List<UserStock> list = new ArrayList<>();
-        assertEquals(0, userStockService.consume(list::add));
+        assertEquals(0, userStockService.consume(list::add, emptySet()));
         assertTrue(list.isEmpty());
     }
 
     @Test
-    public void testConsumeSome() {
+    public void testConsumeSomeNoSort() {
         UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         assertEquals(1, userStockService.add(userStock1));
         assertEquals(1, userStockService.add(userStock2));
 
         List<UserStock> list = new ArrayList<>();
-        assertEquals(2, userStockService.consume(list::add));
+        assertEquals(2, userStockService.consume(list::add, emptySet()));
         assertEquals(2, list.size());
-        assertTrue(list.contains(userStock1));
-        assertTrue(list.contains(userStock2));
+        assertEquals(userStock1, list.get(0));
+        assertEquals(userStock2, list.get(1));
+    }
+
+    @Test
+    public void testConsumeSomeWithSort() {
+        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
+        UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
+        assertEquals(1, userStockService.add(userStock1));
+        assertEquals(1, userStockService.add(userStock2));
+
+        List<UserStock> list = new ArrayList<>();
+        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), SYMBOL.toSort()));
+        assertEquals(2, userStockService.consume(list::add, sort));
+        assertEquals(2, list.size());
+        assertEquals(userStock2, list.get(0));
+        assertEquals(userStock1, list.get(1));
     }
 
     @Test
@@ -202,7 +264,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(1, userStock.get().getShares());
 
             // Make sure activity log was added
-            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page(), emptySet());
             assertEquals(1, activityLogs.getTotal());
             assertEquals(1, activityLogs.getResults().size());
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
@@ -235,7 +297,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(2, userStock.get().getShares());
 
             // Make sure activity log was added
-            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page(), emptySet());
             assertEquals(1, activityLogs.getTotal());
             assertEquals(1, activityLogs.getResults().size());
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
@@ -263,7 +325,7 @@ public class JdbcUserStockServiceIT {
             assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getSymbol()).isPresent());
 
             // Make sure no activity log was added
-            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page(), emptySet());
             assertEquals(0, activityLogs.getTotal());
             assertTrue(activityLogs.getResults().isEmpty());
         }
@@ -288,7 +350,7 @@ public class JdbcUserStockServiceIT {
             assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getSymbol()).isPresent());
 
             // Make sure no activity log was added
-            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page(), emptySet());
             assertEquals(0, activityLogs.getTotal());
             assertTrue(activityLogs.getResults().isEmpty());
         }
@@ -318,7 +380,7 @@ public class JdbcUserStockServiceIT {
             assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getSymbol()).isPresent());
 
             // Make sure no activity log was added
-            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page(), emptySet());
             assertEquals(0, activityLogs.getTotal());
             assertTrue(activityLogs.getResults().isEmpty());
         }
@@ -343,7 +405,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(9, userStock.get().getShares());
 
             // Make sure activity log was added
-            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page(), emptySet());
             assertEquals(1, activityLogs.getTotal());
             assertEquals(1, activityLogs.getResults().size());
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
@@ -374,7 +436,7 @@ public class JdbcUserStockServiceIT {
             assertFalse(userStockService.get(user1.getId(), TWITTER, stock1.getSymbol()).isPresent());
 
             // Make sure activity log was added
-            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page(), emptySet());
             assertEquals(1, activityLogs.getTotal());
             assertEquals(1, activityLogs.getResults().size());
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
@@ -412,7 +474,7 @@ public class JdbcUserStockServiceIT {
             assertEquals(existingUserStock.getShares(), userStock.get().getShares());
 
             // Make sure no activity log was added
-            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page());
+            Results<ActivityLog> activityLogs = activityLogTable.getForUser(connection, user1.getId(), new Page(), emptySet());
             assertEquals(0, activityLogs.getTotal());
             assertTrue(activityLogs.getResults().isEmpty());
         }

@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
+import static java.util.Collections.emptySet;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
@@ -62,7 +63,7 @@ public class StockUpdateTask implements BaseTask {
                 };
                 try (StockUpdateRunnable runnable = remoteStockService.getUpdateRunnable(executorService, updateConsumer)) {
                     executorService.submit(runnable);
-                    databaseServiceFactory.getStockService().consumeForMarket(market, runnable);
+                    databaseServiceFactory.getStockService().consumeForMarket(market, runnable, emptySet());
                 } catch (IOException e) {
                     LOGGER.error("Failed to close stock update runnable", e);
                 }

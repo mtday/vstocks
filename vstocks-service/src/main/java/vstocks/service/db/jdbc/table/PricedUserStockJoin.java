@@ -5,8 +5,15 @@ import vstocks.model.*;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
+
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static vstocks.model.DatabaseField.*;
+import static vstocks.model.Sort.SortDirection.DESC;
 
 public class PricedUserStockJoin extends BaseTable {
     private static final RowMapper<PricedUserStock> ROW_MAPPER = rs -> {
@@ -23,6 +30,11 @@ public class PricedUserStockJoin extends BaseTable {
                 .setPrice(price);
     };
 
+    @Override
+    protected Set<Sort> getDefaultSort() {
+        return new HashSet<>(asList(MARKET.toSort(), SYMBOL.toSort(), TIMESTAMP.toSort(DESC)));
+    }
+
     public Optional<PricedUserStock> get(Connection connection, String userId, Market market, String symbol) {
         String sql = "SELECT DISTINCT ON (u.market, u.symbol) u.*, p.timestamp, p.price FROM user_stocks u "
                 + "LEFT JOIN stock_prices p ON (u.market = p.market AND u.symbol = p.symbol) "
@@ -30,10 +42,13 @@ public class PricedUserStockJoin extends BaseTable {
         return getOne(connection, ROW_MAPPER, sql, userId, market, symbol);
     }
 
-    public Results<PricedUserStock> getForUser(Connection connection, String userId, Page page) {
+    public Results<PricedUserStock> getForUser(Connection connection, String userId, Page page, Set<Sort> sort) {
         String query = "SELECT DISTINCT ON (u.market, u.symbol) u.*, p.timestamp, p.price FROM user_stocks u "
                 + "LEFT JOIN stock_prices p ON (u.market = p.market AND u.symbol = p.symbol) "
                 + "WHERE u.user_id = ? ORDER BY u.market, u.symbol, p.timestamp DESC LIMIT ? OFFSET ?";
+        if (sort != null && !sort.isEmpty()) {
+            query = format("SELECT * FROM (%s) AS data %s", query, getSort(sort));
+        }
         String countQuery = "SELECT COUNT(*) FROM ("
                 + "SELECT DISTINCT ON (u.market, u.symbol) u.market, u.symbol FROM user_stocks u "
                 + "LEFT JOIN stock_prices p ON (u.market = p.market AND u.symbol = p.symbol) "
@@ -42,11 +57,14 @@ public class PricedUserStockJoin extends BaseTable {
         return results(connection, ROW_MAPPER, page, query, countQuery, userId);
     }
 
-    public Results<PricedUserStock> getForStock(Connection connection, Market market, String symbol, Page page) {
+    public Results<PricedUserStock> getForStock(Connection connection, Market market, String symbol, Page page, Set<Sort> sort) {
         String query = "SELECT DISTINCT ON (u.user_id, u.market, u.symbol) u.*, p.timestamp, p.price FROM user_stocks u "
                 + "LEFT JOIN stock_prices p ON (u.market = p.market AND u.symbol = p.symbol) "
                 + "WHERE u.market = ? AND u.symbol = ? "
                 + "ORDER BY u.user_id, u.market, u.symbol, p.timestamp DESC LIMIT ? OFFSET ?";
+        if (sort != null && !sort.isEmpty()) {
+            query = format("SELECT * FROM (%s) AS data %s", query, getSort(sort));
+        }
         String countQuery = "SELECT COUNT(*) FROM ("
                 + "SELECT DISTINCT ON (u.user_id, u.market, u.symbol) u.user_id FROM user_stocks u "
                 + "LEFT JOIN stock_prices p ON (u.market = p.market AND u.symbol = p.symbol) "
@@ -55,10 +73,13 @@ public class PricedUserStockJoin extends BaseTable {
         return results(connection, ROW_MAPPER, page, query, countQuery, market, symbol);
     }
 
-    public Results<PricedUserStock> getAll(Connection connection, Page page) {
+    public Results<PricedUserStock> getAll(Connection connection, Page page, Set<Sort> sort) {
         String query = "SELECT DISTINCT ON (u.user_id, u.market, u.symbol) u.*, p.timestamp, p.price FROM user_stocks u "
                 + "LEFT JOIN stock_prices p ON (u.market = p.market AND u.symbol = p.symbol) "
                 + "ORDER BY u.user_id, u.market, u.symbol, p.timestamp DESC LIMIT ? OFFSET ?";
+        if (sort != null && !sort.isEmpty()) {
+            query = format("SELECT * FROM (%s) AS data %s", query, getSort(sort));
+        }
         String countQuery = "SELECT COUNT(*) FROM ("
                 + "SELECT DISTINCT ON (u.user_id, u.market, u.symbol) u.user_id, u.market, u.symbol FROM user_stocks u "
                 + "LEFT JOIN stock_prices p ON (u.market = p.market AND u.symbol = p.symbol) "
@@ -67,10 +88,13 @@ public class PricedUserStockJoin extends BaseTable {
         return results(connection, ROW_MAPPER, page, query, countQuery);
     }
 
-    public int consume(Connection connection, Consumer<PricedUserStock> consumer) {
+    public int consume(Connection connection, Consumer<PricedUserStock> consumer, Set<Sort> sort) {
         String sql = "SELECT DISTINCT ON (u.user_id, u.market, u.symbol) u.*, p.timestamp, p.price FROM user_stocks u "
                 + "LEFT JOIN stock_prices p ON (u.market = p.market AND u.symbol = p.symbol) "
                 + "ORDER BY u.user_id, u.market, u.symbol, p.timestamp DESC";
+        if (sort != null && !sort.isEmpty()) {
+            sql = format("SELECT * FROM (%s) AS data %s", sql, getSort(sort));
+        }
         return consume(connection, ROW_MAPPER, consumer, sql);
     }
 }

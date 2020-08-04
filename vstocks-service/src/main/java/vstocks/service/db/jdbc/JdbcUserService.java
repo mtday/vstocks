@@ -7,6 +7,7 @@ import vstocks.service.db.jdbc.table.UserTable;
 
 import javax.sql.DataSource;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static vstocks.config.Config.USER_INITIAL_BALANCE;
@@ -44,13 +45,13 @@ public class JdbcUserService extends BaseService implements UserService {
     }
 
     @Override
-    public Results<User> getAll(Page page) {
-        return withConnection(conn -> userTable.getAll(conn, page));
+    public Results<User> getAll(Page page, Set<Sort> sort) {
+        return withConnection(conn -> userTable.getAll(conn, page, sort));
     }
 
     @Override
-    public int consume(Consumer<User> consumer) {
-        return withConnection(conn -> userTable.consume(conn, consumer));
+    public int consume(Consumer<User> consumer, Set<Sort> sort) {
+        return withConnection(conn -> userTable.consume(conn, consumer, sort));
     }
 
     @Override

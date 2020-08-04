@@ -13,13 +13,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
+import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
 import static vstocks.model.Market.YOUTUBE;
+import static vstocks.model.Sort.SortDirection.DESC;
 
 public class JdbcPricedStockServiceIT {
     @ClassRule
@@ -107,13 +109,13 @@ public class JdbcPricedStockServiceIT {
 
     @Test
     public void testGetForMarket() {
-        Results<PricedStock> results = pricedStockService.getForMarket(TWITTER, new Page());
+        Results<PricedStock> results = pricedStockService.getForMarket(TWITTER, new Page(), emptySet());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
 
     @Test
-    public void testGetForMarketSome() {
+    public void testGetForMarketSomeNoSort() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
@@ -129,7 +131,7 @@ public class JdbcPricedStockServiceIT {
         assertEquals(1, stockPriceService.add(stock2Price1));
         assertEquals(1, stockPriceService.add(stock2Price2));
 
-        Results<PricedStock> results = pricedStockService.getForMarket(TWITTER, new Page());
+        Results<PricedStock> results = pricedStockService.getForMarket(TWITTER, new Page(), emptySet());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
 
@@ -146,17 +148,54 @@ public class JdbcPricedStockServiceIT {
         assertEquals(stock2.getName(), pricedStock2.getName());
         assertEquals(stock2Price1.getTimestamp(), pricedStock2.getTimestamp());
         assertEquals(stock2Price1.getPrice(), pricedStock2.getPrice());
+    }
+
+    @Test
+    public void testGetForMarketSomeWithSort() {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
+        StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+        StockPrice stock2Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock2Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+
+        assertEquals(1, stockService.add(stock1));
+        assertEquals(1, stockService.add(stock2));
+        assertEquals(1, stockPriceService.add(stock1Price1));
+        assertEquals(1, stockPriceService.add(stock1Price2));
+        assertEquals(1, stockPriceService.add(stock2Price1));
+        assertEquals(1, stockPriceService.add(stock2Price2));
+
+        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), NAME.toSort()));
+        Results<PricedStock> results = pricedStockService.getForMarket(TWITTER, new Page(), sort);
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+
+        PricedStock pricedStock1 = results.getResults().get(0);
+        assertEquals(stock2.getMarket(), pricedStock1.getMarket());
+        assertEquals(stock2.getSymbol(), pricedStock1.getSymbol());
+        assertEquals(stock2.getName(), pricedStock1.getName());
+        assertEquals(stock2Price1.getTimestamp(), pricedStock1.getTimestamp());
+        assertEquals(stock2Price1.getPrice(), pricedStock1.getPrice());
+
+        PricedStock pricedStock2 = results.getResults().get(1);
+        assertEquals(stock1.getMarket(), pricedStock2.getMarket());
+        assertEquals(stock1.getSymbol(), pricedStock2.getSymbol());
+        assertEquals(stock1.getName(), pricedStock2.getName());
+        assertEquals(stock1Price1.getTimestamp(), pricedStock2.getTimestamp());
+        assertEquals(stock1Price1.getPrice(), pricedStock2.getPrice());
     }
 
     @Test
     public void testConsumeForMarket() {
         List<PricedStock> results = new ArrayList<>();
-        assertEquals(0, pricedStockService.consumeForMarket(TWITTER, results::add));
+        assertEquals(0, pricedStockService.consumeForMarket(TWITTER, results::add, emptySet()));
         assertTrue(results.isEmpty());
     }
 
     @Test
-    public void testConsumeForMarketSome() {
+    public void testConsumeForMarketSomeNoSort() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
@@ -173,7 +212,7 @@ public class JdbcPricedStockServiceIT {
         assertEquals(1, stockPriceService.add(stock2Price2));
 
         List<PricedStock> results = new ArrayList<>();
-        assertEquals(2, pricedStockService.consumeForMarket(TWITTER, results::add));
+        assertEquals(2, pricedStockService.consumeForMarket(TWITTER, results::add, emptySet()));
         assertEquals(2, results.size());
 
         PricedStock pricedStock1 = results.get(0);
@@ -192,14 +231,51 @@ public class JdbcPricedStockServiceIT {
     }
 
     @Test
+    public void testConsumeForMarketSomeWithSort() {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
+        StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+        StockPrice stock2Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock2Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+
+        assertEquals(1, stockService.add(stock1));
+        assertEquals(1, stockService.add(stock2));
+        assertEquals(1, stockPriceService.add(stock1Price1));
+        assertEquals(1, stockPriceService.add(stock1Price2));
+        assertEquals(1, stockPriceService.add(stock2Price1));
+        assertEquals(1, stockPriceService.add(stock2Price2));
+
+        List<PricedStock> results = new ArrayList<>();
+        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), PRICE.toSort()));
+        assertEquals(2, pricedStockService.consumeForMarket(TWITTER, results::add, sort));
+        assertEquals(2, results.size());
+
+        PricedStock pricedStock1 = results.get(0);
+        assertEquals(stock2.getMarket(), pricedStock1.getMarket());
+        assertEquals(stock2.getSymbol(), pricedStock1.getSymbol());
+        assertEquals(stock2.getName(), pricedStock1.getName());
+        assertEquals(stock2Price1.getTimestamp(), pricedStock1.getTimestamp());
+        assertEquals(stock2Price1.getPrice(), pricedStock1.getPrice());
+
+        PricedStock pricedStock2 = results.get(1);
+        assertEquals(stock1.getMarket(), pricedStock2.getMarket());
+        assertEquals(stock1.getSymbol(), pricedStock2.getSymbol());
+        assertEquals(stock1.getName(), pricedStock2.getName());
+        assertEquals(stock1Price1.getTimestamp(), pricedStock2.getTimestamp());
+        assertEquals(stock1Price1.getPrice(), pricedStock2.getPrice());
+    }
+
+    @Test
     public void testGetAllNone() {
-        Results<PricedStock> results = pricedStockService.getAll(new Page());
+        Results<PricedStock> results = pricedStockService.getAll(new Page(), emptySet());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
 
     @Test
-    public void testGetAllSome() {
+    public void testGetAllSomeNoSort() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
@@ -215,7 +291,7 @@ public class JdbcPricedStockServiceIT {
         assertEquals(1, stockPriceService.add(stock2Price1));
         assertEquals(1, stockPriceService.add(stock2Price2));
 
-        Results<PricedStock> results = pricedStockService.getAll(new Page());
+        Results<PricedStock> results = pricedStockService.getAll(new Page(), emptySet());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
 
@@ -235,14 +311,51 @@ public class JdbcPricedStockServiceIT {
     }
 
     @Test
+    public void testGetAllSomeWithSort() {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
+        StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+        StockPrice stock2Price1 = new StockPrice().setMarket(YOUTUBE).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock2Price2 = new StockPrice().setMarket(YOUTUBE).setSymbol(stock2.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+
+        assertEquals(1, stockService.add(stock1));
+        assertEquals(1, stockService.add(stock2));
+        assertEquals(1, stockPriceService.add(stock1Price1));
+        assertEquals(1, stockPriceService.add(stock1Price2));
+        assertEquals(1, stockPriceService.add(stock2Price1));
+        assertEquals(1, stockPriceService.add(stock2Price2));
+
+        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), PRICE.toSort()));
+        Results<PricedStock> results = pricedStockService.getAll(new Page(), sort);
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+
+        PricedStock pricedStock1 = results.getResults().get(0);
+        assertEquals(stock2.getMarket(), pricedStock1.getMarket());
+        assertEquals(stock2.getSymbol(), pricedStock1.getSymbol());
+        assertEquals(stock2.getName(), pricedStock1.getName());
+        assertEquals(stock2Price1.getTimestamp(), pricedStock1.getTimestamp());
+        assertEquals(stock2Price1.getPrice(), pricedStock1.getPrice());
+
+        PricedStock pricedStock2 = results.getResults().get(1);
+        assertEquals(stock1.getMarket(), pricedStock2.getMarket());
+        assertEquals(stock1.getSymbol(), pricedStock2.getSymbol());
+        assertEquals(stock1.getName(), pricedStock2.getName());
+        assertEquals(stock1Price1.getTimestamp(), pricedStock2.getTimestamp());
+        assertEquals(stock1Price1.getPrice(), pricedStock2.getPrice());
+    }
+
+    @Test
     public void testConsumeNone() {
         List<PricedStock> list = new ArrayList<>();
-        assertEquals(0, pricedStockService.consume(list::add));
+        assertEquals(0, pricedStockService.consume(list::add, emptySet()));
         assertTrue(list.isEmpty());
     }
 
     @Test
-    public void testConsumeSome() {
+    public void testConsumeSomeNoSort() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
@@ -259,7 +372,7 @@ public class JdbcPricedStockServiceIT {
         assertEquals(1, stockPriceService.add(stock2Price2));
 
         List<PricedStock> results = new ArrayList<>();
-        assertEquals(2, pricedStockService.consume(results::add));
+        assertEquals(2, pricedStockService.consume(results::add, emptySet()));
         assertEquals(2, results.size());
 
         PricedStock pricedStock1 = results.get(0);
@@ -275,6 +388,43 @@ public class JdbcPricedStockServiceIT {
         assertEquals(stock2.getName(), pricedStock2.getName());
         assertEquals(stock2Price1.getTimestamp(), pricedStock2.getTimestamp());
         assertEquals(stock2Price1.getPrice(), pricedStock2.getPrice());
+    }
+
+    @Test
+    public void testConsumeSomeWithSort() {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
+        StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+        StockPrice stock2Price1 = new StockPrice().setMarket(YOUTUBE).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stock2Price2 = new StockPrice().setMarket(YOUTUBE).setSymbol(stock2.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
+
+        assertEquals(1, stockService.add(stock1));
+        assertEquals(1, stockService.add(stock2));
+        assertEquals(1, stockPriceService.add(stock1Price1));
+        assertEquals(1, stockPriceService.add(stock1Price2));
+        assertEquals(1, stockPriceService.add(stock2Price1));
+        assertEquals(1, stockPriceService.add(stock2Price2));
+
+        List<PricedStock> results = new ArrayList<>();
+        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), PRICE.toSort()));
+        assertEquals(2, pricedStockService.consume(results::add, sort));
+        assertEquals(2, results.size());
+
+        PricedStock pricedStock1 = results.get(0);
+        assertEquals(stock2.getMarket(), pricedStock1.getMarket());
+        assertEquals(stock2.getSymbol(), pricedStock1.getSymbol());
+        assertEquals(stock2.getName(), pricedStock1.getName());
+        assertEquals(stock2Price1.getTimestamp(), pricedStock1.getTimestamp());
+        assertEquals(stock2Price1.getPrice(), pricedStock1.getPrice());
+
+        PricedStock pricedStock2 = results.get(1);
+        assertEquals(stock1.getMarket(), pricedStock2.getMarket());
+        assertEquals(stock1.getSymbol(), pricedStock2.getSymbol());
+        assertEquals(stock1.getName(), pricedStock2.getName());
+        assertEquals(stock1Price1.getTimestamp(), pricedStock2.getTimestamp());
+        assertEquals(stock1Price1.getPrice(), pricedStock2.getPrice());
     }
 
     @Test

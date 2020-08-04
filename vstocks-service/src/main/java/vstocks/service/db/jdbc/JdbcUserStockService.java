@@ -10,6 +10,7 @@ import vstocks.service.db.jdbc.table.UserStockTable;
 import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -29,23 +30,23 @@ public class JdbcUserStockService extends BaseService implements UserStockServic
     }
 
     @Override
-    public Results<UserStock> getForUser(String userId, Page page) {
-        return withConnection(conn -> userStockTable.getForUser(conn, userId, page));
+    public Results<UserStock> getForUser(String userId, Page page, Set<Sort> sort) {
+        return withConnection(conn -> userStockTable.getForUser(conn, userId, page, sort));
     }
 
     @Override
-    public Results<UserStock> getForStock(Market market, String symbol, Page page) {
-        return withConnection(conn -> userStockTable.getForStock(conn, market, symbol, page));
+    public Results<UserStock> getForStock(Market market, String symbol, Page page, Set<Sort> sort) {
+        return withConnection(conn -> userStockTable.getForStock(conn, market, symbol, page, sort));
     }
 
     @Override
-    public Results<UserStock> getAll(Page page) {
-        return withConnection(conn -> userStockTable.getAll(conn, page));
+    public Results<UserStock> getAll(Page page, Set<Sort> sort) {
+        return withConnection(conn -> userStockTable.getAll(conn, page, sort));
     }
 
     @Override
-    public int consume(Consumer<UserStock> consumer) {
-        return withConnection(conn -> userStockTable.consume(conn, consumer));
+    public int consume(Consumer<UserStock> consumer, Set<Sort> sort) {
+        return withConnection(conn -> userStockTable.consume(conn, consumer, sort));
     }
 
     @Override

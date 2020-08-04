@@ -1,23 +1,21 @@
 package vstocks.service.db;
 
-import vstocks.model.Market;
-import vstocks.model.Page;
-import vstocks.model.Results;
-import vstocks.model.UserStock;
+import vstocks.model.*;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public interface UserStockService {
     Optional<UserStock> get(String userId, Market market, String symbol);
 
-    Results<UserStock> getForUser(String userId, Page page);
+    Results<UserStock> getForUser(String userId, Page page, Set<Sort> sort);
 
-    Results<UserStock> getForStock(Market market, String symbol, Page page);
+    Results<UserStock> getForStock(Market market, String symbol, Page page, Set<Sort> sort);
 
-    Results<UserStock> getAll(Page page);
+    Results<UserStock> getAll(Page page, Set<Sort> sort);
 
-    int consume(Consumer<UserStock> consumer);
+    int consume(Consumer<UserStock> consumer, Set<Sort> sort);
 
     int buyStock(String userId, Market market, String symbol, int shares);
 

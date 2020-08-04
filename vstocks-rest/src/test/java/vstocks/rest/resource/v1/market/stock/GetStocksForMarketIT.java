@@ -16,8 +16,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static vstocks.model.Market.TWITTER;
@@ -38,7 +37,7 @@ public class GetStocksForMarketIT extends ResourceTest {
     @Test
     public void testGetForMarketsNone() {
         PricedStockService pricedStockService = mock(PricedStockService.class);
-        when(pricedStockService.getForMarket(eq(TWITTER), any())).thenReturn(new Results<>());
+        when(pricedStockService.getForMarket(eq(TWITTER), any(), anySet())).thenReturn(new Results<>());
         when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         Response response = target("/v1/market/twitter/stocks").request().get();
@@ -63,7 +62,7 @@ public class GetStocksForMarketIT extends ResourceTest {
         Results<PricedStock> results = new Results<PricedStock>().setPage(new Page()).setTotal(3)
                 .setResults(asList(pricedStock1, pricedStock2, pricedStock3));
         PricedStockService pricedStockService = mock(PricedStockService.class);
-        when(pricedStockService.getForMarket(eq(TWITTER), any())).thenReturn(results);
+        when(pricedStockService.getForMarket(eq(TWITTER), any(), anySet())).thenReturn(results);
         when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         Response response = target("/v1/market/twitter/stocks").request().get();

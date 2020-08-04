@@ -1,14 +1,12 @@
 package vstocks.service.db.jdbc;
 
-import vstocks.model.Market;
-import vstocks.model.Page;
-import vstocks.model.Results;
-import vstocks.model.Stock;
+import vstocks.model.*;
 import vstocks.service.db.StockService;
 import vstocks.service.db.jdbc.table.StockTable;
 
 import javax.sql.DataSource;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class JdbcStockService extends BaseService implements StockService {
@@ -24,23 +22,23 @@ public class JdbcStockService extends BaseService implements StockService {
     }
 
     @Override
-    public Results<Stock> getForMarket(Market market, Page page) {
-        return withConnection(conn -> stockTable.getForMarket(conn, market, page));
+    public Results<Stock> getForMarket(Market market, Page page, Set<Sort> sort) {
+        return withConnection(conn -> stockTable.getForMarket(conn, market, page, sort));
     }
 
     @Override
-    public int consumeForMarket(Market market, Consumer<Stock> consumer) {
-        return withConnection(conn -> stockTable.consumeForMarket(conn, market, consumer));
+    public int consumeForMarket(Market market, Consumer<Stock> consumer, Set<Sort> sort) {
+        return withConnection(conn -> stockTable.consumeForMarket(conn, market, consumer, sort));
     }
 
     @Override
-    public Results<Stock> getAll(Page page) {
-        return withConnection(conn -> stockTable.getAll(conn, page));
+    public Results<Stock> getAll(Page page, Set<Sort> sort) {
+        return withConnection(conn -> stockTable.getAll(conn, page, sort));
     }
 
     @Override
-    public int consume(Consumer<Stock> consumer) {
-        return withConnection(conn -> stockTable.consume(conn, consumer));
+    public int consume(Consumer<Stock> consumer, Set<Sort> sort) {
+        return withConnection(conn -> stockTable.consume(conn, consumer, sort));
     }
 
     @Override

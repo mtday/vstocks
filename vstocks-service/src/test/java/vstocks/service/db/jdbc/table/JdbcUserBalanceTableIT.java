@@ -9,11 +9,13 @@ import vstocks.service.db.DataSourceExternalResource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
+import static vstocks.model.DatabaseField.*;
+import static vstocks.model.Sort.SortDirection.DESC;
 import static vstocks.model.UserSource.TwitterClient;
 
 public class JdbcUserBalanceTableIT {
@@ -72,14 +74,14 @@ public class JdbcUserBalanceTableIT {
     @Test
     public void testGetAllNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<UserBalance> results = userBalanceTable.getAll(connection, new Page());
+            Results<UserBalance> results = userBalanceTable.getAll(connection, new Page(), emptySet());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }
     }
 
     @Test
-    public void testGetAllSome() throws SQLException {
+    public void testGetAllSomeNoSort() throws SQLException {
         UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
         UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
@@ -89,11 +91,31 @@ public class JdbcUserBalanceTableIT {
         }
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<UserBalance> results = userBalanceTable.getAll(connection, new Page());
+            Results<UserBalance> results = userBalanceTable.getAll(connection, new Page(), emptySet());
             assertEquals(2, results.getTotal());
             assertEquals(2, results.getResults().size());
-            assertTrue(results.getResults().contains(userBalance1));
-            assertTrue(results.getResults().contains(userBalance2));
+            assertEquals(userBalance1, results.getResults().get(0));
+            assertEquals(userBalance2, results.getResults().get(1));
+        }
+    }
+
+    @Test
+    public void testGetAllSomeWithSort() throws SQLException {
+        UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
+        UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userBalanceTable.add(connection, userBalance1));
+            assertEquals(1, userBalanceTable.add(connection, userBalance2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), BALANCE.toSort()));
+            Results<UserBalance> results = userBalanceTable.getAll(connection, new Page(), sort);
+            assertEquals(2, results.getTotal());
+            assertEquals(2, results.getResults().size());
+            assertEquals(userBalance2, results.getResults().get(0));
+            assertEquals(userBalance1, results.getResults().get(1));
         }
     }
 
@@ -101,13 +123,13 @@ public class JdbcUserBalanceTableIT {
     public void testConsumeNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             List<UserBalance> list = new ArrayList<>();
-            assertEquals(0, userBalanceTable.consume(connection, list::add));
+            assertEquals(0, userBalanceTable.consume(connection, list::add, emptySet()));
             assertTrue(list.isEmpty());
         }
     }
 
     @Test
-    public void testConsumeSome() throws SQLException {
+    public void testConsumeSomeNoSort() throws SQLException {
         UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
         UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
@@ -118,10 +140,30 @@ public class JdbcUserBalanceTableIT {
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             List<UserBalance> list = new ArrayList<>();
-            assertEquals(2, userBalanceTable.consume(connection, list::add));
+            assertEquals(2, userBalanceTable.consume(connection, list::add, emptySet()));
             assertEquals(2, list.size());
-            assertTrue(list.contains(userBalance1));
-            assertTrue(list.contains(userBalance2));
+            assertEquals(userBalance1, list.get(0));
+            assertEquals(userBalance2, list.get(1));
+        }
+    }
+
+    @Test
+    public void testConsumeSomeWithSort() throws SQLException {
+        UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
+        UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userBalanceTable.add(connection, userBalance1));
+            assertEquals(1, userBalanceTable.add(connection, userBalance2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<UserBalance> list = new ArrayList<>();
+            Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), BALANCE.toSort()));
+            assertEquals(2, userBalanceTable.consume(connection, list::add, sort));
+            assertEquals(2, list.size());
+            assertEquals(userBalance2, list.get(0));
+            assertEquals(userBalance1, list.get(1));
         }
     }
 
@@ -292,7 +334,7 @@ public class JdbcUserBalanceTableIT {
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<UserBalance> results = userBalanceTable.getAll(connection, new Page());
+            Results<UserBalance> results = userBalanceTable.getAll(connection, new Page(), emptySet());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }

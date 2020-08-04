@@ -6,6 +6,7 @@ import vstocks.service.db.jdbc.table.PricedStockJoin;
 
 import javax.sql.DataSource;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class JdbcPricedStockService extends BaseService implements PricedStockService {
@@ -21,23 +22,23 @@ public class JdbcPricedStockService extends BaseService implements PricedStockSe
     }
 
     @Override
-    public Results<PricedStock> getForMarket(Market market, Page page) {
-        return withConnection(conn -> pricedStockJoin.getForMarket(conn, market, page));
+    public Results<PricedStock> getForMarket(Market market, Page page, Set<Sort> sort) {
+        return withConnection(conn -> pricedStockJoin.getForMarket(conn, market, page, sort));
     }
 
     @Override
-    public int consumeForMarket(Market market, Consumer<PricedStock> consumer) {
-        return withConnection(conn -> pricedStockJoin.consumeForMarket(conn, market, consumer));
+    public int consumeForMarket(Market market, Consumer<PricedStock> consumer, Set<Sort> sort) {
+        return withConnection(conn -> pricedStockJoin.consumeForMarket(conn, market, consumer, sort));
     }
 
     @Override
-    public Results<PricedStock> getAll(Page page) {
-        return withConnection(conn -> pricedStockJoin.getAll(conn, page));
+    public Results<PricedStock> getAll(Page page, Set<Sort> sort) {
+        return withConnection(conn -> pricedStockJoin.getAll(conn, page, sort));
     }
 
     @Override
-    public int consume(Consumer<PricedStock> consumer) {
-        return withConnection(conn -> pricedStockJoin.consume(conn, consumer));
+    public int consume(Consumer<PricedStock> consumer, Set<Sort> sort) {
+        return withConnection(conn -> pricedStockJoin.consume(conn, consumer, sort));
     }
 
     @Override

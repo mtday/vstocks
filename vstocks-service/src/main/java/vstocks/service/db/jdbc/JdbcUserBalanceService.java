@@ -2,12 +2,14 @@ package vstocks.service.db.jdbc;
 
 import vstocks.model.Page;
 import vstocks.model.Results;
+import vstocks.model.Sort;
 import vstocks.model.UserBalance;
 import vstocks.service.db.UserBalanceService;
 import vstocks.service.db.jdbc.table.UserBalanceTable;
 
 import javax.sql.DataSource;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class JdbcUserBalanceService extends BaseService implements UserBalanceService {
@@ -23,13 +25,13 @@ public class JdbcUserBalanceService extends BaseService implements UserBalanceSe
     }
 
     @Override
-    public Results<UserBalance> getAll(Page page) {
-        return withConnection(conn -> userBalanceTable.getAll(conn, page));
+    public Results<UserBalance> getAll(Page page, Set<Sort> sort) {
+        return withConnection(conn -> userBalanceTable.getAll(conn, page, sort));
     }
 
     @Override
-    public int consume(Consumer<UserBalance> consumer) {
-        return withConnection(conn -> userBalanceTable.consume(conn, consumer));
+    public int consume(Consumer<UserBalance> consumer, Set<Sort> sort) {
+        return withConnection(conn -> userBalanceTable.consume(conn, consumer, sort));
     }
 
     @Override

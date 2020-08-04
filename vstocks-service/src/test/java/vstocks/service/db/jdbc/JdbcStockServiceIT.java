@@ -6,19 +6,22 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import vstocks.model.Page;
 import vstocks.model.Results;
+import vstocks.model.Sort;
 import vstocks.model.Stock;
 import vstocks.service.db.DataSourceExternalResource;
 import vstocks.service.db.jdbc.table.StockTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
+import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
 import static vstocks.model.Market.YOUTUBE;
+import static vstocks.model.Sort.SortDirection.DESC;
 
 public class JdbcStockServiceIT {
     @ClassRule
@@ -60,86 +63,146 @@ public class JdbcStockServiceIT {
 
     @Test
     public void testGetForMarket() {
-        Results<Stock> results = stockService.getForMarket(TWITTER, new Page());
+        Results<Stock> results = stockService.getForMarket(TWITTER, new Page(), emptySet());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
 
     @Test
-    public void testGetForMarketSome() {
+    public void testGetForMarketSomeNoSort() {
         Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
         assertEquals(1, stockService.add(stock1));
         assertEquals(1, stockService.add(stock2));
 
-        Results<Stock> results = stockService.getForMarket(TWITTER, new Page());
+        Results<Stock> results = stockService.getForMarket(TWITTER, new Page(), emptySet());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
-        assertTrue(results.getResults().contains(stock1));
-        assertTrue(results.getResults().contains(stock2));
+        assertEquals(stock1, results.getResults().get(0));
+        assertEquals(stock2, results.getResults().get(1));
+    }
+
+    @Test
+    public void testGetForMarketSomeWithSort() {
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
+        assertEquals(1, stockService.add(stock1));
+        assertEquals(1, stockService.add(stock2));
+
+        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), NAME.toSort()));
+        Results<Stock> results = stockService.getForMarket(TWITTER, new Page(), sort);
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(stock2, results.getResults().get(0));
+        assertEquals(stock1, results.getResults().get(1));
     }
 
     @Test
     public void testConsumeForMarket() {
         List<Stock> results = new ArrayList<>();
-        assertEquals(0, stockService.consumeForMarket(TWITTER, results::add));
+        assertEquals(0, stockService.consumeForMarket(TWITTER, results::add, emptySet()));
         assertTrue(results.isEmpty());
     }
 
     @Test
-    public void testConsumeForMarketSome() {
+    public void testConsumeForMarketSomeNoSort() {
         Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
         assertEquals(1, stockService.add(stock1));
         assertEquals(1, stockService.add(stock2));
 
         List<Stock> results = new ArrayList<>();
-        assertEquals(2, stockService.consumeForMarket(TWITTER, results::add));
+        assertEquals(2, stockService.consumeForMarket(TWITTER, results::add, emptySet()));
         assertEquals(2, results.size());
-        assertTrue(results.contains(stock1));
-        assertTrue(results.contains(stock2));
+        assertEquals(stock1, results.get(0));
+        assertEquals(stock2, results.get(1));
+    }
+
+    @Test
+    public void testConsumeForMarketSomeWithSort() {
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
+        assertEquals(1, stockService.add(stock1));
+        assertEquals(1, stockService.add(stock2));
+
+        List<Stock> results = new ArrayList<>();
+        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), NAME.toSort()));
+        assertEquals(2, stockService.consumeForMarket(TWITTER, results::add, sort));
+        assertEquals(2, results.size());
+        assertEquals(stock2, results.get(0));
+        assertEquals(stock1, results.get(1));
     }
 
     @Test
     public void testGetAllNone() {
-        Results<Stock> results = stockService.getAll(new Page());
+        Results<Stock> results = stockService.getAll(new Page(), emptySet());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
 
     @Test
-    public void testGetAllSome() {
+    public void testGetAllSomeNoSort() {
         Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
         assertEquals(1, stockService.add(stock1));
         assertEquals(1, stockService.add(stock2));
 
-        Results<Stock> results = stockService.getAll(new Page());
+        Results<Stock> results = stockService.getAll(new Page(), emptySet());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
-        assertTrue(results.getResults().contains(stock1));
-        assertTrue(results.getResults().contains(stock2));
+        assertEquals(stock1, results.getResults().get(0));
+        assertEquals(stock2, results.getResults().get(1));
+    }
+
+    @Test
+    public void testGetAllSomeWithSort() {
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
+        assertEquals(1, stockService.add(stock1));
+        assertEquals(1, stockService.add(stock2));
+
+        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), NAME.toSort()));
+        Results<Stock> results = stockService.getAll(new Page(), sort);
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(stock2, results.getResults().get(0));
+        assertEquals(stock1, results.getResults().get(1));
     }
 
     @Test
     public void testConsumeNone() {
         List<Stock> list = new ArrayList<>();
-        assertEquals(0, stockService.consume(list::add));
+        assertEquals(0, stockService.consume(list::add, emptySet()));
         assertTrue(list.isEmpty());
     }
 
     @Test
-    public void testConsumeSome() {
+    public void testConsumeSomeNoSort() {
         Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
         Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
         assertEquals(1, stockService.add(stock1));
         assertEquals(1, stockService.add(stock2));
 
         List<Stock> list = new ArrayList<>();
-        assertEquals(2, stockService.consume(list::add));
+        assertEquals(2, stockService.consume(list::add, emptySet()));
         assertEquals(2, list.size());
-        assertTrue(list.contains(stock1));
-        assertTrue(list.contains(stock2));
+        assertEquals(stock1, list.get(0));
+        assertEquals(stock2, list.get(1));
+    }
+
+    @Test
+    public void testConsumeSomeWithSort() {
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
+        Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
+        assertEquals(1, stockService.add(stock1));
+        assertEquals(1, stockService.add(stock2));
+
+        List<Stock> list = new ArrayList<>();
+        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), NAME.toSort()));
+        assertEquals(2, stockService.consume(list::add, sort));
+        assertEquals(2, list.size());
+        assertEquals(stock2, list.get(0));
+        assertEquals(stock1, list.get(1));
     }
 
     @Test

@@ -2,9 +2,11 @@ package vstocks.service.db;
 
 import vstocks.model.Page;
 import vstocks.model.Results;
+import vstocks.model.Sort;
 import vstocks.model.User;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public interface UserService {
@@ -14,9 +16,9 @@ public interface UserService {
 
     int login(User user);
 
-    Results<User> getAll(Page page);
+    Results<User> getAll(Page page, Set<Sort> sort);
 
-    int consume(Consumer<User> consumer);
+    int consume(Consumer<User> consumer, Set<Sort> sort);
 
     int add(User user);
 

@@ -1,16 +1,20 @@
 package vstocks.service.db.jdbc.table;
 
-import vstocks.model.Market;
-import vstocks.model.Page;
-import vstocks.model.Results;
-import vstocks.model.StockPrice;
+import vstocks.model.*;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
+
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static vstocks.model.DatabaseField.*;
+import static vstocks.model.Sort.SortDirection.DESC;
 
 public class StockPriceTable extends BaseTable {
     private static final RowMapper<StockPrice> ROW_MAPPER = rs ->
@@ -28,34 +32,41 @@ public class StockPriceTable extends BaseTable {
         ps.setInt(++index, stockPrice.getPrice());
     };
 
+    @Override
+    protected Set<Sort> getDefaultSort() {
+        return new HashSet<>(asList(MARKET.toSort(), SYMBOL.toSort(), TIMESTAMP.toSort(DESC)));
+    }
+
     public Optional<StockPrice> getLatest(Connection connection, Market market, String symbol) {
-        String query = "SELECT * FROM stock_prices WHERE market = ? AND symbol = ? ORDER BY timestamp DESC LIMIT 1";
+        String query = format("SELECT * FROM stock_prices WHERE market = ? AND symbol = ? %s LIMIT 1", getSort(getDefaultSort()));
         return getOne(connection, ROW_MAPPER, query, market, symbol);
     }
 
-    public Results<StockPrice> getLatest(Connection connection, Market market, Collection<String> symbols, Page page) {
+    public Results<StockPrice> getLatest(Connection connection, Market market, Collection<String> symbols, Page page, Set<Sort> sort) {
         String query = "SELECT DISTINCT ON (symbol) * FROM stock_prices WHERE market = ? AND symbol = ANY(?) "
                 + "ORDER BY symbol, timestamp DESC LIMIT ? OFFSET ?";
+        if (sort != null && !sort.isEmpty()) {
+            query = format("SELECT * FROM (%s) AS data %s", query, getSort(sort));
+        }
         String countQuery = "SELECT COUNT(*) FROM (SELECT DISTINCT ON (symbol) * FROM stock_prices "
                 + "WHERE market = ? AND symbol = ANY(?)) AS data";
         return results(connection, ROW_MAPPER, page, query, countQuery, market, symbols);
     }
 
-    public Results<StockPrice> getForStock(Connection connection, Market market, String symbol, Page page) {
-        String query = "SELECT * FROM stock_prices WHERE market = ? AND symbol = ? "
-                + "ORDER BY timestamp DESC LIMIT ? OFFSET ?";
+    public Results<StockPrice> getForStock(Connection connection, Market market, String symbol, Page page, Set<Sort> sort) {
+        String query = format("SELECT * FROM stock_prices WHERE market = ? AND symbol = ? %s LIMIT ? OFFSET ?", getSort(sort));
         String countQuery = "SELECT COUNT(*) FROM stock_prices WHERE market = ? AND symbol = ?";
         return results(connection, ROW_MAPPER, page, query, countQuery, market, symbol);
     }
 
-    public Results<StockPrice> getAll(Connection connection, Page page) {
-        String query = "SELECT * FROM stock_prices ORDER BY market, symbol, timestamp DESC LIMIT ? OFFSET ?";
+    public Results<StockPrice> getAll(Connection connection, Page page, Set<Sort> sort) {
+        String query = format("SELECT * FROM stock_prices %s LIMIT ? OFFSET ?", getSort(sort));
         String countQuery = "SELECT COUNT(*) FROM stock_prices";
         return results(connection, ROW_MAPPER, page, query, countQuery);
     }
 
-    public int consume(Connection connection, Consumer<StockPrice> consumer) {
-        String sql = "SELECT * FROM stock_prices ORDER BY market, symbol, timestamp DESC";
+    public int consume(Connection connection, Consumer<StockPrice> consumer, Set<Sort> sort) {
+        String sql = format("SELECT * FROM stock_prices %s", getSort(sort));
         return consume(connection, ROW_MAPPER, consumer, sql);
     }
 

@@ -1,14 +1,12 @@
 package vstocks.service.db.jdbc;
 
-import vstocks.model.Market;
-import vstocks.model.Page;
-import vstocks.model.PricedUserStock;
-import vstocks.model.Results;
+import vstocks.model.*;
 import vstocks.service.db.PricedUserStockService;
 import vstocks.service.db.jdbc.table.PricedUserStockJoin;
 
 import javax.sql.DataSource;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class JdbcPricedUserStockService extends BaseService implements PricedUserStockService {
@@ -24,22 +22,22 @@ public class JdbcPricedUserStockService extends BaseService implements PricedUse
     }
 
     @Override
-    public Results<PricedUserStock> getForUser(String userId, Page page) {
-        return withConnection(conn -> pricedUserStockJoin.getForUser(conn, userId, page));
+    public Results<PricedUserStock> getForUser(String userId, Page page, Set<Sort> sort) {
+        return withConnection(conn -> pricedUserStockJoin.getForUser(conn, userId, page, sort));
     }
 
     @Override
-    public Results<PricedUserStock> getForStock(Market market, String symbol, Page page) {
-        return withConnection(conn -> pricedUserStockJoin.getForStock(conn, market, symbol, page));
+    public Results<PricedUserStock> getForStock(Market market, String symbol, Page page, Set<Sort> sort) {
+        return withConnection(conn -> pricedUserStockJoin.getForStock(conn, market, symbol, page, sort));
     }
 
     @Override
-    public Results<PricedUserStock> getAll(Page page) {
-        return withConnection(conn -> pricedUserStockJoin.getAll(conn, page));
+    public Results<PricedUserStock> getAll(Page page, Set<Sort> sort) {
+        return withConnection(conn -> pricedUserStockJoin.getAll(conn, page, sort));
     }
 
     @Override
-    public int consume(Consumer<PricedUserStock> consumer) {
-        return withConnection(conn -> pricedUserStockJoin.consume(conn, consumer));
+    public int consume(Consumer<PricedUserStock> consumer, Set<Sort> sort) {
+        return withConnection(conn -> pricedUserStockJoin.consume(conn, consumer, sort));
     }
 }

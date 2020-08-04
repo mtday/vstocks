@@ -1,14 +1,18 @@
 package vstocks.service.db.jdbc.table;
 
-import vstocks.model.ActivityLog;
-import vstocks.model.Market;
-import vstocks.model.Page;
-import vstocks.model.Results;
+import vstocks.model.*;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
+
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static vstocks.model.DatabaseField.*;
+import static vstocks.model.Sort.SortDirection.DESC;
 
 public class ActivityLogTable extends BaseTable {
     private static final RowMapper<ActivityLog> ROW_MAPPER = rs ->
@@ -32,30 +36,35 @@ public class ActivityLogTable extends BaseTable {
         ps.setInt(++index, activityLog.getPrice());
     };
 
+    @Override
+    protected Set<Sort> getDefaultSort() {
+        return new HashSet<>(asList(TIMESTAMP.toSort(DESC), USER_ID.toSort(), MARKET.toSort(), SYMBOL.toSort()));
+    }
+
     public Optional<ActivityLog> get(Connection connection, String id) {
         return getOne(connection, ROW_MAPPER, "SELECT * FROM activity_logs WHERE id = ?", id);
     }
 
-    public Results<ActivityLog> getForUser(Connection connection, String userId, Page page) {
-        String query = "SELECT * FROM activity_logs WHERE user_id = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?";
+    public Results<ActivityLog> getForUser(Connection connection, String userId, Page page, Set<Sort> sort) {
+        String query = format("SELECT * FROM activity_logs WHERE user_id = ? %s LIMIT ? OFFSET ?", getSort(sort));
         String countQuery = "SELECT COUNT(*) FROM activity_logs WHERE user_id = ?";
         return results(connection, ROW_MAPPER, page, query, countQuery, userId);
     }
 
-    public Results<ActivityLog> getForStock(Connection connection, Market market, String symbol, Page page) {
-        String query = "SELECT * FROM activity_logs WHERE market = ? AND symbol = ? ORDER BY timestamp DESC LIMIT ? OFFSET ?";
+    public Results<ActivityLog> getForStock(Connection connection, Market market, String symbol, Page page, Set<Sort> sort) {
+        String query = format("SELECT * FROM activity_logs WHERE market = ? AND symbol = ? %s LIMIT ? OFFSET ?", getSort(sort));
         String countQuery = "SELECT COUNT(*) FROM activity_logs WHERE market = ? AND symbol = ?";
         return results(connection, ROW_MAPPER, page, query, countQuery, market, symbol);
     }
 
-    public Results<ActivityLog> getAll(Connection connection, Page page) {
-        String query = "SELECT * FROM activity_logs ORDER BY timestamp DESC, user_id, market, symbol LIMIT ? OFFSET ?";
+    public Results<ActivityLog> getAll(Connection connection, Page page, Set<Sort> sort) {
+        String query = format("SELECT * FROM activity_logs %s LIMIT ? OFFSET ?", getSort(sort));
         String countQuery = "SELECT COUNT(*) FROM activity_logs";
         return results(connection, ROW_MAPPER, page, query, countQuery);
     }
 
-    public int consume(Connection connection, Consumer<ActivityLog> consumer) {
-        String sql = "SELECT * FROM activity_logs ORDER BY timestamp DESC, user_id, market, symbol";
+    public int consume(Connection connection, Consumer<ActivityLog> consumer, Set<Sort> sort) {
+        String sql = format("SELECT * FROM activity_logs %s", getSort(sort));
         return consume(connection, ROW_MAPPER, consumer, sql);
     }
 

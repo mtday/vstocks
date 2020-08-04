@@ -2,18 +2,21 @@ package vstocks.service.db.jdbc.table;
 
 import vstocks.model.Page;
 import vstocks.model.Results;
+import vstocks.model.Sort;
 
 import java.sql.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static java.util.stream.Collectors.joining;
 
-public class BaseTable {
+public abstract class BaseTable {
     private void populatePreparedStatement(PreparedStatement ps, Object... params) throws SQLException {
         for (int i = 0; i < params.length; i++) {
             if (params[i] instanceof Collection) {
@@ -28,6 +31,15 @@ public class BaseTable {
                 ps.setObject(i + 1, params[i]);
             }
         }
+    }
+
+    protected abstract Set<Sort> getDefaultSort();
+
+    protected String getSort(Set<Sort> sort) {
+        if (sort == null || sort.isEmpty()) {
+            return "ORDER BY " + getDefaultSort().stream().map(Sort::toString).collect(joining(", "));
+        }
+        return "ORDER BY " + sort.stream().map(Sort::toString).collect(joining(", "));
     }
 
     protected int getCount(Connection connection, String sql, Object... params) {

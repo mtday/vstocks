@@ -1,9 +1,6 @@
 package vstocks.service.db.jdbc;
 
-import vstocks.model.Market;
-import vstocks.model.Page;
-import vstocks.model.Results;
-import vstocks.model.StockPrice;
+import vstocks.model.*;
 import vstocks.service.db.StockPriceService;
 import vstocks.service.db.jdbc.table.StockPriceTable;
 
@@ -11,6 +8,7 @@ import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class JdbcStockPriceService extends BaseService implements StockPriceService {
@@ -26,23 +24,23 @@ public class JdbcStockPriceService extends BaseService implements StockPriceServ
     }
 
     @Override
-    public Results<StockPrice> getLatest(Market market, Collection<String> symbols, Page page) {
-        return withConnection(conn -> stockPriceTable.getLatest(conn, market, symbols, page));
+    public Results<StockPrice> getLatest(Market market, Collection<String> symbols, Page page, Set<Sort> sort) {
+        return withConnection(conn -> stockPriceTable.getLatest(conn, market, symbols, page, sort));
     }
 
     @Override
-    public Results<StockPrice> getForStock(Market market, String symbol, Page page) {
-        return withConnection(conn -> stockPriceTable.getForStock(conn, market, symbol, page));
+    public Results<StockPrice> getForStock(Market market, String symbol, Page page, Set<Sort> sort) {
+        return withConnection(conn -> stockPriceTable.getForStock(conn, market, symbol, page, sort));
     }
 
     @Override
-    public Results<StockPrice> getAll(Page page) {
-        return withConnection(conn -> stockPriceTable.getAll(conn, page));
+    public Results<StockPrice> getAll(Page page, Set<Sort> sort) {
+        return withConnection(conn -> stockPriceTable.getAll(conn, page, sort));
     }
 
     @Override
-    public int consume(Consumer<StockPrice> consumer) {
-        return withConnection(conn -> stockPriceTable.consume(conn, consumer));
+    public int consume(Consumer<StockPrice> consumer, Set<Sort> sort) {
+        return withConnection(conn -> stockPriceTable.consume(conn, consumer, sort));
     }
 
     @Override

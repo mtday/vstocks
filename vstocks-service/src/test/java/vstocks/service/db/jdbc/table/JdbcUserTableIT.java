@@ -6,17 +6,19 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import vstocks.model.Page;
 import vstocks.model.Results;
+import vstocks.model.Sort;
 import vstocks.model.User;
 import vstocks.service.db.DataSourceExternalResource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
+import static vstocks.model.DatabaseField.*;
+import static vstocks.model.Sort.SortDirection.DESC;
 import static vstocks.model.UserSource.TwitterClient;
 
 public class JdbcUserTableIT {
@@ -141,14 +143,14 @@ public class JdbcUserTableIT {
     @Test
     public void testGetAllNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<User> results =  userTable.getAll(connection, new Page());
+            Results<User> results =  userTable.getAll(connection, new Page(), emptySet());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }
     }
 
     @Test
-    public void testGetAllSome() throws SQLException {
+    public void testGetAllSomeNoSort() throws SQLException {
         User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
         User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
@@ -157,16 +159,35 @@ public class JdbcUserTableIT {
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<User> results = userTable.getAll(connection, new Page());
+            Results<User> results = userTable.getAll(connection, new Page(), emptySet());
             assertEquals(2, results.getTotal());
             assertEquals(2, results.getResults().size());
-            assertTrue(results.getResults().contains(user1));
-            assertTrue(results.getResults().contains(user2));
+            assertEquals(user1, results.getResults().get(0));
+            assertEquals(user2, results.getResults().get(1));
         }
     }
 
     @Test
-    public void testGetAllMultiplePages() throws SQLException {
+    public void testGetAllSomeWithSort() throws SQLException {
+        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
+        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userTable.add(connection, user1));
+            assertEquals(1, userTable.add(connection, user2));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Set<Sort> sort = new LinkedHashSet<>(asList(USERNAME.toSort(DESC), DISPLAY_NAME.toSort()));
+            Results<User> results = userTable.getAll(connection, new Page(), sort);
+            assertEquals(2, results.getTotal());
+            assertEquals(2, results.getResults().size());
+            assertEquals(user2, results.getResults().get(0));
+            assertEquals(user1, results.getResults().get(1));
+        }
+    }
+
+    @Test
+    public void testGetAllMultiplePagesNoSort() throws SQLException {
         User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
         User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
         User user3 = new User().setId("id3").setUsername("name3").setSource(TwitterClient).setDisplayName("Name");
@@ -180,24 +201,61 @@ public class JdbcUserTableIT {
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             Page page = new Page().setSize(2);
-            Results<User> results = userTable.getAll(connection, page);
+            Results<User> results = userTable.getAll(connection, page, emptySet());
             assertEquals(5, results.getTotal());
             assertEquals(2, results.getResults().size());
-            assertTrue(results.getResults().contains(user1));
-            assertTrue(results.getResults().contains(user2));
+            assertEquals(user1, results.getResults().get(0));
+            assertEquals(user2, results.getResults().get(1));
 
             page = page.next();
-            results = userTable.getAll(connection, page);
+            results = userTable.getAll(connection, page, emptySet());
             assertEquals(5, results.getTotal());
             assertEquals(2, results.getResults().size());
-            assertTrue(results.getResults().contains(user3));
-            assertTrue(results.getResults().contains(user4));
+            assertEquals(user3, results.getResults().get(0));
+            assertEquals(user4, results.getResults().get(1));
 
             page = page.next();
-            results = userTable.getAll(connection, page);
+            results = userTable.getAll(connection, page, emptySet());
             assertEquals(5, results.getTotal());
             assertEquals(1, results.getResults().size());
-            assertTrue(results.getResults().contains(user5));
+            assertEquals(user5, results.getResults().get(0));
+        }
+    }
+
+    @Test
+    public void testGetAllMultiplePagesWithSort() throws SQLException {
+        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
+        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
+        User user3 = new User().setId("id3").setUsername("name3").setSource(TwitterClient).setDisplayName("Name");
+        User user4 = new User().setId("id4").setUsername("name4").setSource(TwitterClient).setDisplayName("Name");
+        User user5 = new User().setId("id5").setUsername("name5").setSource(TwitterClient).setDisplayName("Name");
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            for (User user : asList(user1, user2, user3, user4, user5)) {
+                assertEquals(1, userTable.add(connection, user));
+            }
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Page page = new Page().setSize(2);
+            Set<Sort> sort = new LinkedHashSet<>(asList(USERNAME.toSort(DESC), DISPLAY_NAME.toSort()));
+            Results<User> results = userTable.getAll(connection, page, sort);
+            assertEquals(5, results.getTotal());
+            assertEquals(2, results.getResults().size());
+            assertEquals(user5, results.getResults().get(0));
+            assertEquals(user4, results.getResults().get(1));
+
+            page = page.next();
+            results = userTable.getAll(connection, page, sort);
+            assertEquals(5, results.getTotal());
+            assertEquals(2, results.getResults().size());
+            assertEquals(user3, results.getResults().get(0));
+            assertEquals(user2, results.getResults().get(1));
+
+            page = page.next();
+            results = userTable.getAll(connection, page, sort);
+            assertEquals(5, results.getTotal());
+            assertEquals(1, results.getResults().size());
+            assertEquals(user1, results.getResults().get(0));
         }
     }
 
@@ -205,13 +263,13 @@ public class JdbcUserTableIT {
     public void testConsumeNone() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             List<User> list = new ArrayList<>();
-            assertEquals(0, userTable.consume(connection, list::add));
+            assertEquals(0, userTable.consume(connection, list::add, emptySet()));
             assertTrue(list.isEmpty());
         }
     }
 
     @Test
-    public void testConsumeSome() throws SQLException {
+    public void testConsumeSomeNoSort() throws SQLException {
         User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
         User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
@@ -222,10 +280,30 @@ public class JdbcUserTableIT {
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             List<User> list = new ArrayList<>();
-            assertEquals(2, userTable.consume(connection, list::add));
+            assertEquals(2, userTable.consume(connection, list::add, emptySet()));
             assertEquals(2, list.size());
-            assertTrue(list.contains(user1));
-            assertTrue(list.contains(user2));
+            assertEquals(user1, list.get(0));
+            assertEquals(user2, list.get(1));
+        }
+    }
+
+    @Test
+    public void testConsumeSomeWithSort() throws SQLException {
+        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
+        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userTable.add(connection, user1));
+            assertEquals(1, userTable.add(connection, user2));
+            connection.commit();
+        }
+
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            List<User> list = new ArrayList<>();
+            Set<Sort> sort = new LinkedHashSet<>(asList(USERNAME.toSort(DESC), DISPLAY_NAME.toSort()));
+            assertEquals(2, userTable.consume(connection, list::add, sort));
+            assertEquals(2, list.size());
+            assertEquals(user2, list.get(0));
+            assertEquals(user1, list.get(1));
         }
     }
 
@@ -349,7 +427,7 @@ public class JdbcUserTableIT {
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Results<User> results = userTable.getAll(connection, new Page());
+            Results<User> results = userTable.getAll(connection, new Page(), emptySet());
             assertEquals(0, results.getTotal());
             assertTrue(results.getResults().isEmpty());
         }
