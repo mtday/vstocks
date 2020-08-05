@@ -7,15 +7,15 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public interface PricedStockService {
-    Optional<PricedStock> get(Market market, String symbol);
+    Optional<PricedStock> get(Market market, String symbol, Boolean active);
 
-    Results<PricedStock> getForMarket(Market market, Page page, Set<Sort> sort);
+    Results<PricedStock> getForMarket(Market market, Boolean active, Page page, Set<Sort> sort);
 
-    int consumeForMarket(Market market, Consumer<PricedStock> consumer, Set<Sort> sort);
+    int consumeForMarket(Market market, Boolean active, Consumer<PricedStock> consumer, Set<Sort> sort);
 
-    Results<PricedStock> getAll(Page page, Set<Sort> sort);
+    Results<PricedStock> getAll(Boolean active, Page page, Set<Sort> sort);
 
-    int consume(Consumer<PricedStock> consumer, Set<Sort> sort);
+    int consume(Boolean active, Consumer<PricedStock> consumer, Set<Sort> sort);
 
     int add(PricedStock pricedStock);
 }

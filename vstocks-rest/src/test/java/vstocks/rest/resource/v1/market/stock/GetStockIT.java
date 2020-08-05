@@ -17,7 +17,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static vstocks.model.Market.TWITTER;
@@ -38,7 +38,7 @@ public class GetStockIT extends ResourceTest {
     @Test
     public void testStockMissing() {
         PricedStockService pricedStockService = mock(PricedStockService.class);
-        when(pricedStockService.get(eq(TWITTER), eq("missing"))).thenReturn(empty());
+        when(pricedStockService.get(eq(TWITTER), eq("missing"), anyBoolean())).thenReturn(empty());
         when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         Response response = target("/v1/market/twitter/stock/missing").request().get();
@@ -56,7 +56,7 @@ public class GetStockIT extends ResourceTest {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setName("name").setSymbol("symbol").setTimestamp(now).setPrice(10);
         PricedStockService pricedStockService = mock(PricedStockService.class);
-        when(pricedStockService.get(eq(TWITTER), eq("symbol"))).thenReturn(Optional.of(pricedStock));
+        when(pricedStockService.get(eq(TWITTER), eq("symbol"), any())).thenReturn(Optional.of(pricedStock));
         when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         Response response = target("/v1/market/twitter/stock/symbol").request().get();

@@ -7,6 +7,7 @@ public class PricedStock {
     private Market market;
     private String symbol;
     private String name;
+    private boolean active = true;
     private Instant timestamp;
     private int price;
 
@@ -17,7 +18,8 @@ public class PricedStock {
         return new Stock()
                 .setMarket(market)
                 .setSymbol(symbol)
-                .setName(name);
+                .setName(name)
+                .setActive(active);
     }
 
     public StockPrice asStockPrice() {
@@ -52,6 +54,15 @@ public class PricedStock {
 
     public PricedStock setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public PricedStock setActive(boolean active) {
+        this.active = active;
         return this;
     }
 
@@ -93,6 +104,7 @@ public class PricedStock {
                 "market=" + market +
                 ", symbol='" + symbol + '\'' +
                 ", name='" + name + '\'' +
+                ", active=" + active +
                 ", timestamp=" + timestamp +
                 ", price=" + price +
                 '}';

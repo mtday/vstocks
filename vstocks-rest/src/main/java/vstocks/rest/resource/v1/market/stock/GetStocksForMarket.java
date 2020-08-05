@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
 
+import static java.util.Optional.ofNullable;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/v1/market/{marketId}/stocks")
@@ -27,9 +28,11 @@ public class GetStocksForMarket extends BaseResource {
     public Results<PricedStock> getAllStocks(@PathParam("marketId") String marketId,
                                              @QueryParam("pageNum") Integer pageNum,
                                              @QueryParam("pageSize") Integer pageSize,
-                                             @QueryParam("sort") String sort) {
+                                             @QueryParam("sort") String sort,
+                                             @QueryParam("active") String activeParam) {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
-        return databaseServiceFactory.getPricedStockService().getForMarket(market, getPage(pageNum, pageSize), getSort(sort));
+        Boolean active = ofNullable(activeParam).map(Boolean::valueOf).orElse(null);
+        return databaseServiceFactory.getPricedStockService().getForMarket(market, active, getPage(pageNum, pageSize), getSort(sort));
     }
 }

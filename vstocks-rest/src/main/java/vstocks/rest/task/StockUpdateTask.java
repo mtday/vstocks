@@ -63,7 +63,7 @@ public class StockUpdateTask implements BaseTask {
                 };
                 try (StockUpdateRunnable runnable = remoteStockService.getUpdateRunnable(executorService, updateConsumer)) {
                     executorService.submit(runnable);
-                    databaseServiceFactory.getStockService().consumeForMarket(market, runnable, emptySet());
+                    databaseServiceFactory.getStockService().consumeForMarket(market, true, runnable, emptySet());
                 } catch (IOException e) {
                     LOGGER.error("Failed to close stock update runnable", e);
                 }

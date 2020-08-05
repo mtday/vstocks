@@ -17,28 +17,28 @@ public class JdbcStockService extends BaseService implements StockService {
     }
 
     @Override
-    public Optional<Stock> get(Market market, String symbol) {
-        return withConnection(conn -> stockTable.get(conn, market, symbol));
+    public Optional<Stock> get(Market market, String symbol, Boolean active) {
+        return withConnection(conn -> stockTable.get(conn, market, symbol, active));
     }
 
     @Override
-    public Results<Stock> getForMarket(Market market, Page page, Set<Sort> sort) {
-        return withConnection(conn -> stockTable.getForMarket(conn, market, page, sort));
+    public Results<Stock> getForMarket(Market market, Boolean active, Page page, Set<Sort> sort) {
+        return withConnection(conn -> stockTable.getForMarket(conn, market, active, page, sort));
     }
 
     @Override
-    public int consumeForMarket(Market market, Consumer<Stock> consumer, Set<Sort> sort) {
-        return withConnection(conn -> stockTable.consumeForMarket(conn, market, consumer, sort));
+    public int consumeForMarket(Market market, Boolean active, Consumer<Stock> consumer, Set<Sort> sort) {
+        return withConnection(conn -> stockTable.consumeForMarket(conn, market, active, consumer, sort));
     }
 
     @Override
-    public Results<Stock> getAll(Page page, Set<Sort> sort) {
-        return withConnection(conn -> stockTable.getAll(conn, page, sort));
+    public Results<Stock> getAll(Boolean active, Page page, Set<Sort> sort) {
+        return withConnection(conn -> stockTable.getAll(conn, active, page, sort));
     }
 
     @Override
-    public int consume(Consumer<Stock> consumer, Set<Sort> sort) {
-        return withConnection(conn -> stockTable.consume(conn, consumer, sort));
+    public int consume(Boolean active, Consumer<Stock> consumer, Set<Sort> sort) {
+        return withConnection(conn -> stockTable.consume(conn, active, consumer, sort));
     }
 
     @Override
