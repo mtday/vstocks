@@ -1,10 +1,10 @@
 package vstocks.rest;
 
-import vstocks.service.db.DatabaseServiceFactory;
+import vstocks.db.DBFactory;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
 public class Environment {
-    private DatabaseServiceFactory databaseServiceFactory;
+    private DBFactory dbFactory;
     private RemoteStockServiceFactory remoteStockServiceFactory;
     private boolean includeSecurity = true;
     private boolean includeBackgroundTasks = true;
@@ -12,12 +12,12 @@ public class Environment {
     public Environment() {
     }
 
-    public DatabaseServiceFactory getDatabaseServiceFactory() {
-        return databaseServiceFactory;
+    public DBFactory getDBFactory() {
+        return dbFactory;
     }
 
-    public Environment setDatabaseServiceFactory(DatabaseServiceFactory databaseServiceFactory) {
-        this.databaseServiceFactory = databaseServiceFactory;
+    public Environment setDBFactory(DBFactory dbFactory) {
+        this.dbFactory = dbFactory;
         return this;
     }
 

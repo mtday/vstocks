@@ -43,6 +43,6 @@ public class StockPriceAgeOffTask implements BaseTask {
         int days = DATA_HISTORY_DAYS.getInt();
         Instant cutoff = Instant.now().truncatedTo(ChronoUnit.DAYS).minus(days, ChronoUnit.DAYS);
         LOGGER.info("Aging off stock price data older than {} days ({})", days, cutoff);
-        environment.getDatabaseServiceFactory().getStockPriceService().ageOff(cutoff);
+        environment.getDBFactory().getStockPriceDB().ageOff(cutoff);
     }
 }

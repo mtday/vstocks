@@ -4,7 +4,7 @@ import vstocks.model.Market;
 import vstocks.model.PricedStock;
 import vstocks.model.Results;
 import vstocks.rest.resource.BaseResource;
-import vstocks.service.db.DatabaseServiceFactory;
+import vstocks.db.DBFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -16,11 +16,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/v1/market/{marketId}/stocks")
 @Singleton
 public class GetStocksForMarket extends BaseResource {
-    private final DatabaseServiceFactory databaseServiceFactory;
+    private final DBFactory dbFactory;
 
     @Inject
-    public GetStocksForMarket(DatabaseServiceFactory databaseServiceFactory) {
-        this.databaseServiceFactory = databaseServiceFactory;
+    public GetStocksForMarket(DBFactory dbFactory) {
+        this.dbFactory = dbFactory;
     }
 
     @GET
@@ -33,6 +33,6 @@ public class GetStocksForMarket extends BaseResource {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
         Boolean active = ofNullable(activeParam).map(Boolean::valueOf).orElse(null);
-        return databaseServiceFactory.getPricedStockService().getForMarket(market, active, getPage(pageNum, pageSize), getSort(sort));
+        return dbFactory.getPricedStockDB().getForMarket(market, active, getPage(pageNum, pageSize), getSort(sort));
     }
 }

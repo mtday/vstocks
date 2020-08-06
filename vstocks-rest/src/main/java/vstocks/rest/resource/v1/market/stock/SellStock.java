@@ -6,7 +6,7 @@ import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 import vstocks.model.Market;
 import vstocks.model.PricedUserStock;
 import vstocks.rest.resource.BaseResource;
-import vstocks.service.db.DatabaseServiceFactory;
+import vstocks.db.DBFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -20,11 +20,11 @@ import static javax.ws.rs.core.MediaType.WILDCARD;
 @Path("/v1/market/{market}/stock/{symbol}/sell/{shares:[0-9]+}")
 @Singleton
 public class SellStock extends BaseResource {
-    private final DatabaseServiceFactory databaseServiceFactory;
+    private final DBFactory dbFactory;
 
     @Inject
-    public SellStock(DatabaseServiceFactory databaseServiceFactory) {
-        this.databaseServiceFactory = databaseServiceFactory;
+    public SellStock(DBFactory dbFactory) {
+        this.dbFactory = dbFactory;
     }
 
     @POST
@@ -38,10 +38,10 @@ public class SellStock extends BaseResource {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
         String userId = getUser(profile).getId();
-        if (databaseServiceFactory.getUserStockService().sellStock(userId, market, symbol, shares) == 0) {
+        if (dbFactory.getUserStockDB().sellStock(userId, market, symbol, shares) == 0) {
             throw new BadRequestException("Failed to sell " + shares + " shares of " + market + "/" + symbol + " stock");
         }
-        return databaseServiceFactory.getPricedUserStockService().get(userId, market, symbol).orElseGet(() -> {
+        return dbFactory.getPricedUserStockDB().get(userId, market, symbol).orElseGet(() -> {
             // Not found likely means the user sold all their shares of stock.
             Instant instant = Instant.now().truncatedTo(ChronoUnit.SECONDS);
             return new PricedUserStock().setUserId(userId).setMarket(market).setSymbol(symbol).setShares(0).setTimestamp(instant).setPrice(1);

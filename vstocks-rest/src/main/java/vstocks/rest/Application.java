@@ -25,8 +25,8 @@ import vstocks.rest.security.SecurityConfig;
 import vstocks.rest.task.MemoryUsageLoggingTask;
 import vstocks.rest.task.StockPriceAgeOffTask;
 import vstocks.rest.task.StockUpdateTask;
-import vstocks.service.db.DatabaseServiceFactory;
-import vstocks.service.db.jdbc.JdbcDatabaseServiceFactory;
+import vstocks.db.DBFactory;
+import vstocks.db.jdbc.JdbcDBFactory;
 import vstocks.service.remote.DefaultRemoteStockServiceFactory;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
@@ -44,7 +44,7 @@ public class Application extends ResourceConfig {
     public Application() {
         this(new Environment()
                         .setRemoteStockServiceFactory(new DefaultRemoteStockServiceFactory())
-                        .setDatabaseServiceFactory(new JdbcDatabaseServiceFactory(getDataSource()))
+                        .setDBFactory(new JdbcDBFactory(getDataSource()))
                         .setIncludeSecurity(true)
                         .setIncludeBackgroundTasks(true));
     }
@@ -75,7 +75,7 @@ public class Application extends ResourceConfig {
             @Override
             protected void configure() {
                 bind(getObjectMapper()).to(ObjectMapper.class);
-                ofNullable(environment.getDatabaseServiceFactory()).ifPresent(d -> bind(d).to(DatabaseServiceFactory.class));
+                ofNullable(environment.getDBFactory()).ifPresent(d -> bind(d).to(DBFactory.class));
                 ofNullable(environment.getRemoteStockServiceFactory()).ifPresent(r -> bind(r).to(RemoteStockServiceFactory.class));
             }
         });

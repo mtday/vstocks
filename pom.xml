@@ -9,6 +9,7 @@
 
     <modules>
         <module>vstocks-config</module>
+        <module>vstocks-db</module>
         <module>vstocks-model</module>
         <module>vstocks-rest</module>
         <module>vstocks-server</module>
@@ -42,6 +43,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>vstocks-config</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>vstocks-db</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

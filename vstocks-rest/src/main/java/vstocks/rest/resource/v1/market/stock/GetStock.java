@@ -3,7 +3,7 @@ package vstocks.rest.resource.v1.market.stock;
 import vstocks.model.Market;
 import vstocks.model.PricedStock;
 import vstocks.rest.resource.BaseResource;
-import vstocks.service.db.DatabaseServiceFactory;
+import vstocks.db.DBFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -15,11 +15,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/v1/market/{market}/stock/{symbol}")
 @Singleton
 public class GetStock extends BaseResource {
-    private final DatabaseServiceFactory databaseServiceFactory;
+    private final DBFactory dbFactory;
 
     @Inject
-    public GetStock(DatabaseServiceFactory databaseServiceFactory) {
-        this.databaseServiceFactory = databaseServiceFactory;
+    public GetStock(DBFactory dbFactory) {
+        this.dbFactory = dbFactory;
     }
 
     @GET
@@ -30,7 +30,7 @@ public class GetStock extends BaseResource {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
         Boolean active = ofNullable(activeParam).map(Boolean::valueOf).orElse(null);
-        return databaseServiceFactory.getPricedStockService().get(market, symbol, active)
+        return dbFactory.getPricedStockDB().get(market, symbol, active)
                 .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + symbol + " not found"));
     }
 }

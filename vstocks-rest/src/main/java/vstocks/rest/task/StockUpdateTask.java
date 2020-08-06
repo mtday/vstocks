@@ -6,7 +6,7 @@ import vstocks.model.Market;
 import vstocks.model.PricedStock;
 import vstocks.rest.Environment;
 import vstocks.service.StockUpdateRunnable;
-import vstocks.service.db.DatabaseServiceFactory;
+import vstocks.db.DBFactory;
 import vstocks.service.remote.RemoteStockService;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
@@ -53,17 +53,17 @@ public class StockUpdateTask implements BaseTask {
         try {
             LOGGER.info("Updating all stock prices");
             RemoteStockServiceFactory remoteStockServiceFactory = environment.getRemoteStockServiceFactory();
-            DatabaseServiceFactory databaseServiceFactory = environment.getDatabaseServiceFactory();
+            DBFactory dbFactory = environment.getDBFactory();
 
             for (Market market : Market.values()) {
                 RemoteStockService remoteStockService = remoteStockServiceFactory.getForMarket(market);
                 Consumer<PricedStock> updateConsumer = pricedStock -> {
-                    databaseServiceFactory.getStockService().update(pricedStock.asStock());
-                    databaseServiceFactory.getStockPriceService().add(pricedStock.asStockPrice());
+                    dbFactory.getStockDB().update(pricedStock.asStock());
+                    dbFactory.getStockPriceDB().add(pricedStock.asStockPrice());
                 };
                 try (StockUpdateRunnable runnable = remoteStockService.getUpdateRunnable(executorService, updateConsumer)) {
                     executorService.submit(runnable);
-                    databaseServiceFactory.getStockService().consumeForMarket(market, true, runnable, emptySet());
+                    dbFactory.getStockDB().consumeForMarket(market, true, runnable, emptySet());
                 } catch (IOException e) {
                     LOGGER.error("Failed to close stock update runnable", e);
                 }

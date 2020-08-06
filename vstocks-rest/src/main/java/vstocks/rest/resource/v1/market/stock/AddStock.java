@@ -3,7 +3,7 @@ package vstocks.rest.resource.v1.market.stock;
 import vstocks.model.Market;
 import vstocks.model.PricedStock;
 import vstocks.rest.resource.BaseResource;
-import vstocks.service.db.DatabaseServiceFactory;
+import vstocks.db.DBFactory;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
 import javax.inject.Inject;
@@ -16,13 +16,12 @@ import static javax.ws.rs.core.MediaType.WILDCARD;
 @Path("/v1/market/{market}/stock/{symbol}")
 @Singleton
 public class AddStock extends BaseResource {
-    private final DatabaseServiceFactory databaseServiceFactory;
+    private final DBFactory dbFactory;
     private final RemoteStockServiceFactory remoteStockServiceFactory;
 
     @Inject
-    public AddStock(DatabaseServiceFactory databaseServiceFactory,
-                    RemoteStockServiceFactory remoteStockServiceFactory) {
-        this.databaseServiceFactory = databaseServiceFactory;
+    public AddStock(DBFactory dbFactory, RemoteStockServiceFactory remoteStockServiceFactory) {
+        this.dbFactory = dbFactory;
         this.remoteStockServiceFactory = remoteStockServiceFactory;
     }
 
@@ -41,7 +40,7 @@ public class AddStock extends BaseResource {
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + symbol + " not found"));
 
-        databaseServiceFactory.getPricedStockService().add(pricedStock);
+        dbFactory.getPricedStockDB().add(pricedStock);
         return pricedStock;
     }
 }

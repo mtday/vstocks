@@ -4,7 +4,7 @@ import org.junit.Test;
 import vstocks.model.ErrorResponse;
 import vstocks.model.PricedStock;
 import vstocks.rest.ResourceTest;
-import vstocks.service.db.PricedStockService;
+import vstocks.db.PricedStockDB;
 
 import javax.ws.rs.core.Response;
 import java.time.Instant;
@@ -37,9 +37,9 @@ public class GetStockIT extends ResourceTest {
 
     @Test
     public void testStockMissing() {
-        PricedStockService pricedStockService = mock(PricedStockService.class);
-        when(pricedStockService.get(eq(TWITTER), eq("missing"), anyBoolean())).thenReturn(empty());
-        when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
+        PricedStockDB pricedStockDb = mock(PricedStockDB.class);
+        when(pricedStockDb.get(eq(TWITTER), eq("missing"), anyBoolean())).thenReturn(empty());
+        when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
 
         Response response = target("/v1/market/twitter/stock/missing").request().get();
 
@@ -55,9 +55,9 @@ public class GetStockIT extends ResourceTest {
     public void testMarketExists() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setName("name").setSymbol("symbol").setTimestamp(now).setPrice(10);
-        PricedStockService pricedStockService = mock(PricedStockService.class);
-        when(pricedStockService.get(eq(TWITTER), eq("symbol"), any())).thenReturn(Optional.of(pricedStock));
-        when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
+        PricedStockDB pricedStockDb = mock(PricedStockDB.class);
+        when(pricedStockDb.get(eq(TWITTER), eq("symbol"), any())).thenReturn(Optional.of(pricedStock));
+        when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
 
         Response response = target("/v1/market/twitter/stock/symbol").request().get();
 

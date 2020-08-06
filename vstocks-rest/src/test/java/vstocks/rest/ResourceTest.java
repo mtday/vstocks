@@ -7,7 +7,7 @@ import org.pac4j.core.profile.CommonProfile;
 import vstocks.model.Market;
 import vstocks.model.PricedStock;
 import vstocks.model.Results;
-import vstocks.service.db.DatabaseServiceFactory;
+import vstocks.db.DBFactory;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
 import javax.ws.rs.core.GenericType;
@@ -25,16 +25,16 @@ public abstract class ResourceTest extends JerseyTest {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private DatabaseServiceFactory databaseServiceFactory;
+    private DBFactory dbFactory;
     private RemoteStockServiceFactory remoteStockServiceFactory;
 
     @Override
     protected ResourceConfig configure() {
-        databaseServiceFactory = mock(DatabaseServiceFactory.class);
+        dbFactory = mock(DBFactory.class);
         remoteStockServiceFactory = mock(RemoteStockServiceFactory.class);
 
         Environment environment = new Environment()
-                .setDatabaseServiceFactory(databaseServiceFactory)
+                .setDBFactory(dbFactory)
                 .setRemoteStockServiceFactory(remoteStockServiceFactory)
                 .setIncludeSecurity(false) // disableds Pac4j, we include a simple profile below
                 .setIncludeBackgroundTasks(false);
@@ -53,8 +53,8 @@ public abstract class ResourceTest extends JerseyTest {
         return commonProfile;
     }
 
-    public DatabaseServiceFactory getDatabaseServiceFactory() {
-        return databaseServiceFactory;
+    public DBFactory getDBFactory() {
+        return dbFactory;
     }
 
     public RemoteStockServiceFactory getRemoteStockServiceFactory() {

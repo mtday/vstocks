@@ -4,7 +4,7 @@ import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 import vstocks.rest.resource.BaseResource;
-import vstocks.service.db.DatabaseServiceFactory;
+import vstocks.db.DBFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -22,11 +22,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/v1/security/login")
 @Singleton
 public class Login extends BaseResource {
-    private final DatabaseServiceFactory databaseServiceFactory;
+    private final DBFactory dbFactory;
 
     @Inject
-    public Login(DatabaseServiceFactory databaseServiceFactory) {
-        this.databaseServiceFactory = databaseServiceFactory;
+    public Login(DBFactory dbFactory) {
+        this.dbFactory = dbFactory;
     }
 
     @GET
@@ -34,7 +34,7 @@ public class Login extends BaseResource {
     @Produces(APPLICATION_JSON)
     @Pac4JSecurity(clients = "TwitterClient", authorizers = "isAuthenticated")
     public Response twitterLogin(@Context UriInfo uriInfo, @Pac4JProfile CommonProfile profile) {
-        databaseServiceFactory.getUserService().login(getUser(profile));
+        dbFactory.getUserDB().login(getUser(profile));
 
         URI redirectUri = UriBuilder.fromUri(uriInfo.getRequestUri()).replacePath("/app/index.html").build();
         return Response.temporaryRedirect(redirectUri).build();

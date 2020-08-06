@@ -41,6 +41,8 @@
     * Show standings based on account gains over periods of time (month, week, day)
     * Show standings among friends
 
+* System Status Bar
+
 * Business model
 
     * Allow users to "buy" larger challenge sizes

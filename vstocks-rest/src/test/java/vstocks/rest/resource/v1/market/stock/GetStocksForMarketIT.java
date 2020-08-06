@@ -3,7 +3,7 @@ package vstocks.rest.resource.v1.market.stock;
 import org.junit.Test;
 import vstocks.model.*;
 import vstocks.rest.ResourceTest;
-import vstocks.service.db.PricedStockService;
+import vstocks.db.PricedStockDB;
 
 import javax.ws.rs.core.Response;
 import java.time.Instant;
@@ -36,9 +36,9 @@ public class GetStocksForMarketIT extends ResourceTest {
 
     @Test
     public void testGetForMarketsNone() {
-        PricedStockService pricedStockService = mock(PricedStockService.class);
-        when(pricedStockService.getForMarket(eq(TWITTER), any(), any(), anySet())).thenReturn(new Results<>());
-        when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
+        PricedStockDB pricedStockDb = mock(PricedStockDB.class);
+        when(pricedStockDb.getForMarket(eq(TWITTER), any(), any(), anySet())).thenReturn(new Results<>());
+        when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
 
         Response response = target("/v1/market/twitter/stocks").request().get();
 
@@ -61,9 +61,9 @@ public class GetStocksForMarketIT extends ResourceTest {
 
         Results<PricedStock> results = new Results<PricedStock>().setPage(new Page()).setTotal(3)
                 .setResults(asList(pricedStock1, pricedStock2, pricedStock3));
-        PricedStockService pricedStockService = mock(PricedStockService.class);
-        when(pricedStockService.getForMarket(eq(TWITTER), any(), any(), anySet())).thenReturn(results);
-        when(getDatabaseServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
+        PricedStockDB pricedStockDb = mock(PricedStockDB.class);
+        when(pricedStockDb.getForMarket(eq(TWITTER), any(), any(), anySet())).thenReturn(results);
+        when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
 
         Response response = target("/v1/market/twitter/stocks").request().get();
 

@@ -17,6 +17,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>vstocks-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>vstocks-model</artifactId>
         </dependency>
         <dependency>
