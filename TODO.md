@@ -7,6 +7,10 @@
     * Account resets
         * Delete all owned stocks and activity and set account balance back to the initial starting value
 
+* Friends
+
+    * Support "linking" user accounts to make comparing account balances/activity easier
+
 * Achievements
 
     * Difficulty (Easy, Medium, Hard)
@@ -35,6 +39,7 @@
     * Prominently show player standings
     * Show overall standings based on total account value
     * Show standings based on account gains over periods of time (month, week, day)
+    * Show standings among friends
 
 * Business model
 
