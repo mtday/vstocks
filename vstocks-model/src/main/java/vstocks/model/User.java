@@ -32,6 +32,7 @@ public class User implements Principal {
         return this;
     }
 
+    @JsonIgnore
     public String getEmail() {
         return email;
     }
