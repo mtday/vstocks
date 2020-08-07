@@ -14,8 +14,6 @@ public interface UserDB {
 
     Optional<User> get(String id);
 
-    int login(User user);
-
     Results<User> getAll(Page page, Set<Sort> sort);
 
     int consume(Consumer<User> consumer, Set<Sort> sort);

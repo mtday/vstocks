@@ -16,10 +16,10 @@ import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
+import static java.util.Locale.ENGLISH;
 import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Sort.SortDirection.DESC;
-import static vstocks.model.UserSource.TwitterClient;
 
 public class JdbcUserTableIT {
     @ClassRule
@@ -49,7 +49,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testUsernameExists() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
@@ -68,7 +68,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testGetExists() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
@@ -76,67 +76,27 @@ public class JdbcUserTableIT {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             Optional<User> fetched = userTable.get(connection, user.getId());
             assertTrue(fetched.isPresent());
+            assertEquals(user.getId(), fetched.get().getId());
+            assertEquals(user.getEmail(), fetched.get().getEmail());
             assertEquals(user.getUsername(), fetched.get().getUsername());
-            assertEquals(user.getSource(), fetched.get().getSource());
             assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
         }
     }
 
     @Test
-    public void testLoginMissing() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
-        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userTable.login(connection, user));
-            connection.commit();
-        }
-        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<User> fetched = userTable.get(connection, user.getId());
-            assertTrue(fetched.isPresent());
-            assertEquals(user.getUsername(), fetched.get().getUsername());
-            assertEquals(user.getSource(), fetched.get().getSource());
-            assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
-        }
-    }
-
-    @Test
-    public void testLoginExistsSame() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
+    public void testGetExistsEmailLowercase() throws SQLException {
+        User user = new User().setEmail("USER@DOMAIN.COM").setUsername("name").setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
         }
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(0, userTable.login(connection, user));
-            connection.commit();
-        }
-        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             Optional<User> fetched = userTable.get(connection, user.getId());
             assertTrue(fetched.isPresent());
+            assertEquals(user.getId(), fetched.get().getId());
+            assertEquals(user.getEmail().toLowerCase(ENGLISH), fetched.get().getEmail()); // email automatically lower-cased
             assertEquals(user.getUsername(), fetched.get().getUsername());
-            assertEquals(user.getSource(), fetched.get().getSource());
             assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
-        }
-    }
-
-    @Test
-    public void testLoginExistsDifferent() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
-        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userTable.add(connection, user));
-            connection.commit();
-        }
-        User loginUser = new User().setId("id").setUsername("login").setSource(TwitterClient).setDisplayName("Login");
-        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userTable.login(connection, loginUser));
-            connection.commit();
-        }
-        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            Optional<User> fetched = userTable.get(connection, user.getId());
-            assertTrue(fetched.isPresent());
-            assertEquals(loginUser, fetched.get());
-            assertEquals(loginUser.getUsername(), fetched.get().getUsername());
-            assertEquals(loginUser.getSource(), fetched.get().getSource());
-            assertEquals(loginUser.getDisplayName(), fetched.get().getDisplayName());
         }
     }
 
@@ -151,8 +111,8 @@ public class JdbcUserTableIT {
 
     @Test
     public void testGetAllSomeNoSort() throws SQLException {
-        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
-        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
+        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user1));
             assertEquals(1, userTable.add(connection, user2));
@@ -169,8 +129,8 @@ public class JdbcUserTableIT {
 
     @Test
     public void testGetAllSomeWithSort() throws SQLException {
-        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
-        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
+        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user1));
             assertEquals(1, userTable.add(connection, user2));
@@ -188,11 +148,11 @@ public class JdbcUserTableIT {
 
     @Test
     public void testGetAllMultiplePagesNoSort() throws SQLException {
-        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
-        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
-        User user3 = new User().setId("id3").setUsername("name3").setSource(TwitterClient).setDisplayName("Name");
-        User user4 = new User().setId("id4").setUsername("name4").setSource(TwitterClient).setDisplayName("Name");
-        User user5 = new User().setId("id5").setUsername("name5").setSource(TwitterClient).setDisplayName("Name");
+        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
+        User user3 = new User().setEmail("user3@domain.com").setUsername("name3").setDisplayName("Name3");
+        User user4 = new User().setEmail("user4@domain.com").setUsername("name4").setDisplayName("Name4");
+        User user5 = new User().setEmail("user5@domain.com").setUsername("name5").setDisplayName("Name5");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             for (User user : asList(user1, user2, user3, user4, user5)) {
                 assertEquals(1, userTable.add(connection, user));
@@ -224,11 +184,11 @@ public class JdbcUserTableIT {
 
     @Test
     public void testGetAllMultiplePagesWithSort() throws SQLException {
-        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
-        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
-        User user3 = new User().setId("id3").setUsername("name3").setSource(TwitterClient).setDisplayName("Name");
-        User user4 = new User().setId("id4").setUsername("name4").setSource(TwitterClient).setDisplayName("Name");
-        User user5 = new User().setId("id5").setUsername("name5").setSource(TwitterClient).setDisplayName("Name");
+        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
+        User user3 = new User().setEmail("user3@domain.com").setUsername("name3").setDisplayName("Name3");
+        User user4 = new User().setEmail("user4@domain.com").setUsername("name4").setDisplayName("Name4");
+        User user5 = new User().setEmail("user5@domain.com").setUsername("name5").setDisplayName("Name5");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             for (User user : asList(user1, user2, user3, user4, user5)) {
                 assertEquals(1, userTable.add(connection, user));
@@ -270,8 +230,8 @@ public class JdbcUserTableIT {
 
     @Test
     public void testConsumeSomeNoSort() throws SQLException {
-        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
-        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
+        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user1));
             assertEquals(1, userTable.add(connection, user2));
@@ -289,8 +249,8 @@ public class JdbcUserTableIT {
 
     @Test
     public void testConsumeSomeWithSort() throws SQLException {
-        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
-        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
+        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user1));
             assertEquals(1, userTable.add(connection, user2));
@@ -309,7 +269,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testAdd() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
@@ -318,7 +278,7 @@ public class JdbcUserTableIT {
 
     @Test(expected = Exception.class)
     public void testAddIdConflict() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             user.setUsername("different");
@@ -329,7 +289,7 @@ public class JdbcUserTableIT {
 
     @Test(expected = Exception.class)
     public void testAddUsernameConflict() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             user.setId("different");
@@ -340,7 +300,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testUpdateMissing() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(0, userTable.update(connection, user));
         }
@@ -348,7 +308,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testUpdateNoChange() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
@@ -361,15 +321,16 @@ public class JdbcUserTableIT {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             Optional<User> updated = userTable.get(connection, user.getId());
             assertTrue(updated.isPresent());
+            assertEquals(user.getId(), updated.get().getId());
+            assertEquals(user.getEmail(), updated.get().getEmail());
             assertEquals(user.getUsername(), updated.get().getUsername());
-            assertEquals(user.getSource(), updated.get().getSource());
             assertEquals(user.getDisplayName(), updated.get().getDisplayName());
         }
     }
 
     @Test
     public void testUpdate() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
@@ -384,8 +345,9 @@ public class JdbcUserTableIT {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             Optional<User> updated = userTable.get(connection, user.getId());
             assertTrue(updated.isPresent());
+            assertEquals(user.getId(), updated.get().getId());
+            assertEquals(user.getEmail(), updated.get().getEmail());
             assertEquals(user.getUsername(), updated.get().getUsername());
-            assertEquals(user.getSource(), updated.get().getSource());
             assertEquals(user.getDisplayName(), updated.get().getDisplayName());
         }
     }
@@ -399,7 +361,7 @@ public class JdbcUserTableIT {
 
     @Test
     public void testDelete() throws SQLException {
-        User user = new User().setId("id").setUsername("name").setSource(TwitterClient).setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user));
             connection.commit();
@@ -415,8 +377,8 @@ public class JdbcUserTableIT {
 
     @Test
     public void testTruncate() throws SQLException {
-        User user1 = new User().setId("id1").setUsername("name1").setSource(TwitterClient).setDisplayName("Name");
-        User user2 = new User().setId("id2").setUsername("name2").setSource(TwitterClient).setDisplayName("Name");
+        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user1));
             assertEquals(1, userTable.add(connection, user2));

@@ -4,8 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.model.*;
 import vstocks.db.DataSourceExternalResource;
+import vstocks.model.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,9 +14,9 @@ import java.util.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
-import static vstocks.model.DatabaseField.*;
+import static vstocks.model.DatabaseField.BALANCE;
+import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.Sort.SortDirection.DESC;
-import static vstocks.model.UserSource.TwitterClient;
 
 public class JdbcUserBalanceTableIT {
     @ClassRule
@@ -25,8 +25,8 @@ public class JdbcUserBalanceTableIT {
     private UserTable userTable;
     private UserBalanceTable userBalanceTable;
 
-    private final User user1 = new User().setId("user1").setUsername("u1").setSource(TwitterClient).setDisplayName("U1");
-    private final User user2 = new User().setId("user2").setUsername("u2").setSource(TwitterClient).setDisplayName("U2");
+    private final User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+    private final User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
 
     @Before
     public void setup() throws SQLException {

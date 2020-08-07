@@ -4,16 +4,23 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.security.Principal;
 import java.util.Objects;
+import java.util.UUID;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Locale.ENGLISH;
 import static java.util.Objects.requireNonNull;
 
 public class User implements Principal {
     private String id;
+    private String email;
     private String username;
-    private UserSource source;
     private String displayName;
 
     public User() {
+    }
+
+    public static String generateId(String email) {
+        return UUID.nameUUIDFromBytes(email.trim().toLowerCase(ENGLISH).getBytes(UTF_8)).toString();
     }
 
     public String getId() {
@@ -23,6 +30,15 @@ public class User implements Principal {
     public User setId(String id) {
         this.id = requireNonNull(id);
         return this;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public User setEmail(String email) {
+        this.email = email;
+        return setId(generateId(email));
     }
 
     @JsonIgnore
@@ -37,15 +53,6 @@ public class User implements Principal {
 
     public User setUsername(String username) {
         this.username = requireNonNull(username);
-        return this;
-    }
-
-    public UserSource getSource() {
-        return source;
-    }
-
-    public User setSource(UserSource source) {
-        this.source = requireNonNull(source);
         return this;
     }
 
@@ -75,8 +82,8 @@ public class User implements Principal {
     public String toString() {
         return "User{" +
                 "id='" + id + '\'' +
+                ", email='" + email + '\'' +
                 ", username='" + username + '\'' +
-                ", source=" + source +
                 ", displayName='" + displayName + '\'' +
                 '}';
     }

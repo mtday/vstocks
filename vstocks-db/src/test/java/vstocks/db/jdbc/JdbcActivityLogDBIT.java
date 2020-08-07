@@ -22,7 +22,6 @@ import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
 import static vstocks.model.Sort.SortDirection.DESC;
-import static vstocks.model.UserSource.TwitterClient;
 
 public class JdbcActivityLogDBIT {
     @ClassRule
@@ -33,8 +32,8 @@ public class JdbcActivityLogDBIT {
     private ActivityLogTable activityLogTable;
     private JdbcActivityLogDB activityLogService;
 
-    private final User user1 = new User().setId("user1").setUsername("u1").setSource(TwitterClient).setDisplayName("U1");
-    private final User user2 = new User().setId("user2").setUsername("u2").setSource(TwitterClient).setDisplayName("U2");
+    private final User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+    private final User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
     private final Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
     private final Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
 

@@ -4,10 +4,11 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.ClassRule;
 import org.pac4j.core.profile.CommonProfile;
+import vstocks.db.DBFactory;
 import vstocks.model.Market;
 import vstocks.model.PricedStock;
 import vstocks.model.Results;
-import vstocks.db.DBFactory;
+import vstocks.model.User;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
 import javax.ws.rs.core.GenericType;
@@ -36,7 +37,7 @@ public abstract class ResourceTest extends JerseyTest {
         Environment environment = new Environment()
                 .setDBFactory(dbFactory)
                 .setRemoteStockServiceFactory(remoteStockServiceFactory)
-                .setIncludeSecurity(false) // disableds Pac4j, we include a simple profile below
+                .setIncludeSecurity(false) // disables Pac4j, we include a simple profile below
                 .setIncludeBackgroundTasks(false);
 
         Application application = new Application(environment);
@@ -44,12 +45,21 @@ public abstract class ResourceTest extends JerseyTest {
         return application;
     }
 
+    public User getUser() {
+        return new User()
+                .setEmail("user@domain.com")
+                .setUsername("username")
+                .setDisplayName("Display Name");
+    }
+
     public CommonProfile getCommonProfile() {
+        User user = getUser();
         CommonProfile commonProfile = new CommonProfile();
         commonProfile.setClientName("TwitterClient");
         commonProfile.setId("12345");
-        commonProfile.addAttribute("username", "username");
-        commonProfile.addAttribute("display_name", "Display Name");
+        commonProfile.addAttribute("email", user.getEmail());
+        commonProfile.addAttribute("username", user.getUsername());
+        commonProfile.addAttribute("display_name", user.getDisplayName());
         return commonProfile;
     }
 

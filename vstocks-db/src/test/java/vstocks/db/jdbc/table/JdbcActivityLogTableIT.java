@@ -4,8 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.model.*;
 import vstocks.db.DataSourceExternalResource;
+import vstocks.model.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -20,7 +20,6 @@ import static vstocks.model.DatabaseField.SYMBOL;
 import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.Market.TWITTER;
 import static vstocks.model.Sort.SortDirection.DESC;
-import static vstocks.model.UserSource.TwitterClient;
 
 public class JdbcActivityLogTableIT {
     @ClassRule
@@ -30,8 +29,8 @@ public class JdbcActivityLogTableIT {
     private StockTable stockTable;
     private ActivityLogTable activityLogTable;
 
-    private final User user1 = new User().setId("user1").setUsername("u1").setSource(TwitterClient).setDisplayName("U1");
-    private final User user2 = new User().setId("user2").setUsername("u2").setSource(TwitterClient).setDisplayName("U2");
+    private final User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+    private final User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
     private final Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
     private final Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
 

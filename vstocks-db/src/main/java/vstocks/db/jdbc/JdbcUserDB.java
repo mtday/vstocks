@@ -31,20 +31,6 @@ public class JdbcUserDB extends BaseService implements UserDB {
     }
 
     @Override
-    public int login(User user) {
-        return withConnection(conn -> {
-            if (userTable.login(conn, user) > 0) {
-                // Initial user creation or user update due to login, give the user an initial balance if they do
-                // not already have a balance.
-                UserBalance initialBalance = new UserBalance().setUserId(user.getId()).setBalance(USER_INITIAL_BALANCE.getInt());
-                userBalanceTable.setInitialBalance(conn, initialBalance);
-                return 1;
-            }
-            return 0;
-        });
-    }
-
-    @Override
     public Results<User> getAll(Page page, Set<Sort> sort) {
         return withConnection(conn -> userTable.getAll(conn, page, sort));
     }
@@ -56,7 +42,15 @@ public class JdbcUserDB extends BaseService implements UserDB {
 
     @Override
     public int add(User user) {
-        return withConnection(conn -> userTable.add(conn, user));
+        return withConnection(conn -> {
+            if (userTable.add(conn, user) > 0) {
+                // Initial user creation, give the user an initial balance.
+                UserBalance initialBalance = new UserBalance().setUserId(user.getId()).setBalance(USER_INITIAL_BALANCE.getInt());
+                userBalanceTable.setInitialBalance(conn, initialBalance);
+                return 1;
+            }
+            return 0;
+        });
     }
 
     @Override

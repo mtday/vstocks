@@ -33,8 +33,8 @@ public class JdbcUserStockDBIT {
     private UserStockTable userStockTable;
     private JdbcUserStockDB userStockService;
 
-    private final User user1 = new User().setId("user1").setUsername("u1").setSource(UserSource.TwitterClient).setDisplayName("U1");
-    private final User user2 = new User().setId("user2").setUsername("u2").setSource(UserSource.TwitterClient).setDisplayName("U2");
+    private final User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+    private final User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
     private final UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
     private final UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
     private final Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");

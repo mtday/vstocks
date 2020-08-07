@@ -4,7 +4,6 @@ import org.pac4j.core.profile.CommonProfile;
 import vstocks.model.Page;
 import vstocks.model.Sort;
 import vstocks.model.User;
-import vstocks.model.UserSource;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -36,14 +35,11 @@ public abstract class BaseResource {
     }
 
     protected User getUser(CommonProfile commonProfile) {
-        return ofNullable(commonProfile).flatMap(profile ->
-                UserSource.fromClientName(profile.getClientName()).map(userSource ->
-                        new User()
-                                .setId(userSource.getAbbreviation() + ":" + profile.getId())
-                                .setUsername(profile.getUsername())
-                                .setSource(userSource)
-                                .setDisplayName(profile.getDisplayName())
-                )
+        return ofNullable(commonProfile).map(profile ->
+                new User()
+                        .setEmail(profile.getEmail())
+                        .setUsername(profile.getUsername())
+                        .setDisplayName(profile.getDisplayName())
         ).orElse(null);
     }
 }

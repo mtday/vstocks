@@ -10,7 +10,6 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
-import static vstocks.model.UserSource.TwitterClient;
 
 public class GetUserIT extends ResourceTest {
     @Test
@@ -20,10 +19,11 @@ public class GetUserIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
+        User user = getUser();
         User fetched = response.readEntity(User.class);
-        assertEquals("TW:12345", fetched.getId());
-        assertEquals("username", fetched.getUsername());
-        assertEquals(TwitterClient, fetched.getSource());
-        assertEquals("Display Name", fetched.getDisplayName());
+        assertEquals(user.getId(), fetched.getId());
+        assertEquals(user.getEmail(), fetched.getEmail());
+        assertEquals(user.getUsername(), fetched.getUsername());
+        assertEquals(user.getDisplayName(), fetched.getDisplayName());
     }
 }

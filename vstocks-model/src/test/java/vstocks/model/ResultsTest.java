@@ -47,8 +47,8 @@ public class ResultsTest {
                 .setPage(new Page().setPage(5).setSize(30))
                 .setTotal(10)
                 .setResults(asList(new User().setId("1"), new User().setId("2")));
-        assertEquals("Results{page=Page{page=5, size=30}, total=10, results=[User{id='1', username='null', "
-                + "source=null, displayName='null'}, User{id='2', username='null', source=null, displayName='null'}]}",
-                results.toString());
+        assertEquals("Results{page=Page{page=5, size=30}, total=10, results=[User{id='1', email='null', "
+                + "username='null', displayName='null'}, User{id='2', email='null', username='null', "
+                + "displayName='null'}]}", results.toString());
     }
 }

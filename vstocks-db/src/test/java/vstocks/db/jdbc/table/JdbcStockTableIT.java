@@ -26,8 +26,14 @@ public class JdbcStockTableIT {
     private StockTable stockTable;
 
     @Before
-    public void setup() {
+    public void setup() throws SQLException {
         stockTable = new StockTable();
+
+        // Clean out the stocks added via flyway
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            stockTable.truncate(connection);
+            connection.commit();
+        }
     }
 
     @After
