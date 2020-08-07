@@ -10,30 +10,55 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
+import static java.sql.Types.INTEGER;
+import static java.sql.Types.VARCHAR;
 import static java.util.Arrays.asList;
+import static java.util.Optional.ofNullable;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Sort.SortDirection.DESC;
 
 public class ActivityLogTable extends BaseTable {
-    private static final RowMapper<ActivityLog> ROW_MAPPER = rs ->
-            new ActivityLog()
-                    .setId(rs.getString("id"))
-                    .setUserId(rs.getString("user_id"))
-                    .setMarket(Market.valueOf(rs.getString("market")))
-                    .setSymbol(rs.getString("symbol"))
-                    .setTimestamp(rs.getTimestamp("timestamp").toInstant())
-                    .setShares(rs.getInt("shares"))
-                    .setPrice(rs.getInt("price"));
+    private static final RowMapper<ActivityLog> ROW_MAPPER = rs -> {
+        ActivityLog activityLog = new ActivityLog()
+                .setId(rs.getString("id"))
+                .setUserId(rs.getString("user_id"))
+                .setType(ActivityType.valueOf(rs.getString("type")))
+                .setTimestamp(rs.getTimestamp("timestamp").toInstant());
+        ofNullable(rs.getString("market")).map(Market::valueOf).ifPresent(activityLog::setMarket);
+        ofNullable(rs.getString("symbol")).ifPresent(activityLog::setSymbol);
+        int shares = rs.getInt("shares");
+        activityLog.setShares(rs.wasNull() ? null : shares);
+        int price = rs.getInt("price");
+        activityLog.setPrice(rs.wasNull() ? null : price);
+        return activityLog;
+    };
 
     private static final RowSetter<ActivityLog> INSERT_ROW_SETTER = (ps, activityLog) -> {
         int index = 0;
         ps.setString(++index, activityLog.getId());
         ps.setString(++index, activityLog.getUserId());
-        ps.setString(++index, activityLog.getMarket().name());
-        ps.setString(++index, activityLog.getSymbol());
+        ps.setString(++index, activityLog.getType().name());
         ps.setTimestamp(++index, Timestamp.from(activityLog.getTimestamp()));
-        ps.setInt(++index, activityLog.getShares());
-        ps.setInt(++index, activityLog.getPrice());
+        if (activityLog.getMarket() != null) {
+            ps.setString(++index, activityLog.getMarket().name());
+        } else {
+            ps.setNull(++index, VARCHAR);
+        }
+        if (activityLog.getSymbol() != null) {
+            ps.setString(++index, activityLog.getSymbol());
+        } else {
+            ps.setNull(++index, VARCHAR);
+        }
+        if (activityLog.getShares() != null) {
+            ps.setInt(++index, activityLog.getShares());
+        } else {
+            ps.setNull(++index, INTEGER);
+        }
+        if (activityLog.getPrice() != null) {
+            ps.setInt(++index, activityLog.getPrice());
+        } else {
+            ps.setNull(++index, INTEGER);
+        }
     };
 
     @Override
@@ -51,10 +76,22 @@ public class ActivityLogTable extends BaseTable {
         return results(connection, ROW_MAPPER, page, query, countQuery, userId);
     }
 
+    public Results<ActivityLog> getForUser(Connection connection, String userId, ActivityType type, Page page, Set<Sort> sort) {
+        String query = format("SELECT * FROM activity_logs WHERE user_id = ? AND type = ? %s LIMIT ? OFFSET ?", getSort(sort));
+        String countQuery = "SELECT COUNT(*) FROM activity_logs WHERE user_id = ? AND type = ?";
+        return results(connection, ROW_MAPPER, page, query, countQuery, userId, type);
+    }
+
     public Results<ActivityLog> getForStock(Connection connection, Market market, String symbol, Page page, Set<Sort> sort) {
         String query = format("SELECT * FROM activity_logs WHERE market = ? AND symbol = ? %s LIMIT ? OFFSET ?", getSort(sort));
         String countQuery = "SELECT COUNT(*) FROM activity_logs WHERE market = ? AND symbol = ?";
         return results(connection, ROW_MAPPER, page, query, countQuery, market, symbol);
+    }
+
+    public Results<ActivityLog> getForType(Connection connection, ActivityType type, Page page, Set<Sort> sort) {
+        String query = format("SELECT * FROM activity_logs WHERE type = ? %s LIMIT ? OFFSET ?", getSort(sort));
+        String countQuery = "SELECT COUNT(*) FROM activity_logs WHERE type = ?";
+        return results(connection, ROW_MAPPER, page, query, countQuery, type);
     }
 
     public Results<ActivityLog> getAll(Connection connection, Page page, Set<Sort> sort) {
@@ -69,8 +106,8 @@ public class ActivityLogTable extends BaseTable {
     }
 
     public int add(Connection connection, ActivityLog activityLog) {
-        String sql = "INSERT INTO activity_logs (id, user_id, market, symbol, timestamp, shares, price) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO activity_logs (id, user_id, type, timestamp, market, symbol, shares, price) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         return update(connection, INSERT_ROW_SETTER, sql, activityLog);
     }
 

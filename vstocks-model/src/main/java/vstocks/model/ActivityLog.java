@@ -6,11 +6,12 @@ import java.util.Objects;
 public class ActivityLog {
     private String id;
     private String userId;
+    private ActivityType type;
+    private Instant timestamp;
     private Market market;
     private String symbol;
-    private Instant timestamp;
-    private int shares;
-    private int price;
+    private Integer shares;
+    private Integer price;
 
     public ActivityLog() {
     }
@@ -33,6 +34,24 @@ public class ActivityLog {
         return this;
     }
 
+    public ActivityType getType() {
+        return type;
+    }
+
+    public ActivityLog setType(ActivityType type) {
+        this.type = type;
+        return this;
+    }
+
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+
+    public ActivityLog setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
     public Market getMarket() {
         return market;
     }
@@ -51,29 +70,20 @@ public class ActivityLog {
         return this;
     }
 
-    public Instant getTimestamp() {
-        return timestamp;
-    }
-
-    public ActivityLog setTimestamp(Instant timestamp) {
-        this.timestamp = timestamp;
-        return this;
-    }
-
-    public int getShares() {
+    public Integer getShares() {
         return shares;
     }
 
-    public ActivityLog setShares(int shares) {
+    public ActivityLog setShares(Integer shares) {
         this.shares = shares;
         return this;
     }
 
-    public int getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public ActivityLog setPrice(int price) {
+    public ActivityLog setPrice(Integer price) {
         this.price = price;
         return this;
     }
@@ -96,9 +106,10 @@ public class ActivityLog {
         return "ActivityLog{" +
                 "id='" + id + '\'' +
                 ", userId='" + userId + '\'' +
+                ", type=" + type +
+                ", timestamp=" + timestamp +
                 ", market=" + market +
                 ", symbol='" + symbol + '\'' +
-                ", timestamp=" + timestamp +
                 ", shares=" + shares +
                 ", price=" + price +
                 '}';

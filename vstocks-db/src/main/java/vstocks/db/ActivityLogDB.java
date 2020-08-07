@@ -11,7 +11,11 @@ public interface ActivityLogDB {
 
     Results<ActivityLog> getForUser(String userId, Page page, Set<Sort> sort);
 
+    Results<ActivityLog> getForUser(String userId, ActivityType type, Page page, Set<Sort> sort);
+
     Results<ActivityLog> getForStock(Market market, String symbol, Page page, Set<Sort> sort);
+
+    Results<ActivityLog> getForType(ActivityType type, Page page, Set<Sort> sort);
 
     Results<ActivityLog> getAll(Page page, Set<Sort> sort);
 

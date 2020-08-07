@@ -4,6 +4,7 @@ import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 import vstocks.db.DBFactory;
+import vstocks.model.ActivityLog;
 import vstocks.model.User;
 import vstocks.rest.resource.BaseResource;
 
@@ -17,11 +18,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.Random;
 
 import static java.util.Optional.ofNullable;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static vstocks.model.ActivityType.USER_LOGIN;
 
 @Path("/v1/security/login")
 @Singleton
@@ -52,7 +56,19 @@ public class Login extends BaseResource {
 
             // Create the user
             dbFactory.getUserDB().add(profileUser);
+
+            existingUser = ofNullable(profile.getEmail())
+                    .map(User::generateId)
+                    .flatMap(id -> dbFactory.getUserDB().get(id));
         }
+
+        existingUser.ifPresent(user -> {
+            ActivityLog activityLog = new ActivityLog()
+                    .setUserId(user.getId())
+                    .setType(USER_LOGIN)
+                    .setTimestamp(Instant.now().truncatedTo(ChronoUnit.SECONDS));
+            dbFactory.getActivityLogDB().add(activityLog);
+        });
     }
 
     @GET

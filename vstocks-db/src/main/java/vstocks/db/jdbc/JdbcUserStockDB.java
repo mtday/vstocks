@@ -14,6 +14,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import static vstocks.model.ActivityType.STOCK_BUY;
+import static vstocks.model.ActivityType.STOCK_SELL;
+
 public class JdbcUserStockDB extends BaseService implements UserStockDB {
     private final UserStockTable userStockTable = new UserStockTable();
     private final UserBalanceTable userBalanceTable = new UserBalanceTable();
@@ -64,9 +67,10 @@ public class JdbcUserStockDB extends BaseService implements UserStockDB {
                     ActivityLog activityLog = new ActivityLog()
                             .setId(UUID.randomUUID().toString())
                             .setUserId(userId)
+                            .setType(STOCK_BUY)
+                            .setTimestamp(Instant.now())
                             .setMarket(market)
                             .setSymbol(symbol)
-                            .setTimestamp(Instant.now())
                             .setPrice(price)
                             .setShares(shares);
                     if (activityLogTable.add(conn, activityLog) > 0) {
@@ -95,9 +99,10 @@ public class JdbcUserStockDB extends BaseService implements UserStockDB {
                     ActivityLog activityLog = new ActivityLog()
                             .setId(UUID.randomUUID().toString())
                             .setUserId(userId)
+                            .setType(STOCK_SELL)
+                            .setTimestamp(Instant.now())
                             .setMarket(market)
                             .setSymbol(symbol)
-                            .setTimestamp(Instant.now())
                             .setPrice(price)
                             .setShares(-shares);
                     if (activityLogTable.add(conn, activityLog) > 0) {

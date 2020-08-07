@@ -50,14 +50,14 @@ CREATE INDEX idx_stock_prices_timestamp ON stock_prices (timestamp);
 CREATE TABLE activity_logs (
     id                 TEXT         NOT NULL,
     user_id            TEXT         NOT NULL,
-    market             TEXT         NOT NULL,
-    symbol             TEXT         NOT NULL,
+    type               TEXT         NOT NULL,
     timestamp          TIMESTAMP(0) NOT NULL,
-    shares             INTEGER      NOT NULL,
-    price              INTEGER      NOT NULL,
+    market             TEXT,
+    symbol             TEXT,
+    shares             INTEGER,
+    price              INTEGER,
 
     CONSTRAINT activity_logs_pk PRIMARY KEY (id),
-    CONSTRAINT activity_logs_unique UNIQUE (user_id, market, symbol, timestamp),
     CONSTRAINT activity_logs_fk_user_id FOREIGN KEY (user_id)
         REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT activity_logs_fk_stock FOREIGN KEY (market, symbol)
@@ -66,6 +66,7 @@ CREATE TABLE activity_logs (
 
 CREATE INDEX idx_activity_logs_id ON activity_logs (id);
 CREATE INDEX idx_activity_logs_user_id ON activity_logs (user_id);
+CREATE INDEX idx_activity_logs_type ON activity_logs (type);
 CREATE INDEX idx_activity_logs_market ON activity_logs (market);
 CREATE INDEX idx_activity_logs_symbol ON activity_logs (symbol);
 CREATE INDEX idx_activity_logs_timestamp ON activity_logs (timestamp);

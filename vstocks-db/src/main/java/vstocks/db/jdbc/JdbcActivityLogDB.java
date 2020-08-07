@@ -27,8 +27,18 @@ public class JdbcActivityLogDB extends BaseService implements ActivityLogDB {
     }
 
     @Override
+    public Results<ActivityLog> getForUser(String userId, ActivityType type, Page page, Set<Sort> sort) {
+        return withConnection(conn -> activityLogTable.getForUser(conn, userId, type, page, sort));
+    }
+
+    @Override
     public Results<ActivityLog> getForStock(Market market, String symbol, Page page, Set<Sort> sort) {
         return withConnection(conn -> activityLogTable.getForStock(conn, market, symbol, page, sort));
+    }
+
+    @Override
+    public Results<ActivityLog> getForType(ActivityType type, Page page, Set<Sort> sort) {
+        return withConnection(conn -> activityLogTable.getForType(conn, type, page, sort));
     }
 
     @Override

@@ -16,6 +16,8 @@ import java.util.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
+import static vstocks.model.ActivityType.STOCK_BUY;
+import static vstocks.model.ActivityType.STOCK_SELL;
 import static vstocks.model.DatabaseField.SYMBOL;
 import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.Market.TWITTER;
@@ -271,11 +273,12 @@ public class JdbcUserStockDBIT {
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
             assertNotNull(activityLog.getSymbol());
             assertEquals(user1.getId(), activityLog.getUserId());
+            assertEquals(STOCK_BUY, activityLog.getType());
+            assertNotNull(activityLog.getTimestamp());
             assertEquals(TWITTER, activityLog.getMarket());
             assertEquals(stock1.getSymbol(), activityLog.getSymbol());
-            assertNotNull(activityLog.getTimestamp());
-            assertEquals(stockPrice1.getPrice(), activityLog.getPrice());
-            assertEquals(1, activityLog.getShares());
+            assertEquals(stockPrice1.getPrice(), (int) activityLog.getPrice());
+            assertEquals(1, (int) activityLog.getShares());
         }
     }
 
@@ -304,11 +307,12 @@ public class JdbcUserStockDBIT {
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
             assertNotNull(activityLog.getSymbol());
             assertEquals(user1.getId(), activityLog.getUserId());
+            assertEquals(STOCK_BUY, activityLog.getType());
+            assertNotNull(activityLog.getTimestamp());
             assertEquals(TWITTER, activityLog.getMarket());
             assertEquals(stock1.getSymbol(), activityLog.getSymbol());
-            assertNotNull(activityLog.getTimestamp());
-            assertEquals(stockPrice1.getPrice(), activityLog.getPrice());
-            assertEquals(1, activityLog.getShares());
+            assertEquals(stockPrice1.getPrice(), (int) activityLog.getPrice());
+            assertEquals(1, (int) activityLog.getShares());
         }
     }
 
@@ -412,11 +416,12 @@ public class JdbcUserStockDBIT {
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
             assertNotNull(activityLog.getSymbol());
             assertEquals(user1.getId(), activityLog.getUserId());
+            assertEquals(STOCK_SELL, activityLog.getType());
+            assertNotNull(activityLog.getTimestamp());
             assertEquals(TWITTER, activityLog.getMarket());
             assertEquals(stock1.getSymbol(), activityLog.getSymbol());
-            assertNotNull(activityLog.getTimestamp());
-            assertEquals(stockPrice1.getPrice(), activityLog.getPrice());
-            assertEquals(-1, activityLog.getShares());
+            assertEquals(stockPrice1.getPrice(), (int) activityLog.getPrice());
+            assertEquals(-1, (int) activityLog.getShares());
         }
     }
 
@@ -443,11 +448,12 @@ public class JdbcUserStockDBIT {
             ActivityLog activityLog = activityLogs.getResults().iterator().next();
             assertNotNull(activityLog.getSymbol());
             assertEquals(user1.getId(), activityLog.getUserId());
+            assertEquals(STOCK_SELL, activityLog.getType());
+            assertNotNull(activityLog.getTimestamp());
             assertEquals(TWITTER, activityLog.getMarket());
             assertEquals(stock1.getSymbol(), activityLog.getSymbol());
-            assertNotNull(activityLog.getTimestamp());
-            assertEquals(stockPrice1.getPrice(), activityLog.getPrice());
-            assertEquals(-1, activityLog.getShares());
+            assertEquals(stockPrice1.getPrice(), (int) activityLog.getPrice());
+            assertEquals(-1, (int) activityLog.getShares());
         }
     }
 

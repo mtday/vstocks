@@ -6,28 +6,52 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static vstocks.model.ActivityType.STOCK_SELL;
+import static vstocks.model.ActivityType.USER_LOGIN;
 import static vstocks.model.Market.TWITTER;
 
 public class ActivityLogTest {
     @Test
-    public void testGettersAndSetters() {
+    public void testGettersAndSettersAll() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")
                 .setUserId("userId")
+                .setType(STOCK_SELL)
+                .setTimestamp(now)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setTimestamp(now)
                 .setShares(10)
                 .setPrice(20);
 
         assertEquals("id", activityLog.getId());
         assertEquals("userId", activityLog.getUserId());
+        assertEquals(STOCK_SELL, activityLog.getType());
+        assertEquals(now, activityLog.getTimestamp());
         assertEquals(TWITTER, activityLog.getMarket());
         assertEquals("symbol", activityLog.getSymbol());
+        assertEquals(10, (int) activityLog.getShares());
+        assertEquals(20, (int) activityLog.getPrice());
+    }
+
+    @Test
+    public void testGettersAndSettersSimple() {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        ActivityLog activityLog = new ActivityLog()
+                .setId("id")
+                .setUserId("userId")
+                .setType(USER_LOGIN)
+                .setTimestamp(now);
+
+        assertEquals("id", activityLog.getId());
+        assertEquals("userId", activityLog.getUserId());
+        assertEquals(USER_LOGIN, activityLog.getType());
         assertEquals(now, activityLog.getTimestamp());
-        assertEquals(10, activityLog.getShares());
-        assertEquals(20, activityLog.getPrice());
+        assertNull(activityLog.getMarket());
+        assertNull(activityLog.getSymbol());
+        assertNull(activityLog.getShares());
+        assertNull(activityLog.getPrice());
     }
 
     @Test
@@ -43,9 +67,10 @@ public class ActivityLogTest {
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")
                 .setUserId("userId")
+                .setType(STOCK_SELL)
+                .setTimestamp(now)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setTimestamp(now)
                 .setShares(10)
                 .setPrice(20);
         assertEquals(3386, activityLog.hashCode());
@@ -57,12 +82,13 @@ public class ActivityLogTest {
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")
                 .setUserId("userId")
+                .setType(STOCK_SELL)
+                .setTimestamp(now)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setTimestamp(now)
                 .setShares(10)
                 .setPrice(20);
-        assertEquals("ActivityLog{id='id', userId='userId', market=TWITTER, symbol='symbol', "
-                + "timestamp=" + now.toString() + ", shares=10, price=20}", activityLog.toString());
+        assertEquals("ActivityLog{id='id', userId='userId', type=STOCK_SELL, timestamp=" + now.toString()
+                + ", market=TWITTER, symbol='symbol', shares=10, price=20}", activityLog.toString());
     }
 }

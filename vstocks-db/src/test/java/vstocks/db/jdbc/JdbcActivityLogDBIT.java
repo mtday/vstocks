@@ -19,6 +19,7 @@ import java.util.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
+import static vstocks.model.ActivityType.*;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
 import static vstocks.model.Sort.SortDirection.DESC;
@@ -71,15 +72,16 @@ public class JdbcActivityLogDBIT {
     @Test
     public void testGetExists() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
         assertEquals(1, activityLogDB.add(activityLog));
 
         Optional<ActivityLog> fetched = activityLogDB.get(activityLog.getId());
         assertTrue(fetched.isPresent());
         assertEquals(activityLog.getUserId(), fetched.get().getUserId());
+        assertEquals(activityLog.getType(), fetched.get().getType());
+        assertEquals(activityLog.getTimestamp(), fetched.get().getTimestamp());
         assertEquals(activityLog.getMarket(), fetched.get().getMarket());
         assertEquals(activityLog.getSymbol(), fetched.get().getSymbol());
-        assertEquals(activityLog.getTimestamp(), fetched.get().getTimestamp());
         assertEquals(activityLog.getShares(), fetched.get().getShares());
         assertEquals(activityLog.getPrice(), fetched.get().getPrice());
     }
@@ -94,8 +96,8 @@ public class JdbcActivityLogDBIT {
     @Test
     public void testGetForUserSomeNoSort() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
-        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setShares(1).setPrice(10);
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
@@ -109,8 +111,8 @@ public class JdbcActivityLogDBIT {
     @Test
     public void testGetForUserSomeWithSort() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
-        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setShares(1).setPrice(10);
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
@@ -132,8 +134,8 @@ public class JdbcActivityLogDBIT {
     @Test
     public void testGetForStockSomeNoSort() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
-        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
@@ -147,8 +149,8 @@ public class JdbcActivityLogDBIT {
     @Test
     public void testGetForStockSomeWithSort() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
-        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
@@ -170,8 +172,8 @@ public class JdbcActivityLogDBIT {
     @Test
     public void testGetAllSomeNoSort() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
-        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
@@ -185,8 +187,8 @@ public class JdbcActivityLogDBIT {
     @Test
     public void testGetAllSomeWithSort() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
-        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
@@ -208,8 +210,8 @@ public class JdbcActivityLogDBIT {
     @Test
     public void testConsumeSomeNoSort() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
-        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
@@ -223,8 +225,8 @@ public class JdbcActivityLogDBIT {
     @Test
     public void testConsumeSomeWithSort() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
-        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
@@ -237,30 +239,77 @@ public class JdbcActivityLogDBIT {
     }
 
     @Test
-    public void testAddPositive() {
+    public void testAddLogin() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setType(USER_LOGIN).setTimestamp(now);
         assertEquals(1, activityLogDB.add(activityLog));
+
+        Optional<ActivityLog> fetched = activityLogDB.get(activityLog.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(activityLog.getUserId(), fetched.get().getUserId());
+        assertEquals(activityLog.getType(), fetched.get().getType());
+        assertEquals(activityLog.getTimestamp(), fetched.get().getTimestamp());
+        assertNull(fetched.get().getMarket());
+        assertNull(fetched.get().getSymbol());
+        assertNull(fetched.get().getShares());
+        assertNull(fetched.get().getPrice());
     }
 
     @Test
-    public void testAddNegative() {
+    public void testAddPositivePrice() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(-5);
+        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
         assertEquals(1, activityLogDB.add(activityLog));
+
+        Optional<ActivityLog> fetched = activityLogDB.get(activityLog.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(activityLog.getUserId(), fetched.get().getUserId());
+        assertEquals(activityLog.getType(), fetched.get().getType());
+        assertEquals(activityLog.getTimestamp(), fetched.get().getTimestamp());
+        assertEquals(activityLog.getMarket(), fetched.get().getMarket());
+        assertEquals(activityLog.getSymbol(), fetched.get().getSymbol());
+        assertEquals(activityLog.getShares(), fetched.get().getShares());
+        assertEquals(activityLog.getPrice(), fetched.get().getPrice());
+    }
+
+    @Test
+    public void testAddNegativePrice() {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setType(STOCK_BUY).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(-5);
+        assertEquals(1, activityLogDB.add(activityLog));
+
+        Optional<ActivityLog> fetched = activityLogDB.get(activityLog.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(activityLog.getUserId(), fetched.get().getUserId());
+        assertEquals(activityLog.getType(), fetched.get().getType());
+        assertEquals(activityLog.getTimestamp(), fetched.get().getTimestamp());
+        assertEquals(activityLog.getMarket(), fetched.get().getMarket());
+        assertEquals(activityLog.getSymbol(), fetched.get().getSymbol());
+        assertEquals(activityLog.getShares(), fetched.get().getShares());
+        assertEquals(activityLog.getPrice(), fetched.get().getPrice());
     }
 
     @Test
     public void testAddNegativeBalanceTooLow() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(-15);
+        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setType(STOCK_BUY).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(-15);
         assertEquals(1, activityLogDB.add(activityLog)); // not protected at this level
+
+        Optional<ActivityLog> fetched = activityLogDB.get(activityLog.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(activityLog.getUserId(), fetched.get().getUserId());
+        assertEquals(activityLog.getType(), fetched.get().getType());
+        assertEquals(activityLog.getTimestamp(), fetched.get().getTimestamp());
+        assertEquals(activityLog.getMarket(), fetched.get().getMarket());
+        assertEquals(activityLog.getSymbol(), fetched.get().getSymbol());
+        assertEquals(activityLog.getShares(), fetched.get().getShares());
+        assertEquals(activityLog.getPrice(), fetched.get().getPrice());
     }
 
     @Test(expected = Exception.class)
     public void testAddConflict() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
         assertEquals(1, activityLogDB.add(activityLog));
         activityLogDB.add(activityLog);
     }
@@ -273,10 +322,10 @@ public class JdbcActivityLogDBIT {
     @Test
     public void testDeleteForUser() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
-        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
-        ActivityLog activityLog3 = new ActivityLog().setId("id3").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
-        ActivityLog activityLog4 = new ActivityLog().setId("id4").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setShares(1).setPrice(10);
+        ActivityLog activityLog3 = new ActivityLog().setId("id3").setUserId(user2.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
+        ActivityLog activityLog4 = new ActivityLog().setId("id4").setUserId(user2.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setShares(1).setPrice(10);
 
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
@@ -300,7 +349,7 @@ public class JdbcActivityLogDBIT {
     @Test
     public void testDelete() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
         assertEquals(1, activityLogDB.add(activityLog));
         assertEquals(1, activityLogDB.delete(activityLog.getId()));
         assertFalse(activityLogDB.get(activityLog.getId()).isPresent());
