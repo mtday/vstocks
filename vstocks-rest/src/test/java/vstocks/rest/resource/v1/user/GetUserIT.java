@@ -10,6 +10,7 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class GetUserIT extends ResourceTest {
     @Test
@@ -22,7 +23,7 @@ public class GetUserIT extends ResourceTest {
         User user = getUser();
         User fetched = response.readEntity(User.class);
         assertEquals(user.getId(), fetched.getId());
-        assertEquals(user.getEmail(), fetched.getEmail());
+        assertNull(fetched.getEmail()); // email not included in json responses
         assertEquals(user.getUsername(), fetched.getUsername());
         assertEquals(user.getDisplayName(), fetched.getDisplayName());
     }
