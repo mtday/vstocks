@@ -25,5 +25,7 @@ public interface UserStockDB {
 
     int update(String userId, Market market, String symbol, int delta);
 
+    int deleteForUser(String userId);
+
     int delete(String userId, Market market, String symbol);
 }

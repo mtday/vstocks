@@ -328,6 +328,41 @@ public class JdbcActivityLogTableIT {
     }
 
     @Test
+    public void testDeleteForUserMissing() throws SQLException {
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(0, activityLogTable.deleteForUser(connection, "missing-id"));
+            connection.commit();
+        }
+    }
+
+    @Test
+    public void testDeleteForUser() throws SQLException {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog3 = new ActivityLog().setId("id3").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        ActivityLog activityLog4 = new ActivityLog().setId("id4").setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setShares(1).setPrice(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, activityLogTable.add(connection, activityLog1));
+            assertEquals(1, activityLogTable.add(connection, activityLog2));
+            assertEquals(1, activityLogTable.add(connection, activityLog3));
+            assertEquals(1, activityLogTable.add(connection, activityLog4));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(2, activityLogTable.deleteForUser(connection, user1.getId()));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Results<ActivityLog> results = activityLogTable.getAll(connection, new Page(), emptySet());
+            assertEquals(2, results.getTotal());
+            assertEquals(2, results.getResults().size());
+            assertEquals(activityLog3, results.getResults().get(0));
+            assertEquals(activityLog4, results.getResults().get(1));
+        }
+    }
+
+    @Test
     public void testDeleteMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(0, activityLogTable.delete(connection, "missing-id"));

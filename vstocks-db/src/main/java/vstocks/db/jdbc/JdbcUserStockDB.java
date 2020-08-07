@@ -122,6 +122,11 @@ public class JdbcUserStockDB extends BaseService implements UserStockDB {
     }
 
     @Override
+    public int deleteForUser(String userId) {
+        return withConnection(conn -> userStockTable.deleteForUser(conn, userId));
+    }
+
+    @Override
     public int delete(String userId, Market market, String symbol) {
         return withConnection(conn -> userStockTable.delete(conn, userId, market, symbol));
     }

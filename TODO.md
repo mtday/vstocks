@@ -1,8 +1,6 @@
 
 * User Accounts
 
-    * Need distinct user names
-    * Support local accounts
     * Support login via facebook and google
     * Account resets
         * Delete all owned stocks and activity and set account balance back to the initial starting value

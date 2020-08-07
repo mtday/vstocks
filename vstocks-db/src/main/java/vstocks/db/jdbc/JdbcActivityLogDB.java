@@ -47,6 +47,11 @@ public class JdbcActivityLogDB extends BaseService implements ActivityLogDB {
     }
 
     @Override
+    public int deleteForUser(String userId) {
+        return withConnection(conn -> activityLogTable.deleteForUser(conn, userId));
+    }
+
+    @Override
     public int delete(String id) {
         return withConnection(conn -> activityLogTable.delete(conn, id));
     }

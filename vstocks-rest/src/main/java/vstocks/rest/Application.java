@@ -20,6 +20,7 @@ import vstocks.rest.resource.v1.security.Callback;
 import vstocks.rest.resource.v1.security.Login;
 import vstocks.rest.resource.v1.security.Logout;
 import vstocks.rest.resource.v1.user.GetUser;
+import vstocks.rest.resource.v1.user.UserReset;
 import vstocks.rest.security.AccessLogFilter;
 import vstocks.rest.security.SecurityConfig;
 import vstocks.rest.task.MemoryUsageLoggingTask;
@@ -66,6 +67,7 @@ public class Application extends ResourceConfig {
         register(Logout.class);
 
         register(GetUser.class);
+        register(UserReset.class);
 
         register(BadRequestExceptionMapper.class);
         register(NotFoundExceptionMapper.class);

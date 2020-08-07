@@ -1,9 +1,11 @@
 package vstocks.db.jdbc;
 
-import vstocks.model.*;
 import vstocks.db.UserDB;
+import vstocks.db.jdbc.table.ActivityLogTable;
 import vstocks.db.jdbc.table.UserBalanceTable;
+import vstocks.db.jdbc.table.UserStockTable;
 import vstocks.db.jdbc.table.UserTable;
+import vstocks.model.*;
 
 import javax.sql.DataSource;
 import java.util.Optional;
@@ -15,6 +17,8 @@ import static vstocks.config.Config.USER_INITIAL_BALANCE;
 public class JdbcUserDB extends BaseService implements UserDB {
     private final UserTable userTable = new UserTable();
     private final UserBalanceTable userBalanceTable = new UserBalanceTable();
+    private final UserStockTable userStockTable = new UserStockTable();
+    private final ActivityLogTable activityLogTable = new ActivityLogTable();
 
     public JdbcUserDB(DataSource dataSource) {
         super(dataSource);
@@ -38,6 +42,18 @@ public class JdbcUserDB extends BaseService implements UserDB {
     @Override
     public int consume(Consumer<User> consumer, Set<Sort> sort) {
         return withConnection(conn -> userTable.consume(conn, consumer, sort));
+    }
+
+    @Override
+    public int reset(String id) {
+        return withConnection(conn -> {
+            userBalanceTable.delete(conn, id);
+            UserBalance initialBalance = new UserBalance().setUserId(id).setBalance(USER_INITIAL_BALANCE.getInt());
+            userBalanceTable.setInitialBalance(conn, initialBalance);
+            userStockTable.deleteForUser(conn, id);
+            activityLogTable.deleteForUser(conn, id);
+            return 1;
+        });
     }
 
     @Override

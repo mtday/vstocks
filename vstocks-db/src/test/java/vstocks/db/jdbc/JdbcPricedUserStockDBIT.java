@@ -33,7 +33,7 @@ public class JdbcPricedUserStockDBIT {
     private UserStockTable userStockTable;
     private StockTable stockTable;
     private StockPriceTable stockPriceTable;
-    private PricedUserStockDB pricedUserStockDb;
+    private PricedUserStockDB pricedUserStockDB;
 
     private final User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
     private final User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
@@ -46,7 +46,7 @@ public class JdbcPricedUserStockDBIT {
         userStockTable = new UserStockTable();
         stockTable = new StockTable();
         stockPriceTable = new StockPriceTable();
-        pricedUserStockDb = new JdbcPricedUserStockDB(dataSourceExternalResource.get());
+        pricedUserStockDB = new JdbcPricedUserStockDB(dataSourceExternalResource.get());
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user1));
@@ -70,7 +70,7 @@ public class JdbcPricedUserStockDBIT {
 
     @Test
     public void testGetMissing() {
-        assertFalse(pricedUserStockDb.get("missing-id", TWITTER, "missing-id").isPresent());
+        assertFalse(pricedUserStockDB.get("missing-id", TWITTER, "missing-id").isPresent());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class JdbcPricedUserStockDBIT {
             connection.commit();
         }
 
-        Optional<PricedUserStock> fetched = pricedUserStockDb.get(userStock.getUserId(), userStock.getMarket(), userStock.getSymbol());
+        Optional<PricedUserStock> fetched = pricedUserStockDB.get(userStock.getUserId(), userStock.getMarket(), userStock.getSymbol());
         assertTrue(fetched.isPresent());
         assertEquals(userStock.getUserId(), fetched.get().getUserId());
         assertEquals(userStock.getMarket(), fetched.get().getMarket());
@@ -102,7 +102,7 @@ public class JdbcPricedUserStockDBIT {
             connection.commit();
         }
 
-        Optional<PricedUserStock> fetched = pricedUserStockDb.get(userStock.getUserId(), userStock.getMarket(), userStock.getSymbol());
+        Optional<PricedUserStock> fetched = pricedUserStockDB.get(userStock.getUserId(), userStock.getMarket(), userStock.getSymbol());
         assertTrue(fetched.isPresent());
         assertEquals(userStock.getUserId(), fetched.get().getUserId());
         assertEquals(userStock.getMarket(), fetched.get().getMarket());
@@ -125,7 +125,7 @@ public class JdbcPricedUserStockDBIT {
             connection.commit();
         }
 
-        Optional<PricedUserStock> fetched = pricedUserStockDb.get(userStock.getUserId(), userStock.getMarket(), userStock.getSymbol());
+        Optional<PricedUserStock> fetched = pricedUserStockDB.get(userStock.getUserId(), userStock.getMarket(), userStock.getSymbol());
         assertTrue(fetched.isPresent());
         assertEquals(userStock.getUserId(), fetched.get().getUserId());
         assertEquals(userStock.getMarket(), fetched.get().getMarket());
@@ -137,7 +137,7 @@ public class JdbcPricedUserStockDBIT {
 
     @Test
     public void testGetForUserNone() {
-        Results<PricedUserStock> results = pricedUserStockDb.getForUser(user1.getId(), new Page(), emptySet());
+        Results<PricedUserStock> results = pricedUserStockDB.getForUser(user1.getId(), new Page(), emptySet());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
@@ -161,7 +161,7 @@ public class JdbcPricedUserStockDBIT {
             connection.commit();
         }
 
-        Results<PricedUserStock> results = pricedUserStockDb.getForUser(user1.getId(), new Page(), emptySet());
+        Results<PricedUserStock> results = pricedUserStockDB.getForUser(user1.getId(), new Page(), emptySet());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
 
@@ -200,7 +200,7 @@ public class JdbcPricedUserStockDBIT {
         }
 
         Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), PRICE.toSort()));
-        Results<PricedUserStock> results = pricedUserStockDb.getForUser(user1.getId(), new Page(), sort);
+        Results<PricedUserStock> results = pricedUserStockDB.getForUser(user1.getId(), new Page(), sort);
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
 
@@ -221,7 +221,7 @@ public class JdbcPricedUserStockDBIT {
 
     @Test
     public void testGetForStockNone() {
-        Results<PricedUserStock> results = pricedUserStockDb.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptySet());
+        Results<PricedUserStock> results = pricedUserStockDB.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptySet());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
@@ -241,7 +241,7 @@ public class JdbcPricedUserStockDBIT {
             connection.commit();
         }
 
-        Results<PricedUserStock> results = pricedUserStockDb.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptySet());
+        Results<PricedUserStock> results = pricedUserStockDB.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptySet());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
 
@@ -276,7 +276,7 @@ public class JdbcPricedUserStockDBIT {
         }
 
         Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), SYMBOL.toSort()));
-        Results<PricedUserStock> results = pricedUserStockDb.getForStock(TWITTER, stock1.getSymbol(), new Page(), sort);
+        Results<PricedUserStock> results = pricedUserStockDB.getForStock(TWITTER, stock1.getSymbol(), new Page(), sort);
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
 
@@ -297,7 +297,7 @@ public class JdbcPricedUserStockDBIT {
 
     @Test
     public void testGetAllNone() {
-        Results<PricedUserStock> results = pricedUserStockDb.getAll(new Page(), emptySet());
+        Results<PricedUserStock> results = pricedUserStockDB.getAll(new Page(), emptySet());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
@@ -321,7 +321,7 @@ public class JdbcPricedUserStockDBIT {
             connection.commit();
         }
 
-        Results<PricedUserStock> results = pricedUserStockDb.getAll(new Page(), emptySet());
+        Results<PricedUserStock> results = pricedUserStockDB.getAll(new Page(), emptySet());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
 
@@ -360,7 +360,7 @@ public class JdbcPricedUserStockDBIT {
         }
 
         Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), SYMBOL.toSort()));
-        Results<PricedUserStock> results = pricedUserStockDb.getAll(new Page(), sort);
+        Results<PricedUserStock> results = pricedUserStockDB.getAll(new Page(), sort);
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
 
@@ -382,7 +382,7 @@ public class JdbcPricedUserStockDBIT {
     @Test
     public void testConsumeNone() {
         List<PricedUserStock> list = new ArrayList<>();
-        assertEquals(0, pricedUserStockDb.consume(list::add, emptySet()));
+        assertEquals(0, pricedUserStockDB.consume(list::add, emptySet()));
         assertTrue(list.isEmpty());
     }
 
@@ -402,7 +402,7 @@ public class JdbcPricedUserStockDBIT {
         }
 
         List<PricedUserStock> list = new ArrayList<>();
-        assertEquals(2, pricedUserStockDb.consume(list::add, emptySet()));
+        assertEquals(2, pricedUserStockDB.consume(list::add, emptySet()));
         assertEquals(2, list.size());
 
         assertEquals(userStock1.getUserId(), list.get(0).getUserId());
@@ -437,7 +437,7 @@ public class JdbcPricedUserStockDBIT {
 
         List<PricedUserStock> list = new ArrayList<>();
         Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), SYMBOL.toSort()));
-        assertEquals(2, pricedUserStockDb.consume(list::add, sort));
+        assertEquals(2, pricedUserStockDB.consume(list::add, sort));
         assertEquals(2, list.size());
 
         assertEquals(userStock2.getUserId(), list.get(0).getUserId());

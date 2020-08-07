@@ -19,5 +19,7 @@ public interface ActivityLogDB {
 
     int add(ActivityLog activityLog);
 
+    int deleteForUser(String userId);
+
     int delete(String id);
 }

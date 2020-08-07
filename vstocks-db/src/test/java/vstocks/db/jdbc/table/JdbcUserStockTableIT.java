@@ -393,6 +393,40 @@ public class JdbcUserStockTableIT {
     }
 
     @Test
+    public void testDeleteForUserMissing() throws SQLException {
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(0, userStockTable.deleteForUser(connection, "missing-id"));
+            connection.commit();
+        }
+    }
+
+    @Test
+    public void testDeleteForUser() throws SQLException {
+        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
+        UserStock userStock2 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setShares(10);
+        UserStock userStock3 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
+        UserStock userStock4 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setShares(10);
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(1, userStockTable.add(connection, userStock1));
+            assertEquals(1, userStockTable.add(connection, userStock2));
+            assertEquals(1, userStockTable.add(connection, userStock3));
+            assertEquals(1, userStockTable.add(connection, userStock4));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            assertEquals(2, userStockTable.deleteForUser(connection, user1.getId()));
+            connection.commit();
+        }
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            Results<UserStock> results = userStockTable.getAll(connection, new Page(), emptySet());
+            assertEquals(2, results.getTotal());
+            assertEquals(2, results.getResults().size());
+            assertEquals(userStock3, results.getResults().get(0));
+            assertEquals(userStock4, results.getResults().get(1));
+        }
+    }
+
+    @Test
     public void testDeleteMissing() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(0, userStockTable.delete(connection, "missing-id", TWITTER, "missing-id"));

@@ -91,6 +91,11 @@ public class UserStockTable extends BaseTable {
         return 0;
     }
 
+    public int deleteForUser(Connection connection, String userId) {
+        String sql = "DELETE FROM user_stocks WHERE user_id = ?";
+        return update(connection, sql, userId);
+    }
+
     public int delete(Connection connection, String userId, Market market, String symbol) {
         String sql = "DELETE FROM user_stocks WHERE user_id = ? AND market = ? AND symbol = ?";
         return update(connection, sql, userId, market, symbol);

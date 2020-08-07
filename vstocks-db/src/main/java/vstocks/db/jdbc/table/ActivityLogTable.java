@@ -74,6 +74,10 @@ public class ActivityLogTable extends BaseTable {
         return update(connection, INSERT_ROW_SETTER, sql, activityLog);
     }
 
+    public int deleteForUser(Connection connection, String userId) {
+        return update(connection, "DELETE FROM activity_logs WHERE user_id = ?", userId);
+    }
+
     public int delete(Connection connection, String id) {
         return update(connection, "DELETE FROM activity_logs WHERE id = ?", id);
     }

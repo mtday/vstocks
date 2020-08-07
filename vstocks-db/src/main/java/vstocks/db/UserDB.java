@@ -18,6 +18,8 @@ public interface UserDB {
 
     int consume(Consumer<User> consumer, Set<Sort> sort);
 
+    int reset(String id);
+
     int add(User user);
 
     int update(User user);
