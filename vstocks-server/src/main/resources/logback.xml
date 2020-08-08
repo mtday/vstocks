@@ -18,4 +18,5 @@
     <logger name="org.eclipse.jetty" level="WARN"/>
     <logger name="org.flywaydb" level="WARN"/>
     <logger name="org.pac4j.oauth.profile.creator" level="WARN"/>
+    <logger name="org.reflections" level="WARN"/>
 </configuration>

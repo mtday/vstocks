@@ -38,9 +38,9 @@ public class UserBalanceTable extends BaseTable {
     }
 
     public Results<UserBalance> getAll(Connection connection, Page page, Set<Sort> sort) {
-        String query = format("SELECT * FROM user_balances %s LIMIT ? OFFSET ?", getSort(sort));
-        String countQuery = "SELECT COUNT(*) FROM user_balances";
-        return results(connection, ROW_MAPPER, page, query, countQuery);
+        String sql = format("SELECT * FROM user_balances %s LIMIT ? OFFSET ?", getSort(sort));
+        String count = "SELECT COUNT(*) FROM user_balances";
+        return results(connection, ROW_MAPPER, page, sql, count);
     }
 
     public int consume(Connection connection, Consumer<UserBalance> consumer, Set<Sort> sort) {

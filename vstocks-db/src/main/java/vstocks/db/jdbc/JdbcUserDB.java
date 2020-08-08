@@ -1,10 +1,7 @@
 package vstocks.db.jdbc;
 
 import vstocks.db.UserDB;
-import vstocks.db.jdbc.table.ActivityLogTable;
-import vstocks.db.jdbc.table.UserBalanceTable;
-import vstocks.db.jdbc.table.UserStockTable;
-import vstocks.db.jdbc.table.UserTable;
+import vstocks.db.jdbc.table.*;
 import vstocks.model.*;
 
 import javax.sql.DataSource;
@@ -18,6 +15,7 @@ public class JdbcUserDB extends BaseService implements UserDB {
     private final UserTable userTable = new UserTable();
     private final UserBalanceTable userBalanceTable = new UserBalanceTable();
     private final UserStockTable userStockTable = new UserStockTable();
+    private final UserAchievementTable userAchievementTable = new UserAchievementTable();
     private final ActivityLogTable activityLogTable = new ActivityLogTable();
 
     public JdbcUserDB(DataSource dataSource) {
@@ -51,6 +49,7 @@ public class JdbcUserDB extends BaseService implements UserDB {
             UserBalance initialBalance = new UserBalance().setUserId(id).setBalance(USER_INITIAL_BALANCE.getInt());
             userBalanceTable.setInitialBalance(conn, initialBalance);
             userStockTable.deleteForUser(conn, id);
+            userAchievementTable.deleteForUser(conn, id);
             activityLogTable.deleteForUser(conn, id);
             return 1;
         });

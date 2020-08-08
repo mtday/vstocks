@@ -1,15 +1,15 @@
 package vstocks.db.jdbc.table;
 
+import com.google.common.collect.BoundType;
+import com.google.common.collect.Range;
+import vstocks.model.DatabaseField;
 import vstocks.model.Page;
 import vstocks.model.Results;
 import vstocks.model.Sort;
 
 import java.sql.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static java.util.Optional.empty;
@@ -17,20 +17,39 @@ import static java.util.Optional.of;
 import static java.util.stream.Collectors.joining;
 
 public abstract class BaseTable {
-    private void populatePreparedStatement(PreparedStatement ps, Object... params) throws SQLException {
-        for (int i = 0; i < params.length; i++) {
-            if (params[i] instanceof Collection) {
-                // only collections containing strings are supported
-                Object[] param = ((Collection<?>) params[i]).toArray();
-                ps.setArray(i + 1, ps.getConnection().createArrayOf("varchar", param));
-            } else if (params[i] instanceof Enum) {
-                ps.setString(i + 1, ((Enum<?>) params[i]).name());
-            } else if (params[i] instanceof Instant) {
-                ps.setTimestamp(i + 1, Timestamp.from((Instant) params[i]));
-            } else {
-                ps.setObject(i + 1, params[i]);
+    private int populatePreparedStatement(PreparedStatement ps, Object... params) throws SQLException {
+        int index = 0;
+        for (Object param : params) {
+            if (param instanceof Collection) {
+                // Converts collection items into strings
+                Object[] array = ((Collection<?>) param).stream().map(String::valueOf).toArray();
+                ps.setArray(++index, ps.getConnection().createArrayOf("varchar", array));
+            } else if (param instanceof Enum) {
+                ps.setString(++index, ((Enum<?>) param).name());
+            } else if (param instanceof Instant) {
+                ps.setTimestamp(++index, Timestamp.from((Instant) param));
+            } else if (param instanceof Range) {
+                // Only ranges containing numbers and Instants are supported
+                Range<?> range = (Range<?>) param;
+                if (range.hasLowerBound()) {
+                    if (range.lowerEndpoint() instanceof Instant) {
+                        ps.setTimestamp(++index, Timestamp.from((Instant) range.lowerEndpoint()));
+                    } else {
+                        ps.setObject(++index, range.lowerEndpoint());
+                    }
+                }
+                if (range.hasUpperBound()) {
+                    if (range.upperEndpoint() instanceof Instant) {
+                        ps.setTimestamp(++index, Timestamp.from((Instant) range.upperEndpoint()));
+                    } else {
+                        ps.setObject(++index, range.upperEndpoint());
+                    }
+                }
+            } else if (param != null) {
+                ps.setObject(++index, param);
             }
         }
+        return index;
     }
 
     protected abstract Set<Sort> getDefaultSort();
@@ -40,6 +59,37 @@ public abstract class BaseTable {
             return "ORDER BY " + getDefaultSort().stream().map(Sort::toString).collect(joining(", "));
         }
         return "ORDER BY " + sort.stream().map(Sort::toString).collect(joining(", "));
+    }
+
+    protected Optional<String> getSearchFilter(DatabaseField field, Collection<?> collection) {
+        if (collection != null && !collection.isEmpty()) {
+            return Optional.of(String.format("%s = ANY(?)", field.getField()));
+        }
+        return Optional.empty();
+    }
+
+    protected Optional<String> getSearchFilter(DatabaseField field, Range<?> range) {
+        List<String> clauses = new ArrayList<>(2);
+        if (range != null) {
+            if (range.hasLowerBound()) {
+                if (range.lowerBoundType() == BoundType.CLOSED) {
+                    clauses.add(String.format("%s >= ?", field.getField()));
+                } else {
+                    clauses.add(String.format("%s > ?", field.getField()));
+                }
+            }
+            if (range.hasUpperBound()) {
+                if (range.upperBoundType() == BoundType.CLOSED) {
+                    clauses.add(String.format("%s <= ?", field.getField()));
+                } else {
+                    clauses.add(String.format("%s < ?", field.getField()));
+                }
+            }
+        }
+        if (!clauses.isEmpty()) {
+            return Optional.of(String.join(" AND ", clauses));
+        }
+        return Optional.empty();
     }
 
     protected int getCount(Connection connection, String sql, Object... params) {
@@ -79,8 +129,7 @@ public abstract class BaseTable {
                                      Object... params) {
         Results<T> results = new Results<T>().setPage(page);
         try (PreparedStatement ps = connection.prepareStatement(query)) {
-            populatePreparedStatement(ps, params);
-            int index = params.length;
+            int index = populatePreparedStatement(ps, params);
             ps.setInt(++index, page.getSize());
             ps.setInt(++index, (page.getPage() - 1) * page.getSize());
             try (ResultSet rs = ps.executeQuery()) {

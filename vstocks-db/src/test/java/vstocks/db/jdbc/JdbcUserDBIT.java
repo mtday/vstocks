@@ -309,20 +309,37 @@ public class JdbcUserDBIT {
         userDB.add(user);
     }
 
-    @Test(expected = Exception.class)
-    public void testAddEmailConflict() {
+    @Test
+    public void testAddEmailConflictNoChange() {
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        assertEquals(1, userDB.add(user));
+        assertEquals(0, userDB.add(user));
+    }
+
+    @Test
+    public void testAddEmailConflictUpdate() {
         User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
         assertEquals(1, userDB.add(user));
         user.setUsername("different");
-        userDB.add(user);
+        user.setDisplayName("different");
+        assertEquals(1, userDB.add(user));
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void testAddEmailConflictDifferentCase() {
         User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
         assertEquals(1, userDB.add(user));
         user.setEmail("USER@DOMAIN.COM");
-        userDB.add(user);
+        assertEquals(0, userDB.add(user));
+    }
+
+    @Test
+    public void testAddEmailConflictDifferentCaseUpdate() {
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        assertEquals(1, userDB.add(user));
+        user.setEmail("USER@DOMAIN.COM");
+        user.setDisplayName("different");
+        assertEquals(1, userDB.add(user));
     }
 
     @Test

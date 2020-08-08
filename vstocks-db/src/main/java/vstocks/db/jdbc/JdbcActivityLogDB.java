@@ -52,6 +52,21 @@ public class JdbcActivityLogDB extends BaseService implements ActivityLogDB {
     }
 
     @Override
+    public Results<ActivityLog> search(ActivityLogSearch search, Page page, Set<Sort> sort) {
+        return withConnection(conn -> activityLogTable.search(conn, search, page, sort));
+    }
+
+    @Override
+    public int consume(ActivityLogSearch search, Consumer<ActivityLog> consumer, Set<Sort> sort) {
+        return withConnection(conn -> activityLogTable.consume(conn, search, consumer, sort));
+    }
+
+    @Override
+    public int count(ActivityLogSearch search) {
+        return withConnection(conn -> activityLogTable.count(conn, search));
+    }
+
+    @Override
     public int add(ActivityLog activityLog) {
         return withConnection(conn -> activityLogTable.add(conn, activityLog));
     }

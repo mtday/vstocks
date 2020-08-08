@@ -9,6 +9,8 @@ public interface DBFactory {
 
     PricedStockDB getPricedStockDB();
 
+    UserAchievementDB getUserAchievementDB();
+
     UserBalanceDB getUserBalanceDB();
 
     UserDB getUserDB();

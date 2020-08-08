@@ -35,12 +35,18 @@ public class JdbcPricedStockDBIT {
     private JdbcPricedStockDB pricedStockDB;
 
     @Before
-    public void setup() {
+    public void setup() throws SQLException {
         stockTable = new StockTable();
         stockPriceTable = new StockPriceTable();
         stockDB = new JdbcStockDB(dataSourceExternalResource.get());
         stockPriceDB = new JdbcStockPriceDB(dataSourceExternalResource.get());
         pricedStockDB = new JdbcPricedStockDB(dataSourceExternalResource.get());
+
+        // Clear out the initial stocks from the Flyway script
+        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            stockTable.truncate(connection);
+            connection.commit();
+        }
     }
 
     @After

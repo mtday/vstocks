@@ -3,16 +3,20 @@ package vstocks.model;
 import static java.util.Locale.ENGLISH;
 
 public enum DatabaseField {
+    ACHIEVEMENT_ID,
     BALANCE,
+    DESCRIPTION,
+    DIFFICULTY,
     DISPLAY_NAME,
+    EMAIL,
     ID,
     MARKET,
     NAME,
     PRICE,
     SHARES,
-    SOURCE,
     SYMBOL,
     TIMESTAMP,
+    TYPE,
     USERNAME,
     USER_ID;
 

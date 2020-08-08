@@ -29,7 +29,9 @@ public class DataSourceExternalResource extends ExternalResource implements Supp
         config.setAutoCommit(false);
 
         dataSource = new HikariDataSource(config);
-        Flyway.configure().dataSource(dataSource).load().migrate();
+        Flyway flyway = Flyway.configure().dataSource(dataSource).load();
+        flyway.clean();
+        flyway.migrate();
     }
 
     @Override

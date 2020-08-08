@@ -55,13 +55,13 @@ public class StockTable extends BaseTable {
 
     public Results<Stock> getForMarket(Connection connection, Market market, Boolean active, Page page, Set<Sort> sort) {
         if (active != null) {
-            String query = format("SELECT * FROM stocks WHERE market = ? AND active = ? %s LIMIT ? OFFSET ?", getSort(sort));
-            String countQuery = "SELECT COUNT(*) FROM stocks WHERE market = ? AND active = ?";
-            return results(connection, ROW_MAPPER, page, query, countQuery, market, active);
+            String sql = format("SELECT * FROM stocks WHERE market = ? AND active = ? %s LIMIT ? OFFSET ?", getSort(sort));
+            String count = "SELECT COUNT(*) FROM stocks WHERE market = ? AND active = ?";
+            return results(connection, ROW_MAPPER, page, sql, count, market, active);
         } else {
-            String query = format("SELECT * FROM stocks WHERE market = ? %s LIMIT ? OFFSET ?", getSort(sort));
-            String countQuery = "SELECT COUNT(*) FROM stocks WHERE market = ?";
-            return results(connection, ROW_MAPPER, page, query, countQuery, market);
+            String sql = format("SELECT * FROM stocks WHERE market = ? %s LIMIT ? OFFSET ?", getSort(sort));
+            String count = "SELECT COUNT(*) FROM stocks WHERE market = ?";
+            return results(connection, ROW_MAPPER, page, sql, count, market);
         }
     }
 
@@ -77,13 +77,13 @@ public class StockTable extends BaseTable {
 
     public Results<Stock> getAll(Connection connection, Boolean active, Page page, Set<Sort> sort) {
         if (active != null) {
-            String query = format("SELECT * FROM stocks WHERE active = ? %s LIMIT ? OFFSET ?", getSort(sort));
-            String countQuery = "SELECT COUNT(*) FROM stocks WHERE active = ?";
-            return results(connection, ROW_MAPPER, page, query, countQuery, active);
+            String sql = format("SELECT * FROM stocks WHERE active = ? %s LIMIT ? OFFSET ?", getSort(sort));
+            String count = "SELECT COUNT(*) FROM stocks WHERE active = ?";
+            return results(connection, ROW_MAPPER, page, sql, count, active);
         } else {
-            String query = format("SELECT * FROM stocks %s LIMIT ? OFFSET ?", getSort(sort));
-            String countQuery = "SELECT COUNT(*) FROM stocks";
-            return results(connection, ROW_MAPPER, page, query, countQuery);
+            String sql = format("SELECT * FROM stocks %s LIMIT ? OFFSET ?", getSort(sort));
+            String count = "SELECT COUNT(*) FROM stocks";
+            return results(connection, ROW_MAPPER, page, sql, count);
         }
     }
 

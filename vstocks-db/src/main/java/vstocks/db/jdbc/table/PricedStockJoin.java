@@ -55,101 +55,93 @@ public class PricedStockJoin extends BaseTable {
 
     public Results<PricedStock> getForMarket(Connection connection, Market market, Boolean active, Page page, Set<Sort> sort) {
         if (active != null) {
-            String query = "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
+            String sql = format("SELECT * FROM ("
+                    + "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
                     + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
                     + "WHERE s.market = ? AND s.active = ? "
-                    + "ORDER BY s.market, s.symbol, p.timestamp DESC LIMIT ? OFFSET ?";
-            if (sort != null && !sort.isEmpty()) {
-                query = format("SELECT * FROM (%s) AS data %s", query, getSort(sort));
-            }
-            String countQuery = "SELECT COUNT(*) FROM ("
+                    + "ORDER BY s.market, s.symbol, p.timestamp DESC LIMIT ? OFFSET ?"
+                    + ") AS data %s", getSort(sort));
+            String count = "SELECT COUNT(*) FROM ("
                     + "SELECT DISTINCT ON (s.market, s.symbol) s.market, s.symbol FROM stocks s "
                     + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
                     + "WHERE s.market = ? AND s.active = ? ORDER BY s.market, s.symbol, p.timestamp DESC"
                     + ") AS data";
-            return results(connection, ROW_MAPPER, page, query, countQuery, market, active);
+            return results(connection, ROW_MAPPER, page, sql, count, market, active);
         } else {
-            String query = "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
+            String sql = format("SELECT * FROM ("
+                    + "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
                     + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
-                    + "WHERE s.market = ? ORDER BY s.market, s.symbol, p.timestamp DESC LIMIT ? OFFSET ?";
-            if (sort != null && !sort.isEmpty()) {
-                query = format("SELECT * FROM (%s) AS data %s", query, getSort(sort));
-            }
-            String countQuery = "SELECT COUNT(*) FROM ("
+                    + "WHERE s.market = ? ORDER BY s.market, s.symbol, p.timestamp DESC LIMIT ? OFFSET ?"
+                    + ") AS data %s", getSort(sort));
+            String count = "SELECT COUNT(*) FROM ("
                     + "SELECT DISTINCT ON (s.market, s.symbol) s.market, s.symbol FROM stocks s "
                     + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
                     + "WHERE s.market = ? ORDER BY s.market, s.symbol, p.timestamp DESC"
                     + ") AS data";
-            return results(connection, ROW_MAPPER, page, query, countQuery, market);
+            return results(connection, ROW_MAPPER, page, sql, count, market);
         }
     }
 
     public int consumeForMarket(Connection connection, Market market, Boolean active, Consumer<PricedStock> consumer, Set<Sort> sort) {
         if (active != null) {
-            String sql = "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
+            String sql = format("SELECT * FROM ("
+                    + "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
                     + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
-                    + "WHERE s.market = ? AND s.active = ? ORDER BY s.market, s.symbol, p.timestamp DESC";
-            if (sort != null && !sort.isEmpty()) {
-                sql = format("SELECT * FROM (%s) AS data %s", sql, getSort(sort));
-            }
+                    + "WHERE s.market = ? AND s.active = ? ORDER BY s.market, s.symbol, p.timestamp DESC"
+                    + ") AS data %s", getSort(sort));
             return consume(connection, ROW_MAPPER, consumer, sql, market, active);
         } else {
-            String sql = "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
+            String sql = format("SELECT * FROM ("
+                    + "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
                     + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
-                    + "WHERE s.market = ? ORDER BY s.market, s.symbol, p.timestamp DESC";
-            if (sort != null && !sort.isEmpty()) {
-                sql = format("SELECT * FROM (%s) AS data %s", sql, getSort(sort));
-            }
+                    + "WHERE s.market = ? ORDER BY s.market, s.symbol, p.timestamp DESC"
+                    + ") AS data %s", getSort(sort));
             return consume(connection, ROW_MAPPER, consumer, sql, market);
         }
     }
 
     public Results<PricedStock> getAll(Connection connection, Boolean active, Page page, Set<Sort> sort) {
         if (active != null) {
-            String query = "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
+            String sql = format("SELECT * FROM ("
+                    + "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
                     + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
-                    + "WHERE active = ? ORDER BY s.market, s.symbol, p.timestamp DESC LIMIT ? OFFSET ?";
-            if (sort != null && !sort.isEmpty()) {
-                query = format("SELECT * FROM (%s) AS data %s", query, getSort(sort));
-            }
-            String countQuery = "SELECT COUNT(*) FROM ("
+                    + "WHERE active = ? ORDER BY s.market, s.symbol, p.timestamp DESC LIMIT ? OFFSET ?"
+                    + ") AS data %s", getSort(sort));
+            String count = "SELECT COUNT(*) FROM ("
                     + "SELECT DISTINCT ON (s.market, s.symbol) s.market, s.symbol FROM stocks s "
                     + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
                     + "WHERE active = ? ORDER BY s.market, s.symbol, p.timestamp DESC"
                     + ") AS data";
-            return results(connection, ROW_MAPPER, page, query, countQuery, active);
+            return results(connection, ROW_MAPPER, page, sql, count, active);
         } else {
-            String query = "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
+            String sql = format("SELECT * FROM ("
+                    + "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
                     + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
-                    + "ORDER BY s.market, s.symbol, p.timestamp DESC LIMIT ? OFFSET ?";
-            if (sort != null && !sort.isEmpty()) {
-                query = format("SELECT * FROM (%s) AS data %s", query, getSort(sort));
-            }
-            String countQuery = "SELECT COUNT(*) FROM ("
+                    + "ORDER BY s.market, s.symbol, p.timestamp DESC LIMIT ? OFFSET ?"
+                    + ") AS data %s", getSort(sort));
+            String count = "SELECT COUNT(*) FROM ("
                     + "SELECT DISTINCT ON (s.market, s.symbol) s.market, s.symbol FROM stocks s "
                     + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
                     + "ORDER BY s.market, s.symbol, p.timestamp DESC"
                     + ") AS data";
-            return results(connection, ROW_MAPPER, page, query, countQuery);
+            return results(connection, ROW_MAPPER, page, sql, count);
         }
     }
 
     public int consume(Connection connection, Boolean active, Consumer<PricedStock> consumer, Set<Sort> sort) {
         if (active != null) {
-            String sql = "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
+            String sql = format("SELECT * FROM ("
+                    + "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
                     + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
-                    + "WHERE active = ? ORDER BY s.market, s.symbol, p.timestamp DESC";
-            if (sort != null && !sort.isEmpty()) {
-                sql = format("SELECT * FROM (%s) AS data %s", sql, getSort(sort));
-            }
+                    + "WHERE active = ? ORDER BY s.market, s.symbol, p.timestamp DESC"
+                    + ") AS data %s", getSort(sort));
             return consume(connection, ROW_MAPPER, consumer, sql, active);
         } else {
-            String sql = "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
+            String sql = format("SELECT * FROM ("
+                    + "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
                     + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
-                    + "ORDER BY s.market, s.symbol, p.timestamp DESC";
-            if (sort != null && !sort.isEmpty()) {
-                sql = format("SELECT * FROM (%s) AS data %s", sql, getSort(sort));
-            }
+                    + "ORDER BY s.market, s.symbol, p.timestamp DESC"
+                    + ") AS data %s", getSort(sort));
             return consume(connection, ROW_MAPPER, consumer, sql);
         }
     }

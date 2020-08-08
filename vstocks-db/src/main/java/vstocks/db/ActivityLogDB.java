@@ -21,6 +21,12 @@ public interface ActivityLogDB {
 
     int consume(Consumer<ActivityLog> consumer, Set<Sort> sort);
 
+    Results<ActivityLog> search(ActivityLogSearch search, Page page, Set<Sort> sort);
+
+    int consume(ActivityLogSearch search, Consumer<ActivityLog> consumer, Set<Sort> sort);
+
+    int count(ActivityLogSearch search);
+
     int add(ActivityLog activityLog);
 
     int deleteForUser(String userId);

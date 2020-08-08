@@ -13,6 +13,7 @@
 
     * Difficulty (Easy, Medium, Hard)
     * Activated based on user activity (buy/sell actions)
+    * Different categories (Beginner, Social, Challenges, Big Money, etc.)
 
 * Achievement Levels (Platinum, Gold, Silver, Bronze)
 
@@ -40,6 +41,10 @@
     * Show standings among friends
 
 * System Status Bar
+
+* Artificial User Activity
+
+    * Stress testing the stock services, achievement checking, etc.
 
 * Business model
 

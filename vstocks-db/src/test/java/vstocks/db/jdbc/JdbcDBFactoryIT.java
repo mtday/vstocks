@@ -24,6 +24,7 @@ public class JdbcDBFactoryIT {
         assertNotNull(dbFactory.getStockPriceDB());
         assertNotNull(dbFactory.getStockDB());
         assertNotNull(dbFactory.getPricedStockDB());
+        assertNotNull(dbFactory.getUserAchievementDB());
         assertNotNull(dbFactory.getUserBalanceDB());
         assertNotNull(dbFactory.getUserDB());
         assertNotNull(dbFactory.getUserStockDB());

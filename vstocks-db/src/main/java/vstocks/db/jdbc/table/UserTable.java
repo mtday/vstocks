@@ -62,7 +62,9 @@ public class UserTable extends BaseTable {
     }
 
     public int add(Connection connection, User user) {
-        String sql = "INSERT INTO users (id, email, username, display_name) VALUES (?, LOWER(?), ?, ?)";
+        String sql = "INSERT INTO users (id, email, username, display_name) VALUES (?, LOWER(?), ?, ?) "
+                + "ON CONFLICT ON CONSTRAINT users_pk DO UPDATE SET display_name = EXCLUDED.display_name "
+                + "WHERE users.display_name != EXCLUDED.display_name";
         return update(connection, INSERT_ROW_SETTER, sql, user);
     }
 

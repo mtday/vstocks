@@ -40,21 +40,21 @@ public class UserStockTable extends BaseTable {
     }
 
     public Results<UserStock> getForUser(Connection connection, String userId, Page page, Set<Sort> sort) {
-        String query = format("SELECT * FROM user_stocks WHERE user_id = ? %s LIMIT ? OFFSET ?", getSort(sort));
-        String countQuery = "SELECT COUNT(*) FROM user_stocks WHERE user_id = ?";
-        return results(connection, ROW_MAPPER, page, query, countQuery, userId);
+        String sql = format("SELECT * FROM user_stocks WHERE user_id = ? %s LIMIT ? OFFSET ?", getSort(sort));
+        String count = "SELECT COUNT(*) FROM user_stocks WHERE user_id = ?";
+        return results(connection, ROW_MAPPER, page, sql, count, userId);
     }
 
     public Results<UserStock> getForStock(Connection connection, Market market, String symbol, Page page, Set<Sort> sort) {
-        String query = format("SELECT * FROM user_stocks WHERE market = ? AND symbol = ? %s LIMIT ? OFFSET ?", getSort(sort));
-        String countQuery = "SELECT COUNT(*) FROM user_stocks WHERE market = ? AND symbol = ?";
-        return results(connection, ROW_MAPPER, page, query, countQuery, market, symbol);
+        String sql = format("SELECT * FROM user_stocks WHERE market = ? AND symbol = ? %s LIMIT ? OFFSET ?", getSort(sort));
+        String count = "SELECT COUNT(*) FROM user_stocks WHERE market = ? AND symbol = ?";
+        return results(connection, ROW_MAPPER, page, sql, count, market, symbol);
     }
 
     public Results<UserStock> getAll(Connection connection, Page page, Set<Sort> sort) {
-        String query = format("SELECT * FROM user_stocks %s LIMIT ? OFFSET ?", getSort(sort));
-        String countQuery = "SELECT COUNT(*) FROM user_stocks";
-        return results(connection, ROW_MAPPER, page, query, countQuery);
+        String sql = format("SELECT * FROM user_stocks %s LIMIT ? OFFSET ?", getSort(sort));
+        String count = "SELECT COUNT(*) FROM user_stocks";
+        return results(connection, ROW_MAPPER, page, sql, count);
     }
 
     public int consume(Connection connection, Consumer<UserStock> consumer, Set<Sort> sort) {

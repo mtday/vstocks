@@ -93,7 +93,7 @@ CREATE TABLE user_stocks (
     CONSTRAINT user_stocks_pk PRIMARY KEY (user_id, market, symbol),
     CONSTRAINT user_stocks_fk_user_id FOREIGN KEY (user_id)
         REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE,
-    CONSTRAINT user_stocks_fk_symbol FOREIGN KEY (market, symbol)
+    CONSTRAINT user_stocks_fk_stock FOREIGN KEY (market, symbol)
         REFERENCES stocks (market, symbol) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
@@ -101,3 +101,19 @@ CREATE INDEX idx_user_stocks_user_id ON user_stocks (user_id);
 CREATE INDEX idx_user_stocks_market ON user_stocks (market);
 CREATE INDEX idx_user_stocks_symbol ON user_stocks (symbol);
 CREATE INDEX idx_user_stocks_shares ON user_stocks (shares);
+
+
+CREATE TABLE user_achievements (
+    user_id            TEXT         NOT NULL,
+    achievement_id     TEXT         NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
+    description        TEXT         NOT NULL,
+
+    CONSTRAINT user_achievements_pk PRIMARY KEY (user_id, achievement_id),
+    CONSTRAINT user_achievements_fk_user_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX idx_user_achievements_user_id ON user_achievements (user_id);
+CREATE INDEX idx_user_achievements_achievement_id ON user_achievements (achievement_id);
+CREATE INDEX idx_user_achievements_timestamp ON user_achievements (timestamp);
