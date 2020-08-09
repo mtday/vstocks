@@ -45,8 +45,14 @@ public class AchievementServiceIT {
                 .collect(joining("\n"));
 
         String expected = String.join("\n", asList(
-                "Beginner - First Stock Purchase (Twitter)",
-                "Beginner - First Stock Sale (Twitter)"
+                "Beginner - First Instagram Stock Purchase",
+                "Beginner - First Twitch Stock Purchase",
+                "Beginner - First Twitter Stock Purchase",
+                "Beginner - First YouTube Stock Purchase",
+                "Beginner - First Instagram Stock Sale",
+                "Beginner - First Twitch Stock Sale",
+                "Beginner - First Twitter Stock Sale",
+                "Beginner - First YouTube Stock Sale"
         ));
         assertEquals(expected, achievements);
     }
@@ -81,9 +87,9 @@ public class AchievementServiceIT {
 
         UserAchievement userAchievement = achievements.iterator().next();
         assertEquals(user.getId(), userAchievement.getUserId());
-        assertEquals("first-stock-purchase-twitter", userAchievement.getAchievementId());
+        assertEquals("first_stock_buy_twitter", userAchievement.getAchievementId());
         assertEquals(activityLog.getTimestamp(), userAchievement.getTimestamp());
-        assertEquals("First stock purchase completed - 5 shares of TWITTER/symbol bought for ⊻10 each",
+        assertEquals("First Twitter stock purchase achieved - 5 shares of symbol bought for 10 credits each.",
                 userAchievement.getDescription());
     }
 }

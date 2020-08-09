@@ -14,13 +14,13 @@ import java.util.*;
 import static java.util.stream.Collectors.toList;
 
 public class AchievementService {
-    private final Map<Achievement, AchievementProvider> achievementProviders;
+    private final Map<Achievement, AchievementValidator> achievements;
 
     public AchievementService() {
         Comparator<Achievement> achievementComparator = Comparator.comparing(Achievement::getCategory)
                 .thenComparingInt(Achievement::getOrder)
                 .thenComparing(Achievement::getName);
-        achievementProviders = new TreeMap<>(achievementComparator);
+        achievements = new TreeMap<>(achievementComparator);
 
         ConfigurationBuilder configuration = new ConfigurationBuilder()
                 .setUrls(ClasspathHelper.forClass(AchievementService.class))
@@ -28,7 +28,9 @@ public class AchievementService {
         Reflections reflections = new Reflections(configuration);
         reflections.getSubTypesOf(AchievementProvider.class).stream()
                 .map(this::createProvider)
-                .forEach(provider -> achievementProviders.put(provider.getAchievement(), provider));
+                .map(AchievementProvider::getAchievements)
+                .flatMap(Collection::stream)
+                .forEach(entry -> achievements.put(entry.getKey(), entry.getValue()));
     }
 
     private AchievementProvider createProvider(Class<? extends AchievementProvider> clazz) {
@@ -40,11 +42,11 @@ public class AchievementService {
     }
 
     public Set<Achievement> getAchievements() {
-        return achievementProviders.keySet();
+        return achievements.keySet();
     }
 
     public List<UserAchievement> check(DBFactory dbFactory, ActivityLog activityLog) {
-        return achievementProviders.values().stream()
+        return achievements.values().stream()
                 .map(provider -> provider.validate(dbFactory, activityLog))
                 .filter(Optional::isPresent)
                 .map(Optional::get)

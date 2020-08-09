@@ -16,8 +16,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import static vstocks.model.Market.TWITTER;
-import static vstocks.model.Market.YOUTUBE;
+import static vstocks.model.Market.*;
 
 public abstract class BaseAchievementProviderIT {
     @ClassRule
@@ -30,6 +29,10 @@ public abstract class BaseAchievementProviderIT {
     public final StockPrice twitterStockPrice = new StockPrice().setMarket(TWITTER).setSymbol("symbol").setPrice(10).setTimestamp(now);
     public final Stock youtubeStock = new Stock().setMarket(YOUTUBE).setSymbol("symbol").setName("Name").setActive(true);
     public final StockPrice youtubeStockPrice = new StockPrice().setMarket(YOUTUBE).setSymbol("symbol").setPrice(10).setTimestamp(now);
+    public final Stock instagramStock = new Stock().setMarket(INSTAGRAM).setSymbol("symbol").setName("Name").setActive(true);
+    public final StockPrice instagramStockPrice = new StockPrice().setMarket(INSTAGRAM).setSymbol("symbol").setPrice(10).setTimestamp(now);
+    public final Stock twitchStock = new Stock().setMarket(TWITCH).setSymbol("symbol").setName("Name").setActive(true);
+    public final StockPrice twitchStockPrice = new StockPrice().setMarket(TWITCH).setSymbol("symbol").setPrice(10).setTimestamp(now);
 
     public DBFactory getDBFactory() {
         return new JdbcDBFactory(dataSourceExternalResource.get());
@@ -41,8 +44,12 @@ public abstract class BaseAchievementProviderIT {
             new UserTable().add(connection, user);
             new StockTable().add(connection, twitterStock);
             new StockTable().add(connection, youtubeStock);
+            new StockTable().add(connection, instagramStock);
+            new StockTable().add(connection, twitchStock);
             new StockPriceTable().add(connection, twitterStockPrice);
             new StockPriceTable().add(connection, youtubeStockPrice);
+            new StockPriceTable().add(connection, instagramStockPrice);
+            new StockPriceTable().add(connection, twitchStockPrice);
             connection.commit();;
         }
     }

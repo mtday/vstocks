@@ -14,6 +14,8 @@
     * Difficulty (Easy, Medium, Hard)
     * Activated based on user activity (buy/sell actions)
     * Different categories (Beginner, Social, Challenges, Big Money, etc.)
+    * Diversification achievements (owning stocks across all markets)
+    * Big Spender achievement (spend 20% of your total account value on a single stock)
 
 * Achievement Levels (Platinum, Gold, Silver, Bronze)
 
