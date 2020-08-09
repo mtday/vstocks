@@ -1,15 +1,15 @@
 package vstocks.db.jdbc.table;
 
-import com.google.common.collect.BoundType;
-import com.google.common.collect.Range;
-import vstocks.model.DatabaseField;
 import vstocks.model.Page;
 import vstocks.model.Results;
 import vstocks.model.Sort;
 
 import java.sql.*;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static java.util.Optional.empty;
@@ -28,23 +28,6 @@ public abstract class BaseTable {
                 ps.setString(++index, ((Enum<?>) param).name());
             } else if (param instanceof Instant) {
                 ps.setTimestamp(++index, Timestamp.from((Instant) param));
-            } else if (param instanceof Range) {
-                // Only ranges containing numbers and Instants are supported
-                Range<?> range = (Range<?>) param;
-                if (range.hasLowerBound()) {
-                    if (range.lowerEndpoint() instanceof Instant) {
-                        ps.setTimestamp(++index, Timestamp.from((Instant) range.lowerEndpoint()));
-                    } else {
-                        ps.setObject(++index, range.lowerEndpoint());
-                    }
-                }
-                if (range.hasUpperBound()) {
-                    if (range.upperEndpoint() instanceof Instant) {
-                        ps.setTimestamp(++index, Timestamp.from((Instant) range.upperEndpoint()));
-                    } else {
-                        ps.setObject(++index, range.upperEndpoint());
-                    }
-                }
             } else if (param != null) {
                 ps.setObject(++index, param);
             }
@@ -59,37 +42,6 @@ public abstract class BaseTable {
             return "ORDER BY " + getDefaultSort().stream().map(Sort::toString).collect(joining(", "));
         }
         return "ORDER BY " + sort.stream().map(Sort::toString).collect(joining(", "));
-    }
-
-    protected Optional<String> getSearchFilter(DatabaseField field, Collection<?> collection) {
-        if (collection != null && !collection.isEmpty()) {
-            return Optional.of(String.format("%s = ANY(?)", field.getField()));
-        }
-        return Optional.empty();
-    }
-
-    protected Optional<String> getSearchFilter(DatabaseField field, Range<?> range) {
-        List<String> clauses = new ArrayList<>(2);
-        if (range != null) {
-            if (range.hasLowerBound()) {
-                if (range.lowerBoundType() == BoundType.CLOSED) {
-                    clauses.add(String.format("%s >= ?", field.getField()));
-                } else {
-                    clauses.add(String.format("%s > ?", field.getField()));
-                }
-            }
-            if (range.hasUpperBound()) {
-                if (range.upperBoundType() == BoundType.CLOSED) {
-                    clauses.add(String.format("%s <= ?", field.getField()));
-                } else {
-                    clauses.add(String.format("%s < ?", field.getField()));
-                }
-            }
-        }
-        if (!clauses.isEmpty()) {
-            return Optional.of(String.join(" AND ", clauses));
-        }
-        return Optional.empty();
     }
 
     protected int getCount(Connection connection, String sql, Object... params) {

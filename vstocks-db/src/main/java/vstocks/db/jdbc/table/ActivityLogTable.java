@@ -8,14 +8,12 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.sql.Types.INTEGER;
 import static java.sql.Types.VARCHAR;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.joining;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Sort.SortDirection.DESC;
 
@@ -105,45 +103,6 @@ public class ActivityLogTable extends BaseTable {
     public int consume(Connection connection, Consumer<ActivityLog> consumer, Set<Sort> sort) {
         String sql = format("SELECT * FROM activity_logs %s", getSort(sort));
         return consume(connection, ROW_MAPPER, consumer, sql);
-    }
-
-    private String getFilter(ActivityLogSearch search) {
-        String filter = Stream.of(
-                getSearchFilter(ID, search.getIds()),
-                getSearchFilter(USER_ID, search.getUserIds()),
-                getSearchFilter(TYPE, search.getTypes()),
-                getSearchFilter(TIMESTAMP, search.getTimestampRange()),
-                getSearchFilter(MARKET, search.getMarkets()),
-                getSearchFilter(SYMBOL, search.getSymbols()),
-                getSearchFilter(SHARES, search.getSharesRange()),
-                getSearchFilter(PRICE, search.getPriceRange())
-        ).filter(Optional::isPresent).map(Optional::get).collect(joining(" AND "));
-        return filter.isEmpty() ? "" : "WHERE " + filter;
-    }
-
-    public Results<ActivityLog> search(Connection connection, ActivityLogSearch search, Page page, Set<Sort> sort) {
-        String filter = getFilter(search);
-        String sql = format("SELECT * FROM activity_logs %s %s LIMIT ? OFFSET ?", filter, getSort(sort));
-        String count = format("SELECT COUNT(*) FROM activity_logs %s", filter);
-        return results(connection, ROW_MAPPER, page, sql, count, search.getIds(), search.getUserIds(),
-                search.getTypes(), search.getTimestampRange(), search.getMarkets(), search.getSymbols(),
-                search.getSharesRange(), search.getPriceRange());
-    }
-
-    public int consume(Connection connection, ActivityLogSearch search, Consumer<ActivityLog> consumer, Set<Sort> sort) {
-        String filter = getFilter(search);
-        String sql = format("SELECT * FROM activity_logs %s %s", filter, getSort(sort));
-        return consume(connection, ROW_MAPPER, consumer, sql, search.getIds(), search.getUserIds(), search.getTypes(),
-                search.getTimestampRange(), search.getMarkets(), search.getSymbols(), search.getSharesRange(),
-                search.getPriceRange());
-    }
-
-    public int count(Connection connection, ActivityLogSearch search) {
-        String filter = getFilter(search);
-        String sql = format("SELECT COUNT(*) FROM activity_logs %s", filter);
-        return getCount(connection, sql, search.getIds(), search.getUserIds(), search.getTypes(),
-                search.getTimestampRange(), search.getMarkets(), search.getSymbols(), search.getSharesRange(),
-                search.getPriceRange());
     }
 
     public <T> int consume(Connection connection, PreparedStatementCreator psc, RowMapper<T> rowMapper, Consumer<T> consumer) {

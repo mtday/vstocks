@@ -22,7 +22,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <flyway.version>6.5.2</flyway.version>
-        <guava.version>29.0-jre</guava.version>
         <hk2.version>2.6.1</hk2.version>
         <hikari.version>3.4.5</hikari.version>
         <jackson.version>2.11.1</jackson.version>
@@ -104,13 +103,6 @@
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>${jackson.version}</version>
-            </dependency>
-
-            <!-- Guava utilities -->
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
             </dependency>
 
             <!-- Used for database connection pooling -->

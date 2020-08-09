@@ -23,12 +23,6 @@ public interface ActivityLogDB {
 
     int consume(Consumer<ActivityLog> consumer, Set<Sort> sort);
 
-    Results<ActivityLog> search(ActivityLogSearch search, Page page, Set<Sort> sort);
-
-    int consume(ActivityLogSearch search, Consumer<ActivityLog> consumer, Set<Sort> sort);
-
-    int count(ActivityLogSearch search);
-
     <T> int consume(PreparedStatementCreator psc, RowMapper<T> rowMapper, Consumer<T> consumer);
 
     int add(ActivityLog activityLog);
