@@ -39,7 +39,9 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
                 "first_stock_buy_instagram",
                 "first_stock_sell_instagram",
                 "first_stock_buy_twitch",
-                "first_stock_sell_twitch"
+                "first_stock_sell_twitch",
+                "first_stock_buy_facebook",
+                "first_stock_sell_facebook"
         ));
         String ids = achievements.stream().map(Entry::getKey).map(Achievement::getId).collect(joining("\n"));
         assertEquals(expectedIds, ids);
@@ -57,7 +59,9 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
                 "First Instagram Stock Purchase",
                 "First Instagram Stock Sale",
                 "First Twitch Stock Purchase",
-                "First Twitch Stock Sale"
+                "First Twitch Stock Sale",
+                "First Facebook Stock Purchase",
+                "First Facebook Stock Sale"
         ));
         String names = achievements.stream().map(Entry::getKey).map(Achievement::getName).collect(joining("\n"));
         assertEquals(expectedNames, names);
@@ -89,7 +93,9 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
                 "Buy (with credits) one or more shares of any stock on the Instagram market for any price.",
                 "Sell one or more shares of any stock on the Instagram market for any price.",
                 "Buy (with credits) one or more shares of any stock on the Twitch market for any price.",
-                "Sell one or more shares of any stock on the Twitch market for any price."
+                "Sell one or more shares of any stock on the Twitch market for any price.",
+                "Buy (with credits) one or more shares of any stock on the Facebook market for any price.",
+                "Sell one or more shares of any stock on the Facebook market for any price."
         ));
         String descriptions = achievements.stream().map(Entry::getKey).map(Achievement::getDescription).collect(joining("\n"));
         assertEquals(expectedDescriptions, descriptions);
@@ -203,6 +209,18 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
     }
 
     @Test
+    public void testValidateFacebookBuy() {
+        List<UserAchievement> userAchievements = getUserAchievements(STOCK_BUY, facebookStock);
+        assertEquals(1, userAchievements.size());
+        UserAchievement userAchievement = userAchievements.iterator().next();
+        assertEquals(user.getId(), userAchievement.getUserId());
+        assertEquals("first_stock_buy_facebook", userAchievement.getAchievementId());
+        assertNotNull(userAchievement.getTimestamp());
+        assertEquals("First Facebook stock purchase achieved - 5 shares of symbol bought for 10 credits each.",
+                userAchievement.getDescription());
+    }
+
+    @Test
     public void testValidateTwitterSell() {
         List<UserAchievement> userAchievements = getUserAchievements(STOCK_SELL, twitterStock);
         assertEquals(1, userAchievements.size());
@@ -247,6 +265,18 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
         assertEquals("first_stock_sell_twitch", userAchievement.getAchievementId());
         assertNotNull(userAchievement.getTimestamp());
         assertEquals("First Twitch stock sale achieved - 5 shares of symbol sold for 10 credits each.",
+                userAchievement.getDescription());
+    }
+
+    @Test
+    public void testValidateFacebookSell() {
+        List<UserAchievement> userAchievements = getUserAchievements(STOCK_SELL, facebookStock);
+        assertEquals(1, userAchievements.size());
+        UserAchievement userAchievement = userAchievements.iterator().next();
+        assertEquals(user.getId(), userAchievement.getUserId());
+        assertEquals("first_stock_sell_facebook", userAchievement.getAchievementId());
+        assertNotNull(userAchievement.getTimestamp());
+        assertEquals("First Facebook stock sale achieved - 5 shares of symbol sold for 10 credits each.",
                 userAchievement.getDescription());
     }
 }

@@ -33,6 +33,8 @@ public abstract class BaseAchievementProviderIT {
     public final StockPrice instagramStockPrice = new StockPrice().setMarket(INSTAGRAM).setSymbol("symbol").setPrice(10).setTimestamp(now);
     public final Stock twitchStock = new Stock().setMarket(TWITCH).setSymbol("symbol").setName("Name").setActive(true);
     public final StockPrice twitchStockPrice = new StockPrice().setMarket(TWITCH).setSymbol("symbol").setPrice(10).setTimestamp(now);
+    public final Stock facebookStock = new Stock().setMarket(FACEBOOK).setSymbol("symbol").setName("Name").setActive(true);
+    public final StockPrice facebookStockPrice = new StockPrice().setMarket(FACEBOOK).setSymbol("symbol").setPrice(10).setTimestamp(now);
 
     public DBFactory getDBFactory() {
         return new JdbcDBFactory(dataSourceExternalResource.get());
@@ -46,10 +48,12 @@ public abstract class BaseAchievementProviderIT {
             new StockTable().add(connection, youtubeStock);
             new StockTable().add(connection, instagramStock);
             new StockTable().add(connection, twitchStock);
+            new StockTable().add(connection, facebookStock);
             new StockPriceTable().add(connection, twitterStockPrice);
             new StockPriceTable().add(connection, youtubeStockPrice);
             new StockPriceTable().add(connection, instagramStockPrice);
             new StockPriceTable().add(connection, twitchStockPrice);
+            new StockPriceTable().add(connection, facebookStockPrice);
             connection.commit();;
         }
     }

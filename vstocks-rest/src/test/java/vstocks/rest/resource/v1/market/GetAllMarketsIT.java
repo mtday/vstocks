@@ -23,10 +23,11 @@ public class GetAllMarketsIT extends ResourceTest {
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
         List<Market> results = response.readEntity(new MarketListGenericType());
-        assertEquals(4, results.size());
+        assertEquals(5, results.size());
         assertTrue(results.contains(TWITTER));
         assertTrue(results.contains(YOUTUBE));
         assertTrue(results.contains(INSTAGRAM));
         assertTrue(results.contains(TWITCH));
+        assertTrue(results.contains(FACEBOOK));
     }
 }

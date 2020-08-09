@@ -1,6 +1,7 @@
 package vstocks.service.remote;
 
 import vstocks.model.Market;
+import vstocks.service.remote.facebook.FacebookRemoteStockService;
 import vstocks.service.remote.instagram.InstagramRemoteStockService;
 import vstocks.service.remote.twitch.TwitchRemoteStockService;
 import vstocks.service.remote.twitter.TwitterRemoteStockService;
@@ -11,6 +12,7 @@ public class DefaultRemoteStockServiceFactory implements RemoteStockServiceFacto
     private final RemoteStockService youtubeRemoteStockService = new YouTubeRemoteStockService();
     private final RemoteStockService instagramRemoteStockService = new InstagramRemoteStockService();
     private final RemoteStockService twitchRemoteStockService = new TwitchRemoteStockService();
+    private final RemoteStockService facebookRemoteStockService = new FacebookRemoteStockService();
 
     @Override
     public RemoteStockService getForMarket(Market market) {
@@ -23,6 +25,8 @@ public class DefaultRemoteStockServiceFactory implements RemoteStockServiceFacto
                 return instagramRemoteStockService;
             case TWITCH:
                 return twitchRemoteStockService;
+            case FACEBOOK:
+                return facebookRemoteStockService;
         }
         throw new RuntimeException("Unsupported market: " + market);
     }

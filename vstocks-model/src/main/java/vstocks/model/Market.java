@@ -7,7 +7,8 @@ public enum Market {
     TWITTER("Twitter"),
     YOUTUBE("YouTube"),
     INSTAGRAM("Instagram"),
-    TWITCH("Twitch");
+    TWITCH("Twitch"),
+    FACEBOOK("Facebook");
 
     private final String displayName;
 

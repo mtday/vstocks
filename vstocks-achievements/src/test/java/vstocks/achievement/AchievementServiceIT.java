@@ -45,10 +45,12 @@ public class AchievementServiceIT {
                 .collect(joining("\n"));
 
         String expected = String.join("\n", asList(
+                "Beginner - First Facebook Stock Purchase",
                 "Beginner - First Instagram Stock Purchase",
                 "Beginner - First Twitch Stock Purchase",
                 "Beginner - First Twitter Stock Purchase",
                 "Beginner - First YouTube Stock Purchase",
+                "Beginner - First Facebook Stock Sale",
                 "Beginner - First Instagram Stock Sale",
                 "Beginner - First Twitch Stock Sale",
                 "Beginner - First Twitter Stock Sale",
