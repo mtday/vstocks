@@ -53,31 +53,3 @@ INSERT INTO activity_logs (id, user_id, type, timestamp, market, symbol, shares,
 ('3', 'user2', 'STOCK_BUY', '2020-01-01 00:00:00', 'TWITTER', 'POTUS', 1, 2678),
 ('4', 'user2', 'STOCK_SELL', '2020-02-01 00:00:00', 'TWITTER', 'POTUS', 1, 2693);
 
-
-SELECT user_id, timestamp FROM (
-  SELECT user_id, MIN(timestamp) AS timestamp, COUNT(*) AS count FROM activity_logs
-  WHERE user_id = ANY(?)
-    AND user_id NOT IN (SELECT user_id FROM user_achievements WHERE achievement_id = ?)
-    AND type = ? AND market = ?
-  GROUP BY user_id
-) AS data WHERE count = 1;
-
-  SELECT DISTINCT ON (user_id) id, timestamp
-  FROM activity_logs
-  WHERE user_id IN ('user1', 'user2', 'user3', 'user4')
-    AND user_id NOT IN (SELECT user_id FROM user_achievements WHERE achievement_id = 'whatever')
-    AND type = 'STOCK_BUY' AND market = 'TWITTER'
-  ORDER BY user_id, timestamp DESC;
-
-WITH data AS (
-  SELECT user_id, COUNT(user_id) AS count
-  FROM activity_logs
-  WHERE user_id IN ('user1', 'user2', 'user3', 'user4')
-    AND user_id NOT IN (SELECT user_id FROM user_achievements WHERE achievement_id = 'whatever')
-    AND type = 'STOCK_BUY' AND market = 'TWITTER'
-  GROUP BY user_id
-)
-SELECT DISTINCT ON (a.user_id) a.user_id, a.timestamp, a.shares, a.price FROM activity_logs a
-JOIN data ON (data.user_id = a.user_id)
-WHERE data.count = 1
-ORDER BY a.user_id, timestamp DESC;
