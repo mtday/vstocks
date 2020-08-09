@@ -1040,7 +1040,7 @@ public class JdbcActivityLogDBIT {
     }
 
     @Test
-    public void testAddNegativeBalanceTooLow() {
+    public void testAddNegativeCreditsTooLow() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setType(STOCK_BUY).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(-15);
         assertEquals(1, activityLogDB.add(activityLog)); // not protected at this level

@@ -20,12 +20,13 @@ public class JdbcDBFactoryIT {
 
     @Test
     public void test() {
+        assertNotNull(dbFactory.getPortfolioValueDB());
         assertNotNull(dbFactory.getActivityLogDB());
         assertNotNull(dbFactory.getStockPriceDB());
         assertNotNull(dbFactory.getStockDB());
         assertNotNull(dbFactory.getPricedStockDB());
         assertNotNull(dbFactory.getUserAchievementDB());
-        assertNotNull(dbFactory.getUserBalanceDB());
+        assertNotNull(dbFactory.getUserCreditsDB());
         assertNotNull(dbFactory.getUserDB());
         assertNotNull(dbFactory.getUserStockDB());
         assertNotNull(dbFactory.getPricedUserStockDB());

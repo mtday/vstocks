@@ -72,16 +72,17 @@ CREATE INDEX idx_activity_logs_symbol ON activity_logs (symbol);
 CREATE INDEX idx_activity_logs_timestamp ON activity_logs (timestamp);
 
 
-CREATE TABLE user_balances (
+CREATE TABLE user_credits (
     user_id            TEXT    NOT NULL,
-    balance            INTEGER NOT NULL,
+    credits            BIGINT  NOT NULL,
 
-    CONSTRAINT user_balances_pk PRIMARY KEY (user_id),
-    CONSTRAINT user_balances_fk_user_id FOREIGN KEY (user_id)
+    CONSTRAINT user_credits_pk PRIMARY KEY (user_id),
+    CONSTRAINT user_credits_fk_user_id FOREIGN KEY (user_id)
         REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE INDEX idx_user_balances_user_id ON user_balances (user_id);
+CREATE INDEX idx_user_credits_user_id ON user_credits (user_id);
+CREATE INDEX idx_user_credits_credits ON user_credits (credits);
 
 
 CREATE TABLE user_stocks (

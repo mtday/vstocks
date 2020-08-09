@@ -1,6 +1,8 @@
 package vstocks.db;
 
 public interface DBFactory {
+    PortfolioValueDB getPortfolioValueDB();
+
     ActivityLogDB getActivityLogDB();
 
     StockPriceDB getStockPriceDB();
@@ -11,7 +13,7 @@ public interface DBFactory {
 
     UserAchievementDB getUserAchievementDB();
 
-    UserBalanceDB getUserBalanceDB();
+    UserCreditsDB getUserCreditsDB();
 
     UserDB getUserDB();
 

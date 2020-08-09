@@ -8,9 +8,10 @@ public class JdbcDBFactory implements DBFactory {
     private final ActivityLogDB activityLogDB;
     private final StockPriceDB stockPriceDB;
     private final StockDB stockDB;
+    private final PortfolioValueDB portfolioValueDB;
     private final PricedStockDB pricedStockDB;
     private final UserAchievementDB userAchievementDB;
-    private final UserBalanceDB userBalanceDB;
+    private final UserCreditsDB userCreditsDB;
     private final UserDB userDB;
     private final UserStockDB userStockDB;
     private final PricedUserStockDB pricedUserStockDB;
@@ -19,9 +20,10 @@ public class JdbcDBFactory implements DBFactory {
         this.activityLogDB = new JdbcActivityLogDB(dataSource);
         this.stockPriceDB = new JdbcStockPriceDB(dataSource);
         this.stockDB = new JdbcStockDB(dataSource);
+        this.portfolioValueDB = new JdbcPortfolioValueDB(dataSource);
         this.pricedStockDB = new JdbcPricedStockDB(dataSource);
         this.userAchievementDB = new JdbcUserAchievementDB(dataSource);
-        this.userBalanceDB = new JdbcUserBalanceDB(dataSource);
+        this.userCreditsDB = new JdbcUserCreditsDB(dataSource);
         this.userDB = new JdbcUserDB(dataSource);
         this.userStockDB = new JdbcUserStockDB(dataSource);
         this.pricedUserStockDB = new JdbcPricedUserStockDB(dataSource);
@@ -43,6 +45,11 @@ public class JdbcDBFactory implements DBFactory {
     }
 
     @Override
+    public PortfolioValueDB getPortfolioValueDB() {
+        return portfolioValueDB;
+    }
+
+    @Override
     public PricedStockDB getPricedStockDB() {
         return pricedStockDB;
     }
@@ -53,8 +60,8 @@ public class JdbcDBFactory implements DBFactory {
     }
 
     @Override
-    public UserBalanceDB getUserBalanceDB() {
-        return userBalanceDB;
+    public UserCreditsDB getUserCreditsDB() {
+        return userCreditsDB;
     }
 
     @Override

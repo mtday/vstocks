@@ -65,7 +65,7 @@ public abstract class BaseAchievementProviderIT {
             new StockTable().truncate(connection);
             new StockPriceTable().truncate(connection);
             new UserAchievementTable().truncate(connection);
-            new UserBalanceTable().truncate(connection);
+            new UserCreditsTable().truncate(connection);
             new UserStockTable().truncate(connection);
             new UserTable().truncate(connection);
             connection.commit();

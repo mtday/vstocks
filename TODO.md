@@ -3,11 +3,11 @@
 
     * Support login via facebook and google
     * Account resets
-        * Delete all owned stocks and activity and set account balance back to the initial starting value
+        * Delete all owned stocks and activity and set account credits back to the initial starting value
 
 * Friends
 
-    * Support "linking" user accounts to make comparing account balances/activity easier
+    * Support "linking" user accounts to make comparing account credits/activity easier
 
 * Achievements
 

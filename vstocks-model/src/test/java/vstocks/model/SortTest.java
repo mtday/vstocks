@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static vstocks.model.DatabaseField.BALANCE;
+import static vstocks.model.DatabaseField.CREDITS;
 import static vstocks.model.Sort.SortDirection.ASC;
 import static vstocks.model.Sort.SortDirection.DESC;
 
@@ -19,31 +19,31 @@ public class SortTest {
 
     @Test
     public void testConstructorWithField() {
-        Sort sort = new Sort(BALANCE);
+        Sort sort = new Sort(CREDITS);
 
-        assertEquals(BALANCE, sort.getField());
+        assertEquals(CREDITS, sort.getField());
         assertEquals(ASC, sort.getDirection());
     }
 
     @Test
     public void testConstructorWithFieldAndDirection() {
-        Sort sort = new Sort(BALANCE, DESC);
+        Sort sort = new Sort(CREDITS, DESC);
 
-        assertEquals(BALANCE, sort.getField());
+        assertEquals(CREDITS, sort.getField());
         assertEquals(DESC, sort.getDirection());
     }
 
     @Test
     public void testParseNoDirection() {
-        Sort sort = Sort.parse("BALANCE");
-        assertEquals(BALANCE, sort.getField());
+        Sort sort = Sort.parse("CREDITS");
+        assertEquals(CREDITS, sort.getField());
         assertEquals(ASC, sort.getDirection());
     }
 
     @Test
     public void testParseWithDirection() {
-        Sort sort = Sort.parse("BALANCE:DESC");
-        assertEquals(BALANCE, sort.getField());
+        Sort sort = Sort.parse("CREDITS:DESC");
+        assertEquals(CREDITS, sort.getField());
         assertEquals(DESC, sort.getDirection());
     }
 
@@ -54,28 +54,28 @@ public class SortTest {
 
     @Test
     public void testGettersAndSetters() {
-        Sort sort = new Sort().setField(BALANCE).setDirection(DESC);
+        Sort sort = new Sort().setField(CREDITS).setDirection(DESC);
 
-        assertEquals(BALANCE, sort.getField());
+        assertEquals(CREDITS, sort.getField());
         assertEquals(DESC, sort.getDirection());
     }
 
     @Test
     public void testEquals() {
-        Sort sort1 = new Sort().setField(BALANCE).setDirection(DESC);
-        Sort sort2 = new Sort().setField(BALANCE).setDirection(DESC);
+        Sort sort1 = new Sort().setField(CREDITS).setDirection(DESC);
+        Sort sort2 = new Sort().setField(CREDITS).setDirection(DESC);
         assertEquals(sort1, sort2);
     }
 
     @Test
     public void testHashCode() {
-        Sort sort = new Sort().setField(BALANCE).setDirection(DESC);
-        assertEquals(-1140107498, sort.hashCode());
+        Sort sort = new Sort().setField(CREDITS).setDirection(DESC);
+        assertEquals(-1687369448, sort.hashCode());
     }
 
     @Test
     public void testToString() {
-        Sort sort = new Sort().setField(BALANCE).setDirection(DESC);
-        assertEquals("balance DESC", sort.toString());
+        Sort sort = new Sort().setField(CREDITS).setDirection(DESC);
+        assertEquals("credits DESC", sort.toString());
     }
 }

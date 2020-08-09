@@ -31,14 +31,14 @@ public class JdbcUserStockDBIT {
     private UserTable userTable;
     private StockTable stockTable;
     private StockPriceTable stockPriceTable;
-    private UserBalanceTable userBalanceTable;
+    private UserCreditsTable userCreditsTable;
     private UserStockTable userStockTable;
     private JdbcUserStockDB userStockDB;
 
     private final User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
     private final User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
-    private final UserBalance userBalance1 = new UserBalance().setUserId(user1.getId()).setBalance(10);
-    private final UserBalance userBalance2 = new UserBalance().setUserId(user2.getId()).setBalance(10);
+    private final UserCredits userCredits1 = new UserCredits().setUserId(user1.getId()).setCredits(10);
+    private final UserCredits userCredits2 = new UserCredits().setUserId(user2.getId()).setCredits(10);
     private final Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
     private final Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
     private final StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(Instant.now()).setPrice(10);
@@ -50,15 +50,15 @@ public class JdbcUserStockDBIT {
         userTable = new UserTable();
         stockTable = new StockTable();
         stockPriceTable = new StockPriceTable();
-        userBalanceTable = new UserBalanceTable();
+        userCreditsTable = new UserCreditsTable();
         userStockTable = new UserStockTable();
         userStockDB = new JdbcUserStockDB(dataSourceExternalResource.get());
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user1));
             assertEquals(1, userTable.add(connection, user2));
-            assertEquals(1, userBalanceTable.add(connection, userBalance1));
-            assertEquals(1, userBalanceTable.add(connection, userBalance2));
+            assertEquals(1, userCreditsTable.add(connection, userCredits1));
+            assertEquals(1, userCreditsTable.add(connection, userCredits2));
             assertEquals(1, stockTable.add(connection, stock1));
             assertEquals(1, stockTable.add(connection, stock2));
             assertEquals(1, stockPriceTable.add(connection, stockPrice1));
@@ -73,7 +73,7 @@ public class JdbcUserStockDBIT {
             userStockTable.truncate(connection);
             stockPriceTable.truncate(connection);
             stockTable.truncate(connection);
-            userBalanceTable.truncate(connection);
+            userCreditsTable.truncate(connection);
             userTable.truncate(connection);
             connection.commit();
         }
@@ -256,10 +256,10 @@ public class JdbcUserStockDBIT {
         assertEquals(1, userStockDB.buyStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            // Make sure user balance was updated
-            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
-            assertTrue(userBalance.isPresent());
-            assertEquals(userBalance1.getBalance() - stockPrice1.getPrice(), userBalance.get().getBalance());
+            // Make sure user credits were updated
+            Optional<UserCredits> userCredits = userCreditsTable.get(connection, user1.getId());
+            assertTrue(userCredits.isPresent());
+            assertEquals(userCredits1.getCredits() - stockPrice1.getPrice(), userCredits.get().getCredits());
 
             // Make sure user stock was created/updated
             Optional<UserStock> userStock = userStockDB.get(user1.getId(), TWITTER, stock1.getSymbol());
@@ -290,10 +290,10 @@ public class JdbcUserStockDBIT {
         assertEquals(1, userStockDB.buyStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            // Make sure user balance was updated
-            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
-            assertTrue(userBalance.isPresent());
-            assertEquals(userBalance1.getBalance() - stockPrice1.getPrice(), userBalance.get().getBalance());
+            // Make sure user credits were updated
+            Optional<UserCredits> userCredits = userCreditsTable.get(connection, user1.getId());
+            assertTrue(userCredits.isPresent());
+            assertEquals(userCredits1.getCredits() - stockPrice1.getPrice(), userCredits.get().getCredits());
 
             // Make sure user stock was created/updated
             Optional<UserStock> userStock = userStockDB.get(user1.getId(), TWITTER, stock1.getSymbol());
@@ -317,14 +317,14 @@ public class JdbcUserStockDBIT {
     }
 
     @Test
-    public void testBuyStockBalanceTooLow() throws SQLException {
+    public void testBuyStockCreditsTooLow() throws SQLException {
         assertEquals(0, userStockDB.buyStock(user1.getId(), TWITTER, stock1.getSymbol(), 2));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            // Make sure user balance was NOT updated
-            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
-            assertTrue(userBalance.isPresent());
-            assertEquals(userBalance1.getBalance(), userBalance.get().getBalance());
+            // Make sure user credits were NOT updated
+            Optional<UserCredits> userCredits = userCreditsTable.get(connection, user1.getId());
+            assertTrue(userCredits.isPresent());
+            assertEquals(userCredits1.getCredits(), userCredits.get().getCredits());
 
             // Make sure no user stock was created/updated
             assertFalse(userStockDB.get(user1.getId(), TWITTER, stock1.getSymbol()).isPresent());
@@ -346,10 +346,10 @@ public class JdbcUserStockDBIT {
         assertEquals(0, userStockDB.buyStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            // Make sure user balance was NOT updated
-            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
-            assertTrue(userBalance.isPresent());
-            assertEquals(userBalance1.getBalance(), userBalance.get().getBalance());
+            // Make sure user credits were NOT updated
+            Optional<UserCredits> userCredits = userCreditsTable.get(connection, user1.getId());
+            assertTrue(userCredits.isPresent());
+            assertEquals(userCredits1.getCredits(), userCredits.get().getCredits());
 
             // Make sure no user stock was created/updated
             assertFalse(userStockDB.get(user1.getId(), TWITTER, stock1.getSymbol()).isPresent());
@@ -376,10 +376,10 @@ public class JdbcUserStockDBIT {
         assertEquals(0, userStockDB.sellStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            // Make sure user balance was NOT updated
-            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
-            assertTrue(userBalance.isPresent());
-            assertEquals(userBalance1.getBalance(), userBalance.get().getBalance());
+            // Make sure user credits were NOT updated
+            Optional<UserCredits> userCredits = userCreditsTable.get(connection, user1.getId());
+            assertTrue(userCredits.isPresent());
+            assertEquals(userCredits1.getCredits(), userCredits.get().getCredits());
 
             // Make sure no user stock was created/updated
             assertFalse(userStockDB.get(user1.getId(), TWITTER, stock1.getSymbol()).isPresent());
@@ -399,10 +399,10 @@ public class JdbcUserStockDBIT {
         assertEquals(1, userStockDB.sellStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            // Make sure user balance was updated
-            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
-            assertTrue(userBalance.isPresent());
-            assertEquals(userBalance1.getBalance() + stockPrice1.getPrice(), userBalance.get().getBalance());
+            // Make sure user credits were updated
+            Optional<UserCredits> userCredits = userCreditsTable.get(connection, user1.getId());
+            assertTrue(userCredits.isPresent());
+            assertEquals(userCredits1.getCredits() + stockPrice1.getPrice(), userCredits.get().getCredits());
 
             // Make sure user stock was updated
             Optional<UserStock> userStock = userStockDB.get(user1.getId(), TWITTER, stock1.getSymbol());
@@ -433,10 +433,10 @@ public class JdbcUserStockDBIT {
         assertEquals(1, userStockDB.sellStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            // Make sure user balance was updated
-            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
-            assertTrue(userBalance.isPresent());
-            assertEquals(userBalance1.getBalance() + stockPrice1.getPrice(), userBalance.get().getBalance());
+            // Make sure user credits were updated
+            Optional<UserCredits> userCredits = userCreditsTable.get(connection, user1.getId());
+            assertTrue(userCredits.isPresent());
+            assertEquals(userCredits1.getCredits() + stockPrice1.getPrice(), userCredits.get().getCredits());
 
             // Make sure user stock was deleted, since the shares dropped to 0
             assertFalse(userStockDB.get(user1.getId(), TWITTER, stock1.getSymbol()).isPresent());
@@ -470,10 +470,10 @@ public class JdbcUserStockDBIT {
         assertEquals(0, userStockDB.sellStock(user1.getId(), TWITTER, stock1.getSymbol(), 1));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            // Make sure user balance was NOT updated
-            Optional<UserBalance> userBalance = userBalanceTable.get(connection, user1.getId());
-            assertTrue(userBalance.isPresent());
-            assertEquals(userBalance1.getBalance(), userBalance.get().getBalance());
+            // Make sure user credits were NOT updated
+            Optional<UserCredits> userCredits = userCreditsTable.get(connection, user1.getId());
+            assertTrue(userCredits.isPresent());
+            assertEquals(userCredits1.getCredits(), userCredits.get().getCredits());
 
             // Make sure the user stock was not updated
             Optional<UserStock> userStock = userStockDB.get(user1.getId(), TWITTER, stock1.getSymbol());

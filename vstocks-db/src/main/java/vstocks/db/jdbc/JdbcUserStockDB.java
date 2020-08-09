@@ -4,7 +4,7 @@ import vstocks.model.*;
 import vstocks.db.UserStockDB;
 import vstocks.db.jdbc.table.ActivityLogTable;
 import vstocks.db.jdbc.table.StockPriceTable;
-import vstocks.db.jdbc.table.UserBalanceTable;
+import vstocks.db.jdbc.table.UserCreditsTable;
 import vstocks.db.jdbc.table.UserStockTable;
 
 import javax.sql.DataSource;
@@ -19,7 +19,7 @@ import static vstocks.model.ActivityType.STOCK_SELL;
 
 public class JdbcUserStockDB extends BaseService implements UserStockDB {
     private final UserStockTable userStockTable = new UserStockTable();
-    private final UserBalanceTable userBalanceTable = new UserBalanceTable();
+    private final UserCreditsTable userCreditsTable = new UserCreditsTable();
     private final StockPriceTable stockPriceTable = new StockPriceTable();
     private final ActivityLogTable activityLogTable = new ActivityLogTable();
 
@@ -62,7 +62,7 @@ public class JdbcUserStockDB extends BaseService implements UserStockDB {
             if (stockPrice.isPresent()) {
                 int price = stockPrice.get().getPrice();
                 int cost = price * shares;
-                if (userBalanceTable.update(conn, userId, -cost) > 0
+                if (userCreditsTable.update(conn, userId, -cost) > 0
                         && userStockTable.update(conn, userId, market, symbol, shares) > 0) {
                     ActivityLog activityLog = new ActivityLog()
                             .setId(UUID.randomUUID().toString())
@@ -94,7 +94,7 @@ public class JdbcUserStockDB extends BaseService implements UserStockDB {
             if (stockPrice.isPresent()) {
                 int price = stockPrice.get().getPrice();
                 int cost = price * shares;
-                if (userBalanceTable.update(conn, userId, cost) > 0
+                if (userCreditsTable.update(conn, userId, cost) > 0
                         && userStockTable.update(conn, userId, market, symbol, -shares) > 0) {
                     ActivityLog activityLog = new ActivityLog()
                             .setId(UUID.randomUUID().toString())

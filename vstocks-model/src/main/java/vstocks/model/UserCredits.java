@@ -2,28 +2,28 @@ package vstocks.model;
 
 import java.util.Objects;
 
-public class UserBalance {
+public class UserCredits {
     private String userId;
-    private int balance;
+    private long credits;
 
-    public UserBalance() {
+    public UserCredits() {
     }
 
     public String getUserId() {
         return userId;
     }
 
-    public UserBalance setUserId(String userId) {
+    public UserCredits setUserId(String userId) {
         this.userId = userId;
         return this;
     }
 
-    public int getBalance() {
-        return balance;
+    public long getCredits() {
+        return credits;
     }
 
-    public UserBalance setBalance(int balance) {
-        this.balance = balance;
+    public UserCredits setCredits(long credits) {
+        this.credits = credits;
         return this;
     }
 
@@ -31,7 +31,7 @@ public class UserBalance {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserBalance that = (UserBalance) o;
+        UserCredits that = (UserCredits) o;
         return Objects.equals(userId, that.userId);
     }
 
@@ -42,9 +42,9 @@ public class UserBalance {
 
     @Override
     public String toString() {
-        return "UserBalance{" +
+        return "UserCredits{" +
                 "userId='" + userId + '\'' +
-                ", balance=" + balance +
+                ", credits=" + credits +
                 '}';
     }
 }

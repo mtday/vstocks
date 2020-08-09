@@ -28,27 +28,27 @@ public class JdbcUserDBIT {
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
     private UserTable userTable;
-    private UserBalanceTable userBalanceTable;
+    private UserCreditsTable userCreditsTable;
     private StockTable stockTable;
     private StockPriceTable stockPriceTable;
     private UserStockTable userStockTable;
     private ActivityLogTable activityLogTable;
 
     private JdbcUserDB userDB;
-    private JdbcUserBalanceDB userBalanceDB;
+    private JdbcUserCreditsDB userCreditsDB;
     private JdbcUserStockDB userStockDB;
 
     @Before
     public void setup() {
         userTable = new UserTable();
-        userBalanceTable = new UserBalanceTable();
+        userCreditsTable = new UserCreditsTable();
         stockTable = new StockTable();
         stockPriceTable = new StockPriceTable();
         userStockTable = new UserStockTable();
         activityLogTable = new ActivityLogTable();
 
         userDB = new JdbcUserDB(dataSourceExternalResource.get());
-        userBalanceDB = new JdbcUserBalanceDB(dataSourceExternalResource.get());
+        userCreditsDB = new JdbcUserCreditsDB(dataSourceExternalResource.get());
         userStockDB = new JdbcUserStockDB(dataSourceExternalResource.get());
     }
 
@@ -59,7 +59,7 @@ public class JdbcUserDBIT {
             userStockTable.truncate(connection);
             stockTable.truncate(connection);
             stockPriceTable.truncate(connection);
-            userBalanceTable.truncate(connection);
+            userCreditsTable.truncate(connection);
             userTable.truncate(connection);
             connection.commit();
         }
@@ -251,7 +251,7 @@ public class JdbcUserDBIT {
         assertEquals(1, userDB.add(user));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userBalanceTable.update(connection, user.getId(), 1234));
+            assertEquals(1, userCreditsTable.update(connection, user.getId(), 1234));
 
             Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("Name1");
             Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("Name2");
@@ -272,9 +272,9 @@ public class JdbcUserDBIT {
             connection.commit();
         }
 
-        Optional<UserBalance> userBalanceBeforeReset = userBalanceDB.get(user.getId());
-        assertTrue(userBalanceBeforeReset.isPresent());
-        assertEquals(11234, userBalanceBeforeReset.get().getBalance());
+        Optional<UserCredits> userCreditsBeforeReset = userCreditsDB.get(user.getId());
+        assertTrue(userCreditsBeforeReset.isPresent());
+        assertEquals(11234, userCreditsBeforeReset.get().getCredits());
 
         Results<UserStock> userStocksBeforeReset = userStockDB.getForUser(user.getId(), new Page(), emptySet());
         assertEquals(2, userStocksBeforeReset.getTotal());
@@ -282,9 +282,9 @@ public class JdbcUserDBIT {
 
         userDB.reset(user.getId());
 
-        Optional<UserBalance> userBalanceAfterReset = userBalanceDB.get(user.getId());
-        assertTrue(userBalanceAfterReset.isPresent());
-        assertEquals(10000, userBalanceAfterReset.get().getBalance());
+        Optional<UserCredits> userCreditsAfterReset = userCreditsDB.get(user.getId());
+        assertTrue(userCreditsAfterReset.isPresent());
+        assertEquals(10000, userCreditsAfterReset.get().getCredits());
 
         Results<UserStock> userStocksAfterReset = userStockDB.getForUser(user.getId(), new Page(), emptySet());
         assertEquals(0, userStocksAfterReset.getTotal());
@@ -296,9 +296,9 @@ public class JdbcUserDBIT {
         User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
         assertEquals(1, userDB.add(user));
 
-        Optional<UserBalance> userBalance = userBalanceDB.get(user.getId());
-        assertTrue(userBalance.isPresent());
-        assertEquals(10000, userBalance.get().getBalance());
+        Optional<UserCredits> userCredits = userCreditsDB.get(user.getId());
+        assertTrue(userCredits.isPresent());
+        assertEquals(10000, userCredits.get().getCredits());
     }
 
     @Test(expected = Exception.class)

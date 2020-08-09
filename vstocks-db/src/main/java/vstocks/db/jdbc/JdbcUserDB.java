@@ -9,11 +9,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import static vstocks.config.Config.USER_INITIAL_BALANCE;
+import static vstocks.config.Config.USER_INITIAL_CREDITS;
 
 public class JdbcUserDB extends BaseService implements UserDB {
     private final UserTable userTable = new UserTable();
-    private final UserBalanceTable userBalanceTable = new UserBalanceTable();
+    private final UserCreditsTable userCreditsTable = new UserCreditsTable();
     private final UserStockTable userStockTable = new UserStockTable();
     private final UserAchievementTable userAchievementTable = new UserAchievementTable();
     private final ActivityLogTable activityLogTable = new ActivityLogTable();
@@ -45,9 +45,9 @@ public class JdbcUserDB extends BaseService implements UserDB {
     @Override
     public int reset(String id) {
         return withConnection(conn -> {
-            userBalanceTable.delete(conn, id);
-            UserBalance initialBalance = new UserBalance().setUserId(id).setBalance(USER_INITIAL_BALANCE.getInt());
-            userBalanceTable.setInitialBalance(conn, initialBalance);
+            userCreditsTable.delete(conn, id);
+            UserCredits initialCredits = new UserCredits().setUserId(id).setCredits(USER_INITIAL_CREDITS.getInt());
+            userCreditsTable.setInitialCredits(conn, initialCredits);
             userStockTable.deleteForUser(conn, id);
             userAchievementTable.deleteForUser(conn, id);
             activityLogTable.deleteForUser(conn, id);
@@ -59,9 +59,9 @@ public class JdbcUserDB extends BaseService implements UserDB {
     public int add(User user) {
         return withConnection(conn -> {
             if (userTable.add(conn, user) > 0) {
-                // Initial user creation, give the user an initial balance.
-                UserBalance initialBalance = new UserBalance().setUserId(user.getId()).setBalance(USER_INITIAL_BALANCE.getInt());
-                userBalanceTable.setInitialBalance(conn, initialBalance);
+                // Initial user creation, give the user some initial credits.
+                UserCredits initialCredits = new UserCredits().setUserId(user.getId()).setCredits(USER_INITIAL_CREDITS.getInt());
+                userCreditsTable.setInitialCredits(conn, initialCredits);
                 return 1;
             }
             return 0;
