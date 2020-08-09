@@ -6,15 +6,13 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import vstocks.db.DBFactory;
 import vstocks.model.Achievement;
-import vstocks.model.ActivityLog;
 import vstocks.model.UserAchievement;
 
 import java.util.*;
-
-import static java.util.stream.Collectors.toList;
+import java.util.function.Consumer;
 
 public class AchievementService {
-    private final Map<Achievement, AchievementValidator> achievements;
+    private final Map<Achievement, AchievementFinder> achievements;
 
     public AchievementService() {
         Comparator<Achievement> achievementComparator = Comparator.comparing(Achievement::getCategory)
@@ -45,11 +43,9 @@ public class AchievementService {
         return achievements.keySet();
     }
 
-    public List<UserAchievement> check(DBFactory dbFactory, ActivityLog activityLog) {
+    public int find(DBFactory dbFactory, Set<String> userIds, Consumer<UserAchievement> consumer) {
         return achievements.values().stream()
-                .map(provider -> provider.validate(dbFactory, activityLog))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(toList());
+                .mapToInt(finder -> finder.find(dbFactory, userIds, consumer))
+                .sum();
     }
 }

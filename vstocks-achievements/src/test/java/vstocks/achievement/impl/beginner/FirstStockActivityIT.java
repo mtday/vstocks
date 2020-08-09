@@ -1,21 +1,21 @@
 package vstocks.achievement.impl.beginner;
 
 import org.junit.Test;
-import vstocks.achievement.AchievementValidator;
+import vstocks.achievement.AchievementFinder;
 import vstocks.achievement.impl.BaseAchievementProviderIT;
 import vstocks.model.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 import static vstocks.model.AchievementCategory.BEGINNER;
 import static vstocks.model.ActivityType.*;
@@ -23,13 +23,13 @@ import static vstocks.model.ActivityType.*;
 public class FirstStockActivityIT extends BaseAchievementProviderIT {
     @Test
     public void testAchievementCount() {
-        List<Entry<Achievement, AchievementValidator>> achievements = new FirstStockActivity().getAchievements();
+        List<Entry<Achievement, AchievementFinder>> achievements = new FirstStockActivity().getAchievements();
         assertEquals(2 * Market.values().length, achievements.size()); // a buy and sell for each market
     }
 
     @Test
     public void testAchievementIds() {
-        List<Entry<Achievement, AchievementValidator>> achievements = new FirstStockActivity().getAchievements();
+        List<Entry<Achievement, AchievementFinder>> achievements = new FirstStockActivity().getAchievements();
 
         String expectedIds = String.join("\n", asList(
                 "first_stock_buy_twitter",
@@ -49,7 +49,7 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
 
     @Test
     public void testAchievementNames() {
-        List<Entry<Achievement, AchievementValidator>> achievements = new FirstStockActivity().getAchievements();
+        List<Entry<Achievement, AchievementFinder>> achievements = new FirstStockActivity().getAchievements();
 
         String expectedNames = String.join("\n", asList(
                 "First Twitter Stock Purchase",
@@ -69,13 +69,13 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
 
     @Test
     public void testAchievementCategory() {
-        List<Entry<Achievement, AchievementValidator>> achievements = new FirstStockActivity().getAchievements();
+        List<Entry<Achievement, AchievementFinder>> achievements = new FirstStockActivity().getAchievements();
         assertTrue(achievements.stream().map(Entry::getKey).allMatch(a -> a.getCategory() == BEGINNER));
     }
 
     @Test
     public void testAchievementOrder() {
-        List<Entry<Achievement, AchievementValidator>> achievements = new FirstStockActivity().getAchievements();
+        List<Entry<Achievement, AchievementFinder>> achievements = new FirstStockActivity().getAchievements();
         // buying orders before selling
         assertTrue(achievements.stream().map(Entry::getKey).filter(a -> a.getId().contains("stock_buy")).allMatch(a -> a.getOrder() == 5));
         assertTrue(achievements.stream().map(Entry::getKey).filter(a -> a.getId().contains("stock_sell")).allMatch(a -> a.getOrder() == 10));
@@ -83,7 +83,7 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
 
     @Test
     public void testAchievementDescriptions() {
-        List<Entry<Achievement, AchievementValidator>> achievements = new FirstStockActivity().getAchievements();
+        List<Entry<Achievement, AchievementFinder>> achievements = new FirstStockActivity().getAchievements();
 
         String expectedDescriptions = String.join("\n", asList(
                 "Buy (with credits) one or more shares of any stock on the Twitter market for any price.",
@@ -103,26 +103,17 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
 
     @Test
     public void testValidateNoActivity() {
-        Stream<AchievementValidator> validators = new FirstStockActivity().getAchievements().stream().map(Entry::getValue);
+        Stream<AchievementFinder> finders = new FirstStockActivity().getAchievements().stream().map(Entry::getValue);
 
-        // need an activity log to pass into the validate method, but not adding it to the db first.
-        ActivityLog activityLog = new ActivityLog()
-                .setId(UUID.randomUUID().toString())
-                .setUserId(user.getId())
-                .setType(STOCK_SELL)
-                .setTimestamp(Instant.now().truncatedTo(ChronoUnit.SECONDS))
-                .setMarket(twitterStock.getMarket())
-                .setSymbol(twitterStock.getSymbol())
-                .setShares(-5)
-                .setPrice(twitterStockPrice.getPrice());
-
-        // with no activity in the db, none of the validators will match
-        assertTrue(validators.map(v -> v.validate(getDBFactory(), activityLog)).noneMatch(Optional::isPresent));
+        // with no activity in the db, none of the finders will match
+        List<UserAchievement> userAchievements = new ArrayList<>();
+        assertEquals(0, finders.mapToInt(f -> f.find(getDBFactory(), singleton(user.getId()), userAchievements::add)).sum());
+        assertTrue(userAchievements.isEmpty());
     }
 
     @Test
     public void testValidateNoBuySellActivity() {
-        Stream<AchievementValidator> validators = new FirstStockActivity().getAchievements().stream().map(Entry::getValue);
+        Stream<AchievementFinder> finders = new FirstStockActivity().getAchievements().stream().map(Entry::getValue);
 
         ActivityLog activityLog = new ActivityLog()
                 .setId(UUID.randomUUID().toString())
@@ -132,12 +123,14 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
 
         getDBFactory().getActivityLogDB().add(activityLog);
 
-        // with no buy/sell activity in the db, none of the validators will match
-        assertTrue(validators.map(v -> v.validate(getDBFactory(), activityLog)).noneMatch(Optional::isPresent));
+        // with no buy/sell activity in the db, none of the finders will match
+        List<UserAchievement> userAchievements = new ArrayList<>();
+        assertEquals(0, finders.mapToInt(f -> f.find(getDBFactory(), singleton(user.getId()), userAchievements::add)).sum());
+        assertTrue(userAchievements.isEmpty());
     }
 
     private List<UserAchievement> getUserAchievements(ActivityType activityType, Stock stock) {
-        Stream<AchievementValidator> validators = new FirstStockActivity().getAchievements().stream().map(Entry::getValue);
+        Stream<AchievementFinder> finders = new FirstStockActivity().getAchievements().stream().map(Entry::getValue);
 
         ActivityLog activityLog = new ActivityLog()
                 .setId(UUID.randomUUID().toString())
@@ -150,14 +143,10 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
                 .setPrice(10);
 
         getDBFactory().getActivityLogDB().add(activityLog);
-        try {
-            return validators.map(v -> v.validate(getDBFactory(), activityLog))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .collect(toList());
-        } finally {
-            getDBFactory().getActivityLogDB().delete(activityLog.getId());
-        }
+
+        List<UserAchievement> userAchievements = new ArrayList<>();
+        finders.forEach(f -> f.find(getDBFactory(), singleton(user.getId()), userAchievements::add));
+        return userAchievements;
     }
 
     @Test

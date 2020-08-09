@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.Map.Entry;
 
 public interface AchievementProvider {
-    List<Entry<Achievement, AchievementValidator>> getAchievements();
+    List<Entry<Achievement, AchievementFinder>> getAchievements();
 }

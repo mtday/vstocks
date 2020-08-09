@@ -1,5 +1,7 @@
 package vstocks.db;
 
+import vstocks.db.jdbc.table.PreparedStatementCreator;
+import vstocks.db.jdbc.table.RowMapper;
 import vstocks.model.*;
 
 import java.util.Optional;
@@ -26,6 +28,8 @@ public interface ActivityLogDB {
     int consume(ActivityLogSearch search, Consumer<ActivityLog> consumer, Set<Sort> sort);
 
     int count(ActivityLogSearch search);
+
+    <T> int consume(PreparedStatementCreator psc, RowMapper<T> rowMapper, Consumer<T> consumer);
 
     int add(ActivityLog activityLog);
 

@@ -159,8 +159,16 @@ public abstract class BaseTable {
     }
 
     protected <T> int consume(Connection connection, RowMapper<T> rowMapper, Consumer<T> consumer, String sql, Object... params) {
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        PreparedStatementCreator psc = conn -> {
+            PreparedStatement ps = connection.prepareStatement(sql);
             populatePreparedStatement(ps, params);
+            return ps;
+        };
+        return consume(connection, psc, rowMapper, consumer);
+    }
+
+    protected <T> int consume(Connection connection, PreparedStatementCreator psc, RowMapper<T> rowMapper, Consumer<T> consumer) {
+        try (PreparedStatement ps = psc.create(connection)) {
             try (ResultSet rs = ps.executeQuery()) {
                 int consumed = 0;
                 while (rs.next()) {

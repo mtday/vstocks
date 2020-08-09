@@ -3,44 +3,44 @@ package vstocks.model;
 import com.google.common.collect.Range;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 
 public class ActivityLogSearch {
-    private List<String> ids;
-    private List<String> userIds;
-    private List<ActivityType> types;
+    private Set<String> ids;
+    private Set<String> userIds;
+    private Set<ActivityType> types;
     private Range<Instant> timestampRange;
-    private List<Market> markets;
-    private List<String> symbols;
+    private Set<Market> markets;
+    private Set<String> symbols;
     private Range<Integer> sharesRange;
     private Range<Integer> priceRange;
 
     public ActivityLogSearch() {
     }
 
-    public List<String> getIds() {
+    public Set<String> getIds() {
         return ids;
     }
 
-    public ActivityLogSearch setIds(List<String> ids) {
+    public ActivityLogSearch setIds(Set<String> ids) {
         this.ids = ids;
         return this;
     }
 
-    public List<String> getUserIds() {
+    public Set<String> getUserIds() {
         return userIds;
     }
 
-    public ActivityLogSearch setUserIds(List<String> userIds) {
+    public ActivityLogSearch setUserIds(Set<String> userIds) {
         this.userIds = userIds;
         return this;
     }
 
-    public List<ActivityType> getTypes() {
+    public Set<ActivityType> getTypes() {
         return types;
     }
 
-    public ActivityLogSearch setTypes(List<ActivityType> types) {
+    public ActivityLogSearch setTypes(Set<ActivityType> types) {
         this.types = types;
         return this;
     }
@@ -54,20 +54,20 @@ public class ActivityLogSearch {
         return this;
     }
 
-    public List<Market> getMarkets() {
+    public Set<Market> getMarkets() {
         return markets;
     }
 
-    public ActivityLogSearch setMarkets(List<Market> markets) {
+    public ActivityLogSearch setMarkets(Set<Market> markets) {
         this.markets = markets;
         return this;
     }
 
-    public List<String> getSymbols() {
+    public Set<String> getSymbols() {
         return symbols;
     }
 
-    public ActivityLogSearch setSymbols(List<String> symbols) {
+    public ActivityLogSearch setSymbols(Set<String> symbols) {
         this.symbols = symbols;
         return this;
     }

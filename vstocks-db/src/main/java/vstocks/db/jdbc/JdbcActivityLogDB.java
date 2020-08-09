@@ -1,8 +1,10 @@
 package vstocks.db.jdbc;
 
-import vstocks.model.*;
 import vstocks.db.ActivityLogDB;
 import vstocks.db.jdbc.table.ActivityLogTable;
+import vstocks.db.jdbc.table.PreparedStatementCreator;
+import vstocks.db.jdbc.table.RowMapper;
+import vstocks.model.*;
 
 import javax.sql.DataSource;
 import java.util.Optional;
@@ -64,6 +66,11 @@ public class JdbcActivityLogDB extends BaseService implements ActivityLogDB {
     @Override
     public int count(ActivityLogSearch search) {
         return withConnection(conn -> activityLogTable.count(conn, search));
+    }
+
+    @Override
+    public <T> int consume(PreparedStatementCreator psc, RowMapper<T> rowMapper, Consumer<T> consumer) {
+        return withConnection(conn -> activityLogTable.consume(conn, psc, rowMapper, consumer));
     }
 
     @Override

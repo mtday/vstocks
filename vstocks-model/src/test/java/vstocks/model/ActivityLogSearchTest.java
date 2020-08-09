@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashSet;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -18,21 +19,21 @@ public class ActivityLogSearchTest {
     public void testGettersAndSettersAll() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         ActivityLogSearch activityLogSearch = new ActivityLogSearch()
-                .setIds(asList("id1", "id2"))
-                .setUserIds(asList("user1", "user2"))
-                .setTypes(asList(STOCK_SELL, STOCK_BUY))
+                .setIds(new LinkedHashSet<>(asList("id1", "id2")))
+                .setUserIds(new LinkedHashSet<>(asList("user1", "user2")))
+                .setTypes(new LinkedHashSet<>(asList(STOCK_SELL, STOCK_BUY)))
                 .setTimestampRange(Range.closed(now.minusSeconds(5), now.plusSeconds(5)))
-                .setMarkets(asList(TWITTER, YOUTUBE))
-                .setSymbols(asList("symbol1", "symbol2"))
+                .setMarkets(new LinkedHashSet<>(asList(TWITTER, YOUTUBE)))
+                .setSymbols(new LinkedHashSet<>(asList("symbol1", "symbol2")))
                 .setSharesRange(Range.atLeast(10))
                 .setPriceRange(Range.atMost(20));
 
-        assertEquals(asList("id1", "id2"), activityLogSearch.getIds());
-        assertEquals(asList("user1", "user2"), activityLogSearch.getUserIds());
-        assertEquals(asList(STOCK_SELL, STOCK_BUY), activityLogSearch.getTypes());
+        assertEquals(new LinkedHashSet<>(asList("id1", "id2")), activityLogSearch.getIds());
+        assertEquals(new LinkedHashSet<>(asList("user1", "user2")), activityLogSearch.getUserIds());
+        assertEquals(new LinkedHashSet<>(asList(STOCK_SELL, STOCK_BUY)), activityLogSearch.getTypes());
         assertEquals(Range.closed(now.minusSeconds(5), now.plusSeconds(5)), activityLogSearch.getTimestampRange());
-        assertEquals(asList(TWITTER, YOUTUBE), activityLogSearch.getMarkets());
-        assertEquals(asList("symbol1", "symbol2"), activityLogSearch.getSymbols());
+        assertEquals(new LinkedHashSet<>(asList(TWITTER, YOUTUBE)), activityLogSearch.getMarkets());
+        assertEquals(new LinkedHashSet<>(asList("symbol1", "symbol2")), activityLogSearch.getSymbols());
         assertEquals(Range.atLeast(10), activityLogSearch.getSharesRange());
         assertEquals(Range.atMost(20), activityLogSearch.getPriceRange());
     }
@@ -43,12 +44,12 @@ public class ActivityLogSearchTest {
         Instant tsBegin = now.minusSeconds(5);
         Instant tsEnd = now.plusSeconds(5);
         ActivityLogSearch activityLogSearch = new ActivityLogSearch()
-                .setIds(asList("id1", "id2"))
-                .setUserIds(asList("user1", "user2"))
-                .setTypes(asList(STOCK_SELL, STOCK_BUY))
+                .setIds(new LinkedHashSet<>(asList("id1", "id2")))
+                .setUserIds(new LinkedHashSet<>(asList("user1", "user2")))
+                .setTypes(new LinkedHashSet<>(asList(STOCK_SELL, STOCK_BUY)))
                 .setTimestampRange(Range.closed(tsBegin, tsEnd))
-                .setMarkets(asList(TWITTER, YOUTUBE))
-                .setSymbols(asList("symbol1", "symbol2"))
+                .setMarkets(new LinkedHashSet<>(asList(TWITTER, YOUTUBE)))
+                .setSymbols(new LinkedHashSet<>(asList("symbol1", "symbol2")))
                 .setSharesRange(Range.atLeast(10))
                 .setPriceRange(Range.atMost(20));
         assertEquals("ActivityLogSearch{ids=[id1, id2], userIds=[user1, user2], types=[STOCK_SELL, STOCK_BUY], "

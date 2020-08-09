@@ -362,7 +362,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setIds(asList(activityLog1.getId(), "missing"));
+        ActivityLogSearch search = new ActivityLogSearch().setIds(new LinkedHashSet<>(asList(activityLog1.getId(), "missing")));
         Results<ActivityLog> results = activityLogDB.search(search, new Page(), emptySet());
         assertEquals(1, results.getTotal());
         assertEquals(1, results.getResults().size());
@@ -377,7 +377,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setUserIds(asList(activityLog1.getUserId(), "missing"));
+        ActivityLogSearch search = new ActivityLogSearch().setUserIds(new LinkedHashSet<>(asList(activityLog1.getUserId(), "missing")));
         Results<ActivityLog> results = activityLogDB.search(search, new Page(), emptySet());
         assertEquals(1, results.getTotal());
         assertEquals(1, results.getResults().size());
@@ -392,7 +392,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setTypes(asList(activityLog1.getType(), USER_LOGIN));
+        ActivityLogSearch search = new ActivityLogSearch().setTypes(new LinkedHashSet<>(asList(activityLog1.getType(), USER_LOGIN)));
         Results<ActivityLog> results = activityLogDB.search(search, new Page(), emptySet());
         assertEquals(1, results.getTotal());
         assertEquals(1, results.getResults().size());
@@ -453,7 +453,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setMarkets(asList(activityLog1.getMarket(), YOUTUBE));
+        ActivityLogSearch search = new ActivityLogSearch().setMarkets(new LinkedHashSet<>(asList(activityLog1.getMarket(), YOUTUBE)));
         Results<ActivityLog> results = activityLogDB.search(search, new Page(), emptySet());
         assertEquals(1, results.getTotal());
         assertEquals(1, results.getResults().size());
@@ -468,7 +468,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setSymbols(asList(activityLog1.getSymbol(), "missing"));
+        ActivityLogSearch search = new ActivityLogSearch().setSymbols(new LinkedHashSet<>(asList(activityLog1.getSymbol(), "missing")));
         Results<ActivityLog> results = activityLogDB.search(search, new Page(), emptySet());
         assertEquals(1, results.getTotal());
         assertEquals(1, results.getResults().size());
@@ -611,7 +611,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setIds(asList(activityLog1.getId(), "missing"));
+        ActivityLogSearch search = new ActivityLogSearch().setIds(new LinkedHashSet<>(asList(activityLog1.getId(), "missing")));
         List<ActivityLog> results = new ArrayList<>();
         assertEquals(1, activityLogDB.consume(search, results::add, emptySet()));
         assertEquals(1, results.size());
@@ -626,7 +626,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setUserIds(asList(activityLog1.getUserId(), "missing"));
+        ActivityLogSearch search = new ActivityLogSearch().setUserIds(new LinkedHashSet<>(asList(activityLog1.getUserId(), "missing")));
         List<ActivityLog> results = new ArrayList<>();
         assertEquals(1, activityLogDB.consume(search, results::add, emptySet()));
         assertEquals(1, results.size());
@@ -641,7 +641,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setTypes(asList(activityLog1.getType(), USER_LOGIN));
+        ActivityLogSearch search = new ActivityLogSearch().setTypes(new LinkedHashSet<>(asList(activityLog1.getType(), USER_LOGIN)));
         List<ActivityLog> results = new ArrayList<>();
         assertEquals(1, activityLogDB.consume(search, results::add, emptySet()));
         assertEquals(1, results.size());
@@ -702,7 +702,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setMarkets(asList(activityLog1.getMarket(), YOUTUBE));
+        ActivityLogSearch search = new ActivityLogSearch().setMarkets(new LinkedHashSet<>(asList(activityLog1.getMarket(), YOUTUBE)));
         List<ActivityLog> results = new ArrayList<>();
         assertEquals(1, activityLogDB.consume(search, results::add, emptySet()));
         assertEquals(1, results.size());
@@ -717,7 +717,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setSymbols(asList(activityLog1.getSymbol(), "missing"));
+        ActivityLogSearch search = new ActivityLogSearch().setSymbols(new LinkedHashSet<>(asList(activityLog1.getSymbol(), "missing")));
         List<ActivityLog> results = new ArrayList<>();
         assertEquals(1, activityLogDB.consume(search, results::add, emptySet()));
         assertEquals(1, results.size());
@@ -837,7 +837,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setIds(asList(activityLog1.getId(), "missing"));
+        ActivityLogSearch search = new ActivityLogSearch().setIds(new LinkedHashSet<>(asList(activityLog1.getId(), "missing")));
         assertEquals(1, activityLogDB.count(search));
     }
 
@@ -849,7 +849,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setUserIds(asList(activityLog1.getUserId(), "missing"));
+        ActivityLogSearch search = new ActivityLogSearch().setUserIds(new LinkedHashSet<>(asList(activityLog1.getUserId(), "missing")));
         assertEquals(1, activityLogDB.count(search));
     }
 
@@ -861,7 +861,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setTypes(asList(activityLog1.getType(), USER_LOGIN));
+        ActivityLogSearch search = new ActivityLogSearch().setTypes(new LinkedHashSet<>(asList(activityLog1.getType(), USER_LOGIN)));
         assertEquals(1, activityLogDB.count(search));
     }
 
@@ -906,7 +906,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setMarkets(asList(activityLog1.getMarket(), YOUTUBE));
+        ActivityLogSearch search = new ActivityLogSearch().setMarkets(new LinkedHashSet<>(asList(activityLog1.getMarket(), YOUTUBE)));
         assertEquals(1, activityLogDB.count(search));
     }
 
@@ -918,7 +918,7 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        ActivityLogSearch search = new ActivityLogSearch().setSymbols(asList(activityLog1.getSymbol(), "missing"));
+        ActivityLogSearch search = new ActivityLogSearch().setSymbols(new LinkedHashSet<>(asList(activityLog1.getSymbol(), "missing")));
         assertEquals(1, activityLogDB.count(search));
     }
 

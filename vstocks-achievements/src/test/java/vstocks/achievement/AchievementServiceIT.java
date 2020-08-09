@@ -14,10 +14,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.joining;
 import static org.junit.Assert.assertEquals;
 import static vstocks.model.ActivityType.STOCK_BUY;
@@ -84,7 +86,8 @@ public class AchievementServiceIT {
         assertEquals(1, dbFactory.getActivityLogDB().add(activityLog));
 
         AchievementService achievementService = new AchievementService();
-        List<UserAchievement> achievements = achievementService.check(dbFactory, activityLog);
+        List<UserAchievement> achievements = new ArrayList<>();
+        assertEquals(1, achievementService.find(dbFactory, singleton(user.getId()), achievements::add));
         assertEquals(1, achievements.size());
 
         UserAchievement userAchievement = achievements.iterator().next();

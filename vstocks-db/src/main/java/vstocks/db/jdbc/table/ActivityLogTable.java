@@ -146,6 +146,10 @@ public class ActivityLogTable extends BaseTable {
                 search.getPriceRange());
     }
 
+    public <T> int consume(Connection connection, PreparedStatementCreator psc, RowMapper<T> rowMapper, Consumer<T> consumer) {
+        return super.consume(connection, psc, rowMapper, consumer);
+    }
+
     public int add(Connection connection, ActivityLog activityLog) {
         String sql = "INSERT INTO activity_logs (id, user_id, type, timestamp, market, symbol, shares, price) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
