@@ -1,7 +1,11 @@
 package vstocks.db;
 
-import vstocks.model.*;
+import vstocks.model.Page;
+import vstocks.model.Results;
+import vstocks.model.Sort;
+import vstocks.model.UserAchievement;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -9,7 +13,7 @@ import java.util.function.Consumer;
 public interface UserAchievementDB {
     Optional<UserAchievement> get(String userId, String achievementId);
 
-    Results<UserAchievement> getForUser(String userId, Page page, Set<Sort> sort);
+    List<UserAchievement> getForUser(String userId);
 
     Results<UserAchievement> getForAchievement(String achievementId, Page page, Set<Sort> sort);
 

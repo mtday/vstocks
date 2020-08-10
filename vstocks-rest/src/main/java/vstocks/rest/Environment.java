@@ -1,11 +1,13 @@
 package vstocks.rest;
 
+import vstocks.achievement.AchievementService;
 import vstocks.db.DBFactory;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
 public class Environment {
     private DBFactory dbFactory;
     private RemoteStockServiceFactory remoteStockServiceFactory;
+    private AchievementService achievementService;
     private boolean includeSecurity = true;
     private boolean includeBackgroundTasks = true;
 
@@ -27,6 +29,15 @@ public class Environment {
 
     public Environment setRemoteStockServiceFactory(RemoteStockServiceFactory remoteStockServiceFactory) {
         this.remoteStockServiceFactory = remoteStockServiceFactory;
+        return this;
+    }
+
+    public AchievementService getAchievementService() {
+        return achievementService;
+    }
+
+    public Environment setAchievementService(AchievementService achievementService) {
+        this.achievementService = achievementService;
         return this;
     }
 

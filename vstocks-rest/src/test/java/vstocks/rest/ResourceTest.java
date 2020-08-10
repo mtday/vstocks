@@ -2,13 +2,10 @@ package vstocks.rest;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
-import org.junit.ClassRule;
 import org.pac4j.core.profile.CommonProfile;
+import vstocks.achievement.AchievementService;
 import vstocks.db.DBFactory;
-import vstocks.model.Market;
-import vstocks.model.PricedStock;
-import vstocks.model.Results;
-import vstocks.model.User;
+import vstocks.model.*;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
 import javax.ws.rs.core.GenericType;
@@ -23,20 +20,20 @@ public abstract class ResourceTest extends JerseyTest {
         LogManager.getLogManager().reset();
     }
 
-    @ClassRule
-    public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
-
     private DBFactory dbFactory;
     private RemoteStockServiceFactory remoteStockServiceFactory;
+    private AchievementService achievementService;
 
     @Override
     protected ResourceConfig configure() {
         dbFactory = mock(DBFactory.class);
         remoteStockServiceFactory = mock(RemoteStockServiceFactory.class);
+        achievementService = mock(AchievementService.class);
 
         Environment environment = new Environment()
                 .setDBFactory(dbFactory)
                 .setRemoteStockServiceFactory(remoteStockServiceFactory)
+                .setAchievementService(achievementService)
                 .setIncludeSecurity(false) // disables Pac4j, we include a simple profile below
                 .setIncludeBackgroundTasks(false);
 
@@ -71,7 +68,13 @@ public abstract class ResourceTest extends JerseyTest {
         return remoteStockServiceFactory;
     }
 
+    public AchievementService getAchievementService() {
+        return achievementService;
+    }
+
+    public static class AchievementListGenericType extends GenericType<List<Achievement>> {}
     public static class MarketListGenericType extends GenericType<List<Market>> {}
     public static class PricedStockResultsGenericType extends GenericType<Results<PricedStock>> {}
     public static class PricedStockListGenericType extends GenericType<List<PricedStock>> {}
+    public static class UserAchievementListGenericType extends GenericType<List<UserAchievement>> {}
 }

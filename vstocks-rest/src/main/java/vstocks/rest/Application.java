@@ -11,10 +11,12 @@ import org.pac4j.jax.rs.features.JaxRsConfigProvider;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
+import vstocks.achievement.AchievementService;
 import vstocks.db.DBFactory;
 import vstocks.db.jdbc.JdbcDBFactory;
 import vstocks.rest.exception.BadRequestExceptionMapper;
 import vstocks.rest.exception.NotFoundExceptionMapper;
+import vstocks.rest.resource.v1.achievement.GetAchievements;
 import vstocks.rest.resource.v1.market.GetAllMarkets;
 import vstocks.rest.resource.v1.market.GetMarket;
 import vstocks.rest.resource.v1.market.stock.*;
@@ -23,6 +25,7 @@ import vstocks.rest.resource.v1.security.Login;
 import vstocks.rest.resource.v1.security.Logout;
 import vstocks.rest.resource.v1.user.GetUser;
 import vstocks.rest.resource.v1.user.UserReset;
+import vstocks.rest.resource.v1.user.achievement.GetUserAchievements;
 import vstocks.rest.security.AccessLogFilter;
 import vstocks.rest.security.SecurityConfig;
 import vstocks.rest.task.MemoryUsageLoggingTask;
@@ -46,14 +49,17 @@ public class Application extends ResourceConfig {
     @SuppressWarnings("unused")
     public Application() {
         this(new Environment()
-                        .setRemoteStockServiceFactory(new DefaultRemoteStockServiceFactory())
-                        .setDBFactory(new JdbcDBFactory(getDataSource()))
-                        .setIncludeSecurity(true)
-                        .setIncludeBackgroundTasks(true));
+                .setDBFactory(new JdbcDBFactory(getDataSource()))
+                .setRemoteStockServiceFactory(new DefaultRemoteStockServiceFactory())
+                .setAchievementService(new AchievementService())
+                .setIncludeSecurity(true)
+                .setIncludeBackgroundTasks(true));
     }
 
     public Application(Environment environment) {
         property("jersey.config.server.wadl.disableWadl", "true");
+
+        register(GetAchievements.class);
 
         register(AddStock.class);
         register(BuyStock.class);
@@ -70,6 +76,7 @@ public class Application extends ResourceConfig {
 
         register(GetUser.class);
         register(UserReset.class);
+        register(GetUserAchievements.class);
 
         register(BadRequestExceptionMapper.class);
         register(NotFoundExceptionMapper.class);
@@ -81,6 +88,7 @@ public class Application extends ResourceConfig {
                 bind(getObjectMapper()).to(ObjectMapper.class);
                 ofNullable(environment.getDBFactory()).ifPresent(d -> bind(d).to(DBFactory.class));
                 ofNullable(environment.getRemoteStockServiceFactory()).ifPresent(r -> bind(r).to(RemoteStockServiceFactory.class));
+                ofNullable(environment.getAchievementService()).ifPresent(r -> bind(r).to(AchievementService.class));
             }
         });
 

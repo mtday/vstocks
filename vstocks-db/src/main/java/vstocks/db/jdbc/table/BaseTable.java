@@ -6,10 +6,7 @@ import vstocks.model.Sort;
 
 import java.sql.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static java.util.Collections.emptySet;
@@ -73,6 +70,21 @@ public class BaseTable {
             }
         } catch (SQLException sqlException) {
             throw new RuntimeException("Failed to fetch object from database", sqlException);
+        }
+    }
+
+    protected <T> List<T> getList(Connection connection, RowMapper<T> rowMapper, String sql, Object... params) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            populatePreparedStatement(ps, params);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<T> results = new ArrayList<>();
+                while (rs.next()) {
+                    results.add(rowMapper.map(rs));
+                }
+                return results;
+            }
+        } catch (SQLException sqlException) {
+            throw new RuntimeException("Failed to fetch objects from database", sqlException);
         }
     }
 

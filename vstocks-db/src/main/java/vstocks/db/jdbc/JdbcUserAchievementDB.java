@@ -8,6 +8,7 @@ import vstocks.model.Sort;
 import vstocks.model.UserAchievement;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -25,8 +26,8 @@ public class JdbcUserAchievementDB extends BaseService implements UserAchievemen
     }
 
     @Override
-    public Results<UserAchievement> getForUser(String userId, Page page, Set<Sort> sort) {
-        return withConnection(conn -> userAchievementTable.getForUser(conn, userId, page, sort));
+    public List<UserAchievement> getForUser(String userId) {
+        return withConnection(conn -> userAchievementTable.getForUser(conn, userId));
     }
 
     @Override

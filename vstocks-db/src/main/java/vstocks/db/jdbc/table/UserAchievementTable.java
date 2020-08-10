@@ -1,10 +1,14 @@
 package vstocks.db.jdbc.table;
 
-import vstocks.model.*;
+import vstocks.model.Page;
+import vstocks.model.Results;
+import vstocks.model.Sort;
+import vstocks.model.UserAchievement;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -40,10 +44,9 @@ public class UserAchievementTable extends BaseTable {
         return getOne(connection, ROW_MAPPER, sql, userId, achievementId);
     }
 
-    public Results<UserAchievement> getForUser(Connection connection, String userId, Page page, Set<Sort> sort) {
-        String sql = format("SELECT * FROM user_achievements WHERE user_id = ? %s LIMIT ? OFFSET ?", getSort(sort));
-        String count = "SELECT COUNT(*) FROM user_achievements WHERE user_id = ?";
-        return results(connection, ROW_MAPPER, page, sql, count, userId);
+    public List<UserAchievement> getForUser(Connection connection, String userId) {
+        String sql = "SELECT * FROM user_achievements WHERE user_id = ? ORDER BY timestamp DESC";
+        return getList(connection, ROW_MAPPER, sql, userId);
     }
 
     public Results<UserAchievement> getForAchievement(Connection connection, String achievementId, Page page, Set<Sort> sort) {
