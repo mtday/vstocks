@@ -9,6 +9,7 @@ public class JdbcDBFactory implements DBFactory {
     private final StockPriceDB stockPriceDB;
     private final StockDB stockDB;
     private final PortfolioValueDB portfolioValueDB;
+    private final PortfolioValueRankDB portfolioValueRankDB;
     private final PricedStockDB pricedStockDB;
     private final UserAchievementDB userAchievementDB;
     private final UserCreditsDB userCreditsDB;
@@ -21,6 +22,7 @@ public class JdbcDBFactory implements DBFactory {
         this.stockPriceDB = new JdbcStockPriceDB(dataSource);
         this.stockDB = new JdbcStockDB(dataSource);
         this.portfolioValueDB = new JdbcPortfolioValueDB(dataSource);
+        this.portfolioValueRankDB = new JdbcPortfolioValueRankDB(dataSource);
         this.pricedStockDB = new JdbcPricedStockDB(dataSource);
         this.userAchievementDB = new JdbcUserAchievementDB(dataSource);
         this.userCreditsDB = new JdbcUserCreditsDB(dataSource);
@@ -47,6 +49,11 @@ public class JdbcDBFactory implements DBFactory {
     @Override
     public PortfolioValueDB getPortfolioValueDB() {
         return portfolioValueDB;
+    }
+
+    @Override
+    public PortfolioValueRankDB getPortfolioValueRankDB() {
+        return portfolioValueRankDB;
     }
 
     @Override

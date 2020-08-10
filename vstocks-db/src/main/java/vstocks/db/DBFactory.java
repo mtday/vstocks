@@ -1,13 +1,15 @@
 package vstocks.db;
 
 public interface DBFactory {
-    PortfolioValueDB getPortfolioValueDB();
-
     ActivityLogDB getActivityLogDB();
 
     StockPriceDB getStockPriceDB();
 
     StockDB getStockDB();
+
+    PortfolioValueDB getPortfolioValueDB();
+
+    PortfolioValueRankDB getPortfolioValueRankDB();
 
     PricedStockDB getPricedStockDB();
 

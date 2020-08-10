@@ -11,6 +11,8 @@ import org.pac4j.jax.rs.features.JaxRsConfigProvider;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
+import vstocks.db.DBFactory;
+import vstocks.db.jdbc.JdbcDBFactory;
 import vstocks.rest.exception.BadRequestExceptionMapper;
 import vstocks.rest.exception.NotFoundExceptionMapper;
 import vstocks.rest.resource.v1.market.GetAllMarkets;
@@ -24,10 +26,9 @@ import vstocks.rest.resource.v1.user.UserReset;
 import vstocks.rest.security.AccessLogFilter;
 import vstocks.rest.security.SecurityConfig;
 import vstocks.rest.task.MemoryUsageLoggingTask;
+import vstocks.rest.task.PortfolioValueAgeOffTask;
 import vstocks.rest.task.StockPriceAgeOffTask;
 import vstocks.rest.task.StockUpdateTask;
-import vstocks.db.DBFactory;
-import vstocks.db.jdbc.JdbcDBFactory;
 import vstocks.service.remote.DefaultRemoteStockServiceFactory;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
@@ -42,6 +43,7 @@ import static vstocks.config.Config.*;
 
 @ApplicationPath("/")
 public class Application extends ResourceConfig {
+    @SuppressWarnings("unused")
     public Application() {
         this(new Environment()
                         .setRemoteStockServiceFactory(new DefaultRemoteStockServiceFactory())
@@ -96,6 +98,7 @@ public class Application extends ResourceConfig {
             ExecutorService stockPriceLookupExecutorService = Executors.newFixedThreadPool(8);
 
             new MemoryUsageLoggingTask().schedule(scheduledExecutorService);
+            new PortfolioValueAgeOffTask(environment).schedule(scheduledExecutorService);
             new StockPriceAgeOffTask(environment).schedule(scheduledExecutorService);
             new StockUpdateTask(environment, stockPriceLookupExecutorService).schedule(scheduledExecutorService);
         }
