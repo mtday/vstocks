@@ -274,6 +274,20 @@ public class JdbcStockPriceDBIT {
     }
 
     @Test
+    public void testAddAll() {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
+        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(20);
+        assertEquals(2, stockPriceDB.addAll(asList(stockPrice1, stockPrice2)));
+
+        Results<StockPrice> results = stockPriceDB.getLatest(TWITTER, asList(stock1.getSymbol(), stock2.getSymbol()), new Page(), emptySet());
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(stockPrice1, results.getResults().get(0));
+        assertEquals(stockPrice2, results.getResults().get(1));
+    }
+
+    @Test
     public void testAgeOff() {
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);

@@ -219,6 +219,17 @@ public class JdbcUserCreditsDBIT {
     }
 
     @Test
+    public void testUpdateZero() {
+        UserCredits userCredits = new UserCredits().setUserId(user1.getId()).setCredits(10);
+        assertEquals(1, userCreditsDB.add(userCredits));
+        assertEquals(0, userCreditsDB.update(userCredits.getUserId(), 0));
+
+        Optional<UserCredits> fetched = userCreditsDB.get(userCredits.getUserId());
+        assertTrue(fetched.isPresent());
+        assertEquals(10, fetched.get().getCredits());
+    }
+
+    @Test
     public void testDeleteMissing() {
         assertEquals(0, userCreditsDB.delete("missing"));
     }

@@ -12,11 +12,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import static java.util.Collections.emptySet;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.joining;
 
-public abstract class BaseTable {
+public class BaseTable {
     private int populatePreparedStatement(PreparedStatement ps, Object... params) throws SQLException {
         int index = 0;
         for (Object param : params) {
@@ -35,7 +36,9 @@ public abstract class BaseTable {
         return index;
     }
 
-    protected abstract Set<Sort> getDefaultSort();
+    protected Set<Sort> getDefaultSort() {
+        return emptySet();
+    }
 
     protected String getSort(Set<Sort> sort) {
         if (sort == null || sort.isEmpty()) {
@@ -140,6 +143,19 @@ public abstract class BaseTable {
             return ps.executeUpdate();
         } catch (SQLException sqlException) {
             throw new RuntimeException("Failed to perform database update", sqlException);
+        }
+    }
+
+    protected <T> int updateBatch(Connection connection, RowSetter<T> rowSetter, String sql, Collection<T> objects) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            int updated = 0;
+            for (T object : objects) {
+                rowSetter.set(ps, object);
+                updated += ps.executeUpdate();
+            }
+            return updated;
+        } catch (SQLException sqlException) {
+            throw new RuntimeException("Failed to perform database updates", sqlException);
         }
     }
 

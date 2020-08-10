@@ -5,9 +5,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import vstocks.db.DataSourceExternalResource;
-import vstocks.db.jdbc.table.ActivityLogTable;
-import vstocks.db.jdbc.table.StockTable;
-import vstocks.db.jdbc.table.UserTable;
+import vstocks.db.jdbc.table.*;
 import vstocks.model.*;
 
 import java.sql.Connection;
@@ -312,6 +310,30 @@ public class JdbcActivityLogDBIT {
         assertEquals(2, list.size());
         assertEquals(activityLog2, list.get(0));
         assertEquals(activityLog1, list.get(1));
+    }
+
+    @Test
+    public void testCustomConsume() {
+        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        ActivityLog activityLog1 = new ActivityLog().setId("id1").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
+        ActivityLog activityLog2 = new ActivityLog().setId("id2").setUserId(user2.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
+        assertEquals(1, activityLogDB.add(activityLog1));
+        assertEquals(1, activityLogDB.add(activityLog2));
+
+        PreparedStatementCreator psc = conn -> conn.prepareStatement("SELECT id FROM activity_logs ORDER BY id");
+        RowMapper<String> mapper = rs -> rs.getString("id");
+        List<String> list = new ArrayList<>();
+        assertEquals(2, activityLogDB.consume(psc, mapper, list::add));
+        assertEquals(2, list.size());
+        assertEquals("id1", list.get(0));
+        assertEquals("id2", list.get(1));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testCustomConsumeInvalidSql() {
+        PreparedStatementCreator psc = conn -> conn.prepareStatement("invalid");
+        RowMapper<String> mapper = rs -> rs.getString("id");
+        activityLogDB.consume(psc, mapper, ignored -> {});
     }
 
     @Test

@@ -12,14 +12,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.*;
 import static org.junit.Assert.*;
+import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
 import static vstocks.model.Market.YOUTUBE;
+import static vstocks.model.Sort.SortDirection.DESC;
 
 public class JdbcPortfolioValueDBIT {
     @ClassRule
@@ -30,6 +31,7 @@ public class JdbcPortfolioValueDBIT {
     private StockPriceTable stockPriceTable;
     private UserCreditsTable userCreditsTable;
     private UserStockTable userStockTable;
+    private PortfolioValueTable portfolioValueTable;
 
     private JdbcPortfolioValueDB portfolioValueDB;
 
@@ -56,6 +58,7 @@ public class JdbcPortfolioValueDBIT {
         stockPriceTable = new StockPriceTable();
         userCreditsTable = new UserCreditsTable();
         userStockTable = new UserStockTable();
+        portfolioValueTable = new PortfolioValueTable();
         portfolioValueDB = new JdbcPortfolioValueDB(dataSourceExternalResource.get());
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
@@ -80,6 +83,7 @@ public class JdbcPortfolioValueDBIT {
     @After
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
+            portfolioValueTable.truncate(connection);
             userStockTable.truncate(connection);
             stockPriceTable.truncate(connection);
             stockTable.truncate(connection);
@@ -90,24 +94,24 @@ public class JdbcPortfolioValueDBIT {
     }
 
     @Test
-    public void testGetMissing() {
-        assertFalse(portfolioValueDB.get("missing-id").isPresent());
+    public void testGenerateMissing() {
+        assertFalse(portfolioValueDB.generate("missing-id").isPresent());
     }
 
     @Test
-    public void testGetExistsNoCreditsOrStocks() {
-        assertFalse(portfolioValueDB.get(user1.getId()).isPresent());
+    public void testGenerateExistsNoCreditsOrStocks() {
+        assertFalse(portfolioValueDB.generate(user1.getId()).isPresent());
     }
 
     @Test
-    public void testGetExistsWithCreditsNoStocks() throws SQLException {
+    public void testGenerateExistsWithCreditsNoStocks() throws SQLException {
         UserCredits userCredits = new UserCredits().setUserId(user1.getId()).setCredits(10000);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userCreditsTable.add(connection, userCredits));
             connection.commit();
         }
 
-        Optional<PortfolioValue> fetched = portfolioValueDB.get(user1.getId());
+        Optional<PortfolioValue> fetched = portfolioValueDB.generate(user1.getId());
         assertTrue(fetched.isPresent());
         assertEquals(user1.getId(), fetched.get().getUserId());
         assertEquals(userCredits.getCredits(), fetched.get().getCredits());
@@ -116,7 +120,7 @@ public class JdbcPortfolioValueDBIT {
     }
 
     @Test
-    public void testGetExistsWithCreditsAndSingleStock() throws SQLException {
+    public void testGenerateExistsWithCreditsAndSingleStock() throws SQLException {
         UserCredits userCredits = new UserCredits().setUserId(user1.getId()).setCredits(10000);
         UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(twitterStock1.getMarket()).setSymbol(twitterStock1.getSymbol()).setShares(30);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
@@ -125,7 +129,7 @@ public class JdbcPortfolioValueDBIT {
             connection.commit();
         }
 
-        Optional<PortfolioValue> fetched = portfolioValueDB.get(user1.getId());
+        Optional<PortfolioValue> fetched = portfolioValueDB.generate(user1.getId());
         assertTrue(fetched.isPresent());
         assertEquals(user1.getId(), fetched.get().getUserId());
         assertEquals(userCredits.getCredits(), fetched.get().getCredits());
@@ -137,7 +141,7 @@ public class JdbcPortfolioValueDBIT {
     }
 
     @Test
-    public void testGetExistsWithCreditsAndMultipleStocks() throws SQLException {
+    public void testGenerateExistsWithCreditsAndMultipleStocks() throws SQLException {
         UserCredits userCredits = new UserCredits().setUserId(user1.getId()).setCredits(10000);
         UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(twitterStock1.getMarket()).setSymbol(twitterStock1.getSymbol()).setShares(30);
         UserStock userStock2 = new UserStock().setUserId(user1.getId()).setMarket(youtubeStock1.getMarket()).setSymbol(youtubeStock1.getSymbol()).setShares(20);
@@ -150,7 +154,7 @@ public class JdbcPortfolioValueDBIT {
             connection.commit();
         }
 
-        Optional<PortfolioValue> fetched = portfolioValueDB.get(user1.getId());
+        Optional<PortfolioValue> fetched = portfolioValueDB.generate(user1.getId());
         assertTrue(fetched.isPresent());
         assertEquals(user1.getId(), fetched.get().getUserId());
         assertEquals(userCredits.getCredits(), fetched.get().getCredits());
@@ -168,14 +172,14 @@ public class JdbcPortfolioValueDBIT {
     }
 
     @Test
-    public void testConsumeNone() {
+    public void testGenerateAllNone() {
         List<PortfolioValue> results = new ArrayList<>();
-        assertEquals(0, portfolioValueDB.consume(results::add));
+        assertEquals(0, portfolioValueDB.generateAll(results::add));
         assertTrue(results.isEmpty());
     }
 
     @Test
-    public void testConsume() throws SQLException {
+    public void testGenerateAll() throws SQLException {
         UserCredits userCredits1 = new UserCredits().setUserId(user1.getId()).setCredits(10000);
         UserCredits userCredits2 = new UserCredits().setUserId(user2.getId()).setCredits(11000);
         UserStock userStock11 = new UserStock().setUserId(user1.getId()).setMarket(twitterStock1.getMarket()).setSymbol(twitterStock1.getSymbol()).setShares(30);
@@ -199,7 +203,7 @@ public class JdbcPortfolioValueDBIT {
         }
 
         List<PortfolioValue> results = new ArrayList<>();
-        assertEquals(2, portfolioValueDB.consume(results::add));
+        assertEquals(2, portfolioValueDB.generateAll(results::add));
         assertEquals(2, results.size());
 
         // user2 portfolio has higher value so it is returned first
@@ -234,5 +238,241 @@ public class JdbcPortfolioValueDBIT {
                 + twitterStockPrice1.getPrice() * userStock11.getShares()
                 + youtubeStockPrice1.getPrice() * userStock12.getShares()
                 + youtubeStockPrice2.getPrice() * userStock13.getShares(), portfolioValue2.getTotal());
+    }
+
+    @Test
+    public void testGetLatestMissing() {
+        assertFalse(portfolioValueDB.getLatest("missing-id").isPresent());
+    }
+
+    @Test
+    public void testGetLatestExists() {
+        PortfolioValue portfolioValue = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        assertEquals(1, portfolioValueDB.add(portfolioValue));
+
+        Optional<PortfolioValue> fetched = portfolioValueDB.getLatest(user1.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(portfolioValue.getUserId(), fetched.get().getUserId());
+        assertEquals(portfolioValue.getTimestamp(), fetched.get().getTimestamp());
+        assertEquals(portfolioValue.getCredits(), fetched.get().getCredits());
+        assertEquals(portfolioValue.getMarketValues(), fetched.get().getMarketValues());
+        assertEquals(portfolioValue.getTotal(), fetched.get().getTotal());
+    }
+
+    @Test
+    public void testGetLatestNone() {
+        Results<PortfolioValue> results = portfolioValueDB.getLatest(singleton(user1.getId()), new Page(), emptySet());
+        assertEquals(0, results.getTotal());
+        assertTrue(results.getResults().isEmpty());
+    }
+
+    @Test
+    public void testGetLatestSomeNoSort() {
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setCredits(20).setMarketValues(singletonMap(TWITTER, 2000L)).setTotal(2020);
+        PortfolioValue portfolioValue3 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now).setCredits(30).setMarketValues(singletonMap(TWITTER, 3000L)).setTotal(3030);
+        PortfolioValue portfolioValue4 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(40)).setCredits(40).setMarketValues(singletonMap(TWITTER, 4000L)).setTotal(4040);
+        assertEquals(4, portfolioValueDB.addAll(asList(portfolioValue1, portfolioValue2, portfolioValue3, portfolioValue4)));
+
+        Results<PortfolioValue> results = portfolioValueDB.getLatest(asList(user1.getId(), user2.getId()), new Page(), emptySet());
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(portfolioValue1, results.getResults().get(0));
+        assertEquals(portfolioValue3, results.getResults().get(1));
+    }
+
+    @Test
+    public void testGetLatestSomeWithSort() {
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setCredits(20).setMarketValues(singletonMap(TWITTER, 2000L)).setTotal(2020);
+        PortfolioValue portfolioValue3 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now).setCredits(30).setMarketValues(singletonMap(TWITTER, 3000L)).setTotal(3030);
+        PortfolioValue portfolioValue4 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(40)).setCredits(40).setMarketValues(singletonMap(TWITTER, 4000L)).setTotal(4040);
+        assertEquals(1, portfolioValueDB.add(portfolioValue1));
+        assertEquals(1, portfolioValueDB.add(portfolioValue2));
+        assertEquals(1, portfolioValueDB.add(portfolioValue3));
+        assertEquals(1, portfolioValueDB.add(portfolioValue4));
+
+        Set<Sort> sort = new LinkedHashSet<>(asList(CREDITS.toSort(DESC), USER_ID.toSort(DESC)));
+        Results<PortfolioValue> results = portfolioValueDB.getLatest(asList(user1.getId(), user2.getId()), new Page(), sort);
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(portfolioValue3, results.getResults().get(0));
+        assertEquals(portfolioValue1, results.getResults().get(1));
+    }
+
+    @Test
+    public void testGetForUserNone() {
+        Results<PortfolioValue> results = portfolioValueDB.getForUser(user1.getId(), new Page(), emptySet());
+        assertEquals(0, results.getTotal());
+        assertTrue(results.getResults().isEmpty());
+    }
+
+    @Test
+    public void testGetForUserSomeNoSort() {
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(singletonMap(TWITTER, 2000L)).setTotal(2020);
+        assertEquals(1, portfolioValueDB.add(portfolioValue1));
+        assertEquals(1, portfolioValueDB.add(portfolioValue2));
+
+        Results<PortfolioValue> results = portfolioValueDB.getForUser(user1.getId(), new Page(), emptySet());
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(portfolioValue1, results.getResults().get(0));
+        assertEquals(portfolioValue2, results.getResults().get(1));
+    }
+
+    @Test
+    public void testGetForUserSomeWithSort() {
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(singletonMap(TWITTER, 2000L)).setTotal(2020);
+        assertEquals(1, portfolioValueDB.add(portfolioValue1));
+        assertEquals(1, portfolioValueDB.add(portfolioValue2));
+
+        Set<Sort> sort = new LinkedHashSet<>(asList(CREDITS.toSort(DESC), USER_ID.toSort(DESC)));
+        Results<PortfolioValue> results = portfolioValueDB.getForUser(user1.getId(), new Page(), sort);
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(portfolioValue2, results.getResults().get(0));
+        assertEquals(portfolioValue1, results.getResults().get(1));
+    }
+
+    @Test
+    public void testGetAllNone() {
+        Results<PortfolioValue> results = portfolioValueDB.getAll(new Page(), emptySet());
+        assertEquals(0, results.getTotal());
+        assertTrue(results.getResults().isEmpty());
+    }
+
+    @Test
+    public void testGetAllSomeNoSort() {
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(singletonMap(TWITTER, 2000L)).setTotal(2020);
+        assertEquals(1, portfolioValueDB.add(portfolioValue1));
+        assertEquals(1, portfolioValueDB.add(portfolioValue2));
+
+        Results<PortfolioValue> results = portfolioValueDB.getAll(new Page(), emptySet());
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(portfolioValue1, results.getResults().get(0));
+        assertEquals(portfolioValue2, results.getResults().get(1));
+    }
+
+    @Test
+    public void testGetAllSomeWithSort() {
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(singletonMap(TWITTER, 2000L)).setTotal(2020);
+        assertEquals(1, portfolioValueDB.add(portfolioValue1));
+        assertEquals(1, portfolioValueDB.add(portfolioValue2));
+
+        Set<Sort> sort = new LinkedHashSet<>(asList(CREDITS.toSort(DESC), USER_ID.toSort(DESC)));
+        Results<PortfolioValue> results = portfolioValueDB.getAll(new Page(), sort);
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(portfolioValue2, results.getResults().get(0));
+        assertEquals(portfolioValue1, results.getResults().get(1));
+    }
+
+    @Test
+    public void testConsumeNone() {
+        List<PortfolioValue> list = new ArrayList<>();
+        assertEquals(0, portfolioValueDB.consume(list::add, emptySet()));
+        assertTrue(list.isEmpty());
+    }
+
+    @Test
+    public void testConsumeSomeNoSort() {
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(singletonMap(TWITTER, 2000L)).setTotal(2020);
+        assertEquals(1, portfolioValueDB.add(portfolioValue1));
+        assertEquals(1, portfolioValueDB.add(portfolioValue2));
+
+        List<PortfolioValue> list = new ArrayList<>();
+        assertEquals(2, portfolioValueDB.consume(list::add, emptySet()));
+        assertEquals(2, list.size());
+        assertEquals(portfolioValue1, list.get(0));
+        assertEquals(portfolioValue2, list.get(1));
+    }
+
+    @Test
+    public void testConsumeSomeWithSort() {
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(singletonMap(TWITTER, 2000L)).setTotal(2020);
+        assertEquals(1, portfolioValueDB.add(portfolioValue1));
+        assertEquals(1, portfolioValueDB.add(portfolioValue2));
+
+        List<PortfolioValue> list = new ArrayList<>();
+        Set<Sort> sort = new LinkedHashSet<>(asList(CREDITS.toSort(DESC), USER_ID.toSort(DESC)));
+        assertEquals(2, portfolioValueDB.consume(list::add, sort));
+        assertEquals(2, list.size());
+        assertEquals(portfolioValue2, list.get(0));
+        assertEquals(portfolioValue1, list.get(1));
+    }
+
+    @Test
+    public void testAdd() {
+        PortfolioValue portfolioValue = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        assertEquals(1, portfolioValueDB.add(portfolioValue));
+    }
+
+    @Test
+    public void testAddConflictSameValues() {
+        PortfolioValue portfolioValue = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        assertEquals(1, portfolioValueDB.add(portfolioValue));
+        assertEquals(0, portfolioValueDB.add(portfolioValue));
+
+        Optional<PortfolioValue> fetched = portfolioValueDB.getLatest(user1.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(portfolioValue.getUserId(), fetched.get().getUserId());
+        assertEquals(portfolioValue.getTimestamp(), fetched.get().getTimestamp());
+        assertEquals(portfolioValue.getCredits(), fetched.get().getCredits());
+        assertEquals(portfolioValue.getMarketValues(), fetched.get().getMarketValues());
+        assertEquals(portfolioValue.getTotal(), fetched.get().getTotal());
+    }
+
+    @Test
+    public void testAddConflictDifferentValues() {
+        PortfolioValue portfolioValue = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        assertEquals(1, portfolioValueDB.add(portfolioValue));
+        portfolioValue.setCredits(12);
+        portfolioValue.setTotal(1012);
+        assertEquals(1, portfolioValueDB.add(portfolioValue));
+
+        Optional<PortfolioValue> fetched = portfolioValueDB.getLatest(user1.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(portfolioValue.getUserId(), fetched.get().getUserId());
+        assertEquals(portfolioValue.getTimestamp(), fetched.get().getTimestamp());
+        assertEquals(portfolioValue.getCredits(), fetched.get().getCredits());
+        assertEquals(portfolioValue.getMarketValues(), fetched.get().getMarketValues());
+        assertEquals(portfolioValue.getTotal(), fetched.get().getTotal());
+    }
+
+    @Test
+    public void testAddAll() {
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(singletonMap(TWITTER, 2000L)).setTotal(2020);
+        assertEquals(2, portfolioValueDB.addAll(asList(portfolioValue1, portfolioValue2)));
+
+        Results<PortfolioValue> results = portfolioValueDB.getLatest(asList(user1.getId(), user2.getId()), new Page(), emptySet());
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(portfolioValue1, results.getResults().get(0));
+        assertEquals(portfolioValue2, results.getResults().get(1));
+    }
+
+    @Test
+    public void testAgeOff() {
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(10)).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        PortfolioValue portfolioValue3 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+
+        assertEquals(1, portfolioValueDB.add(portfolioValue1));
+        assertEquals(1, portfolioValueDB.add(portfolioValue2));
+        assertEquals(1, portfolioValueDB.add(portfolioValue3));
+        assertEquals(2, portfolioValueDB.ageOff(now.minusSeconds(5)));
+
+        Results<PortfolioValue> results = portfolioValueDB.getAll(new Page(), emptySet());
+        assertEquals(1, results.getTotal());
+        assertEquals(1, results.getResults().size());
+        assertEquals(portfolioValue1, results.getResults().iterator().next());
     }
 }

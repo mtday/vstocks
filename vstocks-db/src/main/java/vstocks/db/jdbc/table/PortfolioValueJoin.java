@@ -2,19 +2,15 @@ package vstocks.db.jdbc.table;
 
 import vstocks.model.Market;
 import vstocks.model.PortfolioValue;
-import vstocks.model.Sort;
 
 import java.sql.Connection;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toMap;
-import static vstocks.model.DatabaseField.TOTAL;
-import static vstocks.model.DatabaseField.USER_ID;
-import static vstocks.model.Sort.SortDirection.DESC;
 
 public class PortfolioValueJoin extends BaseTable {
     private static final RowMapper<PortfolioValue> ROW_MAPPER = rs -> {
@@ -30,18 +26,14 @@ public class PortfolioValueJoin extends BaseTable {
 
         return new PortfolioValue()
                 .setUserId(rs.getString("user_id"))
+                .setTimestamp(rs.getTimestamp("timestamp").toInstant().truncatedTo(ChronoUnit.SECONDS))
                 .setCredits(rs.getLong("credits"))
                 .setMarketValues(marketValues)
                 .setTotal(rs.getLong("total"));
     };
 
-    @Override
-    protected Set<Sort> getDefaultSort() {
-        return new HashSet<>(asList(TOTAL.toSort(DESC), USER_ID.toSort()));
-    }
-
-    public Optional<PortfolioValue> get(Connection connection, String userId) {
-        String sql = "SELECT uc.user_id, uc.credits, COALESCE(market_values, '') AS market_values, "
+    public Optional<PortfolioValue> generate(Connection connection, String userId) {
+        String sql = "SELECT uc.user_id, NOW() AS timestamp, uc.credits, COALESCE(market_values, '') AS market_values, "
                 + "  credits + COALESCE(stock_total, 0) AS total "
                 + "FROM user_credits uc LEFT JOIN ("
                 + "  SELECT user_id, STRING_AGG(market || ':' || value, ';') AS market_values, SUM(value) AS stock_total FROM ("
@@ -58,8 +50,8 @@ public class PortfolioValueJoin extends BaseTable {
         return getOne(connection, ROW_MAPPER, sql, userId, userId);
     }
 
-    public int consume(Connection connection, Consumer<PortfolioValue> consumer) {
-        String sql = "SELECT uc.user_id, uc.credits, COALESCE(market_values, '') AS market_values, "
+    public int generateAll(Connection connection, Consumer<PortfolioValue> consumer) {
+        String sql = "SELECT uc.user_id, NOW() AS timestamp, uc.credits, COALESCE(market_values, '') AS market_values, "
                 + "  credits + COALESCE(stock_total, 0) AS total "
                 + "FROM user_credits uc LEFT JOIN ("
                 + "  SELECT user_id, STRING_AGG(market || ':' || value, ';') AS market_values, SUM(value) AS stock_total FROM ("

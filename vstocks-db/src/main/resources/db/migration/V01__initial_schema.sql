@@ -85,6 +85,39 @@ CREATE INDEX idx_user_credits_user_id ON user_credits (user_id);
 CREATE INDEX idx_user_credits_credits ON user_credits (credits);
 
 
+CREATE TABLE portfolio_values (
+    user_id            TEXT         NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
+    credits            BIGINT       NOT NULL,
+    market_values      TEXT         NOT NULL,
+    total              BIGINT       NOT NULL,
+
+    CONSTRAINT portfolio_values_pk PRIMARY KEY (user_id, timestamp),
+    CONSTRAINT portfolio_values_fk_user_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX idx_portfolio_values_user_id ON portfolio_values (user_id);
+CREATE INDEX idx_portfolio_values_timestamp ON portfolio_values (timestamp);
+CREATE INDEX idx_portfolio_values_credits ON portfolio_values (credits);
+CREATE INDEX idx_portfolio_values_total ON portfolio_values (total);
+
+
+CREATE TABLE portfolio_value_ranks (
+    user_id            TEXT         NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
+    rank               INTEGER      NOT NULL,
+
+    CONSTRAINT portfolio_value_ranks_pk PRIMARY KEY (user_id, timestamp),
+    CONSTRAINT portfolio_value_ranks_fk_user_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX idx_portfolio_value_ranks_user_id ON portfolio_value_ranks (user_id);
+CREATE INDEX idx_portfolio_value_ranks_timestamp ON portfolio_value_ranks (timestamp);
+CREATE INDEX idx_portfolio_value_ranks_rank ON portfolio_value_ranks (rank);
+
+
 CREATE TABLE user_stocks (
     user_id            TEXT    NOT NULL,
     market             TEXT    NOT NULL,

@@ -13,6 +13,7 @@ public enum DatabaseField {
     MARKET,
     NAME,
     PRICE,
+    RANK,
     SHARES,
     SYMBOL,
     TIMESTAMP,

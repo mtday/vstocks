@@ -5,14 +5,12 @@ import vstocks.model.*;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Sort.SortDirection.DESC;
 
@@ -70,10 +68,14 @@ public class StockPriceTable extends BaseTable {
     }
 
     public int add(Connection connection, StockPrice stockPrice) {
+        return addAll(connection, singleton(stockPrice));
+    }
+
+    public int addAll(Connection connection, Collection<StockPrice> stockPrices) {
         String sql = "INSERT INTO stock_prices (market, symbol, timestamp, price) VALUES (?, ?, ?, ?) "
                 + "ON CONFLICT ON CONSTRAINT stock_prices_pk DO UPDATE "
                 + "SET price = EXCLUDED.price WHERE stock_prices.price != EXCLUDED.price";
-        return update(connection, INSERT_ROW_SETTER, sql, stockPrice);
+        return updateBatch(connection, INSERT_ROW_SETTER, sql, stockPrices);
     }
 
     public int ageOff(Connection connection, Instant cutoff) {

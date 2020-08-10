@@ -21,5 +21,7 @@ public interface StockPriceDB {
 
     int add(StockPrice stockPrice);
 
+    int addAll(Collection<StockPrice> stockPrices);
+
     int ageOff(Instant cutoff);
 }

@@ -49,6 +49,11 @@ public class JdbcStockPriceDB extends BaseService implements StockPriceDB {
     }
 
     @Override
+    public int addAll(Collection<StockPrice> stockPrices) {
+        return withConnection(conn -> stockPriceTable.addAll(conn, stockPrices));
+    }
+
+    @Override
     public int ageOff(Instant cutoff) {
         return withConnection(conn -> stockPriceTable.ageOff(conn, cutoff));
     }

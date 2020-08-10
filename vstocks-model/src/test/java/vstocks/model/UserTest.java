@@ -2,6 +2,9 @@ package vstocks.model;
 
 import org.junit.Test;
 
+import java.util.UUID;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 
 public class UserTest {
@@ -18,8 +21,9 @@ public class UserTest {
 
     @Test
     public void testEquals() {
-        User user1 = new User().setId("id").setUsername("username1");
-        User user2 = new User().setId("id").setUsername("username2");
+        String userId = UUID.nameUUIDFromBytes("user@domain.com".getBytes(UTF_8)).toString();
+        User user1 = new User().setId(userId).setUsername("username1");
+        User user2 = new User().setId(userId).setUsername("username2");
         assertEquals(user1, user2);
     }
 
