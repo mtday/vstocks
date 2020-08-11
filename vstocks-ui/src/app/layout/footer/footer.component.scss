@@ -1,0 +1,35 @@
+
+@import '../../../variables.scss';
+
+footer {
+    height: $footerHeight;
+    margin: 0 15px;
+
+    .copyright {
+        line-height: $footerHeight;
+    }
+
+    .legal {
+        ul {
+            float: right;
+            margin: 0;
+            padding: 0;
+            text-align: right;
+
+            li {
+                display: inline-block;
+                line-height: $footerHeight;
+                margin: 0 0 0 10px;
+
+                a {
+                    color: $fontColorNormal;
+                    text-decoration: none;
+                }
+                a:hover, a.active {
+                    color: $fontColorBright;
+                }
+            }
+        }
+    }
+}
+

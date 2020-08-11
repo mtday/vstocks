@@ -1,12 +1,22 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { PrivacyComponent } from './pages/privacy/privacy.component';
-import { TermsComponent } from './pages/terms/terms.component';
+// Pages (Legal)
+import { PrivacyComponent } from './pages/legal/privacy/privacy.component';
+import { TermsComponent } from './pages/legal/terms/terms.component';
+
+// Pages (User)
+import { ProfileComponent } from './pages/user/profile/profile.component';
+import { LoginComponent } from './pages/user/login/login.component';
 
 const routes: Routes = [
-  { path: 'privacy', component: PrivacyComponent },
-  { path: 'terms',   component: TermsComponent   }
+  // Pages (Legal)
+  { path: 'legal/privacy', component: PrivacyComponent },
+  { path: 'legal/terms',   component: TermsComponent   },
+
+  // Pages (User)
+  { path: 'user/login',    component: LoginComponent   },
+  { path: 'user/profile',  component: ProfileComponent },
 ];
 
 @NgModule({

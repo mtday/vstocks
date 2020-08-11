@@ -1,103 +1,15 @@
 
-$containerBackgroundColor: #011b35;
-$borderColorNormal: #0d2c4b;
-$borderColorBright: #008bcf;
-$fontColorNormal: #808c9a;
-$fontColorBright: #e1e4e7;
-
-$headerHeight: 60px;
-$footerHeight: 40px;
+@import '../variables.scss';
 
 .container {
     background-color: $containerBackgroundColor;
     height: 100vh;
     margin: auto;
 
-    header {
-        height: $headerHeight;
-        margin: 0 15px;
-
-        nav {
-            .logo {
-                color: $fontColorBright;
-                float: left;
-                font-size: 20px;
-                font-weight: bold;
-                height: $headerHeight;
-                line-height: $headerHeight;
-                margin: 0;
-
-                a {
-                    text-decoration: none;
-                }
-            }
-
-            ul {
-                margin: 0;
-                padding: 0;
-                margin: auto;
-                text-align: right;
-
-                li {
-                    display: inline-block;
-                    margin: 0 0 0 20px;
-
-                    .separator {
-                        padding: 0 10px;
-                    }
-                }
-
-                a {
-                    display: block;
-                    color: $fontColorNormal;
-                    line-height: $headerHeight;
-                    height: $headerHeight;
-                    text-decoration: none;
-                }
-                a:hover, a.active {
-                    color: $fontColorBright;
-                    border-bottom: 1px solid $borderColorBright;
-                }
-            }
-        }
-    }
-
     section {
         border-bottom: 1px solid $borderColorNormal;
         border-top: 1px solid $borderColorNormal;
         height: calc(100vh - 60px - 40px - 2px); /* full page height - $headerHeight - $footerHeight */
-        margin: 0 15px;
-    }
-
-    footer {
-        height: $footerHeight;
-        margin: 0 15px;
-
-        .copyright {
-            line-height: $footerHeight;
-        }
-
-        .legal {
-            ul {
-                float: right;
-                margin: 0;
-                padding: 0;
-                text-align: right;
-
-                li {
-                    display: inline-block;
-                    line-height: $footerHeight;
-                    margin: 0 0 0 10px;
-
-                    a {
-                        color: $fontColorNormal;
-                        text-decoration: none;
-                    }
-                    a:hover, a.active {
-                        color: $fontColorBright;
-                    }
-                }
-            }
-        }
+        margin: 0;
     }
 }

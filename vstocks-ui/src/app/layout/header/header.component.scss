@@ -1,0 +1,50 @@
+@import '../../../variables.scss';
+
+header {
+    height: $headerHeight;
+    margin: 0 15px;
+
+    nav {
+        .logo {
+            color: $fontColorBright;
+            float: left;
+            font-size: 20px;
+            font-weight: bold;
+            height: $headerHeight;
+            line-height: $headerHeight;
+            margin: 0;
+
+            a {
+                text-decoration: none;
+            }
+        }
+
+        ul {
+            margin: 0;
+            padding: 0;
+            margin: auto;
+            text-align: right;
+
+            li {
+                display: inline-block;
+                margin: 0 0 0 20px;
+
+                .separator {
+                    padding: 0 10px;
+                }
+            }
+
+            a {
+                display: block;
+                color: $fontColorNormal;
+                line-height: $headerHeight;
+                height: $headerHeight;
+                text-decoration: none;
+            }
+            a:hover, a.active {
+                color: $fontColorBright;
+                border-bottom: 1px solid $borderColorBright;
+            }
+        }
+    }
+}
