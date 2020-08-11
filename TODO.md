@@ -44,6 +44,8 @@
 
 * System Status Bar
 
+* Allow users to have "Favorite" stocks?
+
 * Artificial User Activity
 
     * Stress testing the stock services, achievement checking, etc.

@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static java.util.Optional.ofNullable;
+import static org.eclipse.jetty.servlet.ServletContextHandler.SESSIONS;
 import static vstocks.config.Config.*;
 
 public class VStocksServer {
@@ -36,8 +37,9 @@ public class VStocksServer {
         URI staticResourceURI = staticResourceURL.toURI().resolve("./");
 
         Server server = new Server(port);
-        ServletContextHandler servletContextHandler = new ServletContextHandler();
+        ServletContextHandler servletContextHandler = new ServletContextHandler(SESSIONS);
         servletContextHandler.setContextPath(contextPath);
+        servletContextHandler.setClassLoader(Thread.currentThread().getContextClassLoader());
         servletContextHandler.setSessionHandler(new SessionHandler());
         servletContextHandler.setBaseResource(Resource.newResource(staticResourceURI));
         servletContextHandler.addServlet(new ServletHolder("default", DefaultServlet.class), contextPath);

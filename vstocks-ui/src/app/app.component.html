@@ -1,0 +1,37 @@
+
+<div class="container">
+
+    <header>
+        <nav>
+            <label class="logo">
+                <a href="#" class="logo">vStocks</a>
+            </label>
+
+            <ul>
+                <li><a class="active" href="#" routerLink="/">Dashboard</a></li>
+                <li><a href="#" routerLink="/">Portfolio</a></li>
+                <li><a href="#" routerLink="/standings">Standings</a></li>
+                <li><a href="#" routerLink="/achievements">Achievements</a></li>
+                <li><span class="separator"></span></li>
+                <li><a href="#" routerLink="/login">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section>
+        <router-outlet></router-outlet>
+    </section>
+
+    <footer>
+        <span class="copyright">
+            &copy; Copyright 2020 vStocks
+        </span>
+        <span class="legal">
+            <ul>
+                <li><a href="#" routerLink="/privacy">Privacy Policy</a></li>
+                <li><a href="#" routerLink="/terms">Terms of Service</a></li>
+            </ul>
+        </span>
+    </footer>
+
+</div>

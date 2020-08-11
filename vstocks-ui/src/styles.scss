@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito:400,700&display=swap');
+
+$fontColorNormal: #808c9a;
+$fontColorBright: #e1e4e7;
+
+
+body {
+    color: $fontColorNormal;
+    box-sizing: border-box;
+    font-family: Nunito;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
