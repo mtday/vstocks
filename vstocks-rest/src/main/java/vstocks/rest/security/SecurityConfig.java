@@ -3,6 +3,7 @@ package vstocks.rest.security;
 import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.pac4j.JaxRsUrlResolver;
 import org.pac4j.jax.rs.servlet.pac4j.ServletSessionStore;
+import org.pac4j.oauth.client.FacebookClient;
 import org.pac4j.oauth.client.Google2Client;
 import org.pac4j.oauth.client.TwitterClient;
 
@@ -23,7 +24,14 @@ public class SecurityConfig {
         );
         google2Client.setCallbackUrl(GOOGLE_API_CALLBACK.getString());
 
-        Config config = new Config(twitterClient, google2Client);
+        FacebookClient facebookClient = new FacebookClient(
+                FACEBOOK_API_CLIENT_ID.getString(),
+                FACEBOOK_API_CLIENT_SECRET.getString()
+        );
+        facebookClient.setCallbackUrl(FACEBOOK_API_CALLBACK.getString());
+        facebookClient.setScope("email");
+
+        Config config = new Config(twitterClient, google2Client, facebookClient);
         config.getClients().setUrlResolver(new JaxRsUrlResolver());
         config.setSessionStore(new ServletSessionStore());
         return config;

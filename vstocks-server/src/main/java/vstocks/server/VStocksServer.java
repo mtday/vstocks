@@ -1,6 +1,7 @@
 package vstocks.server;
 
-import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.session.SessionHandler;
@@ -8,11 +9,13 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vstocks.rest.Application;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,13 +33,35 @@ public class VStocksServer {
     public static void main(String... args) throws URISyntaxException, MalformedURLException {
         String contextPath = SERVER_CONTEXT_PATH.getString();
         String apiPath = SERVER_API_PATH.getString();
-        int port = SERVER_PORT.getInt();
+
+        HttpConfiguration httpConfiguration = new HttpConfiguration();
+        httpConfiguration.setSecureScheme("https");
+        httpConfiguration.setSecurePort(SERVER_PORT.getInt());
+        httpConfiguration.addCustomizer(new SecureRequestCustomizer());
+
+        SslContextFactory sslContextFactory = new SslContextFactory.Server();
+        sslContextFactory.setKeyStorePath(getFilePath(SERVER_KEYSTORE_FILE.getString()));
+        sslContextFactory.setKeyStoreType(SERVER_KEYSTORE_TYPE.getString());
+        sslContextFactory.setKeyStorePassword(SERVER_KEYSTORE_PASSWORD.getString());
+        sslContextFactory.setKeyManagerPassword(SERVER_KEYSTORE_PASSWORD.getString());
+        sslContextFactory.setTrustStorePath(getFilePath(SERVER_TRUSTSTORE_FILE.getString()));
+        sslContextFactory.setTrustStoreType(SERVER_TRUSTSTORE_TYPE.getString());
+        sslContextFactory.setTrustStorePassword(SERVER_TRUSTSTORE_PASSWORD.getString());
+
+        Server server = new Server();
+
+        ServerConnector sslConnector = new ServerConnector(
+                server,
+                new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
+                new HttpConnectionFactory(httpConfiguration)
+        );
+        sslConnector.setPort(SERVER_PORT.getInt());
+        server.addConnector(sslConnector);
 
         URL staticResourceURL = ofNullable(VStocksServer.class.getResource("/META-INF/static/index.html"))
                 .orElseThrow(() -> new RuntimeException("Failed to find META-INF static resources"));
         URI staticResourceURI = staticResourceURL.toURI().resolve("./");
 
-        Server server = new Server(port);
         ServletContextHandler servletContextHandler = new ServletContextHandler(SESSIONS);
         servletContextHandler.setContextPath(contextPath);
         servletContextHandler.setClassLoader(Thread.currentThread().getContextClassLoader());
@@ -63,5 +88,16 @@ public class VStocksServer {
                 throw new RuntimeException("Failed to start server", failed);
             }
         });
+    }
+
+    private static String getFilePath(String file) {
+        if (new File(file).exists()) {
+            return file;
+        }
+
+        ClassLoader classLoader = VStocksServer.class.getClassLoader();
+        return ofNullable(classLoader.getResource(file))
+                .map(URL::toString)
+                .orElseThrow(() -> new RuntimeException("Failed to find file: " + file));
     }
 }

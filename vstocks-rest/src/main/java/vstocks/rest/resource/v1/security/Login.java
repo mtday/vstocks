@@ -99,4 +99,14 @@ public class Login extends BaseResource {
         URI redirectUri = UriBuilder.fromUri(uriInfo.getRequestUri()).replacePath(REDIRECT).build();
         return Response.temporaryRedirect(redirectUri).header(AUTHORIZATION, "Bearer " + token).build();
     }
+
+    @GET
+    @Path("/facebook")
+    @Produces(APPLICATION_JSON)
+    @Pac4JSecurity(clients = "FacebookClient", authorizers = "isAuthenticated")
+    public Response facebookLogin(@Context UriInfo uriInfo, @Pac4JProfile CommonProfile profile) {
+        String token = doLogin(profile);
+        URI redirectUri = UriBuilder.fromUri(uriInfo.getRequestUri()).replacePath(REDIRECT).build();
+        return Response.temporaryRedirect(redirectUri).header(AUTHORIZATION, "Bearer " + token).build();
+    }
 }

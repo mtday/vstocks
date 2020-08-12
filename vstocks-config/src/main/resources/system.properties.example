@@ -1,9 +1,14 @@
 
-# Only used during development.
-
 server.port = 8080
 server.context.path = /
 server.api.path = /api/*
+
+server.keystore.file = keystore.p12
+server.keystore.type = PKCS12
+server.keystore.password = changeit
+server.truststore.file = truststore.p12
+server.truststore.type = PKCS12
+server.truststore.password = changeit
 
 
 # CREATE DATABASE vstockstest;
@@ -35,8 +40,12 @@ twitter.api.consumer.key = TODO
 twitter.api.consumer.secret = TODO
 twitter.api.accesstoken.key = TODO
 twitter.api.accesstoken.secret = TODO
-twitter.api.callback = http://localhost:8080/api/v1/security/callback
+twitter.api.callback = https://localhost:8443/api/v1/security/callback
 
 google.api.client.id = TODO
 google.api.client.secret = TODO
-google.api.callback = http://localhost:8080/api/v1/security/callback
+google.api.callback = https://localhost:8443/api/v1/security/callback
+
+facebook.api.client.id = TODO
+facebook.api.client.secret = TODO
+facebook.api.callback = https://localhost:8443/api/v1/security/callback
