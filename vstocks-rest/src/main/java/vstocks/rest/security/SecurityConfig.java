@@ -14,8 +14,7 @@ public class SecurityConfig {
                 TWITTER_API_CONSUMER_SECRET.getString()
         );
         twitterClient.setCallbackUrl(TWITTER_API_CALLBACK.getString());
-
-        org.pac4j.core.client.direct.AnonymousClient a;
+        twitterClient.setIncludeEmail(true);
 
         Config config = new Config(twitterClient);
         config.getClients().setUrlResolver(new JaxRsUrlResolver());

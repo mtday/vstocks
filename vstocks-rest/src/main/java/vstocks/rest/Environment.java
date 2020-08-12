@@ -2,12 +2,14 @@ package vstocks.rest;
 
 import vstocks.achievement.AchievementService;
 import vstocks.db.DBFactory;
+import vstocks.rest.security.JwtSecurity;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
 public class Environment {
     private DBFactory dbFactory;
     private RemoteStockServiceFactory remoteStockServiceFactory;
     private AchievementService achievementService;
+    private JwtSecurity jwtSecurity;
     private boolean includeSecurity = true;
     private boolean includeBackgroundTasks = true;
 
@@ -38,6 +40,15 @@ public class Environment {
 
     public Environment setAchievementService(AchievementService achievementService) {
         this.achievementService = achievementService;
+        return this;
+    }
+
+    public JwtSecurity getJwtSecurity() {
+        return jwtSecurity;
+    }
+
+    public Environment setJwtSecurity(JwtSecurity jwtSecurity) {
+        this.jwtSecurity = jwtSecurity;
         return this;
     }
 

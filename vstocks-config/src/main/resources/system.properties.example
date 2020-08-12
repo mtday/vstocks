@@ -26,6 +26,11 @@ data.history.days = 30
 user.initial.credits = 10000
 
 
+jwt.signature.secret = jgpmje8f3YYNlWCbHXUDkzaFpDIAZVB23gAPEojotkGiUfNDwUUkukGf3wzuERV30T0s3HEwkCkYpPVMCyLGz
+jwt.encryption.secret = jgpmje8f3YYNlWCbHXUDkzaFpDIAZVB23gAPEojotkGiUfNDwUUkukGf3wzuERV30T0s3HEwkCkYpPVMCyLGz
+jwt.expiration.minutes = 15
+
+
 twitter.api.consumer.key = TODO
 twitter.api.consumer.secret = TODO
 twitter.api.accesstoken.key = TODO

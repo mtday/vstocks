@@ -5,6 +5,7 @@ import vstocks.model.Page;
 import vstocks.model.Sort;
 import vstocks.model.User;
 
+import javax.ws.rs.core.SecurityContext;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -32,6 +33,15 @@ public abstract class BaseResource {
                 .filter(sort -> !sort.isEmpty())
                 .map(Sort::parse)
                 .collect(toCollection(LinkedHashSet::new));
+    }
+
+    protected User getUser(SecurityContext securityContext) {
+        return Stream.of(securityContext)
+                .map(SecurityContext::getUserPrincipal)
+                .filter(principal -> principal instanceof User)
+                .map(principal -> (User) principal)
+                .findFirst()
+                .orElse(null);
     }
 
     protected User getUser(CommonProfile commonProfile) {

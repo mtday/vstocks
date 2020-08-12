@@ -27,6 +27,8 @@ import vstocks.rest.resource.v1.user.GetUser;
 import vstocks.rest.resource.v1.user.UserReset;
 import vstocks.rest.resource.v1.user.achievement.GetUserAchievements;
 import vstocks.rest.security.AccessLogFilter;
+import vstocks.rest.security.JwtSecurity;
+import vstocks.rest.security.JwtTokenFilter;
 import vstocks.rest.security.SecurityConfig;
 import vstocks.rest.task.MemoryUsageLoggingTask;
 import vstocks.rest.task.PortfolioValueAgeOffTask;
@@ -48,12 +50,7 @@ import static vstocks.config.Config.*;
 public class Application extends ResourceConfig {
     @SuppressWarnings("unused")
     public Application() {
-        this(new Environment()
-                .setDBFactory(new JdbcDBFactory(getDataSource()))
-                .setRemoteStockServiceFactory(new DefaultRemoteStockServiceFactory())
-                .setAchievementService(new AchievementService())
-                .setIncludeSecurity(true)
-                .setIncludeBackgroundTasks(true));
+        this(getEnvironment());
     }
 
     public Application(Environment environment) {
@@ -82,13 +79,16 @@ public class Application extends ResourceConfig {
         register(NotFoundExceptionMapper.class);
 
         register(AccessLogFilter.class);
+        register(JwtTokenFilter.class);
+
         register(new AbstractBinder() {
             @Override
             protected void configure() {
                 bind(getObjectMapper()).to(ObjectMapper.class);
                 ofNullable(environment.getDBFactory()).ifPresent(d -> bind(d).to(DBFactory.class));
                 ofNullable(environment.getRemoteStockServiceFactory()).ifPresent(r -> bind(r).to(RemoteStockServiceFactory.class));
-                ofNullable(environment.getAchievementService()).ifPresent(r -> bind(r).to(AchievementService.class));
+                ofNullable(environment.getAchievementService()).ifPresent(a -> bind(a).to(AchievementService.class));
+                ofNullable(environment.getJwtSecurity()).ifPresent(j -> bind(j).to(JwtSecurity.class));
             }
         });
 
@@ -110,6 +110,16 @@ public class Application extends ResourceConfig {
             new StockPriceAgeOffTask(environment).schedule(scheduledExecutorService);
             new StockUpdateTask(environment, stockPriceLookupExecutorService).schedule(scheduledExecutorService);
         }
+    }
+
+    private static Environment getEnvironment() {
+        return new Environment()
+                .setDBFactory(new JdbcDBFactory(getDataSource()))
+                .setRemoteStockServiceFactory(new DefaultRemoteStockServiceFactory())
+                .setAchievementService(new AchievementService())
+                .setJwtSecurity(new JwtSecurity())
+                .setIncludeSecurity(true)
+                .setIncludeBackgroundTasks(true);
     }
 
     private static ObjectMapper getObjectMapper() {

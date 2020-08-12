@@ -6,6 +6,7 @@ import org.pac4j.core.profile.CommonProfile;
 import vstocks.achievement.AchievementService;
 import vstocks.db.DBFactory;
 import vstocks.model.*;
+import vstocks.rest.security.JwtSecurity;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
 import javax.ws.rs.core.GenericType;
@@ -23,17 +24,20 @@ public abstract class ResourceTest extends JerseyTest {
     private DBFactory dbFactory;
     private RemoteStockServiceFactory remoteStockServiceFactory;
     private AchievementService achievementService;
+    private JwtSecurity jwtSecurity;
 
     @Override
     protected ResourceConfig configure() {
         dbFactory = mock(DBFactory.class);
         remoteStockServiceFactory = mock(RemoteStockServiceFactory.class);
         achievementService = mock(AchievementService.class);
+        jwtSecurity = mock(JwtSecurity.class);
 
         Environment environment = new Environment()
                 .setDBFactory(dbFactory)
                 .setRemoteStockServiceFactory(remoteStockServiceFactory)
                 .setAchievementService(achievementService)
+                .setJwtSecurity(jwtSecurity)
                 .setIncludeSecurity(false) // disables Pac4j, we include a simple profile below
                 .setIncludeBackgroundTasks(false);
 
@@ -70,6 +74,10 @@ public abstract class ResourceTest extends JerseyTest {
 
     public AchievementService getAchievementService() {
         return achievementService;
+    }
+
+    public JwtSecurity getJwtSecurity() {
+        return jwtSecurity;
     }
 
     public static class AchievementListGenericType extends GenericType<List<Achievement>> {}

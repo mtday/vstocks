@@ -3,12 +3,13 @@ package vstocks.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.security.Principal;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Locale.ENGLISH;
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 public class User implements Principal {
     private String id;
@@ -19,8 +20,40 @@ public class User implements Principal {
     public User() {
     }
 
+    @JsonIgnore
+    public Map<String, Object> getJwtClaims() {
+        Map<String, Object> claims = new TreeMap<>();
+        claims.put("id", id);
+        claims.put("email", email);
+        claims.put("username", username);
+        claims.put("displayName", displayName);
+        return claims;
+    }
+
+    public static Optional<User> getUserFromJwtClaims(Map<String, Object> claims) {
+        return Stream.of(claims)
+                .filter(Objects::nonNull)
+                .filter(claimsMap -> claimsMap.containsKey("id"))
+                .filter(claimsMap -> claimsMap.containsKey("email"))
+                .filter(claimsMap -> claimsMap.containsKey("username"))
+                .filter(claimsMap -> claimsMap.containsKey("displayName"))
+                .filter(claimsMap -> {
+                    // Make sure the user id matches the id generated from the email.
+                    String id = String.valueOf(claimsMap.get("id"));
+                    String email = String.valueOf(claimsMap.get("email"));
+                    return User.generateId(email).equals(id);
+                })
+                .map(claimsMap -> new User()
+                        .setEmail(String.valueOf(claimsMap.get("email"))) // also sets the id
+                        .setUsername(String.valueOf(claimsMap.get("username")))
+                        .setDisplayName(String.valueOf(claimsMap.get("displayName"))))
+                .findFirst();
+    }
+
     public static String generateId(String email) {
-        return UUID.nameUUIDFromBytes(email.trim().toLowerCase(ENGLISH).getBytes(UTF_8)).toString();
+        return ofNullable(email)
+                .map(e -> UUID.nameUUIDFromBytes(e.trim().toLowerCase(ENGLISH).getBytes(UTF_8)).toString())
+                .orElse(null);
     }
 
     public String getId() {
@@ -38,7 +71,7 @@ public class User implements Principal {
     }
 
     public User setEmail(String email) {
-        this.email = email;
+        this.email = requireNonNull(email);
         return setId(generateId(email));
     }
 

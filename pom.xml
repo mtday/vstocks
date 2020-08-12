@@ -21,6 +21,7 @@
         <java.version>14</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <annotation-api.version>1.3.5</annotation-api.version>
         <flyway.version>6.5.2</flyway.version>
         <hk2.version>2.6.1</hk2.version>
         <hikari.version>3.4.5</hikari.version>
@@ -112,7 +113,12 @@
                 <version>${hikari.version}</version>
             </dependency>
 
-            <!-- Used for REST endpoints -->
+            <!-- Used for REST endpoints and annotations -->
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${annotation-api.version}</version>
+            </dependency>
             <dependency>
                 <groupId>jakarta.ws.rs</groupId>
                 <artifactId>jakarta.ws.rs-api</artifactId>
@@ -173,6 +179,11 @@
             <dependency>
                 <groupId>org.pac4j</groupId>
                 <artifactId>pac4j-core</artifactId>
+                <version>${pac4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.pac4j</groupId>
+                <artifactId>pac4j-jwt</artifactId>
                 <version>${pac4j.version}</version>
             </dependency>
             <dependency>
