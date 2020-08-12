@@ -3,6 +3,7 @@ package vstocks.rest.security;
 import org.pac4j.core.config.Config;
 import org.pac4j.jax.rs.pac4j.JaxRsUrlResolver;
 import org.pac4j.jax.rs.servlet.pac4j.ServletSessionStore;
+import org.pac4j.oauth.client.Google2Client;
 import org.pac4j.oauth.client.TwitterClient;
 
 import static vstocks.config.Config.*;
@@ -16,7 +17,13 @@ public class SecurityConfig {
         twitterClient.setCallbackUrl(TWITTER_API_CALLBACK.getString());
         twitterClient.setIncludeEmail(true);
 
-        Config config = new Config(twitterClient);
+        Google2Client google2Client = new Google2Client(
+                GOOGLE_API_CLIENT_ID.getString(),
+                GOOGLE_API_CLIENT_SECRET.getString()
+        );
+        google2Client.setCallbackUrl(GOOGLE_API_CALLBACK.getString());
+
+        Config config = new Config(twitterClient, google2Client);
         config.getClients().setUrlResolver(new JaxRsUrlResolver());
         config.setSessionStore(new ServletSessionStore());
         return config;

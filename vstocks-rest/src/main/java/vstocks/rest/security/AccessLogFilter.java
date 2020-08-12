@@ -16,11 +16,9 @@ public class AccessLogFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        String username = String.format("%-16s",
-                ofNullable(requestContext.getSecurityContext().getUserPrincipal())
-                        .map(Principal::getName)
-                        .orElse("")
-        );
+        String username = ofNullable(requestContext.getSecurityContext().getUserPrincipal())
+                .map(Principal::getName)
+                .orElse("");
         String method = requestContext.getRequest().getMethod();
         String path = requestContext.getUriInfo().getRequestUri().getPath();
         LOGGER.info("{} => {} {}", username, method, path);

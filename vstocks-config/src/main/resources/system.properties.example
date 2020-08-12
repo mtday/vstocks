@@ -26,9 +26,9 @@ data.history.days = 30
 user.initial.credits = 10000
 
 
-jwt.signature.secret = jgpmje8f3YYNlWCbHXUDkzaFpDIAZVB23gAPEojotkGiUfNDwUUkukGf3wzuERV30T0s3HEwkCkYpPVMCyLGz
-jwt.encryption.secret = jgpmje8f3YYNlWCbHXUDkzaFpDIAZVB23gAPEojotkGiUfNDwUUkukGf3wzuERV30T0s3HEwkCkYpPVMCyLGz
-jwt.expiration.minutes = 15
+jwt.signature.secret = secret
+jwt.encryption.secret = secret
+jwt.expiration.minutes = 60
 
 
 twitter.api.consumer.key = TODO
@@ -36,3 +36,7 @@ twitter.api.consumer.secret = TODO
 twitter.api.accesstoken.key = TODO
 twitter.api.accesstoken.secret = TODO
 twitter.api.callback = http://localhost:8080/api/v1/security/callback
+
+google.api.client.id = TODO
+google.api.client.secret = TODO
+google.api.callback = http://localhost:8080/api/v1/security/callback
