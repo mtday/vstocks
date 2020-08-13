@@ -47,10 +47,10 @@ public class UserResetIT extends ResourceTest {
 
     @Test
     public void testResetUser() {
-        when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser()));
-
         UserDB userDB = mock(UserDB.class);
+        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getDBFactory().getUserDB()).thenReturn(userDB);
+        when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         Response response = target("/v1/user/reset").request().header(AUTHORIZATION, "Bearer token").put(Entity.text(""));
         assertEquals(OK.getStatusCode(), response.getStatus());

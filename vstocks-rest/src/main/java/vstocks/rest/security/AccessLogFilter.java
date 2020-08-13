@@ -12,7 +12,7 @@ import static java.util.Optional.ofNullable;
 
 @Provider
 public class AccessLogFilter implements ContainerRequestFilter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccessLogFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger("access-log");
 
     @Override
     public void filter(ContainerRequestContext requestContext) {

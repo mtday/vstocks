@@ -1,9 +1,13 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+
+// Interceptors
+import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { UnauthorizedInterceptor } from './interceptors/unauthorized.interceptor';
 
 // Layouts
 import { HeaderComponent } from './layout/header/header.component';
@@ -35,9 +39,12 @@ import { ProfileComponent } from './pages/user/profile/profile.component';
   imports: [
     AppRoutingModule,
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

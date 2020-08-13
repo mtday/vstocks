@@ -3,8 +3,6 @@ package vstocks.rest.resource.v1.security;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import vstocks.db.DBFactory;
 import vstocks.model.ActivityLog;
 import vstocks.model.User;
@@ -38,8 +36,6 @@ import static vstocks.model.ActivityType.USER_LOGIN;
 @Path("/v1/security/login")
 @Singleton
 public class Login extends BaseResource {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Login.class);
-
     private static final Random RANDOM = new Random();
     private static final String REDIRECT = "/";
 
@@ -79,7 +75,7 @@ public class Login extends BaseResource {
                 .setTimestamp(Instant.now().truncatedTo(SECONDS));
         dbFactory.getActivityLogDB().add(activityLog);
 
-        return jwtSecurity.generateToken(user);
+        return jwtSecurity.generateToken(user.getId());
     }
 
     private Response generateResponse(UriInfo uriInfo, String token) {

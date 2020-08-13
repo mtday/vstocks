@@ -36,6 +36,7 @@
         <junit.version>4.13</junit.version>
         <logback.version>1.2.3</logback.version>
         <mockito.version>3.4.4</mockito.version>
+        <numbus-jose-jwt.version>8.20</numbus-jose-jwt.version>
         <pac4j-jersey.version>3.0.3</pac4j-jersey.version>
         <pac4j.version>3.8.3</pac4j.version>
         <postgresql.version>42.2.14</postgresql.version>
@@ -113,6 +114,13 @@
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+
+            <!-- Used for JWT creation and validation -->
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${numbus-jose-jwt.version}</version>
             </dependency>
 
             <!-- Used for database connection pooling -->
@@ -193,11 +201,6 @@
             <dependency>
                 <groupId>org.pac4j</groupId>
                 <artifactId>pac4j-core</artifactId>
-                <version>${pac4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.pac4j</groupId>
-                <artifactId>pac4j-jwt</artifactId>
                 <version>${pac4j.version}</version>
             </dependency>
             <dependency>

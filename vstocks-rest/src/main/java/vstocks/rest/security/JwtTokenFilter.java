@@ -1,5 +1,6 @@
 package vstocks.rest.security;
 
+import vstocks.db.DBFactory;
 import vstocks.model.ErrorResponse;
 
 import javax.annotation.Priority;
@@ -23,10 +24,12 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 @JwtTokenRequired
 @Priority(AUTHENTICATION)
 public class JwtTokenFilter implements ContainerRequestFilter {
+    private final DBFactory dbFactory;
     private final JwtSecurity jwtSecurity;
 
     @Inject
-    public JwtTokenFilter(JwtSecurity jwtSecurity) {
+    public JwtTokenFilter(DBFactory dbFactory, JwtSecurity jwtSecurity) {
+        this.dbFactory = dbFactory;
         this.jwtSecurity = jwtSecurity;
     }
 
@@ -40,6 +43,7 @@ public class JwtTokenFilter implements ContainerRequestFilter {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .findFirst()
+                .flatMap(userId -> dbFactory.getUserDB().get(userId))
                 .map(UserSecurityContext::new);
 
         if (securityContext.isEmpty()) {

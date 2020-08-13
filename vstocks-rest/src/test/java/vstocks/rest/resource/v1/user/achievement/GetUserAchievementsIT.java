@@ -2,6 +2,7 @@ package vstocks.rest.resource.v1.user.achievement;
 
 import org.junit.Test;
 import vstocks.db.UserAchievementDB;
+import vstocks.db.UserDB;
 import vstocks.model.ErrorResponse;
 import vstocks.model.UserAchievement;
 import vstocks.rest.ResourceTest;
@@ -54,7 +55,10 @@ public class GetUserAchievementsIT extends ResourceTest {
 
     @Test
     public void testGetUserAchievementsNone() {
-        when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser()));
+        UserDB userDB = mock(UserDB.class);
+        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(getDBFactory().getUserDB()).thenReturn(userDB);
+        when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         UserAchievementDB userAchievementDB = mock(UserAchievementDB.class);
         when(userAchievementDB.getForUser(eq(getUser().getId()))).thenReturn(emptyList());
@@ -72,7 +76,10 @@ public class GetUserAchievementsIT extends ResourceTest {
 
     @Test
     public void testGetUserAchievementsSomeAvailable() {
-        when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser()));
+        UserDB userDB = mock(UserDB.class);
+        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(getDBFactory().getUserDB()).thenReturn(userDB);
+        when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         UserAchievement userAchievement = new UserAchievement()
                 .setUserId(getUser().getId())

@@ -1,1 +1,7 @@
 <p>profile works!</p>
+
+<div *ngIf="user">
+    <label>ID: {{user.id}}</label>
+    <label>Username: {{user.username}}</label>
+    <label>Display Name: {{user.displayName}}</label>
+</div>

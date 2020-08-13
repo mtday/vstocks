@@ -1,6 +1,7 @@
 package vstocks.rest.resource.v1.user;
 
 import org.junit.Test;
+import vstocks.db.UserDB;
 import vstocks.model.ErrorResponse;
 import vstocks.model.User;
 import vstocks.rest.ResourceTest;
@@ -17,6 +18,7 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class GetUserIT extends ResourceTest {
@@ -48,7 +50,10 @@ public class GetUserIT extends ResourceTest {
 
     @Test
     public void testGetUser() {
-        when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser()));
+        UserDB userDB = mock(UserDB.class);
+        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(getDBFactory().getUserDB()).thenReturn(userDB);
+        when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         Response response = target("/v1/user").request().header(AUTHORIZATION, "Bearer token").get();
 
