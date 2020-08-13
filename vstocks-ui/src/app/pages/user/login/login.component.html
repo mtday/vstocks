@@ -4,19 +4,36 @@
     <div class="login-box">
 
         <div class="login-box-header">
-            Sign In to Your Social Account
+            Sign In
         </div>
 
         <div class="login-box-body">
-            <button class="facebook" (click)="doLogin('facebook')" md-raised-button>
-                <i class="fa fa-facebook"></i> Sign In With Facebook
-            </button>
-            <button class='google' (click)="doLogin('google')" md-raised-button>
-                <i class="fa fa-google"></i> Sign In With Google
-            </button>
-            <button color="primary" (click)="doLogin('twitter')" md-raised-button>
-                <i class="fa fa-twitter"></i> Sign In With Twitter
-            </button>
+            <div class="note">
+                For your security, vStocks does not support managing accounts
+                internally. Use one of the below social services to sign in
+                safely and securely.
+            </div>
+
+            <div class="login-button facebook">
+                <a href="/api/v1/security/login/facebook">
+                    <label class="fa fa-facebook"></label>
+                    Sign In With Facebook
+                </a>
+            </div>
+
+            <div class="login-button google">
+                <a href="/api/v1/security/login/google">
+                    <label class="fa fa-google"></label>
+                    Sign In With Google
+                </a>
+            </div>
+
+            <div class="login-button twitter">
+                <a href="/api/v1/security/login/twitter">
+                    <label class="fa fa-twitter"></label>
+                    Sign In With Twitter
+                </a>
+            </div>
         </div>
     </div>
 

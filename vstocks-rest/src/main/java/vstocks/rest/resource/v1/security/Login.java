@@ -21,15 +21,18 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Optional.ofNullable;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.temporaryRedirect;
 import static vstocks.model.ActivityType.USER_LOGIN;
 
 @Path("/v1/security/login")
@@ -76,8 +79,15 @@ public class Login extends BaseResource {
                 .setTimestamp(Instant.now().truncatedTo(SECONDS));
         dbFactory.getActivityLogDB().add(activityLog);
 
-        LOGGER.info("User {} logged in via {}", user, profile.getClientName());
         return jwtSecurity.generateToken(user);
+    }
+
+    private Response generateResponse(UriInfo uriInfo, String token) {
+        URI redirectUri = UriBuilder.fromUri(uriInfo.getRequestUri())
+                .replacePath(REDIRECT)
+                .queryParam("token", URLEncoder.encode(token, UTF_8))
+                .build();
+        return temporaryRedirect(redirectUri).header(AUTHORIZATION, "Bearer " + token).build();
     }
 
     @GET
@@ -85,9 +95,7 @@ public class Login extends BaseResource {
     @Produces(APPLICATION_JSON)
     @Pac4JSecurity(clients = "TwitterClient", authorizers = "isAuthenticated")
     public Response twitterLogin(@Context UriInfo uriInfo, @Pac4JProfile CommonProfile profile) {
-        String token = doLogin(profile);
-        URI redirectUri = UriBuilder.fromUri(uriInfo.getRequestUri()).replacePath(REDIRECT).build();
-        return Response.temporaryRedirect(redirectUri).header(AUTHORIZATION, "Bearer " + token).build();
+        return generateResponse(uriInfo, doLogin(profile));
     }
 
     @GET
@@ -95,9 +103,7 @@ public class Login extends BaseResource {
     @Produces(APPLICATION_JSON)
     @Pac4JSecurity(clients = "Google2Client", authorizers = "isAuthenticated")
     public Response googleLogin(@Context UriInfo uriInfo, @Pac4JProfile CommonProfile profile) {
-        String token = doLogin(profile);
-        URI redirectUri = UriBuilder.fromUri(uriInfo.getRequestUri()).replacePath(REDIRECT).build();
-        return Response.temporaryRedirect(redirectUri).header(AUTHORIZATION, "Bearer " + token).build();
+        return generateResponse(uriInfo, doLogin(profile));
     }
 
     @GET
@@ -105,8 +111,6 @@ public class Login extends BaseResource {
     @Produces(APPLICATION_JSON)
     @Pac4JSecurity(clients = "FacebookClient", authorizers = "isAuthenticated")
     public Response facebookLogin(@Context UriInfo uriInfo, @Pac4JProfile CommonProfile profile) {
-        String token = doLogin(profile);
-        URI redirectUri = UriBuilder.fromUri(uriInfo.getRequestUri()).replacePath(REDIRECT).build();
-        return Response.temporaryRedirect(redirectUri).header(AUTHORIZATION, "Bearer " + token).build();
+        return generateResponse(uriInfo, doLogin(profile));
     }
 }

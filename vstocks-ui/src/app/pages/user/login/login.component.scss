@@ -27,7 +27,42 @@ $twitterColor: #008bcf;
         .login-box-body {
             background-color: $boxBodyBackgroundColor;
             border: 1px solid $boxBorderColor;
+            color: white;
             padding: 20px;
+
+            div.note {
+                color: $fontColorNormal;
+                margin-bottom: 30px;
+            }
+
+            div.login-button {
+                border-radius: 7px;
+                text-align: center;
+                margin: 20px;
+            }
+
+            .facebook {
+                background-color: $facebookColor;
+            }
+
+            .google {
+                background-color: $googleColor;
+            }
+
+            .twitter {
+                background-color: $twitterColor;
+            }
+
+            a {
+                color: white;
+                display: block;
+                line-height: 40px;
+                text-decoration: none;
+
+                label {
+                    margin-right: 10px;
+                }
+            }
         }
     }
 }

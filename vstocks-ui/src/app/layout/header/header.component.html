@@ -5,18 +5,21 @@
             <a href="#" class="logo">vStocks</a>
         </label>
 
-        <ul>
-            <!-- TODO Only show portfolio when logged in -->
-            <li><a class="active" href="#" routerLink="/">Portfolio</a></li>
+        <ul *ngIf="isLoggedIn">
+            <li><a class="active" href="#" routerLink="/">Dashboard</a></li>
+            <li><a href="#" routerLink="/standings">Standings</a></li>
+            <li><a href="#" routerLink="/portfolio">Portfolio</a></li>
+            <li><a href="#" routerLink="/achievements">Achievements</a></li>
+            <li><span class="separator"></span></li>
+            <li><a href="#" routerLink="/user/profile">Profile</a></li>
+            <li><a href="#" (click)="logout()">Logout</a></li>
+        </ul>
+
+        <ul *ngIf="!isLoggedIn">
             <li><a href="#" routerLink="/">Dashboard</a></li>
             <li><a href="#" routerLink="/standings">Standings</a></li>
-            <li><a href="#" routerLink="/achievements">Achievements</a></li>
-
             <li><span class="separator"></span></li>
-
-            <!-- TODO Display login when user is not logged in, and profile when the user is logged in -->
             <li><a href="#" routerLink="/user/login">Login</a></li>
-            <li><a href="#" routerLink="/user/profile">Profile</a></li>
         </ul>
     </nav>
 </header>
