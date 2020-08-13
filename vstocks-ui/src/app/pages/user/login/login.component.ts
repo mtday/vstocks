@@ -12,4 +12,8 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  doLogin(provider: string) {
+    console.log("Provider: " + provider);
+  }
+
 }

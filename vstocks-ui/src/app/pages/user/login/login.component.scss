@@ -1,0 +1,33 @@
+
+@import '../../../../variables.scss';
+
+
+$facebookColor: #006699;
+$googleColor: #dd4b39;
+$twitterColor: #008bcf;
+
+
+.login-container {
+    padding: 20px;
+
+    .login-box {
+        height: 450px;
+        width: 350px;
+        margin: auto;
+
+        .login-box-header {
+            background-color: $boxHeaderBackgroundColor;
+            border: 1px solid $boxBorderColor;
+            border-radius: 7px 7px 0px 0px;
+            color: $fontColorBright;
+            line-height: 50px;
+            padding: 0 20px;
+        }
+
+        .login-box-body {
+            background-color: $boxBodyBackgroundColor;
+            border: 1px solid $boxBorderColor;
+            padding: 20px;
+        }
+    }
+}

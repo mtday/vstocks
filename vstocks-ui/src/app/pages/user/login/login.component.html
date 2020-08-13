@@ -1,1 +1,23 @@
-<p>login works!</p>
+
+<div class="login-container">
+
+    <div class="login-box">
+
+        <div class="login-box-header">
+            Sign In to Your Social Account
+        </div>
+
+        <div class="login-box-body">
+            <button class="facebook" (click)="doLogin('facebook')" md-raised-button>
+                <i class="fa fa-facebook"></i> Sign In With Facebook
+            </button>
+            <button class='google' (click)="doLogin('google')" md-raised-button>
+                <i class="fa fa-google"></i> Sign In With Google
+            </button>
+            <button color="primary" (click)="doLogin('twitter')" md-raised-button>
+                <i class="fa fa-twitter"></i> Sign In With Twitter
+            </button>
+        </div>
+    </div>
+
+</div>
