@@ -13,7 +13,7 @@ import static java.util.Optional.ofNullable;
 public enum Config {
     SERVER_PORT,
     SERVER_CONTEXT_PATH,
-    SERVER_API_PATH,
+    SERVER_UI_PATH,
 
     SERVER_KEYSTORE_FILE,
     SERVER_KEYSTORE_TYPE,

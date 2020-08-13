@@ -17,9 +17,9 @@ import vstocks.rest.Application;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,7 +32,7 @@ public class VStocksServer {
 
     public static void main(String... args) throws URISyntaxException, MalformedURLException {
         String contextPath = SERVER_CONTEXT_PATH.getString();
-        String apiPath = SERVER_API_PATH.getString();
+        String uiPath = SERVER_UI_PATH.getString();
 
         HttpConfiguration httpConfiguration = new HttpConfiguration();
         httpConfiguration.setSecureScheme("https");
@@ -58,18 +58,14 @@ public class VStocksServer {
         sslConnector.setPort(SERVER_PORT.getInt());
         server.addConnector(sslConnector);
 
-        URL staticResourceURL = ofNullable(VStocksServer.class.getResource("/META-INF/static/index.html"))
-                .orElseThrow(() -> new RuntimeException("Failed to find META-INF static resources"));
-        URI staticResourceURI = staticResourceURL.toURI().resolve("./");
-
         ServletContextHandler servletContextHandler = new ServletContextHandler(SESSIONS);
         servletContextHandler.setContextPath(contextPath);
         servletContextHandler.setClassLoader(Thread.currentThread().getContextClassLoader());
         servletContextHandler.setSessionHandler(new SessionHandler());
-        servletContextHandler.setBaseResource(Resource.newResource(staticResourceURI));
+        servletContextHandler.setBaseResource(Resource.newResource(Paths.get(uiPath)));
         servletContextHandler.addServlet(new ServletHolder("default", DefaultServlet.class), contextPath);
 
-        ServletHolder servletHolder = servletContextHandler.addServlet(ServletContainer.class, apiPath);
+        ServletHolder servletHolder = servletContextHandler.addServlet(ServletContainer.class, "/api/*");
         servletHolder.setInitOrder(1);
         servletHolder.setInitParameter("javax.ws.rs.Application", Application.class.getName());
 
