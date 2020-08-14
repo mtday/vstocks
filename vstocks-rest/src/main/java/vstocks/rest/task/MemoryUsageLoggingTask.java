@@ -6,21 +6,22 @@ import org.slf4j.LoggerFactory;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoField;
 import java.util.concurrent.ScheduledExecutorService;
 
-import static java.util.concurrent.TimeUnit.*;
+import static java.time.temporal.ChronoField.*;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
-public class MemoryUsageLoggingTask implements BaseTask {
+public class MemoryUsageLoggingTask implements Task {
     private static final Logger LOGGER = LoggerFactory.getLogger(MemoryUsageLoggingTask.class);
 
     @Override
     public void schedule(ScheduledExecutorService scheduledExecutorService) {
         // Determine how long to delay so that our scheduled task runs at approximately each even 2 minute mark.
         LocalDateTime now = LocalDateTime.now();
-        int minute = now.get(ChronoField.MINUTE_OF_HOUR) % 10;
-        int second = now.get(ChronoField.SECOND_OF_MINUTE);
-        int millis = now.get(ChronoField.MILLI_OF_SECOND);
+        int minute = now.get(MINUTE_OF_HOUR) % 10;
+        int second = now.get(SECOND_OF_MINUTE);
+        int millis = now.get(MILLI_OF_SECOND);
         long delayMinutes = (9 - minute) * 60000;
         long delaySeconds = (second > 0 ? 59 - second : 59) * 1000;
         long delayMillis  = millis > 0 ? 1000 - millis : 1000;

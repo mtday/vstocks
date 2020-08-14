@@ -64,6 +64,8 @@ public class JwtSecurity {
                 .filter(claims -> claims.getSubject() != null)
                 .filter(claims -> "vstocks".equals(claims.getIssuer()))
                 .filter(claims -> claims.getAudience() != null && claims.getAudience().contains("vstocks"))
+                .filter(claims -> claims.getExpirationTime() != null)
+                .filter(claims -> !claims.getExpirationTime().before(new Date()))
                 .map(JWTClaimsSet::getSubject)
                 .findFirst();
     }

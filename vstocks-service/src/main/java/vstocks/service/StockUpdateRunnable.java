@@ -14,5 +14,6 @@ public interface StockUpdateRunnable extends Runnable, Closeable, Consumer<Stock
     void run();
 
     @Override
-    void close() throws IOException;
+    default void close() throws IOException {
+    }
 }

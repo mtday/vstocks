@@ -5,12 +5,14 @@ import vstocks.model.User;
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
 
+import static java.util.Objects.requireNonNull;
+
 public class UserSecurityContext implements SecurityContext {
     private static final String AUTHENTICATION_SCHEME = "user";
     private final User user;
 
     public UserSecurityContext(User user) {
-        this.user = user;
+        this.user = requireNonNull(user);
     }
 
     @Override

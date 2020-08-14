@@ -2,26 +2,26 @@ package vstocks.rest.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import vstocks.db.DBFactory;
 import vstocks.model.Market;
 import vstocks.model.PricedStock;
 import vstocks.rest.Environment;
 import vstocks.service.StockUpdateRunnable;
-import vstocks.db.DBFactory;
 import vstocks.service.remote.RemoteStockService;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoField;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
+import static java.time.temporal.ChronoField.*;
 import static java.util.Collections.emptySet;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
-public class StockUpdateTask implements BaseTask {
+public class StockUpdateTask implements Task {
     private static final Logger LOGGER = LoggerFactory.getLogger(StockUpdateTask.class);
 
     private final Environment environment;
@@ -36,16 +36,17 @@ public class StockUpdateTask implements BaseTask {
     public void schedule(ScheduledExecutorService scheduledExecutorService) {
         // Determine how long to delay so that our scheduled task runs at approximately each 10 minute mark.
         LocalDateTime now = LocalDateTime.now();
-        int minute = now.get(ChronoField.MINUTE_OF_HOUR) % 10;
-        int second = now.get(ChronoField.SECOND_OF_MINUTE);
-        int millis = now.get(ChronoField.MILLI_OF_SECOND);
+        int minute = now.get(MINUTE_OF_HOUR) % 10;
+        int second = now.get(SECOND_OF_MINUTE);
+        int millis = now.get(MILLI_OF_SECOND);
         long delayMinutes = (9 - minute) * 60000;
         long delaySeconds = (second > 0 ? 59 - second : 59) * 1000;
         long delayMillis = millis > 0 ? 1000 - millis : 1000;
         long delay = delayMinutes + delaySeconds + delayMillis;
 
-        //scheduledExecutorService.scheduleAtFixedRate(this, delay, MINUTES.toMillis(10), MILLISECONDS);
-        scheduledExecutorService.scheduleAtFixedRate(this, delay % MINUTES.toMillis(1), MINUTES.toMillis(1), MILLISECONDS);
+        scheduledExecutorService.scheduleAtFixedRate(this, delay, MINUTES.toMillis(10), MILLISECONDS);
+        // More frequent schedule for testing (once per minute):
+        //scheduledExecutorService.scheduleAtFixedRate(this, delay % MINUTES.toMillis(1), MINUTES.toMillis(1), MILLISECONDS);
     }
 
     @Override

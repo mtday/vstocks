@@ -2,6 +2,6 @@ package vstocks.rest.task;
 
 import java.util.concurrent.ScheduledExecutorService;
 
-public interface BaseTask extends Runnable {
+public interface Task extends Runnable {
     void schedule(ScheduledExecutorService scheduledExecutorService);
 }
