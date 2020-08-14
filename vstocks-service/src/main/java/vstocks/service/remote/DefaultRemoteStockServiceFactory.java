@@ -16,18 +16,12 @@ public class DefaultRemoteStockServiceFactory implements RemoteStockServiceFacto
 
     @Override
     public RemoteStockService getForMarket(Market market) {
-        switch (market) {
-            case TWITTER:
-                return twitterRemoteStockService;
-            case YOUTUBE:
-                return youtubeRemoteStockService;
-            case INSTAGRAM:
-                return instagramRemoteStockService;
-            case TWITCH:
-                return twitchRemoteStockService;
-            case FACEBOOK:
-                return facebookRemoteStockService;
-        }
-        throw new RuntimeException("Unsupported market: " + market);
+        return switch (market) {
+            case TWITTER -> twitterRemoteStockService;
+            case YOUTUBE -> youtubeRemoteStockService;
+            case INSTAGRAM -> instagramRemoteStockService;
+            case TWITCH -> twitchRemoteStockService;
+            case FACEBOOK -> facebookRemoteStockService;
+        };
     }
 }

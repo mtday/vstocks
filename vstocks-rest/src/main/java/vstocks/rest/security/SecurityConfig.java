@@ -15,20 +15,20 @@ public class SecurityConfig {
                 TWITTER_API_CONSUMER_KEY.getString(),
                 TWITTER_API_CONSUMER_SECRET.getString()
         );
-        twitterClient.setCallbackUrl(TWITTER_API_CALLBACK.getString());
+        twitterClient.setCallbackUrl(TWITTER_API_LOGIN_CALLBACK.getString());
         twitterClient.setIncludeEmail(true);
 
         Google2Client google2Client = new Google2Client(
                 GOOGLE_API_CLIENT_ID.getString(),
                 GOOGLE_API_CLIENT_SECRET.getString()
         );
-        google2Client.setCallbackUrl(GOOGLE_API_CALLBACK.getString());
+        google2Client.setCallbackUrl(GOOGLE_API_LOGIN_CALLBACK.getString());
 
         FacebookClient facebookClient = new FacebookClient(
                 FACEBOOK_API_CLIENT_ID.getString(),
                 FACEBOOK_API_CLIENT_SECRET.getString()
         );
-        facebookClient.setCallbackUrl(FACEBOOK_API_CALLBACK.getString());
+        facebookClient.setCallbackUrl(FACEBOOK_API_LOGIN_CALLBACK.getString());
         facebookClient.setScope("email");
 
         Config config = new Config(twitterClient, google2Client, facebookClient);
