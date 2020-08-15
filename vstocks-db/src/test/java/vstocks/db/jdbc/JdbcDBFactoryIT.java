@@ -21,15 +21,16 @@ public class JdbcDBFactoryIT {
     @Test
     public void test() {
         assertNotNull(dbFactory.getActivityLogDB());
-        assertNotNull(dbFactory.getStockPriceDB());
-        assertNotNull(dbFactory.getStockDB());
+        assertNotNull(dbFactory.getOwnedStockDB());
         assertNotNull(dbFactory.getPortfolioValueDB());
         assertNotNull(dbFactory.getPortfolioValueRankDB());
         assertNotNull(dbFactory.getPricedStockDB());
+        assertNotNull(dbFactory.getPricedUserStockDB());
+        assertNotNull(dbFactory.getStockDB());
+        assertNotNull(dbFactory.getStockPriceDB());
         assertNotNull(dbFactory.getUserAchievementDB());
         assertNotNull(dbFactory.getUserCreditsDB());
         assertNotNull(dbFactory.getUserDB());
         assertNotNull(dbFactory.getUserStockDB());
-        assertNotNull(dbFactory.getPricedUserStockDB());
     }
 }

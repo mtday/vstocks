@@ -6,29 +6,31 @@ import javax.sql.DataSource;
 
 public class JdbcDBFactory implements DBFactory {
     private final ActivityLogDB activityLogDB;
-    private final StockPriceDB stockPriceDB;
-    private final StockDB stockDB;
+    private final OwnedStockDB ownedStockDB;
     private final PortfolioValueDB portfolioValueDB;
     private final PortfolioValueRankDB portfolioValueRankDB;
     private final PricedStockDB pricedStockDB;
+    private final PricedUserStockDB pricedUserStockDB;
+    private final StockDB stockDB;
+    private final StockPriceDB stockPriceDB;
     private final UserAchievementDB userAchievementDB;
     private final UserCreditsDB userCreditsDB;
     private final UserDB userDB;
     private final UserStockDB userStockDB;
-    private final PricedUserStockDB pricedUserStockDB;
 
     public JdbcDBFactory(DataSource dataSource) {
         this.activityLogDB = new JdbcActivityLogDB(dataSource);
-        this.stockPriceDB = new JdbcStockPriceDB(dataSource);
-        this.stockDB = new JdbcStockDB(dataSource);
+        this.ownedStockDB = new JdbcOwnedStockDB(dataSource);
         this.portfolioValueDB = new JdbcPortfolioValueDB(dataSource);
         this.portfolioValueRankDB = new JdbcPortfolioValueRankDB(dataSource);
         this.pricedStockDB = new JdbcPricedStockDB(dataSource);
+        this.pricedUserStockDB = new JdbcPricedUserStockDB(dataSource);
+        this.stockDB = new JdbcStockDB(dataSource);
+        this.stockPriceDB = new JdbcStockPriceDB(dataSource);
         this.userAchievementDB = new JdbcUserAchievementDB(dataSource);
         this.userCreditsDB = new JdbcUserCreditsDB(dataSource);
         this.userDB = new JdbcUserDB(dataSource);
         this.userStockDB = new JdbcUserStockDB(dataSource);
-        this.pricedUserStockDB = new JdbcPricedUserStockDB(dataSource);
     }
 
     @Override
@@ -37,13 +39,8 @@ public class JdbcDBFactory implements DBFactory {
     }
 
     @Override
-    public StockPriceDB getStockPriceDB() {
-        return stockPriceDB;
-    }
-
-    @Override
-    public StockDB getStockDB() {
-        return stockDB;
+    public OwnedStockDB getOwnedStockDB() {
+        return ownedStockDB;
     }
 
     @Override
@@ -59,6 +56,21 @@ public class JdbcDBFactory implements DBFactory {
     @Override
     public PricedStockDB getPricedStockDB() {
         return pricedStockDB;
+    }
+
+    @Override
+    public PricedUserStockDB getPricedUserStockDB() {
+        return pricedUserStockDB;
+    }
+
+    @Override
+    public StockDB getStockDB() {
+        return stockDB;
+    }
+
+    @Override
+    public StockPriceDB getStockPriceDB() {
+        return stockPriceDB;
     }
 
     @Override
@@ -79,10 +91,5 @@ public class JdbcDBFactory implements DBFactory {
     @Override
     public UserStockDB getUserStockDB() {
         return userStockDB;
-    }
-
-    @Override
-    public PricedUserStockDB getPricedUserStockDB() {
-        return pricedUserStockDB;
     }
 }

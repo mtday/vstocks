@@ -3,6 +3,7 @@ package vstocks.rest.task;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
 import vstocks.db.DBFactory;
+import vstocks.db.OwnedStockDB;
 import vstocks.db.StockDB;
 import vstocks.db.StockPriceDB;
 import vstocks.model.Market;
@@ -76,14 +77,6 @@ public class StockUpdateTaskTest {
             return 1;
         });
 
-        when(stockDB.consumeForMarket(any(), any(), any(), any())).thenAnswer((Answer<Integer>) invocation -> {
-            Market market = invocation.getArgument(0);
-            Consumer<Stock> consumer = invocation.getArgument(2);
-            consumer.accept(new Stock().setMarket(market).setSymbol("s1").setName("s1").setActive(true));
-            consumer.accept(new Stock().setMarket(market).setSymbol("s2").setName("s2").setActive(true));
-            return 2;
-        });
-
         StockPriceDB stockPriceDB = mock(StockPriceDB.class);
         List<StockPrice> addedStockPrices = new ArrayList<>();
         when(stockPriceDB.add(any())).thenAnswer((Answer<Integer>) invocation -> {
@@ -91,7 +84,17 @@ public class StockUpdateTaskTest {
             return 1;
         });
 
+        OwnedStockDB ownedStockDB = mock(OwnedStockDB.class);
+        when(ownedStockDB.consumeForMarket(any(), any(), any())).thenAnswer((Answer<Integer>) invocation -> {
+            Market market = invocation.getArgument(0);
+            Consumer<Stock> consumer = invocation.getArgument(1);
+            consumer.accept(new Stock().setMarket(market).setSymbol("s1").setName("s1").setActive(true));
+            consumer.accept(new Stock().setMarket(market).setSymbol("s2").setName("s2").setActive(true));
+            return 2;
+        });
+
         DBFactory dbFactory = mock(DBFactory.class);
+        when(dbFactory.getOwnedStockDB()).thenReturn(ownedStockDB);
         when(dbFactory.getStockDB()).thenReturn(stockDB);
         when(dbFactory.getStockPriceDB()).thenReturn(stockPriceDB);
 

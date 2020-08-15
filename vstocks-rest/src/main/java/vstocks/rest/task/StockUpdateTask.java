@@ -56,17 +56,17 @@ public class StockUpdateTask implements Task {
             RemoteStockServiceFactory remoteStockServiceFactory = environment.getRemoteStockServiceFactory();
             DBFactory dbFactory = environment.getDBFactory();
 
+            Consumer<PricedStock> updateConsumer = pricedStock -> {
+                LOGGER.info("Updating: {}/{} ({}) => {}", pricedStock.getMarket(), pricedStock.getSymbol(),
+                        pricedStock.getName(), pricedStock.getPrice());
+                dbFactory.getStockDB().update(pricedStock.asStock());
+                dbFactory.getStockPriceDB().add(pricedStock.asStockPrice());
+            };
             for (Market market : Market.values()) {
                 RemoteStockService remoteStockService = remoteStockServiceFactory.getForMarket(market);
-                Consumer<PricedStock> updateConsumer = pricedStock -> {
-                    LOGGER.info("Updating: {}/{} ({}) => {}", pricedStock.getMarket(), pricedStock.getSymbol(),
-                            pricedStock.getName(), pricedStock.getPrice());
-                    dbFactory.getStockDB().update(pricedStock.asStock());
-                    dbFactory.getStockPriceDB().add(pricedStock.asStockPrice());
-                };
                 try (StockUpdateRunnable runnable = remoteStockService.getUpdateRunnable(executorService, updateConsumer)) {
                     executorService.submit(runnable);
-                    dbFactory.getStockDB().consumeForMarket(market, true, runnable, emptySet());
+                    dbFactory.getOwnedStockDB().consumeForMarket(market, runnable, emptySet());
                 } catch (IOException e) {
                     LOGGER.error("Failed to close stock update runnable", e);
                 }
