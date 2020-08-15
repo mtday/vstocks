@@ -53,6 +53,7 @@ public class TwitterRemoteStockService implements RemoteStockService {
                 .setMarket(TWITTER)
                 .setSymbol(user.getScreenName())
                 .setName(user.getName())
+                .setImageLink(user.getProfileImageURLHttps())
                 .setTimestamp(Instant.now())
                 .setPrice(getPrice(user));
     }

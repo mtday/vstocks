@@ -267,6 +267,51 @@ public class JdbcStockDBIT {
     }
 
     @Test
+    public void testAddConflictUpdateDifferentLink() {
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name").setImageLink("link");
+        assertEquals(1, stockDB.add(stock));
+        stock.setImageLink("updated");
+        assertEquals(1, stockDB.add(stock));
+
+        Optional<Stock> fetched = stockDB.get(TWITTER, stock.getSymbol());
+        assertTrue(fetched.isPresent());
+        assertEquals(stock.getMarket(), fetched.get().getMarket());
+        assertEquals(stock.getSymbol(), fetched.get().getSymbol());
+        assertEquals(stock.getName(), fetched.get().getName());
+        assertEquals(stock.getImageLink(), fetched.get().getImageLink());
+    }
+
+    @Test
+    public void testAddConflictUpdateNullLink() {
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
+        assertEquals(1, stockDB.add(stock));
+        stock.setImageLink("updated");
+        assertEquals(1, stockDB.add(stock));
+
+        Optional<Stock> fetched = stockDB.get(TWITTER, stock.getSymbol());
+        assertTrue(fetched.isPresent());
+        assertEquals(stock.getMarket(), fetched.get().getMarket());
+        assertEquals(stock.getSymbol(), fetched.get().getSymbol());
+        assertEquals(stock.getName(), fetched.get().getName());
+        assertEquals(stock.getImageLink(), fetched.get().getImageLink());
+    }
+
+    @Test
+    public void testAddConflictUpdateLinkToNull() {
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name").setImageLink("link");
+        assertEquals(1, stockDB.add(stock));
+        stock.setImageLink(null);
+        assertEquals(1, stockDB.add(stock));
+
+        Optional<Stock> fetched = stockDB.get(TWITTER, stock.getSymbol());
+        assertTrue(fetched.isPresent());
+        assertEquals(stock.getMarket(), fetched.get().getMarket());
+        assertEquals(stock.getSymbol(), fetched.get().getSymbol());
+        assertEquals(stock.getName(), fetched.get().getName());
+        assertNull(fetched.get().getImageLink());
+    }
+
+    @Test
     public void testUpdateMissing() {
         Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name").setImageLink("link");
         assertEquals(0, stockDB.update(stock));
@@ -287,6 +332,38 @@ public class JdbcStockDBIT {
         assertEquals(stock.getSymbol(), updated.get().getSymbol());
         assertEquals(stock.getName(), updated.get().getName());
         assertEquals(stock.getImageLink(), updated.get().getImageLink());
+    }
+
+    @Test
+    public void testUpdateNullLinkToSetNonNull() {
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name");
+        assertEquals(1, stockDB.add(stock));
+
+        stock.setImageLink("link");
+        assertEquals(1, stockDB.update(stock));
+
+        Optional<Stock> updated = stockDB.get(TWITTER, stock.getSymbol());
+        assertTrue(updated.isPresent());
+        assertEquals(stock.getMarket(), updated.get().getMarket());
+        assertEquals(stock.getSymbol(), updated.get().getSymbol());
+        assertEquals(stock.getName(), updated.get().getName());
+        assertEquals(stock.getImageLink(), updated.get().getImageLink());
+    }
+
+    @Test
+    public void testUpdateNullLinkToSetNull() {
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name").setImageLink("link");
+        assertEquals(1, stockDB.add(stock));
+
+        stock.setImageLink(null);
+        assertEquals(1, stockDB.update(stock));
+
+        Optional<Stock> updated = stockDB.get(TWITTER, stock.getSymbol());
+        assertTrue(updated.isPresent());
+        assertEquals(stock.getMarket(), updated.get().getMarket());
+        assertEquals(stock.getSymbol(), updated.get().getSymbol());
+        assertEquals(stock.getName(), updated.get().getName());
+        assertNull(updated.get().getImageLink());
     }
 
     @Test

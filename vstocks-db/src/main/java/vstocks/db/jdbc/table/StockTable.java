@@ -10,7 +10,8 @@ import java.util.function.Consumer;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static vstocks.model.DatabaseField.*;
+import static vstocks.model.DatabaseField.MARKET;
+import static vstocks.model.DatabaseField.SYMBOL;
 
 public class StockTable extends BaseTable {
     private static final RowMapper<Stock> ROW_MAPPER = rs ->
@@ -74,13 +75,14 @@ public class StockTable extends BaseTable {
         String sql = "INSERT INTO stocks (market, symbol, name, image_link) VALUES (?, ?, ?, ?) "
                 + "ON CONFLICT ON CONSTRAINT stocks_pk "
                 + "DO UPDATE set name = EXCLUDED.name, image_link = EXCLUDED.image_link "
-                + "WHERE stocks.name != EXCLUDED.name OR stocks.image_link != EXCLUDED.image_link";
+                + "WHERE stocks.name != EXCLUDED.name "
+                + "OR COALESCE(stocks.image_link, '') != COALESCE(EXCLUDED.image_link, '')";
         return update(connection, INSERT_ROW_SETTER, sql, stock);
     }
 
     public int update(Connection connection, Stock stock) {
         String sql = "UPDATE stocks SET name = ?, image_link = ? "
-                + "WHERE market = ? AND symbol = ? AND (name != ? OR image_link != ?)";
+                + "WHERE market = ? AND symbol = ? AND (name != ? OR COALESCE(image_link, '') != COALESCE(?, ''))";
         return update(connection, UPDATE_ROW_SETTER, sql, stock);
     }
 

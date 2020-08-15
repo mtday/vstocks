@@ -57,8 +57,7 @@ public class StockUpdateTask implements Task {
             DBFactory dbFactory = environment.getDBFactory();
 
             Consumer<PricedStock> updateConsumer = pricedStock -> {
-                LOGGER.info("Updating: {}/{} ({}) => {}", pricedStock.getMarket(), pricedStock.getSymbol(),
-                        pricedStock.getName(), pricedStock.getPrice());
+                LOGGER.info("Updating: {}", pricedStock);
                 dbFactory.getStockDB().update(pricedStock.asStock());
                 dbFactory.getStockPriceDB().add(pricedStock.asStockPrice());
             };

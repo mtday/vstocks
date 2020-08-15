@@ -1,9 +1,6 @@
 package vstocks.service.remote.youtube;
 
-import com.google.api.services.youtube.model.Channel;
-import com.google.api.services.youtube.model.ChannelLocalization;
-import com.google.api.services.youtube.model.ChannelSnippet;
-import com.google.api.services.youtube.model.ChannelStatistics;
+import com.google.api.services.youtube.model.*;
 import org.junit.Test;
 import vstocks.model.PricedStock;
 import vstocks.model.Stock;
@@ -21,13 +18,15 @@ import java.util.function.Function;
 
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static vstocks.model.Market.YOUTUBE;
 import static vstocks.service.remote.youtube.YouTubeRemoteStockService.getPrice;
+import static vstocks.service.remote.youtube.YouTubeRemoteStockService.toPricedStock;
 
 public class YouTubeRemoteStockServiceTest {
     private final Function<Integer, Channel> getChannelWithSubscribers = subscribers -> {
@@ -62,19 +61,75 @@ public class YouTubeRemoteStockServiceTest {
         assertEquals(4951, getPrice(getChannelWithSubscribers.apply(100_000_000)));
     }
 
-    private static Channel getChannel(String id, int subscribers, String title) {
+    private static Channel getChannel(String id, int subscribers, String title, String link) {
+        ThumbnailDetails thumbnailDetails = new ThumbnailDetails()
+                .setDefault(new Thumbnail().setUrl(link));
         ChannelSnippet channelSnippet = new ChannelSnippet()
-                .setLocalized(new ChannelLocalization().setTitle(title));
+                .setLocalized(new ChannelLocalization().setTitle(title))
+                .setThumbnails(thumbnailDetails);
         ChannelStatistics channelStatistics = new ChannelStatistics()
                 .setSubscriberCount(new BigInteger(String.valueOf(subscribers)));
         return new Channel().setId(id).setSnippet(channelSnippet).setStatistics(channelStatistics);
     }
 
     @Test
+    public void testToPricedStock() {
+        PricedStock pricedStock = toPricedStock(getChannel("channel", 50_000, "title", "link"));
+
+        assertEquals(YOUTUBE, pricedStock.getMarket());
+        assertEquals("channel", pricedStock.getSymbol());
+        assertEquals("title", pricedStock.getName());
+        assertEquals("link", pricedStock.getImageLink());
+        assertNotNull(pricedStock.getTimestamp());
+        assertEquals(239, pricedStock.getPrice());
+    }
+
+    @Test
+    public void testToPricedStockNullUrl() {
+        PricedStock pricedStock = toPricedStock(getChannel("channel", 50_000, "title", null));
+
+        assertEquals(YOUTUBE, pricedStock.getMarket());
+        assertEquals("channel", pricedStock.getSymbol());
+        assertEquals("title", pricedStock.getName());
+        assertNull(pricedStock.getImageLink());
+        assertNotNull(pricedStock.getTimestamp());
+        assertEquals(239, pricedStock.getPrice());
+    }
+
+    @Test
+    public void testToPricedStockNullThumbnailDetails() {
+        Channel channel = getChannel("channel", 50_000, "title", null);
+        channel.getSnippet().setThumbnails(null);
+        PricedStock pricedStock = toPricedStock(channel);
+
+        assertEquals(YOUTUBE, pricedStock.getMarket());
+        assertEquals("channel", pricedStock.getSymbol());
+        assertEquals("title", pricedStock.getName());
+        assertNull(pricedStock.getImageLink());
+        assertNotNull(pricedStock.getTimestamp());
+        assertEquals(239, pricedStock.getPrice());
+    }
+
+    @Test
+    public void testToPricedStockNullDefaultThumbnail() {
+        Channel channel = getChannel("channel", 50_000, "title", null);
+        channel.getSnippet().getThumbnails().setDefault(null);
+        PricedStock pricedStock = toPricedStock(channel);
+
+        assertEquals(YOUTUBE, pricedStock.getMarket());
+        assertEquals("channel", pricedStock.getSymbol());
+        assertEquals("title", pricedStock.getName());
+        assertNull(pricedStock.getImageLink());
+        assertNotNull(pricedStock.getTimestamp());
+        assertEquals(239, pricedStock.getPrice());
+    }
+
+    @Test
     public void testGetUpdateRunnable() throws ExecutionException, InterruptedException, IOException {
+        Channel channel1 = getChannel("1", 50_000, "Channel 1", "link1");
+        Channel channel2 = getChannel("2", 100_000, "Channel 2", "link2");
         YouTubeService youTubeService = mock(YouTubeService.class);
-        when(youTubeService.getChannels(any()))
-                .thenReturn(asList(getChannel("1", 50_000, "Channel 1"), getChannel("2", 100_000, "Channel 2")));
+        when(youTubeService.getChannels(any())).thenReturn(asList(channel1, channel2));
 
         ExecutorService executorService = Executors.newFixedThreadPool(3);
         List<PricedStock> entries = new ArrayList<>();
@@ -82,8 +137,8 @@ public class YouTubeRemoteStockServiceTest {
         YouTubeRemoteStockService youTubeRemoteStockService = new YouTubeRemoteStockService(youTubeService);
         Future<?> future;
         try (StockUpdateRunnable runnable = youTubeRemoteStockService.getUpdateRunnable(executorService, entries::add)) {
-            runnable.accept(new Stock().setMarket(YOUTUBE).setSymbol("1").setName("Channel 1"));
-            runnable.accept(new Stock().setMarket(YOUTUBE).setSymbol("2").setName("Channel 2"));
+            runnable.accept(new Stock().setMarket(YOUTUBE).setSymbol("1").setName("name").setImageLink("link"));
+            runnable.accept(new Stock().setMarket(YOUTUBE).setSymbol("2").setName("name").setImageLink("link"));
             future = executorService.submit(runnable);
         }
         future.get();
@@ -101,32 +156,37 @@ public class YouTubeRemoteStockServiceTest {
 
         assertEquals("1", entries.get(0).getSymbol());
         assertEquals("Channel 1", entries.get(0).getName());
+        assertEquals("link1", entries.get(0).getImageLink());
         assertEquals(239, entries.get(0).getPrice());
 
         assertEquals("2", entries.get(1).getSymbol());
         assertEquals("Channel 2", entries.get(1).getName());
+        assertEquals("link2", entries.get(1).getImageLink());
         assertEquals(455, entries.get(1).getPrice());
     }
 
     @Test
     public void testSearch() {
-        Channel channel1 = getChannel("1", 50_000, "Channel 1");
-        Channel channel2 = getChannel("2", 100_000, "Channel 2");
+        Channel channel1 = getChannel("1", 50_000, "Channel 1", "link1");
+        Channel channel2 = getChannel("2", 100_000, "Channel 2", "link2");
 
         YouTubeService youTubeService = mock(YouTubeService.class);
-        when(youTubeService.search(eq("user"), eq(20))).thenReturn(asList(channel1, channel2));
+        when(youTubeService.search(eq("channel"), eq(20))).thenReturn(asList(channel1, channel2));
 
         YouTubeRemoteStockService youTubeRemoteStockService = new YouTubeRemoteStockService(youTubeService);
-        List<PricedStock> stocks = youTubeRemoteStockService.search("user", 20);
+        List<PricedStock> stocks = youTubeRemoteStockService.search("channel", 20);
 
         assertEquals(2, stocks.size());
         assertEquals(YOUTUBE, stocks.get(0).getMarket());
         assertEquals("1", stocks.get(0).getSymbol());
         assertEquals("Channel 1", stocks.get(0).getName());
+        assertEquals("link1", stocks.get(0).getImageLink());
         assertEquals(239, stocks.get(0).getPrice());
+
         assertEquals(YOUTUBE, stocks.get(1).getMarket());
         assertEquals("2", stocks.get(1).getSymbol());
         assertEquals("Channel 2", stocks.get(1).getName());
+        assertEquals("link2", stocks.get(1).getImageLink());
         assertEquals(455, stocks.get(1).getPrice());
     }
 }
