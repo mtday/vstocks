@@ -52,10 +52,8 @@ public enum Config {
     GOOGLE_API_CLIENT_ID,
     GOOGLE_API_CLIENT_SECRET,
     GOOGLE_API_LOGIN_CALLBACK,
-    GOOGLE_API_OAUTH_CALLBACK,
-    GOOGLE_API_OAUTH_SCOPES,
-    GOOGLE_API_OAUTH_APPLICATION,
-    GOOGLE_API_OAUTH_USER,
+    GOOGLE_API_SCOPES,
+    GOOGLE_API_CREDENTIALS,
 
     FACEBOOK_API_CLIENT_ID,
     FACEBOOK_API_CLIENT_SECRET,
@@ -83,6 +81,15 @@ public enum Config {
         return ofNullable(PROPERTIES.getProperty(getKey()))
                 .map(Long::parseLong)
                 .orElseThrow(() -> new RuntimeException("Key missing from config: " + getKey()));
+    }
+
+    public InputStream getInputStream() throws IOException {
+        String file = getString();
+        if (new File(file).exists()) {
+            return new FileInputStream(file);
+        }
+        return ofNullable(Config.class.getClassLoader().getResourceAsStream(file))
+                .orElseThrow(() -> new IOException("File " + file + " not found"));
     }
 
     private String getKey() {

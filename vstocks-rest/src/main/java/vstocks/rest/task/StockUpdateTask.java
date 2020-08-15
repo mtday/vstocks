@@ -44,9 +44,9 @@ public class StockUpdateTask implements Task {
         long delayMillis = millis > 0 ? 1000 - millis : 1000;
         long delay = delayMinutes + delaySeconds + delayMillis;
 
-        scheduledExecutorService.scheduleAtFixedRate(this, delay, MINUTES.toMillis(10), MILLISECONDS);
+        //scheduledExecutorService.scheduleAtFixedRate(this, delay, MINUTES.toMillis(10), MILLISECONDS);
         // More frequent schedule for testing (once per minute):
-        //scheduledExecutorService.scheduleAtFixedRate(this, delay % MINUTES.toMillis(1), MINUTES.toMillis(1), MILLISECONDS);
+        scheduledExecutorService.scheduleAtFixedRate(this, delay % MINUTES.toMillis(1), MINUTES.toMillis(1), MILLISECONDS);
     }
 
     @Override
@@ -59,6 +59,8 @@ public class StockUpdateTask implements Task {
             for (Market market : Market.values()) {
                 RemoteStockService remoteStockService = remoteStockServiceFactory.getForMarket(market);
                 Consumer<PricedStock> updateConsumer = pricedStock -> {
+                    LOGGER.info("Updating: {}/{} ({}) => {}", pricedStock.getMarket(), pricedStock.getSymbol(),
+                            pricedStock.getName(), pricedStock.getPrice());
                     dbFactory.getStockDB().update(pricedStock.asStock());
                     dbFactory.getStockPriceDB().add(pricedStock.asStockPrice());
                 };

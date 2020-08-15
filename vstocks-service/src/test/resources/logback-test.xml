@@ -17,4 +17,5 @@
     <logger name="com.zaxxer" level="WARN"/>
     <logger name="org.flywaydb" level="WARN"/>
     <logger name="vstocks.service.remote.twitter.TwitterStockUpdateBatchRunnable" level="OFF"/>
+    <logger name="vstocks.service.remote.youtube.YouTubeStockUpdateBatchRunnable" level="OFF"/>
 </configuration>

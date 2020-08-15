@@ -60,8 +60,8 @@ public class TwitterRemoteStockService implements RemoteStockService {
     @Override
     public StockUpdateRunnable getUpdateRunnable(ExecutorService executorService,
                                                  Consumer<PricedStock> updateConsumer) {
-        return new TwitterStockUpdateRunnable(twitter, executorService, user ->
-                updateConsumer.accept(toPricedStock(user)));
+        return new TwitterStockUpdateRunnable(twitter, executorService,
+                user -> updateConsumer.accept(toPricedStock(user)));
     }
 
     @Override

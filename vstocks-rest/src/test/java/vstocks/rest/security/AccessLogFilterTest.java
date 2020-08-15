@@ -41,14 +41,14 @@ public class AccessLogFilterTest {
     @Test
     public void testNoSecurityContext() {
         ContainerRequestContext containerRequestContext = getRequestContext("GET", "/api/v1/user");
-        assertEquals(" => GET /api/v1/user", test(containerRequestContext));
+        assertEquals("- => GET /api/v1/user", test(containerRequestContext));
     }
 
     @Test
     public void testNoSecurityContextJwt() {
         ContainerRequestContext containerRequestContext = getRequestContext("GET", "/api/v1/user");
         when(containerRequestContext.getHeaderString(eq(AUTHORIZATION))).thenReturn("Bearer token");
-        assertEquals(" => GET /api/v1/user (jwt)", test(containerRequestContext));
+        assertEquals("- => GET /api/v1/user (jwt)", test(containerRequestContext));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class AccessLogFilterTest {
         SecurityContext securityContext = mock(SecurityContext.class);
         ContainerRequestContext containerRequestContext = getRequestContext("GET", "/api/v1/user");
         when(containerRequestContext.getSecurityContext()).thenReturn(securityContext);
-        assertEquals(" => GET /api/v1/user", test(containerRequestContext));
+        assertEquals("- => GET /api/v1/user", test(containerRequestContext));
     }
 
     @Test

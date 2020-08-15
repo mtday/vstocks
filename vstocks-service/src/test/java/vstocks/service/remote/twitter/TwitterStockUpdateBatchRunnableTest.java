@@ -6,7 +6,6 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.User;
 import twitter4j.api.UsersResources;
-import vstocks.model.Market;
 import vstocks.model.Stock;
 
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static vstocks.model.Market.TWITTER;
 
 public class TwitterStockUpdateBatchRunnableTest {
     private static User getUser(String username) {
@@ -36,8 +36,9 @@ public class TwitterStockUpdateBatchRunnableTest {
         Twitter twitter = mock(Twitter.class);
         when(twitter.users()).thenReturn(usersResources);
 
-        List<Stock> stocks = Stream.of("user1", "user2").map(symbol ->
-                new Stock().setMarket(Market.TWITTER).setSymbol(symbol).setName("Name")).collect(toList());
+        List<Stock> stocks = Stream.of("user1", "user2")
+                .map(symbol -> new Stock().setMarket(TWITTER).setSymbol(symbol).setName("Name"))
+                .collect(toList());
         List<User> users = new ArrayList<>();
         new TwitterStockUpdateBatchRunnable(twitter, users::add, stocks).run();
 
@@ -52,8 +53,9 @@ public class TwitterStockUpdateBatchRunnableTest {
         Twitter twitter = mock(Twitter.class);
         when(twitter.users()).thenReturn(usersResources);
 
-        List<Stock> stocks = Stream.of("user1", "user2").map(symbol ->
-                new Stock().setMarket(Market.TWITTER).setSymbol(symbol).setName("Name")).collect(toList());
+        List<Stock> stocks = Stream.of("user1", "user2")
+                .map(symbol -> new Stock().setMarket(TWITTER).setSymbol(symbol).setName("Name"))
+                .collect(toList());
         List<User> users = new ArrayList<>();
         new TwitterStockUpdateBatchRunnable(twitter, users::add, stocks).run();
 
@@ -68,8 +70,9 @@ public class TwitterStockUpdateBatchRunnableTest {
         Twitter twitter = mock(Twitter.class);
         when(twitter.users()).thenReturn(usersResources);
 
-        List<Stock> stocks = Stream.of("user1", "user2").map(symbol ->
-                new Stock().setMarket(Market.TWITTER).setSymbol(symbol).setName("Name")).collect(toList());
+        List<Stock> stocks = Stream.of("user1", "user2")
+                .map(symbol -> new Stock().setMarket(TWITTER).setSymbol(symbol).setName("Name"))
+                .collect(toList());
         List<User> users = new ArrayList<>();
         new TwitterStockUpdateBatchRunnable(twitter, users::add, stocks).run();
 

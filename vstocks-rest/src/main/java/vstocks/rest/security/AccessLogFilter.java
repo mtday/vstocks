@@ -35,7 +35,7 @@ public class AccessLogFilter implements ContainerRequestFilter {
         String username = ofNullable(requestContext.getSecurityContext())
                 .map(SecurityContext::getUserPrincipal)
                 .map(Principal::getName)
-                .orElse("");
+                .orElse("-");
         String method = requestContext.getRequest().getMethod();
         String path = requestContext.getUriInfo().getRequestUri().getPath();
         boolean hasToken = Stream.of(requestContext.getHeaderString(AUTHORIZATION))

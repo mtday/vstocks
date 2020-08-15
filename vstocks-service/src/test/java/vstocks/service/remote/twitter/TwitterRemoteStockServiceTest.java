@@ -127,14 +127,8 @@ public class TwitterRemoteStockServiceTest {
 
     @Test
     public void testSearch() throws TwitterException {
-        User user1 = mock(User.class);
-        when(user1.getScreenName()).thenReturn("user1");
-        when(user1.getName()).thenReturn("User1");
-        when(user1.getFollowersCount()).thenReturn(50_000);
-        User user2 = mock(User.class);
-        when(user2.getScreenName()).thenReturn("user2");
-        when(user2.getName()).thenReturn("User2");
-        when(user2.getFollowersCount()).thenReturn(100_000);
+        User user1 = getUser("user1", 50_000, "User1");
+        User user2 = getUser("user2", 100_000, "User2");
 
         @SuppressWarnings("unchecked")
         ResponseList<User> users = mock(ResponseList.class);
@@ -155,6 +149,7 @@ public class TwitterRemoteStockServiceTest {
         assertEquals(239, stocks.get(0).getPrice());
         assertEquals(TWITTER, stocks.get(1).getMarket());
         assertEquals("user2", stocks.get(1).getSymbol());
+        assertEquals("User2", stocks.get(1).getName());
         assertEquals(455, stocks.get(1).getPrice());
     }
 }

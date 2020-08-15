@@ -1,7 +1,7 @@
 
 server.port = 8443
 server.context.path = /
-server.ui.path = vstocks-frontend/dist/vstocks-frontend
+server.ui.path = vstocks-ui/dist/vstocks-ui
 
 server.keystore.file = keystore.p12
 server.keystore.type = PKCS12
@@ -46,10 +46,8 @@ twitter.api.login.callback = https://localhost:8443/api/v1/security/callback
 google.api.client.id = TODO
 google.api.client.secret = TODO
 google.api.login.callback = https://localhost:8443/api/v1/security/callback
-google.api.oauth.callback = https://localhost:8443/api/v1/security/google/callback
-google.api.oauth.scopes = https://www.googleapis.com/auth/youtube.readonly
-google.api.oauth.application = vstocks
-google.api.oauth.user = vstocks
+google.api.scopes = https://www.googleapis.com/auth/youtube.readonly
+google.api.credentials = vstocks-googleapi.json
 
 facebook.api.client.id = TODO
 facebook.api.client.secret = TODO

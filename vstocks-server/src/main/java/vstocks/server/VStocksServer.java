@@ -16,8 +16,6 @@ import org.slf4j.LoggerFactory;
 import vstocks.rest.Application;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
@@ -30,7 +28,7 @@ import static vstocks.config.Config.*;
 public class VStocksServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(VStocksServer.class);
 
-    public static void main(String... args) throws URISyntaxException, MalformedURLException {
+    public static void main(String... args) {
         String contextPath = SERVER_CONTEXT_PATH.getString();
         String uiPath = SERVER_UI_PATH.getString();
 
