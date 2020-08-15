@@ -3,8 +3,8 @@ package vstocks.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.security.Principal;
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.Objects;
+import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Locale.ENGLISH;
@@ -16,38 +16,9 @@ public class User implements Principal {
     private String email;
     private String username;
     private String displayName;
+    private String imageLink;
 
     public User() {
-    }
-
-    @JsonIgnore
-    public Map<String, Object> getJwtClaims() {
-        Map<String, Object> claims = new TreeMap<>();
-        claims.put("id", id);
-        claims.put("email", email);
-        claims.put("username", username);
-        claims.put("displayName", displayName);
-        return claims;
-    }
-
-    public static Optional<User> getUserFromJwtClaims(Map<String, Object> claims) {
-        return Stream.of(claims)
-                .filter(Objects::nonNull)
-                .filter(claimsMap -> claimsMap.containsKey("id"))
-                .filter(claimsMap -> claimsMap.containsKey("email"))
-                .filter(claimsMap -> claimsMap.containsKey("username"))
-                .filter(claimsMap -> claimsMap.containsKey("displayName"))
-                .filter(claimsMap -> {
-                    // Make sure the user id matches the id generated from the email.
-                    String id = String.valueOf(claimsMap.get("id"));
-                    String email = String.valueOf(claimsMap.get("email"));
-                    return User.generateId(email).equals(id);
-                })
-                .map(claimsMap -> new User()
-                        .setEmail(String.valueOf(claimsMap.get("email"))) // also sets the id
-                        .setUsername(String.valueOf(claimsMap.get("username")))
-                        .setDisplayName(String.valueOf(claimsMap.get("displayName"))))
-                .findFirst();
     }
 
     public static String generateId(String email) {
@@ -99,6 +70,15 @@ public class User implements Principal {
         return this;
     }
 
+    public String getImageLink() {
+        return imageLink;
+    }
+
+    public User setImageLink(String imageLink) {
+        this.imageLink = imageLink;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -119,6 +99,7 @@ public class User implements Principal {
                 ", email='" + email + '\'' +
                 ", username='" + username + '\'' +
                 ", displayName='" + displayName + '\'' +
+                ", imageLink='" + imageLink + '\'' +
                 '}';
     }
 }

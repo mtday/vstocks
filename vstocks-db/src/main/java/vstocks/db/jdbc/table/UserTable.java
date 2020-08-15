@@ -17,7 +17,8 @@ public class UserTable extends BaseTable {
                     .setId(rs.getString("id"))
                     .setEmail(rs.getString("email"))
                     .setUsername(rs.getString("username"))
-                    .setDisplayName(rs.getString("display_name"));
+                    .setDisplayName(rs.getString("display_name"))
+                    .setImageLink(rs.getString("image_link"));
 
     private static final RowSetter<User> INSERT_ROW_SETTER = (ps, user) -> {
         int index = 0;
@@ -25,16 +26,19 @@ public class UserTable extends BaseTable {
         ps.setString(++index, user.getEmail());
         ps.setString(++index, user.getUsername());
         ps.setString(++index, user.getDisplayName());
+        ps.setString(++index, user.getImageLink());
     };
 
     private static final RowSetter<User> UPDATE_ROW_SETTER = (ps, user) -> {
         int index = 0;
         ps.setString(++index, user.getUsername());
         ps.setString(++index, user.getDisplayName());
+        ps.setString(++index, user.getImageLink());
         ps.setString(++index, user.getId());
         ps.setString(++index, user.getEmail());
         ps.setString(++index, user.getUsername());
         ps.setString(++index, user.getDisplayName());
+        ps.setString(++index, user.getImageLink());
     };
 
     @Override
@@ -62,15 +66,18 @@ public class UserTable extends BaseTable {
     }
 
     public int add(Connection connection, User user) {
-        String sql = "INSERT INTO users (id, email, username, display_name) VALUES (?, LOWER(?), ?, ?) "
-                + "ON CONFLICT ON CONSTRAINT users_pk DO UPDATE SET display_name = EXCLUDED.display_name "
-                + "WHERE users.display_name != EXCLUDED.display_name";
+        String sql = "INSERT INTO users (id, email, username, display_name, image_link) VALUES (?, LOWER(?), ?, ?, ?) "
+                + "ON CONFLICT ON CONSTRAINT users_pk DO UPDATE SET username = EXCLUDED.username, "
+                + "display_name = EXCLUDED.display_name, image_link = EXCLUDED.image_link "
+                + "WHERE users.username != EXCLUDED.username OR users.display_name != EXCLUDED.display_name "
+                + "OR COALESCE(users.image_link, '') != COALESCE(EXCLUDED.image_link, '')";
         return update(connection, INSERT_ROW_SETTER, sql, user);
     }
 
     public int update(Connection connection, User user) {
-        String sql = "UPDATE users SET username = ?, display_name = ? "
-                + "WHERE id = ? AND email = LOWER(?) AND (username != ? OR display_name != ?)";
+        String sql = "UPDATE users SET username = ?, display_name = ?, image_link = ? "
+                + "WHERE id = ? AND email = LOWER(?) AND "
+                + "(username != ? OR display_name != ? OR COALESCE(image_link, '') != COALESCE(?, ''))";
         return update(connection, UPDATE_ROW_SETTER, sql, user);
     }
 

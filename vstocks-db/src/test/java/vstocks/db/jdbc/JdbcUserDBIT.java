@@ -84,7 +84,7 @@ public class JdbcUserDBIT {
 
     @Test
     public void testGetExists() {
-        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setImageLink("link");
         assertEquals(1, userDB.add(user));
 
         Optional<User> fetched = userDB.get(user.getId());
@@ -93,10 +93,25 @@ public class JdbcUserDBIT {
         assertEquals(user.getEmail(), fetched.get().getEmail());
         assertEquals(user.getUsername(), fetched.get().getUsername());
         assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
+        assertEquals(user.getImageLink(), fetched.get().getImageLink());
     }
 
     @Test
     public void testGetLowercaseEmail() {
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setImageLink("link");
+        assertEquals(1, userDB.add(user));
+
+        Optional<User> fetched = userDB.get(user.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(user.getId(), fetched.get().getId());
+        assertEquals(user.getEmail().toLowerCase(ENGLISH), fetched.get().getEmail());
+        assertEquals(user.getUsername(), fetched.get().getUsername());
+        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
+        assertEquals(user.getImageLink(), fetched.get().getImageLink());
+    }
+
+    @Test
+    public void testGetNoLink() {
         User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
         assertEquals(1, userDB.add(user));
 
@@ -106,6 +121,7 @@ public class JdbcUserDBIT {
         assertEquals(user.getEmail().toLowerCase(ENGLISH), fetched.get().getEmail());
         assertEquals(user.getUsername(), fetched.get().getUsername());
         assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
+        assertNull(fetched.get().getImageLink());
     }
 
     @Test
@@ -117,8 +133,8 @@ public class JdbcUserDBIT {
 
     @Test
     public void testGetAllSomeNoSort() {
-        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
-        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
+        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1").setImageLink("link");
+        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2").setImageLink("link");
         assertEquals(1, userDB.add(user1));
         assertEquals(1, userDB.add(user2));
 
@@ -131,8 +147,8 @@ public class JdbcUserDBIT {
 
     @Test
     public void testGetAllSomeWithSort() {
-        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
-        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
+        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1").setImageLink("link");
+        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2").setImageLink("link");
         assertEquals(1, userDB.add(user1));
         assertEquals(1, userDB.add(user2));
 
@@ -146,11 +162,11 @@ public class JdbcUserDBIT {
 
     @Test
     public void testGetAllMultiplePagesNoSort() {
-        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
-        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
-        User user3 = new User().setEmail("user3@domain.com").setUsername("name3").setDisplayName("Name3");
-        User user4 = new User().setEmail("user4@domain.com").setUsername("name4").setDisplayName("Name4");
-        User user5 = new User().setEmail("user5@domain.com").setUsername("name5").setDisplayName("Name5");
+        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1").setImageLink("link");
+        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2").setImageLink("link");
+        User user3 = new User().setEmail("user3@domain.com").setUsername("name3").setDisplayName("Name3").setImageLink("link");
+        User user4 = new User().setEmail("user4@domain.com").setUsername("name4").setDisplayName("Name4").setImageLink("link");
+        User user5 = new User().setEmail("user5@domain.com").setUsername("name5").setDisplayName("Name5").setImageLink("link");
         for (User user : asList(user1, user2, user3, user4, user5)) {
             assertEquals(1, userDB.add(user));
         }
@@ -178,11 +194,11 @@ public class JdbcUserDBIT {
 
     @Test
     public void testGetAllMultiplePagesWithSort() {
-        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
-        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
-        User user3 = new User().setEmail("user3@domain.com").setUsername("name3").setDisplayName("Name3");
-        User user4 = new User().setEmail("user4@domain.com").setUsername("name4").setDisplayName("Name4");
-        User user5 = new User().setEmail("user5@domain.com").setUsername("name5").setDisplayName("Name5");
+        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1").setImageLink("link");
+        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2").setImageLink("link");
+        User user3 = new User().setEmail("user3@domain.com").setUsername("name3").setDisplayName("Name3").setImageLink("link");
+        User user4 = new User().setEmail("user4@domain.com").setUsername("name4").setDisplayName("Name4").setImageLink("link");
+        User user5 = new User().setEmail("user5@domain.com").setUsername("name5").setDisplayName("Name5").setImageLink("link");
         for (User user : asList(user1, user2, user3, user4, user5)) {
             assertEquals(1, userDB.add(user));
         }
@@ -218,8 +234,8 @@ public class JdbcUserDBIT {
 
     @Test
     public void testConsumeSomeNoSort() {
-        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
-        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
+        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1").setImageLink("link");
+        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2").setImageLink("link");
         assertEquals(1, userDB.add(user1));
         assertEquals(1, userDB.add(user2));
 
@@ -232,8 +248,8 @@ public class JdbcUserDBIT {
 
     @Test
     public void testConsumeSomeWithSort() {
-        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
-        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
+        User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1").setImageLink("link");
+        User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2").setImageLink("link");
         assertEquals(1, userDB.add(user1));
         assertEquals(1, userDB.add(user2));
 
@@ -247,7 +263,7 @@ public class JdbcUserDBIT {
 
     @Test
     public void testReset() throws SQLException {
-        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setImageLink("link");
         assertEquals(1, userDB.add(user));
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
@@ -293,8 +309,16 @@ public class JdbcUserDBIT {
 
     @Test
     public void testAdd() {
-        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setImageLink("link");
         assertEquals(1, userDB.add(user));
+
+        Optional<User> fetched = userDB.get(user.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(user.getId(), fetched.get().getId());
+        assertEquals(user.getEmail(), fetched.get().getEmail());
+        assertEquals(user.getUsername(), fetched.get().getUsername());
+        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
+        assertEquals(user.getImageLink(), fetched.get().getImageLink());
 
         Optional<UserCredits> userCredits = userCreditsDB.get(user.getId());
         assertTrue(userCredits.isPresent());
@@ -303,31 +327,80 @@ public class JdbcUserDBIT {
 
     @Test(expected = Exception.class)
     public void testAddUsernameConflict() {
-        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setImageLink("link");
         assertEquals(1, userDB.add(user));
         user.setEmail("different");
-        userDB.add(user);
+        userDB.add(user); // fails on the unique username constraint
     }
 
     @Test
     public void testAddEmailConflictNoChange() {
-        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setImageLink("link");
         assertEquals(1, userDB.add(user));
         assertEquals(0, userDB.add(user));
+
+        Optional<User> fetched = userDB.get(user.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(user.getId(), fetched.get().getId());
+        assertEquals(user.getEmail(), fetched.get().getEmail());
+        assertEquals(user.getUsername(), fetched.get().getUsername());
+        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
+        assertEquals(user.getImageLink(), fetched.get().getImageLink());
     }
 
     @Test
     public void testAddEmailConflictUpdate() {
-        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setImageLink("link");
         assertEquals(1, userDB.add(user));
         user.setUsername("different");
         user.setDisplayName("different");
+        user.setImageLink("different");
         assertEquals(1, userDB.add(user));
+
+        Optional<User> fetched = userDB.get(user.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(user.getId(), fetched.get().getId());
+        assertEquals(user.getEmail(), fetched.get().getEmail());
+        assertEquals(user.getUsername(), fetched.get().getUsername());
+        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
+        assertEquals(user.getImageLink(), fetched.get().getImageLink());
+    }
+
+    @Test
+    public void testAddEmailConflictUpdateLinkToNull() {
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setImageLink("link");
+        assertEquals(1, userDB.add(user));
+        user.setImageLink(null);
+        assertEquals(1, userDB.add(user));
+
+        Optional<User> fetched = userDB.get(user.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(user.getId(), fetched.get().getId());
+        assertEquals(user.getEmail(), fetched.get().getEmail());
+        assertEquals(user.getUsername(), fetched.get().getUsername());
+        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
+        assertNull(fetched.get().getImageLink());
+    }
+
+    @Test
+    public void testAddEmailConflictUpdateNullLink() {
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        assertEquals(1, userDB.add(user));
+        user.setImageLink("link");
+        assertEquals(1, userDB.add(user));
+
+        Optional<User> fetched = userDB.get(user.getId());
+        assertTrue(fetched.isPresent());
+        assertEquals(user.getId(), fetched.get().getId());
+        assertEquals(user.getEmail(), fetched.get().getEmail());
+        assertEquals(user.getUsername(), fetched.get().getUsername());
+        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
+        assertEquals(user.getImageLink(), fetched.get().getImageLink());
     }
 
     @Test
     public void testAddEmailConflictDifferentCase() {
-        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setImageLink("link");
         assertEquals(1, userDB.add(user));
         user.setEmail("USER@DOMAIN.COM");
         assertEquals(0, userDB.add(user));
@@ -335,7 +408,7 @@ public class JdbcUserDBIT {
 
     @Test
     public void testAddEmailConflictDifferentCaseUpdate() {
-        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setImageLink("link");
         assertEquals(1, userDB.add(user));
         user.setEmail("USER@DOMAIN.COM");
         user.setDisplayName("different");
@@ -344,17 +417,18 @@ public class JdbcUserDBIT {
 
     @Test
     public void testUpdateMissing() {
-        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setImageLink("link");
         assertEquals(0, userDB.update(user));
     }
 
     @Test
     public void testUpdate() {
-        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setImageLink("link");
         assertEquals(1, userDB.add(user));
 
         user.setUsername("updated");
         user.setDisplayName("updated");
+        user.setImageLink("updated");
         assertEquals(1, userDB.update(user));
 
         Optional<User> updated = userDB.get(user.getId());
@@ -363,6 +437,41 @@ public class JdbcUserDBIT {
         assertEquals(user.getEmail(), updated.get().getEmail());
         assertEquals(user.getUsername(), updated.get().getUsername());
         assertEquals(user.getDisplayName(), updated.get().getDisplayName());
+        assertEquals(user.getImageLink(), updated.get().getImageLink());
+    }
+
+    @Test
+    public void testUpdateLinkToNull() {
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setImageLink("link");
+        assertEquals(1, userDB.add(user));
+
+        user.setImageLink(null);
+        assertEquals(1, userDB.update(user));
+
+        Optional<User> updated = userDB.get(user.getId());
+        assertTrue(updated.isPresent());
+        assertEquals(user.getId(), updated.get().getId());
+        assertEquals(user.getEmail(), updated.get().getEmail());
+        assertEquals(user.getUsername(), updated.get().getUsername());
+        assertEquals(user.getDisplayName(), updated.get().getDisplayName());
+        assertNull(updated.get().getImageLink());
+    }
+
+    @Test
+    public void testUpdateNullLink() {
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        assertEquals(1, userDB.add(user));
+
+        user.setImageLink("link");
+        assertEquals(1, userDB.update(user));
+
+        Optional<User> updated = userDB.get(user.getId());
+        assertTrue(updated.isPresent());
+        assertEquals(user.getId(), updated.get().getId());
+        assertEquals(user.getEmail(), updated.get().getEmail());
+        assertEquals(user.getUsername(), updated.get().getUsername());
+        assertEquals(user.getDisplayName(), updated.get().getDisplayName());
+        assertEquals(user.getImageLink(), updated.get().getImageLink());
     }
 
     @Test
@@ -372,7 +481,7 @@ public class JdbcUserDBIT {
 
     @Test
     public void testDelete() {
-        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
+        User user = new User().setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setImageLink("link");
         assertEquals(1, userDB.add(user));
         assertEquals(1, userDB.delete(user.getId()));
         assertFalse(userDB.get(user.getId()).isPresent());

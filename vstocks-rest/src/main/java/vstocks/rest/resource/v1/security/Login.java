@@ -68,6 +68,15 @@ public class Login extends BaseResource {
         }
 
         User user = existingUser.orElseThrow(() -> new RuntimeException("Unexpected missing user"));
+
+        // An existing user exists in the db. Update the profile image. We don't update anything else
+        // (username, display name) since the user may have modified those via their profile page.
+        User profileUser = getUser(profile);
+        if (profileUser.getImageLink() != null && !profileUser.getImageLink().equals(user.getImageLink())) {
+            user.setImageLink(profileUser.getImageLink());
+            dbFactory.getUserDB().update(user);
+        }
+
         ActivityLog activityLog = new ActivityLog()
                 .setId(UUID.randomUUID().toString())
                 .setUserId(user.getId())

@@ -5,6 +5,7 @@ CREATE TABLE users (
     email              TEXT NOT NULL,
     username           TEXT NOT NULL,
     display_name       TEXT NOT NULL,
+    image_link         TEXT,
 
     CONSTRAINT users_pk PRIMARY KEY (id),
     CONSTRAINT users_unique_email UNIQUE (email),
@@ -14,6 +15,7 @@ CREATE TABLE users (
 CREATE INDEX idx_users_email ON users (email);
 CREATE INDEX idx_users_username ON users (username);
 CREATE INDEX idx_users_display_name ON users (display_name);
+CREATE INDEX idx_users_image_link ON users (image_link);
 
 
 CREATE TABLE stocks (
@@ -28,7 +30,7 @@ CREATE TABLE stocks (
 CREATE INDEX idx_stocks_market ON stocks (market);
 CREATE INDEX idx_stocks_symbol ON stocks (symbol);
 CREATE INDEX idx_stocks_name ON stocks (name);
-CREATE INDEX idx_stocks_image_link ON stocks (name);
+CREATE INDEX idx_stocks_image_link ON stocks (image_link);
 
 
 CREATE TABLE stock_prices (

@@ -8,10 +8,10 @@ import static org.junit.Assert.assertEquals;
 public class ResultsTest {
     @Test
     public void testGettersAndSetters() {
-        Results<User> results = new Results<User>()
+        Results<String> results = new Results<String>()
                 .setPage(new Page().setPage(5).setSize(30))
                 .setTotal(10)
-                .setResults(asList(new User().setId("1"), new User().setId("2")));
+                .setResults(asList("1", "2"));
 
         assertEquals(5, results.getPage().getPage());
         assertEquals(30, results.getPage().getSize());
@@ -21,34 +21,32 @@ public class ResultsTest {
 
     @Test
     public void testEquals() {
-        Results<User> results1 = new Results<User>()
+        Results<String> results1 = new Results<String>()
                 .setPage(new Page().setPage(5).setSize(30))
                 .setTotal(10)
-                .setResults(asList(new User().setId("1"), new User().setId("2")));
-        Results<User> results2 = new Results<User>()
+                .setResults(asList("1", "2"));
+        Results<String> results2 = new Results<String>()
                 .setPage(new Page().setPage(5).setSize(30))
                 .setTotal(10)
-                .setResults(asList(new User().setId("1"), new User().setId("2")));
+                .setResults(asList("1", "2"));
         assertEquals(results1, results2);
     }
 
     @Test
     public void testHashCode() {
-        Results<User> results = new Results<User>()
+        Results<String> results = new Results<String>()
                 .setPage(new Page().setPage(5).setSize(30))
                 .setTotal(10)
-                .setResults(asList(new User().setId("1"), new User().setId("2")));
-        assertEquals(1134929, results.hashCode());
+                .setResults(asList("1", "2"));
+        assertEquals(1133937, results.hashCode());
     }
 
     @Test
     public void testToString() {
-        Results<User> results = new Results<User>()
+        Results<String> results = new Results<String>()
                 .setPage(new Page().setPage(5).setSize(30))
                 .setTotal(10)
-                .setResults(asList(new User().setId("1"), new User().setId("2")));
-        assertEquals("Results{page=Page{page=5, size=30}, total=10, results=[User{id='1', email='null', "
-                + "username='null', displayName='null'}, User{id='2', email='null', username='null', "
-                + "displayName='null'}]}", results.toString());
+                .setResults(asList("1", "2"));
+        assertEquals("Results{page=Page{page=5, size=30}, total=10, results=[1, 2]}", results.toString());
     }
 }
