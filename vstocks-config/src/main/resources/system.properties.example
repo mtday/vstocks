@@ -33,7 +33,7 @@ user.initial.credits = 10000
 
 jwt.signature.secret = secret
 jwt.encryption.secret = secret
-jwt.expiration.minutes = 60
+jwt.expiration.hours = 4
 
 
 twitter.api.consumer.key = TODO
@@ -41,14 +41,14 @@ twitter.api.consumer.secret = TODO
 twitter.api.accesstoken.key = TODO
 twitter.api.accesstoken.secret = TODO
 twitter.api.bearer = TODO
-twitter.api.login.callback = https://localhost:8443/api/v1/security/callback
+twitter.api.login.callback = https://localhost:8443/api/security/callback
 
 google.api.client.id = TODO
 google.api.client.secret = TODO
-google.api.login.callback = https://localhost:8443/api/v1/security/callback
+google.api.login.callback = https://localhost:8443/api/security/callback
 google.api.scopes = https://www.googleapis.com/auth/youtube.readonly
 google.api.credentials = vstocks-googleapi.json
 
 facebook.api.client.id = TODO
 facebook.api.client.secret = TODO
-facebook.api.login.callback = https://localhost:8443/api/v1/security/callback
+facebook.api.login.callback = https://localhost:8443/api/security/callback

@@ -10,6 +10,7 @@ import vstocks.rest.security.JwtSecurity;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
 import javax.ws.rs.core.GenericType;
+import java.net.URI;
 import java.util.List;
 import java.util.logging.LogManager;
 
@@ -50,7 +51,8 @@ public abstract class ResourceTest extends JerseyTest {
         return new User()
                 .setEmail("user@domain.com")
                 .setUsername("username")
-                .setDisplayName("Display Name");
+                .setDisplayName("Display Name")
+                .setImageLink("https://domain.com/user/profile-image.png");
     }
 
     public CommonProfile getCommonProfile() {
@@ -61,6 +63,7 @@ public abstract class ResourceTest extends JerseyTest {
         commonProfile.addAttribute("email", user.getEmail());
         commonProfile.addAttribute("username", user.getUsername());
         commonProfile.addAttribute("display_name", user.getDisplayName());
+        commonProfile.addAttribute("profile_url", URI.create(user.getImageLink()));
         return commonProfile;
     }
 

@@ -21,8 +21,8 @@ import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Optional.empty;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static vstocks.config.Config.JWT_EXPIRATION_MINUTES;
+import static java.util.concurrent.TimeUnit.HOURS;
+import static vstocks.config.Config.JWT_EXPIRATION_HOURS;
 import static vstocks.config.Config.JWT_SIGNATURE_SECRET;
 
 public class JwtSecurity {
@@ -47,7 +47,7 @@ public class JwtSecurity {
     }
 
     static JWTClaimsSet getClaimsSet(String userId) {
-        long expirationSeconds = MINUTES.toSeconds(JWT_EXPIRATION_MINUTES.getInt());
+        long expirationSeconds = HOURS.toSeconds(JWT_EXPIRATION_HOURS.getInt());
         Date expiration = new Date(Instant.now().plusSeconds(expirationSeconds).toEpochMilli());
         return new JWTClaimsSet.Builder()
                 .subject(userId)

@@ -40,23 +40,23 @@ public class AccessLogFilterTest {
 
     @Test
     public void testNoSecurityContext() {
-        ContainerRequestContext containerRequestContext = getRequestContext("GET", "/api/v1/user");
-        assertEquals("- => GET /api/v1/user", test(containerRequestContext));
+        ContainerRequestContext containerRequestContext = getRequestContext("GET", "/api/user");
+        assertEquals("- => GET /api/user", test(containerRequestContext));
     }
 
     @Test
     public void testNoSecurityContextJwt() {
-        ContainerRequestContext containerRequestContext = getRequestContext("GET", "/api/v1/user");
+        ContainerRequestContext containerRequestContext = getRequestContext("GET", "/api/user");
         when(containerRequestContext.getHeaderString(eq(AUTHORIZATION))).thenReturn("Bearer token");
-        assertEquals("- => GET /api/v1/user (jwt)", test(containerRequestContext));
+        assertEquals("- => GET /api/user (jwt)", test(containerRequestContext));
     }
 
     @Test
     public void testNoUserPrincipal() {
         SecurityContext securityContext = mock(SecurityContext.class);
-        ContainerRequestContext containerRequestContext = getRequestContext("GET", "/api/v1/user");
+        ContainerRequestContext containerRequestContext = getRequestContext("GET", "/api/user");
         when(containerRequestContext.getSecurityContext()).thenReturn(securityContext);
-        assertEquals("- => GET /api/v1/user", test(containerRequestContext));
+        assertEquals("- => GET /api/user", test(containerRequestContext));
     }
 
     @Test
@@ -67,9 +67,9 @@ public class AccessLogFilterTest {
         SecurityContext securityContext = mock(SecurityContext.class);
         when(securityContext.getUserPrincipal()).thenReturn(principal);
 
-        ContainerRequestContext containerRequestContext = getRequestContext("POST", "/api/v1/markets/TWITTER/stock/vstocks/buy");
+        ContainerRequestContext containerRequestContext = getRequestContext("POST", "/api/markets/TWITTER/stock/vstocks/buy");
         when(containerRequestContext.getSecurityContext()).thenReturn(securityContext);
-        assertEquals("username => POST /api/v1/markets/TWITTER/stock/vstocks/buy", test(containerRequestContext));
+        assertEquals("username => POST /api/markets/TWITTER/stock/vstocks/buy", test(containerRequestContext));
     }
 
     @Test
@@ -80,9 +80,9 @@ public class AccessLogFilterTest {
         SecurityContext securityContext = mock(SecurityContext.class);
         when(securityContext.getUserPrincipal()).thenReturn(principal);
 
-        ContainerRequestContext containerRequestContext = getRequestContext("PUT", "/api/v1/markets/TWITTER/stock/vstocks");
+        ContainerRequestContext containerRequestContext = getRequestContext("PUT", "/api/markets/TWITTER/stock/vstocks");
         when(containerRequestContext.getSecurityContext()).thenReturn(securityContext);
         when(containerRequestContext.getHeaderString(eq(AUTHORIZATION))).thenReturn("Bearer token");
-        assertEquals("username => PUT /api/v1/markets/TWITTER/stock/vstocks (jwt)", test(containerRequestContext));
+        assertEquals("username => PUT /api/markets/TWITTER/stock/vstocks (jwt)", test(containerRequestContext));
     }
 }

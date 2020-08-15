@@ -50,6 +50,7 @@ public abstract class BaseResource {
                         .setEmail(profile.getEmail())
                         .setUsername(profile.getUsername())
                         .setDisplayName(profile.getDisplayName())
+                        .setImageLink(ofNullable(profile.getProfileUrl()).map(String::valueOf).orElse(null))
         ).orElse(null);
     }
 }

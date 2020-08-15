@@ -12,7 +12,7 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   getCurrentUser(): Observable<User> {
-    return this.http.get<User>('/api/v1/user');
+    return this.http.get<User>('/api/user');
   }
 
 }

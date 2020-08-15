@@ -25,7 +25,7 @@ export class HeaderComponent implements OnInit {
   }
 
   logout(): void {
-    this.http.get<string>('/api/v1/security/logout');
+    this.http.get<string>('/api/security/logout');
     this.authService.clear();
     this.router.navigate(['/']);
   }
