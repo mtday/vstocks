@@ -25,15 +25,15 @@ public abstract class BaseAchievementProviderIT {
 
     public final Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
     public final User user = new User().setEmail("testuser@domain.com").setUsername("testuser").setDisplayName("User");
-    public final Stock twitterStock = new Stock().setMarket(TWITTER).setSymbol("symbol").setName("Name").setActive(true);
+    public final Stock twitterStock = new Stock().setMarket(TWITTER).setSymbol("symbol").setName("Name").setImageLink("link");
     public final StockPrice twitterStockPrice = new StockPrice().setMarket(TWITTER).setSymbol("symbol").setPrice(10).setTimestamp(now);
-    public final Stock youtubeStock = new Stock().setMarket(YOUTUBE).setSymbol("symbol").setName("Name").setActive(true);
+    public final Stock youtubeStock = new Stock().setMarket(YOUTUBE).setSymbol("symbol").setName("Name").setImageLink("link");
     public final StockPrice youtubeStockPrice = new StockPrice().setMarket(YOUTUBE).setSymbol("symbol").setPrice(10).setTimestamp(now);
-    public final Stock instagramStock = new Stock().setMarket(INSTAGRAM).setSymbol("symbol").setName("Name").setActive(true);
+    public final Stock instagramStock = new Stock().setMarket(INSTAGRAM).setSymbol("symbol").setName("Name").setImageLink("link");
     public final StockPrice instagramStockPrice = new StockPrice().setMarket(INSTAGRAM).setSymbol("symbol").setPrice(10).setTimestamp(now);
-    public final Stock twitchStock = new Stock().setMarket(TWITCH).setSymbol("symbol").setName("Name").setActive(true);
+    public final Stock twitchStock = new Stock().setMarket(TWITCH).setSymbol("symbol").setName("Name").setImageLink("link");
     public final StockPrice twitchStockPrice = new StockPrice().setMarket(TWITCH).setSymbol("symbol").setPrice(10).setTimestamp(now);
-    public final Stock facebookStock = new Stock().setMarket(FACEBOOK).setSymbol("symbol").setName("Name").setActive(true);
+    public final Stock facebookStock = new Stock().setMarket(FACEBOOK).setSymbol("symbol").setName("Name").setImageLink("link");
     public final StockPrice facebookStockPrice = new StockPrice().setMarket(FACEBOOK).setSymbol("symbol").setPrice(10).setTimestamp(now);
 
     public DBFactory getDBFactory() {
@@ -54,7 +54,7 @@ public abstract class BaseAchievementProviderIT {
             new StockPriceTable().add(connection, instagramStockPrice);
             new StockPriceTable().add(connection, twitchStockPrice);
             new StockPriceTable().add(connection, facebookStockPrice);
-            connection.commit();;
+            connection.commit();
         }
     }
 

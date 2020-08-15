@@ -7,15 +7,15 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public interface StockDB {
-    Optional<Stock> get(Market market, String symbol, Boolean active);
+    Optional<Stock> get(Market market, String symbol);
 
-    Results<Stock> getForMarket(Market market, Boolean active, Page page, Set<Sort> sort);
+    Results<Stock> getForMarket(Market market, Page page, Set<Sort> sort);
 
-    int consumeForMarket(Market market, Boolean active, Consumer<Stock> consumer, Set<Sort> sort);
+    int consumeForMarket(Market market, Consumer<Stock> consumer, Set<Sort> sort);
 
-    Results<Stock> getAll(Boolean active, Page page, Set<Sort> sort);
+    Results<Stock> getAll(Page page, Set<Sort> sort);
 
-    int consume(Boolean active, Consumer<Stock> consumer, Set<Sort> sort);
+    int consume(Consumer<Stock> consumer, Set<Sort> sort);
 
     int add(Stock stock);
 

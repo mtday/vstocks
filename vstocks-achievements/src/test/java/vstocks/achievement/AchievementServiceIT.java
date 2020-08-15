@@ -67,7 +67,7 @@ public class AchievementServiceIT {
 
         Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         User user = new User().setEmail("testuser@domain.com").setUsername("testuser").setDisplayName("User");
-        Stock stock = new Stock().setMarket(TWITTER).setSymbol("symbol").setName("Name").setActive(true);
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("symbol").setName("Name").setImageLink("link");
         StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol("symbol").setPrice(10).setTimestamp(now);
 
         ActivityLog activityLog = new ActivityLog()

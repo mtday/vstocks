@@ -6,7 +6,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static vstocks.model.Market.TWITTER;
 
 public class PricedStockTest {
@@ -17,7 +16,7 @@ public class PricedStockTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setName("name")
-                .setActive(true)
+                .setImageLink("link")
                 .setTimestamp(now)
                 .setPrice(20)
                 .asStock();
@@ -25,7 +24,7 @@ public class PricedStockTest {
         assertEquals(TWITTER, stock.getMarket());
         assertEquals("symbol", stock.getSymbol());
         assertEquals("name", stock.getName());
-        assertTrue(stock.isActive());
+        assertEquals("link", stock.getImageLink());
     }
 
     @Test
@@ -35,7 +34,7 @@ public class PricedStockTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setName("name")
-                .setActive(true)
+                .setImageLink("link")
                 .setTimestamp(now)
                 .setPrice(20)
                 .asStockPrice();
@@ -53,14 +52,14 @@ public class PricedStockTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setName("name")
-                .setActive(true)
+                .setImageLink("link")
                 .setTimestamp(now)
                 .setPrice(20);
 
         assertEquals(TWITTER, pricedStock.getMarket());
         assertEquals("symbol", pricedStock.getSymbol());
         assertEquals("name", pricedStock.getName());
-        assertTrue(pricedStock.isActive());
+        assertEquals("link", pricedStock.getImageLink());
         assertEquals(now, pricedStock.getTimestamp());
         assertEquals(20, pricedStock.getPrice());
     }
@@ -79,7 +78,7 @@ public class PricedStockTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setName("name")
-                .setActive(true)
+                .setImageLink("link")
                 .setTimestamp(now)
                 .setPrice(20);
         assertEquals(1553141094, pricedStock.hashCode());
@@ -92,10 +91,10 @@ public class PricedStockTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setName("name")
-                .setActive(true)
+                .setImageLink("link")
                 .setTimestamp(now)
                 .setPrice(20);
-        assertEquals("PricedStock{market=TWITTER, symbol='symbol', name='name', active=true, "
+        assertEquals("PricedStock{market=TWITTER, symbol='symbol', name='name', imageLink='link', "
                 + "timestamp=" + now.toString() + ", price=20}", pricedStock.toString());
     }
 }

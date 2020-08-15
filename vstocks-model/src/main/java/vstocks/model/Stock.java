@@ -6,7 +6,7 @@ public class Stock {
     private Market market;
     private String symbol;
     private String name;
-    private boolean active = true;
+    private String imageLink;
 
     public Stock() {
     }
@@ -38,12 +38,12 @@ public class Stock {
         return this;
     }
 
-    public boolean isActive() {
-        return active;
+    public String getImageLink() {
+        return imageLink;
     }
 
-    public Stock setActive(boolean active) {
-        this.active = active;
+    public Stock setImageLink(String imageLink) {
+        this.imageLink = imageLink;
         return this;
     }
 
@@ -67,7 +67,7 @@ public class Stock {
                 "market=" + market +
                 ", symbol='" + symbol + '\'' +
                 ", name='" + name + '\'' +
-                ", active=" + active +
+                ", imageLink='" + imageLink + '\'' +
                 '}';
     }
 }

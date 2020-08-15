@@ -20,7 +20,7 @@ CREATE TABLE stocks (
     market             TEXT    NOT NULL,
     symbol             TEXT    NOT NULL,
     name               TEXT    NOT NULL,
-    active             BOOLEAN NOT NULL DEFAULT TRUE,
+    image_link         TEXT,
 
     CONSTRAINT stocks_pk PRIMARY KEY (market, symbol)
 );
@@ -28,7 +28,7 @@ CREATE TABLE stocks (
 CREATE INDEX idx_stocks_market ON stocks (market);
 CREATE INDEX idx_stocks_symbol ON stocks (symbol);
 CREATE INDEX idx_stocks_name ON stocks (name);
-CREATE INDEX idx_stocks_active ON stocks (active);
+CREATE INDEX idx_stocks_image_link ON stocks (name);
 
 
 CREATE TABLE stock_prices (

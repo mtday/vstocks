@@ -3,7 +3,6 @@ package vstocks.model;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static vstocks.model.Market.TWITTER;
 
 public class StockTest {
@@ -13,12 +12,12 @@ public class StockTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setName("name")
-                .setActive(true);
+                .setImageLink("link");
 
         assertEquals(TWITTER, stock.getMarket());
         assertEquals("symbol", stock.getSymbol());
         assertEquals("name", stock.getName());
-        assertTrue(stock.isActive());
+        assertEquals("link", stock.getImageLink());
     }
 
     @Test
@@ -34,7 +33,7 @@ public class StockTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setName("name")
-                .setActive(true);
+                .setImageLink("link");
         assertEquals(1553141094, stock.hashCode());
     }
 
@@ -44,7 +43,7 @@ public class StockTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setName("name")
-                .setActive(true);
-        assertEquals("Stock{market=TWITTER, symbol='symbol', name='name', active=true}", stock.toString());
+                .setImageLink("link");
+        assertEquals("Stock{market=TWITTER, symbol='symbol', name='name', imageLink='link'}", stock.toString());
     }
 }

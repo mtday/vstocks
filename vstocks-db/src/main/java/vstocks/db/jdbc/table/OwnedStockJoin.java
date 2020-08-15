@@ -20,7 +20,7 @@ public class OwnedStockJoin extends BaseTable {
                     .setMarket(Market.valueOf(rs.getString("market")))
                     .setSymbol(rs.getString("symbol"))
                     .setName(rs.getString("name"))
-                    .setActive(rs.getBoolean("active"));
+                    .setImageLink(rs.getString("image_link"));
 
     @Override
     protected Set<Sort> getDefaultSort() {
