@@ -16,12 +16,13 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static vstocks.rest.security.JwtTokenFilter.INVALID_JWT_MESSAGE;
 
 public class JwtTokenFilterTest {
     private void verifyUnauthorized(ContainerRequestContext containerRequestContext) {
         ErrorResponse errorResponse = new ErrorResponse()
                 .setStatus(UNAUTHORIZED.getStatusCode())
-                .setMessage("Missing JWT authorization bearer token");
+                .setMessage(INVALID_JWT_MESSAGE);
         verify(containerRequestContext, times(1)).abortWith(argThat(response ->
                 response.getStatus() == UNAUTHORIZED.getStatusCode()
                         && response.getHeaders().get(CONTENT_TYPE).contains(APPLICATION_JSON)

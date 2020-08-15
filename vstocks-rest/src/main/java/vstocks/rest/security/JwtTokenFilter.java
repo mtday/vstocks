@@ -24,6 +24,8 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 @JwtTokenRequired
 @Priority(AUTHENTICATION)
 public class JwtTokenFilter implements ContainerRequestFilter {
+    public static final String INVALID_JWT_MESSAGE = "Missing or invalid JWT authorization bearer token";
+
     private final DBFactory dbFactory;
     private final JwtSecurity jwtSecurity;
 
@@ -49,7 +51,7 @@ public class JwtTokenFilter implements ContainerRequestFilter {
         if (securityContext.isEmpty()) {
             ErrorResponse errorResponse = new ErrorResponse()
                     .setStatus(UNAUTHORIZED.getStatusCode())
-                    .setMessage("Missing JWT authorization bearer token");
+                    .setMessage(INVALID_JWT_MESSAGE);
             Response response = Response
                     .status(UNAUTHORIZED)
                     .header(CONTENT_TYPE, APPLICATION_JSON)

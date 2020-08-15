@@ -14,11 +14,11 @@ import javax.ws.rs.core.SecurityContext;
 
 @Path("/user/reset")
 @Singleton
-public class UserReset extends BaseResource {
+public class ResetUser extends BaseResource {
     private final DBFactory dbFactory;
 
     @Inject
-    public UserReset(DBFactory dbFactory) {
+    public ResetUser(DBFactory dbFactory) {
         this.dbFactory = dbFactory;
     }
 

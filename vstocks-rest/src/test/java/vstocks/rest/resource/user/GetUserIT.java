@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static vstocks.rest.security.JwtTokenFilter.INVALID_JWT_MESSAGE;
 
 public class GetUserIT extends ResourceTest {
     @Test
@@ -31,7 +32,7 @@ public class GetUserIT extends ResourceTest {
 
         ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
-        assertEquals("Missing JWT authorization bearer token", errorResponse.getMessage());
+        assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
 
     @Test
@@ -45,7 +46,7 @@ public class GetUserIT extends ResourceTest {
 
         ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
-        assertEquals("Missing JWT authorization bearer token", errorResponse.getMessage());
+        assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
 
     @Test

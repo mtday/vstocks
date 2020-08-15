@@ -24,7 +24,9 @@ import vstocks.rest.resource.security.Callback;
 import vstocks.rest.resource.security.Login;
 import vstocks.rest.resource.security.Logout;
 import vstocks.rest.resource.user.GetUser;
-import vstocks.rest.resource.user.UserReset;
+import vstocks.rest.resource.user.PutUser;
+import vstocks.rest.resource.user.ResetUser;
+import vstocks.rest.resource.user.UsernameExists;
 import vstocks.rest.resource.user.achievement.GetUserAchievements;
 import vstocks.rest.security.AccessLogFilter;
 import vstocks.rest.security.JwtSecurity;
@@ -72,7 +74,9 @@ public class Application extends ResourceConfig {
         register(Logout.class);
 
         register(GetUser.class);
-        register(UserReset.class);
+        register(PutUser.class);
+        register(ResetUser.class);
+        register(UsernameExists.class);
         register(GetUserAchievements.class);
 
         register(BadRequestExceptionMapper.class);
