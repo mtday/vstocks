@@ -3,7 +3,7 @@ package vstocks.rest.resource.user.portfolio;
 import vstocks.db.DBFactory;
 import vstocks.model.PortfolioValue;
 import vstocks.model.User;
-import vstocks.model.rest.UserPortfolioResponse;
+import vstocks.model.rest.UserPortfolioValueResponse;
 import vstocks.rest.resource.BaseResource;
 import vstocks.rest.security.JwtTokenRequired;
 
@@ -35,7 +35,7 @@ public class GetValues extends BaseResource {
     @GET
     @Produces(APPLICATION_JSON)
     @JwtTokenRequired
-    public UserPortfolioResponse getPortfolio(@Context SecurityContext securityContext) {
+    public UserPortfolioValueResponse getPortfolio(@Context SecurityContext securityContext) {
         User user = getUser(securityContext);
 
         Instant earliest = getEarliest(HISTORY_DAYS);
@@ -44,7 +44,7 @@ public class GetValues extends BaseResource {
                 dbFactory.getPortfolioValueDB().getForUserSince(user.getId(), earliest, emptySet());
         PortfolioValue currentValue = historicalValues.stream().findFirst().orElse(null);
 
-        return new UserPortfolioResponse()
+        return new UserPortfolioValueResponse()
                 .setCurrentValue(currentValue)
                 .setHistoricalValues(historicalValues);
     }

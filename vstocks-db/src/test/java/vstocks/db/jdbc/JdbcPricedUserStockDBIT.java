@@ -4,26 +4,27 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.model.*;
 import vstocks.db.DataSourceExternalResource;
 import vstocks.db.PricedUserStockDB;
 import vstocks.db.jdbc.table.StockPriceTable;
 import vstocks.db.jdbc.table.StockTable;
 import vstocks.db.jdbc.table.UserStockTable;
 import vstocks.db.jdbc.table.UserTable;
+import vstocks.model.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
 import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.User.generateId;
 
 public class JdbcPricedUserStockDBIT {
     @ClassRule
@@ -35,8 +36,8 @@ public class JdbcPricedUserStockDBIT {
     private StockPriceTable stockPriceTable;
     private PricedUserStockDB pricedUserStockDB;
 
-    private final User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
-    private final User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
+    private final User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+    private final User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
     private final Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
     private final Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
 
@@ -93,7 +94,7 @@ public class JdbcPricedUserStockDBIT {
 
     @Test
     public void testGetExistsSinglePrice() throws SQLException {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
@@ -114,7 +115,7 @@ public class JdbcPricedUserStockDBIT {
 
     @Test
     public void testGetExistsMultiplePrices() throws SQLException {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         UserStock userStock = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(12);
@@ -144,7 +145,7 @@ public class JdbcPricedUserStockDBIT {
 
     @Test
     public void testGetForUserSomeNoSort() throws SQLException {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         UserStock userStock2 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setShares(10);
         StockPrice stockPrice11 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
@@ -182,7 +183,7 @@ public class JdbcPricedUserStockDBIT {
 
     @Test
     public void testGetForUserSomeWithSort() throws SQLException {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         UserStock userStock2 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setShares(10);
         StockPrice stockPrice11 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
@@ -228,7 +229,7 @@ public class JdbcPricedUserStockDBIT {
 
     @Test
     public void testGetForStockSomeNoSort() throws SQLException {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
@@ -262,7 +263,7 @@ public class JdbcPricedUserStockDBIT {
 
     @Test
     public void testGetForStockSomeWithSort() throws SQLException {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
@@ -304,7 +305,7 @@ public class JdbcPricedUserStockDBIT {
 
     @Test
     public void testGetAllSomeNoSort() throws SQLException {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setShares(10);
         StockPrice stockPrice11 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
@@ -342,7 +343,7 @@ public class JdbcPricedUserStockDBIT {
 
     @Test
     public void testGetAllSomeWithSort() throws SQLException {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock2.getSymbol()).setShares(10);
         StockPrice stockPrice11 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
@@ -388,7 +389,7 @@ public class JdbcPricedUserStockDBIT {
 
     @Test
     public void testConsumeSomeNoSort() throws SQLException {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
@@ -422,7 +423,7 @@ public class JdbcPricedUserStockDBIT {
 
     @Test
     public void testConsumeSomeWithSort() throws SQLException {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
         StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);

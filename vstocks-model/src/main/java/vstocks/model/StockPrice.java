@@ -1,6 +1,7 @@
 package vstocks.model;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
@@ -13,6 +14,17 @@ public class StockPrice {
 
     public StockPrice() {
     }
+
+    public static final Comparator<StockPrice> FULL_COMPARATOR = Comparator
+            .comparing(StockPrice::getMarket)
+            .thenComparing(StockPrice::getSymbol)
+            .thenComparing(StockPrice::getTimestamp)
+            .thenComparingInt(StockPrice::getPrice);
+
+    public static final Comparator<StockPrice> UNIQUE_COMPARATOR = Comparator
+            .comparing(StockPrice::getMarket)
+            .thenComparing(StockPrice::getSymbol)
+            .thenComparing(StockPrice::getTimestamp);
 
     public Market getMarket() {
         return market;
@@ -56,12 +68,13 @@ public class StockPrice {
         if (o == null || getClass() != o.getClass()) return false;
         StockPrice that = (StockPrice) o;
         return market == that.market &&
-                Objects.equals(symbol, that.symbol);
+                Objects.equals(symbol, that.symbol) &&
+                Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(market.name(), symbol);
+        return Objects.hash(market.name(), symbol, timestamp);
     }
 
     @Override

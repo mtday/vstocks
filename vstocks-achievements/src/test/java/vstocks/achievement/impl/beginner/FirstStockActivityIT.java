@@ -6,13 +6,13 @@ import vstocks.achievement.impl.BaseAchievementProviderIT;
 import vstocks.model.*;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.joining;
@@ -119,7 +119,7 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
                 .setId(UUID.randomUUID().toString())
                 .setUserId(user.getId())
                 .setType(USER_LOGIN)
-                .setTimestamp(Instant.now().truncatedTo(ChronoUnit.SECONDS));
+                .setTimestamp(Instant.now().truncatedTo(SECONDS));
 
         getDBFactory().getActivityLogDB().add(activityLog);
 
@@ -136,7 +136,7 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
                 .setId(UUID.randomUUID().toString())
                 .setUserId(user.getId())
                 .setType(activityType)
-                .setTimestamp(Instant.now().truncatedTo(ChronoUnit.SECONDS))
+                .setTimestamp(Instant.now().truncatedTo(SECONDS))
                 .setMarket(stock.getMarket())
                 .setSymbol(stock.getSymbol())
                 .setShares(activityType == STOCK_BUY ? 5 : -5) // negative when selling

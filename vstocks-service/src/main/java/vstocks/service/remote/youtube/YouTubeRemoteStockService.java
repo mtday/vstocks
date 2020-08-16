@@ -51,7 +51,7 @@ public class YouTubeRemoteStockService implements RemoteStockService {
                 .map(Thumbnail::getUrl)
                 .filter(Objects::nonNull)
                 .findFirst()
-                .ifPresent(pricedStock::setImageLink);
+                .ifPresent(pricedStock::setProfileImage);
         return pricedStock;
     }
 

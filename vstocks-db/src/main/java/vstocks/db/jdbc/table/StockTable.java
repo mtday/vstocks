@@ -19,24 +19,24 @@ public class StockTable extends BaseTable {
                     .setMarket(Market.valueOf(rs.getString("market")))
                     .setSymbol(rs.getString("symbol"))
                     .setName(rs.getString("name"))
-                    .setImageLink(rs.getString("image_link"));
+                    .setProfileImage(rs.getString("profile_image"));
 
     private static final RowSetter<Stock> INSERT_ROW_SETTER = (ps, stock) -> {
         int index = 0;
         ps.setString(++index, stock.getMarket().name());
         ps.setString(++index, stock.getSymbol());
         ps.setString(++index, stock.getName());
-        ps.setString(++index, stock.getImageLink());
+        ps.setString(++index, stock.getProfileImage());
     };
 
     private static final RowSetter<Stock> UPDATE_ROW_SETTER = (ps, stock) -> {
         int index = 0;
         ps.setString(++index, stock.getName());
-        ps.setString(++index, stock.getImageLink());
+        ps.setString(++index, stock.getProfileImage());
         ps.setString(++index, stock.getMarket().name());
         ps.setString(++index, stock.getSymbol());
         ps.setString(++index, stock.getName());
-        ps.setString(++index, stock.getImageLink());
+        ps.setString(++index, stock.getProfileImage());
     };
 
     @Override
@@ -72,17 +72,17 @@ public class StockTable extends BaseTable {
     }
 
     public int add(Connection connection, Stock stock) {
-        String sql = "INSERT INTO stocks (market, symbol, name, image_link) VALUES (?, ?, ?, ?) "
+        String sql = "INSERT INTO stocks (market, symbol, name, profile_image) VALUES (?, ?, ?, ?) "
                 + "ON CONFLICT ON CONSTRAINT stocks_pk "
-                + "DO UPDATE set name = EXCLUDED.name, image_link = EXCLUDED.image_link "
+                + "DO UPDATE set name = EXCLUDED.name, profile_image = EXCLUDED.profile_image "
                 + "WHERE stocks.name != EXCLUDED.name "
-                + "OR COALESCE(stocks.image_link, '') != COALESCE(EXCLUDED.image_link, '')";
+                + "OR COALESCE(stocks.profile_image, '') != COALESCE(EXCLUDED.profile_image, '')";
         return update(connection, INSERT_ROW_SETTER, sql, stock);
     }
 
     public int update(Connection connection, Stock stock) {
-        String sql = "UPDATE stocks SET name = ?, image_link = ? "
-                + "WHERE market = ? AND symbol = ? AND (name != ? OR COALESCE(image_link, '') != COALESCE(?, ''))";
+        String sql = "UPDATE stocks SET name = ?, profile_image = ? "
+                + "WHERE market = ? AND symbol = ? AND (name != ? OR COALESCE(profile_image, '') != COALESCE(?, ''))";
         return update(connection, UPDATE_ROW_SETTER, sql, stock);
     }
 

@@ -3,24 +3,22 @@ package vstocks.model;
 import org.junit.Test;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static vstocks.model.Market.TWITTER;
 
 public class PricedUserStockTest {
     @Test
     public void testAsUserStock() {
-        String userId = UUID.nameUUIDFromBytes("user@domain.com".getBytes(UTF_8)).toString();
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        String userId = User.generateId("user@domain.com");
+        Instant now = Instant.now().truncatedTo(SECONDS);
         UserStock userStock = new PricedUserStock()
                 .setUserId(userId)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setShares(10)
                 .setTimestamp(now)
+                .setShares(10)
                 .setPrice(20)
                 .asUserStock();
 
@@ -32,14 +30,14 @@ public class PricedUserStockTest {
 
     @Test
     public void testAsStockPrice() {
-        String userId = UUID.nameUUIDFromBytes("user@domain.com".getBytes(UTF_8)).toString();
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        String userId = User.generateId("user@domain.com");
+        Instant now = Instant.now().truncatedTo(SECONDS);
         StockPrice stockPrice = new PricedUserStock()
                 .setUserId(userId)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setShares(10)
                 .setTimestamp(now)
+                .setShares(10)
                 .setPrice(20)
                 .asStockPrice();
 
@@ -51,22 +49,25 @@ public class PricedUserStockTest {
 
     @Test
     public void testGettersAndSetters() {
-        String userId = UUID.nameUUIDFromBytes("user@domain.com".getBytes(UTF_8)).toString();
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        String userId = User.generateId("user@domain.com");
+        Instant now = Instant.now().truncatedTo(SECONDS);
         PricedUserStock pricedUserStock = new PricedUserStock()
                 .setUserId(userId)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setShares(10)
                 .setTimestamp(now)
+                .setShares(10)
                 .setPrice(20);
 
         assertEquals(userId, pricedUserStock.getUserId());
         assertEquals(TWITTER, pricedUserStock.getMarket());
         assertEquals("symbol", pricedUserStock.getSymbol());
-        assertEquals(10, pricedUserStock.getShares());
         assertEquals(now, pricedUserStock.getTimestamp());
+        assertEquals(10, pricedUserStock.getShares());
         assertEquals(20, pricedUserStock.getPrice());
+
+        assertEquals(0, PricedUserStock.FULL_COMPARATOR.compare(pricedUserStock, pricedUserStock));
+        assertEquals(0, PricedUserStock.UNIQUE_COMPARATOR.compare(pricedUserStock, pricedUserStock));
     }
 
     @Test
@@ -78,30 +79,30 @@ public class PricedUserStockTest {
 
     @Test
     public void testHashCode() {
-        String userId = UUID.nameUUIDFromBytes("user@domain.com".getBytes(UTF_8)).toString();
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        String userId = User.generateId("user@domain.com");
+        Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
         PricedUserStock pricedUserStock = new PricedUserStock()
                 .setUserId(userId)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setShares(10)
                 .setTimestamp(now)
+                .setShares(10)
                 .setPrice(20);
-        assertEquals(1638071562, pricedUserStock.hashCode());
+        assertEquals(437287800, pricedUserStock.hashCode());
     }
 
     @Test
     public void testToString() {
-        String userId = UUID.nameUUIDFromBytes("user@domain.com".getBytes(UTF_8)).toString();
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        String userId = User.generateId("user@domain.com");
+        Instant now = Instant.now().truncatedTo(SECONDS);
         PricedUserStock pricedUserStock = new PricedUserStock()
                 .setUserId(userId)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setShares(10)
                 .setTimestamp(now)
+                .setShares(10)
                 .setPrice(20);
-        assertEquals("PricedUserStock{userId='" + userId + "', market=TWITTER, symbol='symbol', shares=10, timestamp="
-                + now + ", price=20}", pricedUserStock.toString());
+        assertEquals("PricedUserStock{userId='" + userId + "', market=TWITTER, symbol='symbol', timestamp="
+                + now + ", shares=10, price=20}", pricedUserStock.toString());
     }
 }

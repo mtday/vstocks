@@ -1,6 +1,7 @@
 package vstocks.model;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Objects;
 
 public class ActivityLog {
@@ -15,6 +16,18 @@ public class ActivityLog {
 
     public ActivityLog() {
     }
+
+    public static final Comparator<ActivityLog> FULL_COMPARATOR = Comparator
+            .comparing(ActivityLog::getId)
+            .thenComparing(ActivityLog::getUserId)
+            .thenComparing(ActivityLog::getType)
+            .thenComparing(ActivityLog::getTimestamp)
+            .thenComparing(ActivityLog::getMarket)
+            .thenComparing(ActivityLog::getSymbol)
+            .thenComparing(ActivityLog::getShares)
+            .thenComparing(ActivityLog::getPrice);
+
+    public static final Comparator<ActivityLog> UNIQUE_COMPARATOR = Comparator.comparing(ActivityLog::getId);
 
     public String getId() {
         return id;

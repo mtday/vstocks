@@ -4,12 +4,12 @@ import vstocks.model.Market;
 import vstocks.model.PortfolioValue;
 
 import java.sql.Connection;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.stream.Collectors.toMap;
 
 public class PortfolioValueJoin extends BaseTable {
@@ -26,7 +26,7 @@ public class PortfolioValueJoin extends BaseTable {
 
         return new PortfolioValue()
                 .setUserId(rs.getString("user_id"))
-                .setTimestamp(rs.getTimestamp("timestamp").toInstant().truncatedTo(ChronoUnit.SECONDS))
+                .setTimestamp(rs.getTimestamp("timestamp").toInstant().truncatedTo(SECONDS))
                 .setCredits(rs.getLong("credits"))
                 .setMarketValues(marketValues)
                 .setTotal(rs.getLong("total"));

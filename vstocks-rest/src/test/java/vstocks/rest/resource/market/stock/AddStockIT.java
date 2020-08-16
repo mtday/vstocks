@@ -1,16 +1,16 @@
 package vstocks.rest.resource.market.stock;
 
 import org.junit.Test;
+import vstocks.db.PricedStockDB;
 import vstocks.model.ErrorResponse;
 import vstocks.model.PricedStock;
 import vstocks.rest.ResourceTest;
-import vstocks.db.PricedStockDB;
 import vstocks.service.remote.RemoteStockService;
 
 import javax.ws.rs.core.Response;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -66,7 +66,7 @@ public class AddStockIT extends ResourceTest {
 
     @Test
     public void testStockFoundExactMatch() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setSymbol("symbol").setName("name").setTimestamp(now).setPrice(10);
         RemoteStockService remoteStockService = mock(RemoteStockService.class);
         when(remoteStockService.search(eq("symbol"), eq(10))).thenReturn(singletonList(pricedStock));
@@ -92,7 +92,7 @@ public class AddStockIT extends ResourceTest {
 
     @Test
     public void testStockFoundWrongCase() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setSymbol("symbol").setName("name").setTimestamp(now).setPrice(10);
         RemoteStockService remoteStockService = mock(RemoteStockService.class);
         when(remoteStockService.search(eq("SYMBOL"), eq(10))).thenReturn(singletonList(pricedStock));
@@ -118,7 +118,7 @@ public class AddStockIT extends ResourceTest {
 
     @Test
     public void testStockFoundPrefixMatch() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setSymbol("symbol").setName("name").setTimestamp(now).setPrice(10);
         RemoteStockService remoteStockService = mock(RemoteStockService.class);
         when(remoteStockService.search(eq("sym"), eq(10))).thenReturn(singletonList(pricedStock));
@@ -141,7 +141,7 @@ public class AddStockIT extends ResourceTest {
 
     @Test
     public void testMultipleStocksFoundIncludingValidMatch() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         PricedStock pricedStock1 = new PricedStock().setMarket(TWITTER).setSymbol("symbol1").setName("name1").setTimestamp(now).setPrice(10);
         PricedStock pricedStock2 = new PricedStock().setMarket(TWITTER).setSymbol("symbol2").setName("name2").setTimestamp(now).setPrice(10);
         RemoteStockService remoteStockService = mock(RemoteStockService.class);

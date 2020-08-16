@@ -5,17 +5,18 @@ import vstocks.model.*;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
-import static vstocks.model.DatabaseField.*;
+import static vstocks.model.DatabaseField.TIMESTAMP;
+import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.Sort.SortDirection.DESC;
 
 public class PortfolioValueTable extends BaseTable {
@@ -32,7 +33,7 @@ public class PortfolioValueTable extends BaseTable {
 
         return new PortfolioValue()
                 .setUserId(rs.getString("user_id"))
-                .setTimestamp(rs.getTimestamp("timestamp").toInstant().truncatedTo(ChronoUnit.SECONDS))
+                .setTimestamp(rs.getTimestamp("timestamp").toInstant().truncatedTo(SECONDS))
                 .setCredits(rs.getLong("credits"))
                 .setMarketValues(marketValues)
                 .setTotal(rs.getLong("total"));

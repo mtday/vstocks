@@ -18,6 +18,7 @@ import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.User.generateId;
 
 public class JdbcUserCreditsDBIT {
     @ClassRule
@@ -27,8 +28,8 @@ public class JdbcUserCreditsDBIT {
     private UserCreditsTable userCreditsTable;
     private JdbcUserCreditsDB userCreditsDB;
 
-    private final User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
-    private final User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
+    private final User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+    private final User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
 
     @Before
     public void setup() throws SQLException {

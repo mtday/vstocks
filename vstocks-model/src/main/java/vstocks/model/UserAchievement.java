@@ -1,6 +1,7 @@
 package vstocks.model;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Objects;
 
 public class UserAchievement {
@@ -11,6 +12,16 @@ public class UserAchievement {
 
     public UserAchievement() {
     }
+
+    public static final Comparator<UserAchievement> FULL_COMPARATOR = Comparator
+            .comparing(UserAchievement::getUserId)
+            .thenComparing(UserAchievement::getAchievementId)
+            .thenComparing(UserAchievement::getTimestamp)
+            .thenComparing(UserAchievement::getDescription);
+
+    public static final Comparator<UserAchievement> UNIQUE_COMPARATOR = Comparator
+            .comparing(UserAchievement::getUserId)
+            .thenComparing(UserAchievement::getAchievementId);
 
     public String getUserId() {
         return userId;

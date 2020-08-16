@@ -13,17 +13,18 @@ import vstocks.model.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.joining;
 import static org.junit.Assert.assertEquals;
 import static vstocks.model.ActivityType.STOCK_BUY;
 import static vstocks.model.Market.TWITTER;
+import static vstocks.model.User.generateId;
 
 public class AchievementServiceIT {
     @ClassRule
@@ -65,9 +66,9 @@ public class AchievementServiceIT {
     public void testCheck() {
         DBFactory dbFactory = new JdbcDBFactory(dataSourceExternalResource.get());
 
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        User user = new User().setEmail("testuser@domain.com").setUsername("testuser").setDisplayName("User");
-        Stock stock = new Stock().setMarket(TWITTER).setSymbol("symbol").setName("Name").setImageLink("link");
+        Instant now = Instant.now().truncatedTo(SECONDS);
+        User user = new User().setId(generateId("testuser@domain.com")).setEmail("testuser@domain.com").setUsername("testuser").setDisplayName("User");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("symbol").setName("Name").setProfileImage("link");
         StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol("symbol").setPrice(10).setTimestamp(now);
 
         ActivityLog activityLog = new ActivityLog()

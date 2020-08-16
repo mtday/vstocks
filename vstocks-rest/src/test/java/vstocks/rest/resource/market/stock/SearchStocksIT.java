@@ -8,9 +8,9 @@ import vstocks.service.remote.RemoteStockService;
 
 import javax.ws.rs.core.Response;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
@@ -64,7 +64,7 @@ public class SearchStocksIT extends ResourceTest {
 
     @Test
     public void testSearchStocksSome() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         PricedStock pricedStock1 = new PricedStock().setMarket(TWITTER).setSymbol("symbol1").setName("name1").setTimestamp(now).setPrice(10);
         PricedStock pricedStock2 = new PricedStock().setMarket(TWITTER).setSymbol("symbol2").setName("name2").setTimestamp(now).setPrice(11);
         PricedStock pricedStock3 = new PricedStock().setMarket(TWITTER).setSymbol("symbol3").setName("name3").setTimestamp(now).setPrice(12);

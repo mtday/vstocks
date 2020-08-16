@@ -1,18 +1,33 @@
 package vstocks.model;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Objects;
 
 public class PricedUserStock {
     private String userId;
     private Market market;
     private String symbol;
-    private int shares;
     private Instant timestamp;
+    private int shares;
     private int price;
 
     public PricedUserStock() {
     }
+
+    public static final Comparator<PricedUserStock> FULL_COMPARATOR = Comparator
+            .comparing(PricedUserStock::getUserId)
+            .thenComparing(PricedUserStock::getMarket)
+            .thenComparing(PricedUserStock::getSymbol)
+            .thenComparing(PricedUserStock::getTimestamp)
+            .thenComparingInt(PricedUserStock::getShares)
+            .thenComparingInt(PricedUserStock::getPrice);
+
+    public static final Comparator<PricedUserStock> UNIQUE_COMPARATOR = Comparator
+            .comparing(PricedUserStock::getUserId)
+            .thenComparing(PricedUserStock::getMarket)
+            .thenComparing(PricedUserStock::getSymbol)
+            .thenComparing(PricedUserStock::getTimestamp);
 
     public UserStock asUserStock() {
         return new UserStock()
@@ -57,21 +72,21 @@ public class PricedUserStock {
         return this;
     }
 
-    public int getShares() {
-        return shares;
-    }
-
-    public PricedUserStock setShares(int shares) {
-        this.shares = shares;
-        return this;
-    }
-
     public Instant getTimestamp() {
         return timestamp;
     }
 
     public PricedUserStock setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
+        return this;
+    }
+
+    public int getShares() {
+        return shares;
+    }
+
+    public PricedUserStock setShares(int shares) {
+        this.shares = shares;
         return this;
     }
 
@@ -91,12 +106,13 @@ public class PricedUserStock {
         PricedUserStock userStock = (PricedUserStock) o;
         return Objects.equals(userId, userStock.userId) &&
                 market == userStock.market &&
-                Objects.equals(symbol, userStock.symbol);
+                Objects.equals(symbol, userStock.symbol) &&
+                Objects.equals(timestamp, userStock.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, market.name(), symbol);
+        return Objects.hash(userId, market.name(), symbol, timestamp);
     }
 
     @Override
@@ -105,8 +121,8 @@ public class PricedUserStock {
                 "userId='" + userId + '\'' +
                 ", market=" + market +
                 ", symbol='" + symbol + '\'' +
-                ", shares=" + shares +
                 ", timestamp=" + timestamp +
+                ", shares=" + shares +
                 ", price=" + price +
                 '}';
     }

@@ -5,7 +5,7 @@ import vstocks.db.PortfolioValueDB;
 import vstocks.db.UserDB;
 import vstocks.model.ErrorResponse;
 import vstocks.model.PortfolioValue;
-import vstocks.model.rest.UserPortfolioResponse;
+import vstocks.model.rest.UserPortfolioValueResponse;
 import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;
@@ -78,9 +78,9 @@ public class GetValuesIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        UserPortfolioResponse userPortfolioResponse = response.readEntity(UserPortfolioResponse.class);
-        assertNull(userPortfolioResponse.getCurrentValue());
-        assertTrue(userPortfolioResponse.getHistoricalValues().isEmpty());
+        UserPortfolioValueResponse userPortfolioValueResponse = response.readEntity(UserPortfolioValueResponse.class);
+        assertNull(userPortfolioValueResponse.getCurrentValue());
+        assertTrue(userPortfolioValueResponse.getHistoricalValues().isEmpty());
     }
 
     @Test
@@ -109,20 +109,20 @@ public class GetValuesIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        UserPortfolioResponse userPortfolioResponse = response.readEntity(UserPortfolioResponse.class);
+        UserPortfolioValueResponse userPortfolioValueResponse = response.readEntity(UserPortfolioValueResponse.class);
 
         // make sure the current value is correct
         PortfolioValue expectedCurrentValue = values.iterator().next();
-        assertEquals(expectedCurrentValue.getUserId(), userPortfolioResponse.getCurrentValue().getUserId());
-        assertEquals(expectedCurrentValue.getCredits(), userPortfolioResponse.getCurrentValue().getCredits());
-        assertEquals(expectedCurrentValue.getMarketValues(), userPortfolioResponse.getCurrentValue().getMarketValues());
-        assertEquals(expectedCurrentValue.getTotal(), userPortfolioResponse.getCurrentValue().getTotal());
-        assertEquals(expectedCurrentValue.getTimestamp(), userPortfolioResponse.getCurrentValue().getTimestamp());
+        assertEquals(expectedCurrentValue.getUserId(), userPortfolioValueResponse.getCurrentValue().getUserId());
+        assertEquals(expectedCurrentValue.getCredits(), userPortfolioValueResponse.getCurrentValue().getCredits());
+        assertEquals(expectedCurrentValue.getMarketValues(), userPortfolioValueResponse.getCurrentValue().getMarketValues());
+        assertEquals(expectedCurrentValue.getTotal(), userPortfolioValueResponse.getCurrentValue().getTotal());
+        assertEquals(expectedCurrentValue.getTimestamp(), userPortfolioValueResponse.getCurrentValue().getTimestamp());
 
         // make sure the historical values are correct
-        assertEquals(values.size(), userPortfolioResponse.getHistoricalValues().size());
+        assertEquals(values.size(), userPortfolioValueResponse.getHistoricalValues().size());
         Iterator<PortfolioValue> expectedValueIter = values.iterator();
-        Iterator<PortfolioValue> actualValueIter = userPortfolioResponse.getHistoricalValues().iterator();
+        Iterator<PortfolioValue> actualValueIter = userPortfolioValueResponse.getHistoricalValues().iterator();
         while (expectedValueIter.hasNext() && actualValueIter.hasNext()) {
             PortfolioValue expected = expectedValueIter.next();
             PortfolioValue actual = actualValueIter.next();

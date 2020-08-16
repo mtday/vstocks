@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.stream.Collectors.toCollection;
+import static vstocks.model.User.generateId;
 
 public abstract class BaseResource {
     private static final int DEFAULT_PAGE_SIZE = 25;
@@ -54,10 +55,11 @@ public abstract class BaseResource {
     protected User getUser(CommonProfile commonProfile) {
         return ofNullable(commonProfile).map(profile ->
                 new User()
+                        .setId(generateId(profile.getEmail()))
                         .setEmail(profile.getEmail())
                         .setUsername(profile.getUsername())
                         .setDisplayName(profile.getDisplayName())
-                        .setImageLink(ofNullable(profile.getProfileUrl()).map(String::valueOf).orElse(null))
+                        .setProfileImage(ofNullable(profile.getProfileUrl()).map(String::valueOf).orElse(null))
         ).orElse(null);
     }
 }

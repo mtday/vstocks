@@ -55,7 +55,7 @@ public class StockUpdateTaskTest {
                             .setMarket(stock.getMarket())
                             .setSymbol(stock.getSymbol())
                             .setName(stock.getName())
-                            .setImageLink(stock.getImageLink())
+                            .setProfileImage(stock.getProfileImage())
                             .setTimestamp(Instant.now())
                             .setPrice(10);
                     consumer.accept(pricedStock);
@@ -88,8 +88,8 @@ public class StockUpdateTaskTest {
         when(ownedStockDB.consumeForMarket(any(), any(), any())).thenAnswer((Answer<Integer>) invocation -> {
             Market market = invocation.getArgument(0);
             Consumer<Stock> consumer = invocation.getArgument(1);
-            consumer.accept(new Stock().setMarket(market).setSymbol("s1").setName("s1").setImageLink("link"));
-            consumer.accept(new Stock().setMarket(market).setSymbol("s2").setName("s2").setImageLink("link"));
+            consumer.accept(new Stock().setMarket(market).setSymbol("s1").setName("s1").setProfileImage("link"));
+            consumer.accept(new Stock().setMarket(market).setSymbol("s2").setName("s2").setProfileImage("link"));
             return 2;
         });
 

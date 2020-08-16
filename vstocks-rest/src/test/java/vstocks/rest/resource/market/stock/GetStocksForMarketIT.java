@@ -1,14 +1,17 @@
 package vstocks.rest.resource.market.stock;
 
 import org.junit.Test;
-import vstocks.model.*;
-import vstocks.rest.ResourceTest;
 import vstocks.db.PricedStockDB;
+import vstocks.model.ErrorResponse;
+import vstocks.model.Page;
+import vstocks.model.PricedStock;
+import vstocks.model.Results;
+import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -54,7 +57,7 @@ public class GetStocksForMarketIT extends ResourceTest {
 
     @Test
     public void testGetForMarketsOnePage() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         PricedStock pricedStock1 = new PricedStock().setMarket(TWITTER).setSymbol("symbol1").setName("name1").setTimestamp(now).setPrice(10);
         PricedStock pricedStock2 = new PricedStock().setMarket(TWITTER).setSymbol("symbol2").setName("name2").setTimestamp(now).setPrice(11);
         PricedStock pricedStock3 = new PricedStock().setMarket(TWITTER).setSymbol("symbol3").setName("name3").setTimestamp(now).setPrice(12);

@@ -20,6 +20,9 @@ public class AchievementTest {
         assertEquals(BEGINNER, achievement.getCategory());
         assertEquals("description", achievement.getDescription());
         assertEquals(10, achievement.getOrder());
+
+        assertEquals(0, Achievement.FULL_COMPARATOR.compare(achievement, achievement));
+        assertEquals(0, Achievement.UNIQUE_COMPARATOR.compare(achievement, achievement));
     }
 
     @Test

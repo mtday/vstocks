@@ -92,7 +92,7 @@ public class TwitterRemoteStockServiceTest {
         assertEquals(TWITTER, pricedStock.getMarket());
         assertEquals("user", pricedStock.getSymbol());
         assertEquals("name", pricedStock.getName());
-        assertEquals("link", pricedStock.getImageLink());
+        assertEquals("link", pricedStock.getProfileImage());
         assertNotNull(pricedStock.getTimestamp());
         assertEquals(239, pricedStock.getPrice());
     }
@@ -104,7 +104,7 @@ public class TwitterRemoteStockServiceTest {
         assertEquals(TWITTER, pricedStock.getMarket());
         assertEquals("user", pricedStock.getSymbol());
         assertEquals("name", pricedStock.getName());
-        assertNull(pricedStock.getImageLink());
+        assertNull(pricedStock.getProfileImage());
         assertNotNull(pricedStock.getTimestamp());
         assertEquals(239, pricedStock.getPrice());
     }
@@ -145,12 +145,12 @@ public class TwitterRemoteStockServiceTest {
 
         assertEquals("user1", entries.get(0).getSymbol());
         assertEquals("User1", entries.get(0).getName());
-        assertEquals("link", entries.get(0).getImageLink());
+        assertEquals("link", entries.get(0).getProfileImage());
         assertEquals(239, entries.get(0).getPrice());
 
         assertEquals("user2", entries.get(1).getSymbol());
         assertEquals("User2", entries.get(1).getName());
-        assertEquals("link", entries.get(1).getImageLink());
+        assertEquals("link", entries.get(1).getProfileImage());
         assertEquals(455, entries.get(1).getPrice());
     }
 
@@ -175,13 +175,13 @@ public class TwitterRemoteStockServiceTest {
         assertEquals(TWITTER, stocks.get(0).getMarket());
         assertEquals("user1", stocks.get(0).getSymbol());
         assertEquals("User1", stocks.get(0).getName());
-        assertEquals("link1", stocks.get(0).getImageLink());
+        assertEquals("link1", stocks.get(0).getProfileImage());
         assertEquals(239, stocks.get(0).getPrice());
 
         assertEquals(TWITTER, stocks.get(1).getMarket());
         assertEquals("user2", stocks.get(1).getSymbol());
         assertEquals("User2", stocks.get(1).getName());
-        assertEquals("link2", stocks.get(1).getImageLink());
+        assertEquals("link2", stocks.get(1).getProfileImage());
         assertEquals(455, stocks.get(1).getPrice());
     }
 }

@@ -1,5 +1,6 @@
 package vstocks.model;
 
+import java.util.Comparator;
 import java.util.Objects;
 
 public class UserCredits {
@@ -8,6 +9,12 @@ public class UserCredits {
 
     public UserCredits() {
     }
+
+    public static final Comparator<UserCredits> FULL_COMPARATOR = Comparator
+            .comparing(UserCredits::getUserId)
+            .thenComparingLong(UserCredits::getCredits);
+
+    public static final Comparator<UserCredits> UNIQUE_COMPARATOR = Comparator.comparing(UserCredits::getUserId);
 
     public String getUserId() {
         return userId;

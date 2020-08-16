@@ -12,15 +12,17 @@ import vstocks.model.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static org.junit.Assert.*;
-import static vstocks.model.DatabaseField.*;
+import static vstocks.model.DatabaseField.RANK;
+import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.User.generateId;
 
 public class JdbcPortfolioValueRankDBIT {
     @ClassRule
@@ -31,9 +33,9 @@ public class JdbcPortfolioValueRankDBIT {
 
     private JdbcPortfolioValueRankDB portfolioValueRankDB;
 
-    private final Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-    private final User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
-    private final User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
+    private final Instant now = Instant.now().truncatedTo(SECONDS);
+    private final User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+    private final User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
 
     @Before
     public void setup() throws SQLException {

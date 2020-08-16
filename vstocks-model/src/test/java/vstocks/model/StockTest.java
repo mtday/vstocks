@@ -12,12 +12,15 @@ public class StockTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setName("name")
-                .setImageLink("link");
+                .setProfileImage("link");
 
         assertEquals(TWITTER, stock.getMarket());
         assertEquals("symbol", stock.getSymbol());
         assertEquals("name", stock.getName());
-        assertEquals("link", stock.getImageLink());
+        assertEquals("link", stock.getProfileImage());
+
+        assertEquals(0, Stock.FULL_COMPARATOR.compare(stock, stock));
+        assertEquals(0, Stock.UNIQUE_COMPARATOR.compare(stock, stock));
     }
 
     @Test
@@ -33,7 +36,7 @@ public class StockTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setName("name")
-                .setImageLink("link");
+                .setProfileImage("link");
         assertEquals(1553141094, stock.hashCode());
     }
 
@@ -43,7 +46,7 @@ public class StockTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setName("name")
-                .setImageLink("link");
-        assertEquals("Stock{market=TWITTER, symbol='symbol', name='name', imageLink='link'}", stock.toString());
+                .setProfileImage("link");
+        assertEquals("Stock{market=TWITTER, symbol='symbol', name='name', profileImage='link'}", stock.toString());
     }
 }

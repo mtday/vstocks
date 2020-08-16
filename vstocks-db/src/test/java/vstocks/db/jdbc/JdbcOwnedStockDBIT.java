@@ -28,6 +28,7 @@ import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
 import static vstocks.model.Market.YOUTUBE;
 import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.User.generateId;
 
 public class JdbcOwnedStockDBIT {
     @ClassRule
@@ -43,9 +44,9 @@ public class JdbcOwnedStockDBIT {
     private final Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
     private final Stock stock3 = new Stock().setMarket(YOUTUBE).setSymbol("sym1").setName("name1");
     private final Stock stock4 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
-    private final User user1 = new User().setEmail("user1@domain.com").setUsername("user1").setDisplayName("User 1");
-    private final User user2 = new User().setEmail("user2@domain.com").setUsername("user2").setDisplayName("User 2");
-    private final User user3 = new User().setEmail("user3@domain.com").setUsername("user3").setDisplayName("User 3");
+    private final User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("user1").setDisplayName("User 1");
+    private final User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("user2").setDisplayName("User 2");
+    private final User user3 = new User().setId(generateId("user3@domain.com")).setEmail("user3@domain.com").setUsername("user3").setDisplayName("User 3");
 
     @Before
     public void setup() throws SQLException {

@@ -3,17 +3,15 @@ package vstocks.model;
 import org.junit.Test;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 
 public class UserAchievementTest {
     @Test
     public void testGettersAndSetters() {
-        String userId = UUID.nameUUIDFromBytes("user@domain.com".getBytes(UTF_8)).toString();
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        String userId = User.generateId("user@domain.com");
+        Instant now = Instant.now().truncatedTo(SECONDS);
         UserAchievement userAchievement = new UserAchievement()
                 .setUserId(userId)
                 .setAchievementId("achievementId")
@@ -24,11 +22,14 @@ public class UserAchievementTest {
         assertEquals("achievementId", userAchievement.getAchievementId());
         assertEquals(now, userAchievement.getTimestamp());
         assertEquals("description", userAchievement.getDescription());
+
+        assertEquals(0, UserAchievement.FULL_COMPARATOR.compare(userAchievement, userAchievement));
+        assertEquals(0, UserAchievement.UNIQUE_COMPARATOR.compare(userAchievement, userAchievement));
     }
 
     @Test
     public void testEquals() {
-        String userId = UUID.nameUUIDFromBytes("user@domain.com".getBytes(UTF_8)).toString();
+        String userId = User.generateId("user@domain.com");
         UserAchievement userAchievement1 = new UserAchievement().setUserId(userId).setAchievementId("achievementId");
         UserAchievement userAchievement2 = new UserAchievement().setUserId(userId).setAchievementId("achievementId");
         assertEquals(userAchievement1, userAchievement2);
@@ -36,8 +37,8 @@ public class UserAchievementTest {
 
     @Test
     public void testHashCode() {
-        String userId = UUID.nameUUIDFromBytes("user@domain.com".getBytes(UTF_8)).toString();
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        String userId = User.generateId("user@domain.com");
+        Instant now = Instant.now().truncatedTo(SECONDS);
         UserAchievement userAchievement = new UserAchievement()
                 .setUserId(userId)
                 .setAchievementId("achievementId")
@@ -48,8 +49,8 @@ public class UserAchievementTest {
 
     @Test
     public void testToString() {
-        String userId = UUID.nameUUIDFromBytes("user@domain.com".getBytes(UTF_8)).toString();
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        String userId = User.generateId("user@domain.com");
+        Instant now = Instant.now().truncatedTo(SECONDS);
         UserAchievement userAchievement = new UserAchievement()
                 .setUserId(userId)
                 .setAchievementId("achievementId")

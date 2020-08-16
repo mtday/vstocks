@@ -79,7 +79,7 @@ public class YouTubeRemoteStockServiceTest {
         assertEquals(YOUTUBE, pricedStock.getMarket());
         assertEquals("channel", pricedStock.getSymbol());
         assertEquals("title", pricedStock.getName());
-        assertEquals("link", pricedStock.getImageLink());
+        assertEquals("link", pricedStock.getProfileImage());
         assertNotNull(pricedStock.getTimestamp());
         assertEquals(239, pricedStock.getPrice());
     }
@@ -91,7 +91,7 @@ public class YouTubeRemoteStockServiceTest {
         assertEquals(YOUTUBE, pricedStock.getMarket());
         assertEquals("channel", pricedStock.getSymbol());
         assertEquals("title", pricedStock.getName());
-        assertNull(pricedStock.getImageLink());
+        assertNull(pricedStock.getProfileImage());
         assertNotNull(pricedStock.getTimestamp());
         assertEquals(239, pricedStock.getPrice());
     }
@@ -105,7 +105,7 @@ public class YouTubeRemoteStockServiceTest {
         assertEquals(YOUTUBE, pricedStock.getMarket());
         assertEquals("channel", pricedStock.getSymbol());
         assertEquals("title", pricedStock.getName());
-        assertNull(pricedStock.getImageLink());
+        assertNull(pricedStock.getProfileImage());
         assertNotNull(pricedStock.getTimestamp());
         assertEquals(239, pricedStock.getPrice());
     }
@@ -119,7 +119,7 @@ public class YouTubeRemoteStockServiceTest {
         assertEquals(YOUTUBE, pricedStock.getMarket());
         assertEquals("channel", pricedStock.getSymbol());
         assertEquals("title", pricedStock.getName());
-        assertNull(pricedStock.getImageLink());
+        assertNull(pricedStock.getProfileImage());
         assertNotNull(pricedStock.getTimestamp());
         assertEquals(239, pricedStock.getPrice());
     }
@@ -137,8 +137,8 @@ public class YouTubeRemoteStockServiceTest {
         YouTubeRemoteStockService youTubeRemoteStockService = new YouTubeRemoteStockService(youTubeService);
         Future<?> future;
         try (StockUpdateRunnable runnable = youTubeRemoteStockService.getUpdateRunnable(executorService, entries::add)) {
-            runnable.accept(new Stock().setMarket(YOUTUBE).setSymbol("1").setName("name").setImageLink("link"));
-            runnable.accept(new Stock().setMarket(YOUTUBE).setSymbol("2").setName("name").setImageLink("link"));
+            runnable.accept(new Stock().setMarket(YOUTUBE).setSymbol("1").setName("name").setProfileImage("link"));
+            runnable.accept(new Stock().setMarket(YOUTUBE).setSymbol("2").setName("name").setProfileImage("link"));
             future = executorService.submit(runnable);
         }
         future.get();
@@ -156,12 +156,12 @@ public class YouTubeRemoteStockServiceTest {
 
         assertEquals("1", entries.get(0).getSymbol());
         assertEquals("Channel 1", entries.get(0).getName());
-        assertEquals("link1", entries.get(0).getImageLink());
+        assertEquals("link1", entries.get(0).getProfileImage());
         assertEquals(239, entries.get(0).getPrice());
 
         assertEquals("2", entries.get(1).getSymbol());
         assertEquals("Channel 2", entries.get(1).getName());
-        assertEquals("link2", entries.get(1).getImageLink());
+        assertEquals("link2", entries.get(1).getProfileImage());
         assertEquals(455, entries.get(1).getPrice());
     }
 
@@ -180,13 +180,13 @@ public class YouTubeRemoteStockServiceTest {
         assertEquals(YOUTUBE, stocks.get(0).getMarket());
         assertEquals("1", stocks.get(0).getSymbol());
         assertEquals("Channel 1", stocks.get(0).getName());
-        assertEquals("link1", stocks.get(0).getImageLink());
+        assertEquals("link1", stocks.get(0).getProfileImage());
         assertEquals(239, stocks.get(0).getPrice());
 
         assertEquals(YOUTUBE, stocks.get(1).getMarket());
         assertEquals("2", stocks.get(1).getSymbol());
         assertEquals("Channel 2", stocks.get(1).getName());
-        assertEquals("link2", stocks.get(1).getImageLink());
+        assertEquals("link2", stocks.get(1).getProfileImage());
         assertEquals(455, stocks.get(1).getPrice());
     }
 }

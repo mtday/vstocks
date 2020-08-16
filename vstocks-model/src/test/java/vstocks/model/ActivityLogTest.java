@@ -3,10 +3,8 @@ package vstocks.model;
 import org.junit.Test;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static vstocks.model.ActivityType.STOCK_SELL;
@@ -16,8 +14,8 @@ import static vstocks.model.Market.TWITTER;
 public class ActivityLogTest {
     @Test
     public void testGettersAndSettersAll() {
-        String userId = UUID.nameUUIDFromBytes("user@domain.com".getBytes(UTF_8)).toString();
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        String userId = User.generateId("user@domain.com");
+        Instant now = Instant.now().truncatedTo(SECONDS);
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")
                 .setUserId(userId)
@@ -36,12 +34,15 @@ public class ActivityLogTest {
         assertEquals("symbol", activityLog.getSymbol());
         assertEquals(10, (int) activityLog.getShares());
         assertEquals(20, (int) activityLog.getPrice());
+
+        assertEquals(0, ActivityLog.FULL_COMPARATOR.compare(activityLog, activityLog));
+        assertEquals(0, ActivityLog.UNIQUE_COMPARATOR.compare(activityLog, activityLog));
     }
 
     @Test
     public void testGettersAndSettersSimple() {
-        String userId = UUID.nameUUIDFromBytes("user@domain.com".getBytes(UTF_8)).toString();
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        String userId = User.generateId("user@domain.com");
+        Instant now = Instant.now().truncatedTo(SECONDS);
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")
                 .setUserId(userId)
@@ -67,8 +68,8 @@ public class ActivityLogTest {
 
     @Test
     public void testHashCode() {
-        String userId = UUID.nameUUIDFromBytes("user@domain.com".getBytes(UTF_8)).toString();
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        String userId = User.generateId("user@domain.com");
+        Instant now = Instant.now().truncatedTo(SECONDS);
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")
                 .setUserId(userId)
@@ -83,8 +84,8 @@ public class ActivityLogTest {
 
     @Test
     public void testToString() {
-        String userId = UUID.nameUUIDFromBytes("user@domain.com".getBytes(UTF_8)).toString();
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        String userId = User.generateId("user@domain.com");
+        Instant now = Instant.now().truncatedTo(SECONDS);
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")
                 .setUserId(userId)

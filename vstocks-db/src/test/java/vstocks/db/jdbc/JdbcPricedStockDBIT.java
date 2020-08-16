@@ -4,17 +4,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.model.*;
 import vstocks.db.DataSourceExternalResource;
 import vstocks.db.jdbc.table.StockPriceTable;
 import vstocks.db.jdbc.table.StockTable;
+import vstocks.model.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
@@ -65,7 +65,7 @@ public class JdbcPricedStockDBIT {
 
     @Test
     public void testGetExistsNoPrice() {
-        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setImageLink("link");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
         assertEquals(1, stockDB.add(stock));
 
         Optional<PricedStock> fetched = pricedStockDB.get(TWITTER, stock.getSymbol());
@@ -79,7 +79,7 @@ public class JdbcPricedStockDBIT {
 
     @Test
     public void testGetExistsWithNoPrice() {
-        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setImageLink("link");
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
         assertEquals(1, stockDB.add(stock));
 
         Optional<PricedStock> fetched = pricedStockDB.get(TWITTER, stock.getSymbol());
@@ -93,8 +93,8 @@ public class JdbcPricedStockDBIT {
 
     @Test
     public void testGetExistsWithSinglePrice() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setImageLink("link");
+        Instant now = Instant.now().truncatedTo(SECONDS);
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
         StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock.getSymbol()).setTimestamp(now).setPrice(10);
         assertEquals(1, stockDB.add(stock));
         assertEquals(1, stockPriceDB.add(stockPrice));
@@ -110,8 +110,8 @@ public class JdbcPricedStockDBIT {
 
     @Test
     public void testGetExistsWithMultiplePrices() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setImageLink("link");
+        Instant now = Instant.now().truncatedTo(SECONDS);
+        Stock stock = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
         StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock.getSymbol()).setTimestamp(now).setPrice(10);
         StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
         assertEquals(1, stockDB.add(stock));
@@ -136,9 +136,9 @@ public class JdbcPricedStockDBIT {
 
     @Test
     public void testGetForMarketSomeNoSort() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setImageLink("link");
-        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2").setImageLink("link");
+        Instant now = Instant.now().truncatedTo(SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2").setProfileImage("link");
         StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
         StockPrice stock2Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
@@ -172,9 +172,9 @@ public class JdbcPricedStockDBIT {
 
     @Test
     public void testGetForMarketSomeWithSort() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setImageLink("link");
-        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2").setImageLink("link");
+        Instant now = Instant.now().truncatedTo(SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2").setProfileImage("link");
         StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
         StockPrice stock2Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
@@ -216,9 +216,9 @@ public class JdbcPricedStockDBIT {
 
     @Test
     public void testConsumeForMarketSomeNoSort() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setImageLink("link");
-        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2").setImageLink("link");
+        Instant now = Instant.now().truncatedTo(SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2").setProfileImage("link");
         StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
         StockPrice stock2Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
@@ -252,9 +252,9 @@ public class JdbcPricedStockDBIT {
 
     @Test
     public void testConsumeForMarketSomeWithSort() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setImageLink("link");
-        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2").setImageLink("link");
+        Instant now = Instant.now().truncatedTo(SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
+        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2").setProfileImage("link");
         StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
         StockPrice stock2Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
@@ -296,9 +296,9 @@ public class JdbcPricedStockDBIT {
 
     @Test
     public void testGetAllSomeNoSort() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setImageLink("link");
-        Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2").setImageLink("link");
+        Instant now = Instant.now().truncatedTo(SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
+        Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2").setProfileImage("link");
         StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
         StockPrice stock2Price1 = new StockPrice().setMarket(YOUTUBE).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
@@ -332,9 +332,9 @@ public class JdbcPricedStockDBIT {
 
     @Test
     public void testGetAllSomeWithSort() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setImageLink("link");
-        Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2").setImageLink("link");
+        Instant now = Instant.now().truncatedTo(SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
+        Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2").setProfileImage("link");
         StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
         StockPrice stock2Price1 = new StockPrice().setMarket(YOUTUBE).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
@@ -376,9 +376,9 @@ public class JdbcPricedStockDBIT {
 
     @Test
     public void testConsumeSomeNoSort() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setImageLink("link");
-        Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2").setImageLink("link");
+        Instant now = Instant.now().truncatedTo(SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
+        Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2").setProfileImage("link");
         StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
         StockPrice stock2Price1 = new StockPrice().setMarket(YOUTUBE).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
@@ -412,9 +412,9 @@ public class JdbcPricedStockDBIT {
 
     @Test
     public void testConsumeSomeWithSort() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setImageLink("link");
-        Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2").setImageLink("link");
+        Instant now = Instant.now().truncatedTo(SECONDS);
+        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
+        Stock stock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2").setProfileImage("link");
         StockPrice stock1Price1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         StockPrice stock1Price2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(8);
         StockPrice stock2Price1 = new StockPrice().setMarket(YOUTUBE).setSymbol(stock2.getSymbol()).setTimestamp(now).setPrice(10);
@@ -449,8 +449,8 @@ public class JdbcPricedStockDBIT {
 
     @Test
     public void testAdd() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-        PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setSymbol("symbol").setName("Name").setImageLink("link").setTimestamp(now).setPrice(10);
+        Instant now = Instant.now().truncatedTo(SECONDS);
+        PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setSymbol("symbol").setName("Name").setProfileImage("link").setTimestamp(now).setPrice(10);
 
         assertEquals(1, pricedStockDB.add(pricedStock));
 
@@ -463,7 +463,7 @@ public class JdbcPricedStockDBIT {
         assertEquals(pricedStock.getMarket(), stock.get().getMarket());
         assertEquals(pricedStock.getSymbol(), stock.get().getSymbol());
         assertEquals(pricedStock.getName(), stock.get().getName());
-        assertEquals(pricedStock.getImageLink(), stock.get().getImageLink());
+        assertEquals(pricedStock.getProfileImage(), stock.get().getProfileImage());
         assertEquals(pricedStock.getMarket(), stockPrice.get().getMarket());
         assertEquals(pricedStock.getSymbol(), stockPrice.get().getSymbol());
         assertEquals(pricedStock.getTimestamp(), stockPrice.get().getTimestamp());
@@ -471,8 +471,8 @@ public class JdbcPricedStockDBIT {
     }
 
     @Test
-    public void testAddNoImageLink() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+    public void testAddNoProfileImage() {
+        Instant now = Instant.now().truncatedTo(SECONDS);
         PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setSymbol("symbol").setName("Name").setTimestamp(now).setPrice(10);
 
         assertEquals(1, pricedStockDB.add(pricedStock));
@@ -486,7 +486,7 @@ public class JdbcPricedStockDBIT {
         assertEquals(pricedStock.getMarket(), stock.get().getMarket());
         assertEquals(pricedStock.getSymbol(), stock.get().getSymbol());
         assertEquals(pricedStock.getName(), stock.get().getName());
-        assertNull(stock.get().getImageLink());
+        assertNull(stock.get().getProfileImage());
         assertEquals(pricedStock.getMarket(), stockPrice.get().getMarket());
         assertEquals(pricedStock.getSymbol(), stockPrice.get().getSymbol());
         assertEquals(pricedStock.getTimestamp(), stockPrice.get().getTimestamp());
@@ -495,7 +495,7 @@ public class JdbcPricedStockDBIT {
 
     @Test
     public void testAddAlreadyExists() {
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setSymbol("symbol").setName("Name").setTimestamp(now).setPrice(10);
 
         assertEquals(1, pricedStockDB.add(pricedStock));

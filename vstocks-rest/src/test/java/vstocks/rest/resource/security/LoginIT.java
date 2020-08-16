@@ -96,16 +96,16 @@ public class LoginIT extends ResourceTest {
     }
 
     @Test
-    public void testLoginExistingUserDifferentImageLink() {
+    public void testLoginExistingUserDifferentProfileImage() {
         for (String type : asList("facebook", "google", "twitter")) {
-            testLoginExistingUserDifferentImageLink(type);
+            testLoginExistingUserDifferentProfileImage(type);
         }
     }
 
-    private void testLoginExistingUserDifferentImageLink(String type) {
+    private void testLoginExistingUserDifferentProfileImage(String type) {
         UserDB userDB = mock(UserDB.class);
         when(userDB.get(eq(getUser().getId())))
-                .thenReturn(Optional.of(getUser().setImageLink("https://different/image.png")));
+                .thenReturn(Optional.of(getUser().setProfileImage("https://different/image.png")));
 
         ActivityLogDB activityLogDB = mock(ActivityLogDB.class);
 
@@ -128,7 +128,7 @@ public class LoginIT extends ResourceTest {
 
         verify(userDB, times(1)).update(argThat(user ->
                 // image reset back to the one from the profile
-                getUser().equals(user) && getUser().getImageLink().equals(user.getImageLink())));
+                getUser().equals(user) && getUser().getProfileImage().equals(user.getProfileImage())));
         verify(activityLogDB, times(1)).add(argThat(new ActivityLogArgumentMatcher(activityLog)));
     }
 
@@ -145,7 +145,7 @@ public class LoginIT extends ResourceTest {
                     && Objects.equals(user.getEmail(), expected.getEmail())
                     && Objects.equals(user.getUsername(), expected.getUsername())
                     && Objects.equals(user.getDisplayName(), expected.getDisplayName())
-                    && Objects.equals(user.getImageLink(), expected.getImageLink());
+                    && Objects.equals(user.getProfileImage(), expected.getProfileImage());
         }
 
         @Override

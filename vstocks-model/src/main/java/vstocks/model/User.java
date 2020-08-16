@@ -3,12 +3,12 @@ package vstocks.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.security.Principal;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.UUID;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Locale.ENGLISH;
-import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
 public class User implements Principal {
@@ -16,10 +16,19 @@ public class User implements Principal {
     private String email;
     private String username;
     private String displayName;
-    private String imageLink;
+    private String profileImage;
 
     public User() {
     }
+
+    public static final Comparator<User> FULL_COMPARATOR = Comparator
+            .comparing(User::getId)
+            .thenComparing(User::getEmail)
+            .thenComparing(User::getUsername)
+            .thenComparing(User::getDisplayName)
+            .thenComparing(User::getProfileImage);
+
+    public static final Comparator<User> UNIQUE_COMPARATOR = Comparator.comparing(User::getId);
 
     public static String generateId(String email) {
         return ofNullable(email)
@@ -32,21 +41,20 @@ public class User implements Principal {
     }
 
     public User setId(String id) {
-        this.id = requireNonNull(id);
+        this.id = id;
         return this;
     }
 
-    @JsonIgnore
     public String getEmail() {
         return email;
     }
 
     public User setEmail(String email) {
-        this.email = requireNonNull(email);
-        return setId(generateId(email));
+        this.email = email;
+        return this;
     }
 
-    @JsonIgnore
+    @JsonIgnore // same as username so no need to include this in json output
     @Override
     public String getName() {
         return username;
@@ -57,7 +65,7 @@ public class User implements Principal {
     }
 
     public User setUsername(String username) {
-        this.username = requireNonNull(username);
+        this.username = username;
         return this;
     }
 
@@ -70,12 +78,12 @@ public class User implements Principal {
         return this;
     }
 
-    public String getImageLink() {
-        return imageLink;
+    public String getProfileImage() {
+        return profileImage;
     }
 
-    public User setImageLink(String imageLink) {
-        this.imageLink = imageLink;
+    public User setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
         return this;
     }
 
@@ -99,7 +107,7 @@ public class User implements Principal {
                 ", email='" + email + '\'' +
                 ", username='" + username + '\'' +
                 ", displayName='" + displayName + '\'' +
-                ", imageLink='" + imageLink + '\'' +
+                ", profileImage='" + profileImage + '\'' +
                 '}';
     }
 }

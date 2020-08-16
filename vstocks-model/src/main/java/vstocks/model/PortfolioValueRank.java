@@ -1,6 +1,7 @@
 package vstocks.model;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Objects;
 
 public class PortfolioValueRank {
@@ -10,6 +11,15 @@ public class PortfolioValueRank {
 
     public PortfolioValueRank() {
     }
+
+    public static final Comparator<PortfolioValueRank> FULL_COMPARATOR = Comparator
+            .comparing(PortfolioValueRank::getUserId)
+            .thenComparing(PortfolioValueRank::getTimestamp)
+            .thenComparingInt(PortfolioValueRank::getRank);
+
+    public static final Comparator<PortfolioValueRank> UNIQUE_COMPARATOR = Comparator
+            .comparing(PortfolioValueRank::getUserId)
+            .thenComparing(PortfolioValueRank::getTimestamp);
 
     public String getUserId() {
         return userId;

@@ -1,15 +1,26 @@
 package vstocks.model;
 
+import java.util.Comparator;
 import java.util.Objects;
 
 public class Stock {
     private Market market;
     private String symbol;
     private String name;
-    private String imageLink;
+    private String profileImage;
 
     public Stock() {
     }
+
+    public static final Comparator<Stock> FULL_COMPARATOR = Comparator
+            .comparing(Stock::getMarket)
+            .thenComparing(Stock::getSymbol)
+            .thenComparing(Stock::getName)
+            .thenComparing(Stock::getProfileImage);
+
+    public static final Comparator<Stock> UNIQUE_COMPARATOR = Comparator
+            .comparing(Stock::getMarket)
+            .thenComparing(Stock::getSymbol);
 
     public Market getMarket() {
         return market;
@@ -38,12 +49,12 @@ public class Stock {
         return this;
     }
 
-    public String getImageLink() {
-        return imageLink;
+    public String getProfileImage() {
+        return profileImage;
     }
 
-    public Stock setImageLink(String imageLink) {
-        this.imageLink = imageLink;
+    public Stock setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
         return this;
     }
 
@@ -67,7 +78,7 @@ public class Stock {
                 "market=" + market +
                 ", symbol='" + symbol + '\'' +
                 ", name='" + name + '\'' +
-                ", imageLink='" + imageLink + '\'' +
+                ", profileImage='" + profileImage + '\'' +
                 '}';
     }
 }

@@ -19,7 +19,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -66,7 +65,7 @@ public class PutUserIT extends ResourceTest {
                 .setEmail("updated")
                 .setUsername("updated")
                 .setDisplayName("updated")
-                .setImageLink("updated");
+                .setProfileImage("updated");
         Entity<User> entity = Entity.entity(updateUser, APPLICATION_JSON);
         Response response = target("/user").request().header(AUTHORIZATION, "Bearer token").put(entity);
 
@@ -77,17 +76,17 @@ public class PutUserIT extends ResourceTest {
         User user = getUser();
         User fetched = response.readEntity(User.class);
         assertEquals(user.getId(), fetched.getId());
-        assertNull(fetched.getEmail()); // email not included in json responses
+        assertEquals(user.getEmail(), fetched.getEmail());
         assertEquals(user.getUsername(), fetched.getUsername());
         assertEquals(user.getDisplayName(), fetched.getDisplayName());
-        assertEquals(user.getImageLink(), fetched.getImageLink());
+        assertEquals(user.getProfileImage(), fetched.getProfileImage());
 
         verify(userDB, times(1)).update(argThat(update -> {
             return Objects.equals(user.getId(), update.getId()) // not updated
                     && Objects.equals(user.getEmail(), update.getEmail()) // not updated
                     && Objects.equals(updateUser.getUsername(), update.getUsername()) // updated
                     && Objects.equals(updateUser.getDisplayName(), update.getDisplayName()) // updated
-                    && Objects.equals(user.getImageLink(), update.getImageLink()); // not updated
+                    && Objects.equals(user.getProfileImage(), update.getProfileImage()); // not updated
         }));
     }
 
@@ -103,7 +102,7 @@ public class PutUserIT extends ResourceTest {
                 .setEmail("updated")
                 .setUsername("updated")
                 .setDisplayName("updated")
-                .setImageLink("updated");
+                .setProfileImage("updated");
         Entity<User> entity = Entity.entity(updateUser, APPLICATION_JSON);
         Response response = target("/user").request().header(AUTHORIZATION, "Bearer token").put(entity);
 
@@ -114,17 +113,17 @@ public class PutUserIT extends ResourceTest {
         User user = getUser();
         User fetched = response.readEntity(User.class);
         assertEquals(user.getId(), fetched.getId()); // still original value
-        assertNull(fetched.getEmail()); // email not included in json responses
+        assertEquals(user.getEmail(), fetched.getEmail()); // still original value
         assertEquals(updateUser.getUsername(), fetched.getUsername()); // updated value
         assertEquals(updateUser.getDisplayName(), fetched.getDisplayName()); // updated value
-        assertEquals(user.getImageLink(), fetched.getImageLink()); // still original value
+        assertEquals(user.getProfileImage(), fetched.getProfileImage()); // still original value
 
         verify(userDB, times(1)).update(argThat(update -> {
             return Objects.equals(user.getId(), update.getId()) // not updated
                     && Objects.equals(user.getEmail(), update.getEmail()) // not updated
                     && Objects.equals(updateUser.getUsername(), update.getUsername()) // updated
                     && Objects.equals(updateUser.getDisplayName(), update.getDisplayName()) // updated
-                    && Objects.equals(user.getImageLink(), update.getImageLink()); // not updated
+                    && Objects.equals(user.getProfileImage(), update.getProfileImage()); // not updated
         }));
     }
 }

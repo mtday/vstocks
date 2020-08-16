@@ -11,16 +11,18 @@ import vstocks.model.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
 import static org.junit.Assert.*;
-import static vstocks.model.DatabaseField.*;
+import static vstocks.model.DatabaseField.CREDITS;
+import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.Market.TWITTER;
 import static vstocks.model.Market.YOUTUBE;
 import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.User.generateId;
 
 public class JdbcPortfolioValueDBIT {
     @ClassRule
@@ -35,9 +37,9 @@ public class JdbcPortfolioValueDBIT {
 
     private JdbcPortfolioValueDB portfolioValueDB;
 
-    private final Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
-    private final User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
-    private final User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
+    private final Instant now = Instant.now().truncatedTo(SECONDS);
+    private final User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+    private final User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
     private final Stock twitterStock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
     private final Stock twitterStock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
     private final Stock twitterStock3 = new Stock().setMarket(TWITTER).setSymbol("sym3").setName("name3");

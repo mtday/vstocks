@@ -73,8 +73,8 @@ public class Login extends BaseResource {
         // An existing user exists in the db. Update the profile image. We don't update anything else
         // (username, display name) since the user may have modified those via their profile page.
         User profileUser = getUser(profile);
-        if (!Objects.equals(profileUser.getImageLink(), user.getImageLink())) {
-            user.setImageLink(profileUser.getImageLink());
+        if (!Objects.equals(profileUser.getProfileImage(), user.getProfileImage())) {
+            user.setProfileImage(profileUser.getProfileImage());
             dbFactory.getUserDB().update(user);
         }
 

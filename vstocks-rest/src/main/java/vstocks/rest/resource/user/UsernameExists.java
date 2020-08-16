@@ -1,6 +1,7 @@
 package vstocks.rest.resource.user;
 
 import vstocks.db.DBFactory;
+import vstocks.model.rest.UsernameExistsResponse;
 import vstocks.rest.resource.BaseResource;
 import vstocks.rest.security.JwtTokenRequired;
 
@@ -32,31 +33,5 @@ public class UsernameExists extends BaseResource {
         return new UsernameExistsResponse()
                 .setUsername(trimmed)
                 .setExists(dbFactory.getUserDB().usernameExists(trimmed));
-    }
-
-    public static class UsernameExistsResponse {
-        private String username;
-        private boolean exists;
-
-        public UsernameExistsResponse() {
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public UsernameExistsResponse setUsername(String username) {
-            this.username = username;
-            return this;
-        }
-
-        public boolean isExists() {
-            return exists;
-        }
-
-        public UsernameExistsResponse setExists(boolean exists) {
-            this.exists = exists;
-            return this;
-        }
     }
 }

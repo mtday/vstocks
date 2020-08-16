@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.logging.LogManager;
 
 import static org.mockito.Mockito.mock;
+import static vstocks.model.User.generateId;
 
 public abstract class ResourceTest extends JerseyTest {
     static {
@@ -49,10 +50,11 @@ public abstract class ResourceTest extends JerseyTest {
 
     public User getUser() {
         return new User()
+                .setId(generateId("user@domain.com"))
                 .setEmail("user@domain.com")
                 .setUsername("username")
                 .setDisplayName("Display Name")
-                .setImageLink("https://domain.com/user/profile-image.png");
+                .setProfileImage("https://domain.com/user/profile-image.png");
     }
 
     public CommonProfile getCommonProfile() {
@@ -63,7 +65,7 @@ public abstract class ResourceTest extends JerseyTest {
         commonProfile.addAttribute("email", user.getEmail());
         commonProfile.addAttribute("username", user.getUsername());
         commonProfile.addAttribute("display_name", user.getDisplayName());
-        commonProfile.addAttribute("profile_url", URI.create(user.getImageLink()));
+        commonProfile.addAttribute("profile_url", URI.create(user.getProfileImage()));
         return commonProfile;
     }
 

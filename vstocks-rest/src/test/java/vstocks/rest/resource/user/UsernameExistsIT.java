@@ -3,8 +3,8 @@ package vstocks.rest.resource.user;
 import org.junit.Test;
 import vstocks.db.UserDB;
 import vstocks.model.ErrorResponse;
+import vstocks.model.rest.UsernameExistsResponse;
 import vstocks.rest.ResourceTest;
-import vstocks.rest.resource.user.UsernameExists.UsernameExistsResponse;
 
 import javax.ws.rs.core.Response;
 import java.util.Optional;

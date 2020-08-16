@@ -10,9 +10,9 @@ import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Optional.empty;
 import static javax.ws.rs.client.Entity.entity;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
@@ -72,7 +72,7 @@ public class BuyStockIT extends ResourceTest {
         UserStockDB userStockDb = mock(UserStockDB.class);
         when(userStockDb.buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10))).thenReturn(1);
         when(getDBFactory().getUserStockDB()).thenReturn(userStockDb);
-        Instant now = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant now = Instant.now().truncatedTo(SECONDS);
         PricedUserStock pricedUserStock = new PricedUserStock().setUserId(user.getId()).setMarket(TWITTER).setSymbol("symbol").setShares(10).setTimestamp(now).setPrice(10);
         PricedUserStockDB pricedUserStockDb = mock(PricedUserStockDB.class);
         when(pricedUserStockDb.get(eq(user.getId()), eq(TWITTER), eq("symbol"))).thenReturn(Optional.of(pricedUserStock));

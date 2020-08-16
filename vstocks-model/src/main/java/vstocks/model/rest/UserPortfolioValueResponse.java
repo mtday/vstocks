@@ -4,18 +4,18 @@ import vstocks.model.PortfolioValue;
 
 import java.util.List;
 
-public class UserPortfolioResponse {
+public class UserPortfolioValueResponse {
     private PortfolioValue currentValue;
     private List<PortfolioValue> historicalValues;
 
-    public UserPortfolioResponse() {
+    public UserPortfolioValueResponse() {
     }
 
     public PortfolioValue getCurrentValue() {
         return currentValue;
     }
 
-    public UserPortfolioResponse setCurrentValue(PortfolioValue currentValue) {
+    public UserPortfolioValueResponse setCurrentValue(PortfolioValue currentValue) {
         this.currentValue = currentValue;
         return this;
     }
@@ -24,7 +24,7 @@ public class UserPortfolioResponse {
         return historicalValues;
     }
 
-    public UserPortfolioResponse setHistoricalValues(List<PortfolioValue> historicalValues) {
+    public UserPortfolioValueResponse setHistoricalValues(List<PortfolioValue> historicalValues) {
         this.historicalValues = historicalValues;
         return this;
     }

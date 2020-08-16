@@ -16,7 +16,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -64,9 +63,9 @@ public class GetUserIT extends ResourceTest {
         User user = getUser();
         User fetched = response.readEntity(User.class);
         assertEquals(user.getId(), fetched.getId());
-        assertNull(fetched.getEmail()); // email not included in json responses
+        assertEquals(user.getEmail(), fetched.getEmail());
         assertEquals(user.getUsername(), fetched.getUsername());
         assertEquals(user.getDisplayName(), fetched.getDisplayName());
-        assertEquals(user.getImageLink(), fetched.getImageLink());
+        assertEquals(user.getProfileImage(), fetched.getProfileImage());
     }
 }

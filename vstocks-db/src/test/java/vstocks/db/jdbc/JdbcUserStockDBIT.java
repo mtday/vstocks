@@ -22,6 +22,7 @@ import static vstocks.model.DatabaseField.SYMBOL;
 import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.Market.TWITTER;
 import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.User.generateId;
 
 public class JdbcUserStockDBIT {
     @ClassRule
@@ -35,8 +36,8 @@ public class JdbcUserStockDBIT {
     private UserStockTable userStockTable;
     private JdbcUserStockDB userStockDB;
 
-    private final User user1 = new User().setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
-    private final User user2 = new User().setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
+    private final User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
+    private final User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
     private final UserCredits userCredits1 = new UserCredits().setUserId(user1.getId()).setCredits(10);
     private final UserCredits userCredits2 = new UserCredits().setUserId(user2.getId()).setCredits(10);
     private final Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");

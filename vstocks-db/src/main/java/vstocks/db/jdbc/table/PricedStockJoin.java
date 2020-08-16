@@ -28,7 +28,7 @@ public class PricedStockJoin extends BaseTable {
                 .setMarket(Market.valueOf(rs.getString("market")))
                 .setSymbol(rs.getString("symbol"))
                 .setName(rs.getString("name"))
-                .setImageLink(rs.getString("image_link"))
+                .setProfileImage(rs.getString("profile_image"))
                 .setTimestamp(instant)
                 .setPrice(price);
     };

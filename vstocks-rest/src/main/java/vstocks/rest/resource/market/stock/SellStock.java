@@ -3,17 +3,17 @@ package vstocks.rest.resource.market.stock;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
+import vstocks.db.DBFactory;
 import vstocks.model.Market;
 import vstocks.model.PricedUserStock;
 import vstocks.rest.resource.BaseResource;
-import vstocks.db.DBFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.WILDCARD;
 
@@ -43,7 +43,7 @@ public class SellStock extends BaseResource {
         }
         return dbFactory.getPricedUserStockDB().get(userId, market, symbol).orElseGet(() -> {
             // Not found likely means the user sold all their shares of stock.
-            Instant instant = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+            Instant instant = Instant.now().truncatedTo(SECONDS);
             return new PricedUserStock().setUserId(userId).setMarket(market).setSymbol(symbol).setShares(0).setTimestamp(instant).setPrice(1);
         });
     }

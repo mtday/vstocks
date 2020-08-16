@@ -16,6 +16,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static vstocks.model.User.generateId;
 import static vstocks.rest.security.JwtTokenFilter.INVALID_JWT_MESSAGE;
 
 public class JwtTokenFilterTest {
@@ -86,7 +87,7 @@ public class JwtTokenFilterTest {
 
     @Test
     public void testValid() {
-        User user = new User().setEmail("user@domain.com").setUsername("user").setDisplayName("User");
+        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("user").setDisplayName("User");
 
         UserDB userDB = mock(UserDB.class);
         when(userDB.get(eq("userId"))).thenReturn(Optional.of(user));

@@ -1,25 +1,39 @@
 package vstocks.model;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Objects;
 
 public class PricedStock {
     private Market market;
     private String symbol;
-    private String name;
-    private String imageLink;
     private Instant timestamp;
+    private String name;
+    private String profileImage;
     private int price;
 
     public PricedStock() {
     }
+
+    public static final Comparator<PricedStock> FULL_COMPARATOR = Comparator
+            .comparing(PricedStock::getMarket)
+            .thenComparing(PricedStock::getSymbol)
+            .thenComparing(PricedStock::getTimestamp)
+            .thenComparing(PricedStock::getName)
+            .thenComparing(PricedStock::getProfileImage)
+            .thenComparingInt(PricedStock::getPrice);
+
+    public static final Comparator<PricedStock> UNIQUE_COMPARATOR = Comparator
+            .comparing(PricedStock::getMarket)
+            .thenComparing(PricedStock::getSymbol)
+            .thenComparing(PricedStock::getTimestamp);
 
     public Stock asStock() {
         return new Stock()
                 .setMarket(market)
                 .setSymbol(symbol)
                 .setName(name)
-                .setImageLink(imageLink);
+                .setProfileImage(profileImage);
     }
 
     public StockPrice asStockPrice() {
@@ -48,6 +62,15 @@ public class PricedStock {
         return this;
     }
 
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+
+    public PricedStock setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
     public String getName() {
         return name;
     }
@@ -57,21 +80,12 @@ public class PricedStock {
         return this;
     }
 
-    public String getImageLink() {
-        return imageLink;
+    public String getProfileImage() {
+        return profileImage;
     }
 
-    public PricedStock setImageLink(String imageLink) {
-        this.imageLink = imageLink;
-        return this;
-    }
-
-    public Instant getTimestamp() {
-        return timestamp;
-    }
-
-    public PricedStock setTimestamp(Instant timestamp) {
-        this.timestamp = timestamp;
+    public PricedStock setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
         return this;
     }
 
@@ -90,12 +104,13 @@ public class PricedStock {
         if (o == null || getClass() != o.getClass()) return false;
         PricedStock stock = (PricedStock) o;
         return market == stock.market &&
-                Objects.equals(symbol, stock.symbol);
+                Objects.equals(symbol, stock.symbol) &&
+                Objects.equals(timestamp, stock.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(market.name(), symbol);
+        return Objects.hash(market.name(), symbol, timestamp);
     }
 
     @Override
@@ -103,9 +118,9 @@ public class PricedStock {
         return "PricedStock{" +
                 "market=" + market +
                 ", symbol='" + symbol + '\'' +
-                ", name='" + name + '\'' +
-                ", imageLink='" + imageLink + '\'' +
                 ", timestamp=" + timestamp +
+                ", name='" + name + '\'' +
+                ", profileImage='" + profileImage + '\'' +
                 ", price=" + price +
                 '}';
     }
