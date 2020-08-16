@@ -3,7 +3,7 @@ package vstocks.db.jdbc.table;
 import vstocks.model.*;
 
 import java.sql.Connection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -31,7 +31,7 @@ public class UserStockTable extends BaseTable {
 
     @Override
     protected Set<Sort> getDefaultSort() {
-        return new HashSet<>(asList(USER_ID.toSort(), MARKET.toSort(), SYMBOL.toSort(), SHARES.toSort(DESC)));
+        return new LinkedHashSet<>(asList(USER_ID.toSort(), MARKET.toSort(), SYMBOL.toSort(), SHARES.toSort(DESC)));
     }
 
     public Optional<UserStock> get(Connection connection, String userId, Market market, String symbol) {

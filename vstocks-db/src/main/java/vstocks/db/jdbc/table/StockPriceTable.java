@@ -32,7 +32,7 @@ public class StockPriceTable extends BaseTable {
 
     @Override
     protected Set<Sort> getDefaultSort() {
-        return new HashSet<>(asList(MARKET.toSort(), SYMBOL.toSort(), TIMESTAMP.toSort(DESC)));
+        return new LinkedHashSet<>(asList(MARKET.toSort(), SYMBOL.toSort(), TIMESTAMP.toSort(DESC)));
     }
 
     public Optional<StockPrice> getLatest(Connection connection, Market market, String symbol) {

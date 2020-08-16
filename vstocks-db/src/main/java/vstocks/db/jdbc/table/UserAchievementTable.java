@@ -7,7 +7,7 @@ import vstocks.model.UserAchievement;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class UserAchievementTable extends BaseTable {
 
     @Override
     protected Set<Sort> getDefaultSort() {
-        return new HashSet<>(asList(TIMESTAMP.toSort(DESC), USER_ID.toSort(), ACHIEVEMENT_ID.toSort()));
+        return new LinkedHashSet<>(asList(TIMESTAMP.toSort(DESC), USER_ID.toSort(), ACHIEVEMENT_ID.toSort()));
     }
 
     public Optional<UserAchievement> get(Connection connection, String userId, String achievementId) {

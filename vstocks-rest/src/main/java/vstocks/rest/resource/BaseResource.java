@@ -6,8 +6,6 @@ import vstocks.model.Sort;
 import vstocks.model.User;
 
 import javax.ws.rs.core.SecurityContext;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -15,7 +13,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.stream.Collectors.toCollection;
 import static vstocks.model.User.generateId;
 
@@ -37,10 +34,6 @@ public abstract class BaseResource {
                 .filter(sort -> !sort.isEmpty())
                 .map(Sort::parse)
                 .collect(toCollection(LinkedHashSet::new));
-    }
-
-    protected Instant getEarliest(int days) {
-        return Instant.now().minusSeconds(DAYS.toSeconds(days)).truncatedTo(ChronoUnit.DAYS);
     }
 
     protected User getUser(SecurityContext securityContext) {

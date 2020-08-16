@@ -1,6 +1,8 @@
 package vstocks.rest.resource.user.portfolio;
 
 import vstocks.db.DBFactory;
+import vstocks.model.Delta;
+import vstocks.model.DeltaInterval;
 import vstocks.model.PortfolioValueRank;
 import vstocks.model.User;
 import vstocks.model.rest.UserPortfolioRankResponse;
@@ -16,15 +18,15 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.emptySet;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static vstocks.model.DeltaInterval.DAY30;
 
 @Path("/user/portfolio/ranks")
 @Singleton
 public class GetRanks extends BaseResource {
-    private static final int HISTORY_DAYS = 30;
-
     private final DBFactory dbFactory;
 
     @Inject
@@ -38,15 +40,17 @@ public class GetRanks extends BaseResource {
     public UserPortfolioRankResponse getPortfolio(@Context SecurityContext securityContext) {
         User user = getUser(securityContext);
 
-        Instant earliest = getEarliest(HISTORY_DAYS);
+        Instant earliest = DAY30.getEarliest();
 
         List<PortfolioValueRank> historicalRanks =
                 dbFactory.getPortfolioValueRankDB().getForUserSince(user.getId(), earliest, emptySet());
         PortfolioValueRank currentRank = historicalRanks.stream().findFirst().orElse(null);
+        Map<DeltaInterval, Delta> deltas =
+                Delta.getDeltas(historicalRanks, PortfolioValueRank::getTimestamp, r -> (long) r.getRank());
 
         return new UserPortfolioRankResponse()
                 .setCurrentRank(currentRank)
-                .setHistoricalRanks(historicalRanks);
+                .setHistoricalRanks(historicalRanks)
+                .setDeltas(deltas);
     }
-
 }

@@ -3,6 +3,8 @@ package vstocks.rest.resource.user.portfolio;
 import org.junit.Test;
 import vstocks.db.PortfolioValueRankDB;
 import vstocks.db.UserDB;
+import vstocks.model.Delta;
+import vstocks.model.DeltaInterval;
 import vstocks.model.ErrorResponse;
 import vstocks.model.PortfolioValueRank;
 import vstocks.model.rest.UserPortfolioRankResponse;
@@ -10,6 +12,7 @@ import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -78,6 +81,7 @@ public class GetRanksIT extends ResourceTest {
         UserPortfolioRankResponse userPortfolioRankResponse = response.readEntity(UserPortfolioRankResponse.class);
         assertNull(userPortfolioRankResponse.getCurrentRank());
         assertTrue(userPortfolioRankResponse.getHistoricalRanks().isEmpty());
+        assertEquals(DeltaInterval.values().length, userPortfolioRankResponse.getDeltas().size());
     }
 
     @Test
@@ -123,5 +127,11 @@ public class GetRanksIT extends ResourceTest {
             assertEquals(expected.getRank(), actual.getRank());
             assertEquals(expected.getTimestamp(), actual.getTimestamp());
         }
+
+        assertEquals(DeltaInterval.values().length, userPortfolioRankResponse.getDeltas().size());
+        Arrays.stream(DeltaInterval.values()).forEach(interval -> {
+            Delta delta = new Delta().setInterval(interval).setChange(-9).setPercent(-90f);
+            assertEquals(delta, userPortfolioRankResponse.getDeltas().get(interval));
+        });
     }
 }

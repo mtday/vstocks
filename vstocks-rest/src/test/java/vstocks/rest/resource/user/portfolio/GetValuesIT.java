@@ -3,6 +3,8 @@ package vstocks.rest.resource.user.portfolio;
 import org.junit.Test;
 import vstocks.db.PortfolioValueDB;
 import vstocks.db.UserDB;
+import vstocks.model.Delta;
+import vstocks.model.DeltaInterval;
 import vstocks.model.ErrorResponse;
 import vstocks.model.PortfolioValue;
 import vstocks.model.rest.UserPortfolioValueResponse;
@@ -10,10 +12,7 @@ import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;
 import java.time.Instant;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -81,6 +80,7 @@ public class GetValuesIT extends ResourceTest {
         UserPortfolioValueResponse userPortfolioValueResponse = response.readEntity(UserPortfolioValueResponse.class);
         assertNull(userPortfolioValueResponse.getCurrentValue());
         assertTrue(userPortfolioValueResponse.getHistoricalValues().isEmpty());
+        assertEquals(DeltaInterval.values().length, userPortfolioValueResponse.getDeltas().size());
     }
 
     @Test
@@ -132,5 +132,11 @@ public class GetValuesIT extends ResourceTest {
             assertEquals(expected.getTotal(), actual.getTotal());
             assertEquals(expected.getTimestamp(), actual.getTimestamp());
         }
+
+        assertEquals(DeltaInterval.values().length, userPortfolioValueResponse.getDeltas().size());
+        Arrays.stream(DeltaInterval.values()).forEach(interval -> {
+            Delta delta = new Delta().setInterval(interval).setChange(-270).setPercent(-90f);
+            assertEquals(delta, userPortfolioValueResponse.getDeltas().get(interval));
+        });
     }
 }

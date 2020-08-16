@@ -6,14 +6,15 @@ import vstocks.model.Sort;
 import vstocks.model.UserCredits;
 
 import java.sql.Connection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static vstocks.model.DatabaseField.*;
+import static vstocks.model.DatabaseField.CREDITS;
+import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.SortDirection.DESC;
 
 public class UserCreditsTable extends BaseTable {
@@ -30,7 +31,7 @@ public class UserCreditsTable extends BaseTable {
 
     @Override
     protected Set<Sort> getDefaultSort() {
-        return new HashSet<>(asList(CREDITS.toSort(DESC), USER_ID.toSort()));
+        return new LinkedHashSet<>(asList(CREDITS.toSort(DESC), USER_ID.toSort()));
     }
 
     public Optional<UserCredits> get(Connection connection, String userId) {

@@ -34,7 +34,7 @@ public class PortfolioValueRankTable extends BaseTable {
 
     @Override
     protected Set<Sort> getDefaultSort() {
-        return new HashSet<>(asList(USER_ID.toSort(), TIMESTAMP.toSort(DESC)));
+        return new LinkedHashSet<>(asList(USER_ID.toSort(), TIMESTAMP.toSort(DESC)));
     }
 
     public Optional<PortfolioValueRank> getLatest(Connection connection, String userId) {

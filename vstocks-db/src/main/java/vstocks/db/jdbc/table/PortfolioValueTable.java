@@ -57,7 +57,7 @@ public class PortfolioValueTable extends BaseTable {
 
     @Override
     protected Set<Sort> getDefaultSort() {
-        return new HashSet<>(asList(USER_ID.toSort(), TIMESTAMP.toSort(DESC)));
+        return new LinkedHashSet<>(asList(USER_ID.toSort(), TIMESTAMP.toSort(DESC)));
     }
 
     public Optional<PortfolioValue> getLatest(Connection connection, String userId) {

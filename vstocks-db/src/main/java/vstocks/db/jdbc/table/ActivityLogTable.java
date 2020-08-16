@@ -4,7 +4,7 @@ import vstocks.model.*;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -63,7 +63,7 @@ public class ActivityLogTable extends BaseTable {
 
     @Override
     protected Set<Sort> getDefaultSort() {
-        return new HashSet<>(asList(TIMESTAMP.toSort(DESC), USER_ID.toSort(), MARKET.toSort(), SYMBOL.toSort()));
+        return new LinkedHashSet<>(asList(TIMESTAMP.toSort(DESC), USER_ID.toSort(), MARKET.toSort(), SYMBOL.toSort()));
     }
 
     public Optional<ActivityLog> get(Connection connection, String id) {

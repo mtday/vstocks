@@ -1,8 +1,7 @@
 package vstocks.rest.resource.user.portfolio;
 
 import vstocks.db.DBFactory;
-import vstocks.model.PortfolioValue;
-import vstocks.model.User;
+import vstocks.model.*;
 import vstocks.model.rest.UserPortfolioValueResponse;
 import vstocks.rest.resource.BaseResource;
 import vstocks.rest.security.JwtTokenRequired;
@@ -16,15 +15,15 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.emptySet;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static vstocks.model.DeltaInterval.DAY30;
 
 @Path("/user/portfolio/values")
 @Singleton
 public class GetValues extends BaseResource {
-    private static final int HISTORY_DAYS = 30;
-
     private final DBFactory dbFactory;
 
     @Inject
@@ -38,15 +37,18 @@ public class GetValues extends BaseResource {
     public UserPortfolioValueResponse getPortfolio(@Context SecurityContext securityContext) {
         User user = getUser(securityContext);
 
-        Instant earliest = getEarliest(HISTORY_DAYS);
+        Instant earliest = DAY30.getEarliest();
 
         List<PortfolioValue> historicalValues =
                 dbFactory.getPortfolioValueDB().getForUserSince(user.getId(), earliest, emptySet());
         PortfolioValue currentValue = historicalValues.stream().findFirst().orElse(null);
+        Map<DeltaInterval, Delta> deltas =
+                Delta.getDeltas(historicalValues, PortfolioValue::getTimestamp, PortfolioValue::getTotal);
 
         return new UserPortfolioValueResponse()
                 .setCurrentValue(currentValue)
-                .setHistoricalValues(historicalValues);
+                .setHistoricalValues(historicalValues)
+                .setDeltas(deltas);
     }
 
 }
