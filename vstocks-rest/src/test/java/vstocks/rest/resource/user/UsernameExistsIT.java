@@ -23,7 +23,7 @@ import static vstocks.rest.security.JwtTokenFilter.INVALID_JWT_MESSAGE;
 public class UsernameExistsIT extends ResourceTest {
     @Test
     public void testUsernameExistsNoAuthorizationHeader() {
-        Response response = target("/user/exists").request().property("username", "username").get();
+        Response response = target("/user/exists").queryParam("username", "username").request().get();
 
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));

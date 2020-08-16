@@ -152,6 +152,43 @@ public class JdbcPortfolioValueRankDBIT {
     }
 
     @Test
+    public void testGetForUserSinceNone() {
+        List<PortfolioValueRank> results = portfolioValueRankDB.getForUserSince(user1.getId(), now, emptySet());
+        assertTrue(results.isEmpty());
+    }
+
+    @Test
+    public void testGetForUserSinceSomeNoSort() {
+        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
+        PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now.minusSeconds(10)).setRank(20);
+        PortfolioValueRank portfolioValueRank3 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setRank(18);
+        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank1));
+        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank2));
+        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank3));
+
+        List<PortfolioValueRank> results = portfolioValueRankDB.getForUserSince(user1.getId(), now.minusSeconds(15), emptySet());
+        assertEquals(2, results.size());
+        assertEquals(portfolioValueRank1, results.get(0));
+        assertEquals(portfolioValueRank2, results.get(1));
+    }
+
+    @Test
+    public void testGetForUserSinceSomeWithSort() {
+        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
+        PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now.minusSeconds(10)).setRank(20);
+        PortfolioValueRank portfolioValueRank3 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setRank(18);
+        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank1));
+        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank2));
+        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank3));
+
+        Set<Sort> sort = new LinkedHashSet<>(asList(RANK.toSort(DESC), USER_ID.toSort(DESC)));
+        List<PortfolioValueRank> results = portfolioValueRankDB.getForUserSince(user1.getId(), now.minusSeconds(15), sort);
+        assertEquals(2, results.size());
+        assertEquals(portfolioValueRank2, results.get(0));
+        assertEquals(portfolioValueRank1, results.get(1));
+    }
+
+    @Test
     public void testGetAllNone() {
         Results<PortfolioValueRank> results = portfolioValueRankDB.getAll(new Page(), emptySet());
         assertEquals(0, results.getTotal());

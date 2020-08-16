@@ -8,10 +8,7 @@ import vstocks.model.Sort;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
@@ -59,6 +56,11 @@ public class PortfolioValueRankTable extends BaseTable {
         String sql = format("SELECT * FROM portfolio_value_ranks WHERE user_id = ? %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM portfolio_value_ranks WHERE user_id = ?";
         return results(connection, ROW_MAPPER, page, sql, count, userId);
+    }
+
+    public List<PortfolioValueRank> getForUserSince(Connection connection, String userId, Instant earliest, Set<Sort> sort) {
+        String sql = format("SELECT * FROM portfolio_value_ranks WHERE user_id = ? AND timestamp >= ? %s", getSort(sort));
+        return getList(connection, ROW_MAPPER, sql, userId, earliest);
     }
 
     public Results<PortfolioValueRank> getAll(Connection connection, Page page, Set<Sort> sort) {

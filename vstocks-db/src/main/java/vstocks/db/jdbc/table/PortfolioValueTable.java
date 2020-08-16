@@ -80,6 +80,11 @@ public class PortfolioValueTable extends BaseTable {
         return results(connection, ROW_MAPPER, page, sql, count, userId);
     }
 
+    public List<PortfolioValue> getForUserSince(Connection connection, String userId, Instant earliest, Set<Sort> sort) {
+        String sql = format("SELECT * FROM portfolio_values WHERE user_id = ? AND timestamp >= ? %s", getSort(sort));
+        return getList(connection, ROW_MAPPER, sql, userId, earliest);
+    }
+
     public Results<PortfolioValue> getAll(Connection connection, Page page, Set<Sort> sort) {
         String sql = format("SELECT * FROM portfolio_values %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM portfolio_values";

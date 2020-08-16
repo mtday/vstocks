@@ -337,6 +337,43 @@ public class JdbcPortfolioValueDBIT {
     }
 
     @Test
+    public void testGetForUserSinceNone() {
+        List<PortfolioValue> results = portfolioValueDB.getForUserSince(user1.getId(), now, emptySet());
+        assertTrue(results.isEmpty());
+    }
+
+    @Test
+    public void testGetForUserSinceSomeNoSort() {
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(singletonMap(TWITTER, 2000L)).setTotal(2020);
+        PortfolioValue portfolioValue3 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setCredits(30).setMarketValues(singletonMap(TWITTER, 2100L)).setTotal(2130);
+        assertEquals(1, portfolioValueDB.add(portfolioValue1));
+        assertEquals(1, portfolioValueDB.add(portfolioValue2));
+        assertEquals(1, portfolioValueDB.add(portfolioValue3));
+
+        List<PortfolioValue> results = portfolioValueDB.getForUserSince(user1.getId(), now.minusSeconds(15), emptySet());
+        assertEquals(2, results.size());
+        assertEquals(portfolioValue1, results.get(0));
+        assertEquals(portfolioValue2, results.get(1));
+    }
+
+    @Test
+    public void testGetForUserSinceSomeWithSort() {
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(singletonMap(TWITTER, 2000L)).setTotal(2020);
+        PortfolioValue portfolioValue3 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setCredits(30).setMarketValues(singletonMap(TWITTER, 2100L)).setTotal(2130);
+        assertEquals(1, portfolioValueDB.add(portfolioValue1));
+        assertEquals(1, portfolioValueDB.add(portfolioValue2));
+        assertEquals(1, portfolioValueDB.add(portfolioValue3));
+
+        Set<Sort> sort = new LinkedHashSet<>(asList(CREDITS.toSort(DESC), USER_ID.toSort(DESC)));
+        List<PortfolioValue> results = portfolioValueDB.getForUserSince(user1.getId(), now.minusSeconds(15), sort);
+        assertEquals(2, results.size());
+        assertEquals(portfolioValue2, results.get(0));
+        assertEquals(portfolioValue1, results.get(1));
+    }
+
+    @Test
     public void testGetAllNone() {
         Results<PortfolioValue> results = portfolioValueDB.getAll(new Page(), emptySet());
         assertEquals(0, results.getTotal());

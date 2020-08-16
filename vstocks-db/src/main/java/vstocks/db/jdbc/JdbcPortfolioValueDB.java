@@ -3,11 +3,15 @@ package vstocks.db.jdbc;
 import vstocks.db.PortfolioValueDB;
 import vstocks.db.jdbc.table.PortfolioValueJoin;
 import vstocks.db.jdbc.table.PortfolioValueTable;
-import vstocks.model.*;
+import vstocks.model.Page;
+import vstocks.model.PortfolioValue;
+import vstocks.model.Results;
+import vstocks.model.Sort;
 
 import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -43,6 +47,11 @@ public class JdbcPortfolioValueDB extends BaseService implements PortfolioValueD
     @Override
     public Results<PortfolioValue> getForUser(String userId, Page page, Set<Sort> sort) {
         return withConnection(conn -> portfolioValueTable.getForUser(conn, userId, page, sort));
+    }
+
+    @Override
+    public List<PortfolioValue> getForUserSince(String userId, Instant earliest, Set<Sort> sort) {
+        return withConnection(conn -> portfolioValueTable.getForUserSince(conn, userId, earliest, sort));
     }
 
     @Override
