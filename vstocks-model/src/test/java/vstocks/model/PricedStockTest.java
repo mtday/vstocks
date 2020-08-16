@@ -6,6 +6,7 @@ import java.time.Instant;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static vstocks.model.Market.TWITTER;
 
 public class PricedStockTest {
@@ -62,30 +63,39 @@ public class PricedStockTest {
         assertEquals("link", pricedStock.getProfileImage());
         assertEquals(now, pricedStock.getTimestamp());
         assertEquals(20, pricedStock.getPrice());
-
-        assertEquals(0, PricedStock.FULL_COMPARATOR.compare(pricedStock, pricedStock));
-        assertEquals(0, PricedStock.UNIQUE_COMPARATOR.compare(pricedStock, pricedStock));
     }
 
     @Test
     public void testEquals() {
         Instant now = Instant.now().truncatedTo(SECONDS);
-        PricedStock pricedStock1 = new PricedStock().setMarket(TWITTER).setSymbol("sym").setTimestamp(now).setName("name1");
-        PricedStock pricedStock2 = new PricedStock().setMarket(TWITTER).setSymbol("sym").setTimestamp(now).setName("name2");
-        assertEquals(pricedStock1, pricedStock2);
-    }
-
-    @Test
-    public void testHashCode() {
-        Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
-        PricedStock pricedStock = new PricedStock()
+        PricedStock pricedStock1 = new PricedStock()
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setTimestamp(now)
                 .setName("name")
                 .setProfileImage("link")
                 .setPrice(20);
-        assertEquals(2099410588, pricedStock.hashCode());
+        PricedStock pricedStock2 = new PricedStock()
+                .setMarket(TWITTER)
+                .setSymbol("symbol")
+                .setTimestamp(now)
+                .setName("name")
+                .setProfileImage("link")
+                .setPrice(20);
+        assertEquals(pricedStock1, pricedStock2);
+    }
+
+    @Test
+    public void testHashCode() {
+        PricedStock pricedStock = new PricedStock()
+                .setMarket(TWITTER)
+                .setSymbol("symbol")
+                .setTimestamp(Instant.parse("2007-12-03T10:15:30.00Z"))
+                .setName("name")
+                .setProfileImage("link")
+                .setPrice(20);
+        assertEquals(887503681, new PricedStock().hashCode());
+        assertNotEquals(0, pricedStock.hashCode()); // enums make the value inconsistent
     }
 
     @Test

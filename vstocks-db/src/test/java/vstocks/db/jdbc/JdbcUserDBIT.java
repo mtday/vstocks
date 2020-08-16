@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.DISPLAY_NAME;
 import static vstocks.model.DatabaseField.USERNAME;
 import static vstocks.model.Market.TWITTER;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 import static vstocks.model.User.generateId;
 
 public class JdbcUserDBIT {
@@ -88,13 +88,8 @@ public class JdbcUserDBIT {
         User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
         assertEquals(1, userDB.add(user));
 
-        Optional<User> fetched = userDB.get(user.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(user.getId(), fetched.get().getId());
-        assertEquals(user.getEmail(), fetched.get().getEmail());
-        assertEquals(user.getUsername(), fetched.get().getUsername());
-        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
-        assertEquals(user.getProfileImage(), fetched.get().getProfileImage());
+        User fetched = userDB.get(user.getId()).orElse(null);
+        assertEquals(user, fetched);
     }
 
     @Test
@@ -102,17 +97,22 @@ public class JdbcUserDBIT {
         User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
         assertEquals(1, userDB.add(user));
 
-        Optional<User> fetched = userDB.get(user.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(user.getId(), fetched.get().getId());
-        assertEquals(user.getEmail().toLowerCase(ENGLISH), fetched.get().getEmail());
-        assertEquals(user.getUsername(), fetched.get().getUsername());
-        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
-        assertEquals(user.getProfileImage(), fetched.get().getProfileImage());
+        User fetched = userDB.get(user.getId()).orElse(null);
+        assertEquals(user, fetched);
     }
 
     @Test
-    public void testGetNoLink() {
+    public void testGetUppercaseEmail() {
+        User user = new User().setId(generateId("USER@DOMAIN.COM")).setEmail("USER@DOMAIN.COM").setUsername("name").setDisplayName("Name").setProfileImage("link");
+        assertEquals(1, userDB.add(user));
+
+        user.setEmail("user@domain.com");
+        User fetched = userDB.get(user.getId()).orElse(null);
+        assertEquals(user, fetched);
+    }
+
+    @Test
+    public void testGetNoProfileImage() {
         User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
         assertEquals(1, userDB.add(user));
 
@@ -228,9 +228,9 @@ public class JdbcUserDBIT {
 
     @Test
     public void testConsumeNone() {
-        List<User> list = new ArrayList<>();
-        assertEquals(0, userDB.consume(list::add, emptySet()));
-        assertTrue(list.isEmpty());
+        List<User> results = new ArrayList<>();
+        assertEquals(0, userDB.consume(results::add, emptySet()));
+        assertTrue(results.isEmpty());
     }
 
     @Test
@@ -240,11 +240,11 @@ public class JdbcUserDBIT {
         assertEquals(1, userDB.add(user1));
         assertEquals(1, userDB.add(user2));
 
-        List<User> list = new ArrayList<>();
-        assertEquals(2, userDB.consume(list::add, emptySet()));
-        assertEquals(2, list.size());
-        assertEquals(user1, list.get(0));
-        assertEquals(user2, list.get(1));
+        List<User> results = new ArrayList<>();
+        assertEquals(2, userDB.consume(results::add, emptySet()));
+        assertEquals(2, results.size());
+        assertEquals(user1, results.get(0));
+        assertEquals(user2, results.get(1));
     }
 
     @Test
@@ -254,12 +254,12 @@ public class JdbcUserDBIT {
         assertEquals(1, userDB.add(user1));
         assertEquals(1, userDB.add(user2));
 
-        List<User> list = new ArrayList<>();
+        List<User> results = new ArrayList<>();
         Set<Sort> sort = new LinkedHashSet<>(asList(USERNAME.toSort(DESC), DISPLAY_NAME.toSort()));
-        assertEquals(2, userDB.consume(list::add, sort));
-        assertEquals(2, list.size());
-        assertEquals(user2, list.get(0));
-        assertEquals(user1, list.get(1));
+        assertEquals(2, userDB.consume(results::add, sort));
+        assertEquals(2, results.size());
+        assertEquals(user2, results.get(0));
+        assertEquals(user1, results.get(1));
     }
 
     @Test

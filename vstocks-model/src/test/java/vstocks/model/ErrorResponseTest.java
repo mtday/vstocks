@@ -23,6 +23,7 @@ public class ErrorResponseTest {
     @Test
     public void testHashCode() {
         ErrorResponse errorResponse = new ErrorResponse().setStatus(404).setMessage("error message");
+        assertEquals(961, new ErrorResponse().hashCode());
         assertEquals(-66643300, errorResponse.hashCode());
     }
 

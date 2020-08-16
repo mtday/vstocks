@@ -2,20 +2,18 @@ package vstocks.model;
 
 import java.util.Objects;
 
+import static vstocks.model.SortDirection.ASC;
+
 public class Sort {
-    public enum SortDirection {
-        ASC,
-        DESC
-    }
 
     private DatabaseField field;
-    private SortDirection direction = SortDirection.ASC;
+    private SortDirection direction = ASC;
 
     public Sort() {
     }
 
     public Sort(DatabaseField field) {
-        this(field, SortDirection.ASC);
+        this(field, ASC);
     }
 
     public Sort(DatabaseField field, SortDirection direction) {
@@ -60,7 +58,7 @@ public class Sort {
 
     @Override
     public int hashCode() {
-        return Objects.hash(field.name(), direction.name());
+        return Objects.hash(field, direction);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package vstocks.model;
 
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
 
@@ -14,17 +13,6 @@ public class PortfolioValue {
 
     public PortfolioValue() {
     }
-
-    public static final Comparator<PortfolioValue> FULL_COMPARATOR = Comparator
-            .comparing(PortfolioValue::getUserId)
-            .thenComparing(PortfolioValue::getTimestamp)
-            .thenComparing(portfolioValue -> portfolioValue.getMarketValues().toString())
-            .thenComparingLong(PortfolioValue::getCredits)
-            .thenComparingLong(PortfolioValue::getTotal);
-
-    public static final Comparator<PortfolioValue> UNIQUE_COMPARATOR = Comparator
-            .comparing(PortfolioValue::getUserId)
-            .thenComparing(PortfolioValue::getTimestamp);
 
     public String getUserId() {
         return userId;
@@ -76,13 +64,16 @@ public class PortfolioValue {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PortfolioValue that = (PortfolioValue) o;
-        return Objects.equals(userId, that.userId) &&
-                Objects.equals(timestamp, that.timestamp);
+        return credits == that.credits &&
+                total == that.total &&
+                Objects.equals(userId, that.userId) &&
+                Objects.equals(timestamp, that.timestamp) &&
+                Objects.equals(marketValues, that.marketValues);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, timestamp);
+        return Objects.hash(userId, timestamp, credits, marketValues, total);
     }
 
     @Override

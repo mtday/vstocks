@@ -3,7 +3,6 @@ package vstocks.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.security.Principal;
-import java.util.Comparator;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -20,15 +19,6 @@ public class User implements Principal {
 
     public User() {
     }
-
-    public static final Comparator<User> FULL_COMPARATOR = Comparator
-            .comparing(User::getId)
-            .thenComparing(User::getEmail)
-            .thenComparing(User::getUsername)
-            .thenComparing(User::getDisplayName)
-            .thenComparing(User::getProfileImage);
-
-    public static final Comparator<User> UNIQUE_COMPARATOR = Comparator.comparing(User::getId);
 
     public static String generateId(String email) {
         return ofNullable(email)
@@ -92,12 +82,16 @@ public class User implements Principal {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id);
+        return Objects.equals(id, user.id) &&
+                Objects.equals(email, user.email) &&
+                Objects.equals(username, user.username) &&
+                Objects.equals(displayName, user.displayName) &&
+                Objects.equals(profileImage, user.profileImage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, email, username, displayName, profileImage);
     }
 
     @Override

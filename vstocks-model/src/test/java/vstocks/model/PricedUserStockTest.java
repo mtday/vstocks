@@ -6,12 +6,14 @@ import java.time.Instant;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static vstocks.model.Market.TWITTER;
+import static vstocks.model.User.generateId;
 
 public class PricedUserStockTest {
     @Test
     public void testAsUserStock() {
-        String userId = User.generateId("user@domain.com");
+        String userId = generateId("user@domain.com");
         Instant now = Instant.now().truncatedTo(SECONDS);
         UserStock userStock = new PricedUserStock()
                 .setUserId(userId)
@@ -30,7 +32,7 @@ public class PricedUserStockTest {
 
     @Test
     public void testAsStockPrice() {
-        String userId = User.generateId("user@domain.com");
+        String userId = generateId("user@domain.com");
         Instant now = Instant.now().truncatedTo(SECONDS);
         StockPrice stockPrice = new PricedUserStock()
                 .setUserId(userId)
@@ -49,7 +51,7 @@ public class PricedUserStockTest {
 
     @Test
     public void testGettersAndSetters() {
-        String userId = User.generateId("user@domain.com");
+        String userId = generateId("user@domain.com");
         Instant now = Instant.now().truncatedTo(SECONDS);
         PricedUserStock pricedUserStock = new PricedUserStock()
                 .setUserId(userId)
@@ -65,35 +67,45 @@ public class PricedUserStockTest {
         assertEquals(now, pricedUserStock.getTimestamp());
         assertEquals(10, pricedUserStock.getShares());
         assertEquals(20, pricedUserStock.getPrice());
-
-        assertEquals(0, PricedUserStock.FULL_COMPARATOR.compare(pricedUserStock, pricedUserStock));
-        assertEquals(0, PricedUserStock.UNIQUE_COMPARATOR.compare(pricedUserStock, pricedUserStock));
     }
 
     @Test
     public void testEquals() {
-        PricedUserStock pricedUserStock1 = new PricedUserStock().setUserId("user").setMarket(TWITTER).setSymbol("sym").setPrice(10);
-        PricedUserStock pricedUserStock2 = new PricedUserStock().setUserId("user").setMarket(TWITTER).setSymbol("sym").setPrice(20);
-        assertEquals(pricedUserStock1, pricedUserStock2);
-    }
-
-    @Test
-    public void testHashCode() {
-        String userId = User.generateId("user@domain.com");
-        Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
-        PricedUserStock pricedUserStock = new PricedUserStock()
+        String userId = generateId("user@domain.com");
+        Instant now = Instant.now().truncatedTo(SECONDS);
+        PricedUserStock pricedUserStock1 = new PricedUserStock()
                 .setUserId(userId)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setTimestamp(now)
                 .setShares(10)
                 .setPrice(20);
-        assertEquals(437287800, pricedUserStock.hashCode());
+        PricedUserStock pricedUserStock2 = new PricedUserStock()
+                .setUserId(userId)
+                .setMarket(TWITTER)
+                .setSymbol("symbol")
+                .setTimestamp(now)
+                .setShares(10)
+                .setPrice(20);
+        assertEquals(pricedUserStock1, pricedUserStock2);
+    }
+
+    @Test
+    public void testHashCode() {
+        PricedUserStock pricedUserStock = new PricedUserStock()
+                .setUserId(generateId("user@domain.com"))
+                .setMarket(TWITTER)
+                .setSymbol("symbol")
+                .setTimestamp(Instant.parse("2007-12-03T10:15:30.00Z"))
+                .setShares(10)
+                .setPrice(20);
+        assertEquals(887503681, new PricedUserStock().hashCode());
+        assertNotEquals(0, pricedUserStock.hashCode()); // enums make the value inconsistent
     }
 
     @Test
     public void testToString() {
-        String userId = User.generateId("user@domain.com");
+        String userId = generateId("user@domain.com");
         Instant now = Instant.now().truncatedTo(SECONDS);
         PricedUserStock pricedUserStock = new PricedUserStock()
                 .setUserId(userId)

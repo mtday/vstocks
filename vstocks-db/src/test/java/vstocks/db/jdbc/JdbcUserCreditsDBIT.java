@@ -17,7 +17,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.*;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 import static vstocks.model.User.generateId;
 
 public class JdbcUserCreditsDBIT {
@@ -63,9 +63,8 @@ public class JdbcUserCreditsDBIT {
         UserCredits userCredits = new UserCredits().setUserId(user1.getId()).setCredits(10);
         assertEquals(1, userCreditsDB.add(userCredits));
 
-        Optional<UserCredits> fetched = userCreditsDB.get(userCredits.getUserId());
-        assertTrue(fetched.isPresent());
-        assertEquals(userCredits.getCredits(), fetched.get().getCredits());
+        UserCredits fetched = userCreditsDB.get(user1.getId()).orElse(null);
+        assertEquals(userCredits, fetched);
     }
 
     @Test
@@ -118,11 +117,11 @@ public class JdbcUserCreditsDBIT {
         assertEquals(1, userCreditsDB.add(userCredits1));
         assertEquals(1, userCreditsDB.add(userCredits2));
 
-        List<UserCredits> list = new ArrayList<>();
-        assertEquals(2, userCreditsDB.consume(list::add, emptySet()));
-        assertEquals(2, list.size());
-        assertEquals(userCredits1, list.get(0));
-        assertEquals(userCredits2, list.get(1));
+        List<UserCredits> results = new ArrayList<>();
+        assertEquals(2, userCreditsDB.consume(results::add, emptySet()));
+        assertEquals(2, results.size());
+        assertEquals(userCredits1, results.get(0));
+        assertEquals(userCredits2, results.get(1));
     }
 
     @Test
@@ -132,12 +131,12 @@ public class JdbcUserCreditsDBIT {
         assertEquals(1, userCreditsDB.add(userCredits1));
         assertEquals(1, userCreditsDB.add(userCredits2));
 
-        List<UserCredits> list = new ArrayList<>();
+        List<UserCredits> results = new ArrayList<>();
         Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), CREDITS.toSort()));
-        assertEquals(2, userCreditsDB.consume(list::add, sort));
-        assertEquals(2, list.size());
-        assertEquals(userCredits2, list.get(0));
-        assertEquals(userCredits1, list.get(1));
+        assertEquals(2, userCreditsDB.consume(results::add, sort));
+        assertEquals(2, results.size());
+        assertEquals(userCredits2, results.get(0));
+        assertEquals(userCredits1, results.get(1));
     }
 
     @Test
@@ -145,9 +144,8 @@ public class JdbcUserCreditsDBIT {
         UserCredits userCredits = new UserCredits().setUserId(user1.getId()).setCredits(10);
         assertEquals(1, userCreditsDB.setInitialCredits(userCredits));
 
-        Optional<UserCredits> fetched = userCreditsDB.get(userCredits.getUserId());
-        assertTrue(fetched.isPresent());
-        assertEquals(10, fetched.get().getCredits());
+        UserCredits fetched = userCreditsDB.get(user1.getId()).orElse(null);
+        assertEquals(userCredits, fetched);
     }
 
     @Test
@@ -158,9 +156,8 @@ public class JdbcUserCreditsDBIT {
         UserCredits userCredits = new UserCredits().setUserId(user1.getId()).setCredits(10);
         assertEquals(0, userCreditsDB.setInitialCredits(userCredits));
 
-        Optional<UserCredits> fetched = userCreditsDB.get(userCredits.getUserId());
-        assertTrue(fetched.isPresent());
-        assertEquals(20, fetched.get().getCredits());
+        UserCredits fetched = userCreditsDB.get(user1.getId()).orElse(null);
+        assertEquals(existingCredits, fetched);
     }
 
     @Test
@@ -187,9 +184,9 @@ public class JdbcUserCreditsDBIT {
         assertEquals(1, userCreditsDB.add(userCredits));
         assertEquals(1, userCreditsDB.update(userCredits.getUserId(), 10));
 
-        Optional<UserCredits> updated = userCreditsDB.get(userCredits.getUserId());
-        assertTrue(updated.isPresent());
-        assertEquals(20, updated.get().getCredits());
+        userCredits.setCredits(20);
+        UserCredits fetched = userCreditsDB.get(user1.getId()).orElse(null);
+        assertEquals(userCredits, fetched);
     }
 
     @Test
@@ -203,9 +200,8 @@ public class JdbcUserCreditsDBIT {
         assertEquals(1, userCreditsDB.add(userCredits));
         assertEquals(0, userCreditsDB.update(userCredits.getUserId(), -12));
 
-        Optional<UserCredits> fetched = userCreditsDB.get(userCredits.getUserId());
-        assertTrue(fetched.isPresent());
-        assertEquals(userCredits.getCredits(), fetched.get().getCredits()); // not updated
+        UserCredits fetched = userCreditsDB.get(user1.getId()).orElse(null);
+        assertEquals(userCredits, fetched);
     }
 
     @Test
@@ -214,9 +210,9 @@ public class JdbcUserCreditsDBIT {
         assertEquals(1, userCreditsDB.add(userCredits));
         assertEquals(1, userCreditsDB.update(userCredits.getUserId(), -8));
 
-        Optional<UserCredits> fetched = userCreditsDB.get(userCredits.getUserId());
-        assertTrue(fetched.isPresent());
-        assertEquals(2, fetched.get().getCredits());
+        userCredits.setCredits(2);
+        UserCredits fetched = userCreditsDB.get(user1.getId()).orElse(null);
+        assertEquals(userCredits, fetched);
     }
 
     @Test
@@ -225,9 +221,8 @@ public class JdbcUserCreditsDBIT {
         assertEquals(1, userCreditsDB.add(userCredits));
         assertEquals(0, userCreditsDB.update(userCredits.getUserId(), 0));
 
-        Optional<UserCredits> fetched = userCreditsDB.get(userCredits.getUserId());
-        assertTrue(fetched.isPresent());
-        assertEquals(10, fetched.get().getCredits());
+        UserCredits fetched = userCreditsDB.get(user1.getId()).orElse(null);
+        assertEquals(userCredits, fetched);
     }
 
     @Test

@@ -6,6 +6,7 @@ import java.time.Instant;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static vstocks.model.Market.TWITTER;
 
 public class StockPriceTest {
@@ -22,16 +23,21 @@ public class StockPriceTest {
         assertEquals("symbol", stockPrice.getSymbol());
         assertEquals(now, stockPrice.getTimestamp());
         assertEquals(20, stockPrice.getPrice());
-
-        assertEquals(0, StockPrice.FULL_COMPARATOR.compare(stockPrice, stockPrice));
-        assertEquals(0, StockPrice.UNIQUE_COMPARATOR.compare(stockPrice, stockPrice));
     }
 
     @Test
     public void testEquals() {
         Instant now = Instant.now().truncatedTo(SECONDS);
-        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol("sym").setTimestamp(now).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol("sym").setTimestamp(now).setPrice(20);
+        StockPrice stockPrice1 = new StockPrice()
+                .setMarket(TWITTER)
+                .setSymbol("symbol")
+                .setTimestamp(now)
+                .setPrice(20);
+        StockPrice stockPrice2 = new StockPrice()
+                .setMarket(TWITTER)
+                .setSymbol("symbol")
+                .setTimestamp(now)
+                .setPrice(20);
         assertEquals(stockPrice1, stockPrice2);
     }
 
@@ -43,7 +49,8 @@ public class StockPriceTest {
                 .setSymbol("symbol")
                 .setTimestamp(now)
                 .setPrice(20);
-        assertEquals(2099410588, stockPrice.hashCode());
+        assertEquals(923521, new StockPrice().hashCode());
+        assertNotEquals(0, stockPrice.hashCode()); // enums make the value inconsistent
     }
 
     @Test

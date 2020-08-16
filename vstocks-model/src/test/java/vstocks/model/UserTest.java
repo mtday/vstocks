@@ -21,22 +21,35 @@ public class UserTest {
         assertEquals("username", user.getUsername());
         assertEquals("displayName", user.getDisplayName());
         assertEquals("link", user.getProfileImage());
-
-        assertEquals(0, User.FULL_COMPARATOR.compare(user, user));
-        assertEquals(0, User.UNIQUE_COMPARATOR.compare(user, user));
     }
 
     @Test
     public void testEquals() {
-        User user1 = new User().setId(generateId("user@domain.com")).setUsername("username1");
-        User user2 = new User().setId(generateId("user@domain.com")).setUsername("username2");
+        User user1 = new User()
+                .setId(generateId("user@domain.com"))
+                .setEmail("user@domain.com")
+                .setUsername("username")
+                .setDisplayName("displayName")
+                .setProfileImage("link");
+        User user2 = new User()
+                .setId(generateId("user@domain.com"))
+                .setEmail("user@domain.com")
+                .setUsername("username")
+                .setDisplayName("displayName")
+                .setProfileImage("link");
         assertEquals(user1, user2);
     }
 
     @Test
     public void testHashCode() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("username");
-        assertEquals(2060421285, user.hashCode());
+        User user = new User()
+                .setId(generateId("user@domain.com"))
+                .setEmail("user@domain.com")
+                .setUsername("username")
+                .setDisplayName("displayName")
+                .setProfileImage("link");
+        assertEquals(28629151, new User().hashCode());
+        assertEquals(-1831566276, user.hashCode());
     }
 
     @Test

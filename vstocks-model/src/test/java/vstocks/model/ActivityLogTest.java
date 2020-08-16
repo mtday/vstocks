@@ -5,16 +5,16 @@ import org.junit.Test;
 import java.time.Instant;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static vstocks.model.ActivityType.STOCK_SELL;
 import static vstocks.model.ActivityType.USER_LOGIN;
 import static vstocks.model.Market.TWITTER;
+import static vstocks.model.User.generateId;
 
 public class ActivityLogTest {
     @Test
     public void testGettersAndSettersAll() {
-        String userId = User.generateId("user@domain.com");
+        String userId = generateId("user@domain.com");
         Instant now = Instant.now().truncatedTo(SECONDS);
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")
@@ -34,14 +34,11 @@ public class ActivityLogTest {
         assertEquals("symbol", activityLog.getSymbol());
         assertEquals(10, (int) activityLog.getShares());
         assertEquals(20, (int) activityLog.getPrice());
-
-        assertEquals(0, ActivityLog.FULL_COMPARATOR.compare(activityLog, activityLog));
-        assertEquals(0, ActivityLog.UNIQUE_COMPARATOR.compare(activityLog, activityLog));
     }
 
     @Test
     public void testGettersAndSettersSimple() {
-        String userId = User.generateId("user@domain.com");
+        String userId = generateId("user@domain.com");
         Instant now = Instant.now().truncatedTo(SECONDS);
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")
@@ -61,14 +58,31 @@ public class ActivityLogTest {
 
     @Test
     public void testEquals() {
-        ActivityLog activityLog1 = new ActivityLog().setId("id").setUserId("user1");
-        ActivityLog activityLog2 = new ActivityLog().setId("id").setUserId("user2");
+        Instant now = Instant.now().truncatedTo(SECONDS);
+        ActivityLog activityLog1 = new ActivityLog()
+                .setId("id")
+                .setUserId(generateId("user@domain.com"))
+                .setType(STOCK_SELL)
+                .setTimestamp(now)
+                .setMarket(TWITTER)
+                .setSymbol("symbol")
+                .setShares(10)
+                .setPrice(20);
+        ActivityLog activityLog2 = new ActivityLog()
+                .setId("id")
+                .setUserId(generateId("user@domain.com"))
+                .setType(STOCK_SELL)
+                .setTimestamp(now)
+                .setMarket(TWITTER)
+                .setSymbol("symbol")
+                .setShares(10)
+                .setPrice(20);
         assertEquals(activityLog1, activityLog2);
     }
 
     @Test
     public void testHashCode() {
-        String userId = User.generateId("user@domain.com");
+        String userId = generateId("user@domain.com");
         Instant now = Instant.now().truncatedTo(SECONDS);
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")
@@ -79,12 +93,13 @@ public class ActivityLogTest {
                 .setSymbol("symbol")
                 .setShares(10)
                 .setPrice(20);
-        assertEquals(3386, activityLog.hashCode());
+        assertEquals(-1807454463, new ActivityLog().hashCode());
+        assertNotEquals(0, activityLog.hashCode()); // enums make the value inconsistent
     }
 
     @Test
     public void testToString() {
-        String userId = User.generateId("user@domain.com");
+        String userId = generateId("user@domain.com");
         Instant now = Instant.now().truncatedTo(SECONDS);
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")

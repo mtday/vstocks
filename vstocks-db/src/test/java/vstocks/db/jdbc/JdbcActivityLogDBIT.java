@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 import static vstocks.model.ActivityType.*;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 import static vstocks.model.User.generateId;
 
 public class JdbcActivityLogDBIT {
@@ -74,15 +74,8 @@ public class JdbcActivityLogDBIT {
         ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
         assertEquals(1, activityLogDB.add(activityLog));
 
-        Optional<ActivityLog> fetched = activityLogDB.get(activityLog.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(activityLog.getUserId(), fetched.get().getUserId());
-        assertEquals(activityLog.getType(), fetched.get().getType());
-        assertEquals(activityLog.getTimestamp(), fetched.get().getTimestamp());
-        assertEquals(activityLog.getMarket(), fetched.get().getMarket());
-        assertEquals(activityLog.getSymbol(), fetched.get().getSymbol());
-        assertEquals(activityLog.getShares(), fetched.get().getShares());
-        assertEquals(activityLog.getPrice(), fetched.get().getPrice());
+        ActivityLog fetched = activityLogDB.get(activityLog.getId()).orElse(null);
+        assertEquals(activityLog, fetched);
     }
 
     @Test
@@ -290,11 +283,11 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        List<ActivityLog> list = new ArrayList<>();
-        assertEquals(2, activityLogDB.consume(list::add, emptySet()));
-        assertEquals(2, list.size());
-        assertEquals(activityLog1, list.get(0));
-        assertEquals(activityLog2, list.get(1));
+        List<ActivityLog> results = new ArrayList<>();
+        assertEquals(2, activityLogDB.consume(results::add, emptySet()));
+        assertEquals(2, results.size());
+        assertEquals(activityLog1, results.get(0));
+        assertEquals(activityLog2, results.get(1));
     }
 
     @Test
@@ -305,12 +298,12 @@ public class JdbcActivityLogDBIT {
         assertEquals(1, activityLogDB.add(activityLog1));
         assertEquals(1, activityLogDB.add(activityLog2));
 
-        List<ActivityLog> list = new ArrayList<>();
+        List<ActivityLog> results = new ArrayList<>();
         Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), ID.toSort()));
-        assertEquals(2, activityLogDB.consume(list::add, sort));
-        assertEquals(2, list.size());
-        assertEquals(activityLog2, list.get(0));
-        assertEquals(activityLog1, list.get(1));
+        assertEquals(2, activityLogDB.consume(results::add, sort));
+        assertEquals(2, results.size());
+        assertEquals(activityLog2, results.get(0));
+        assertEquals(activityLog1, results.get(1));
     }
 
     @Test
@@ -343,15 +336,8 @@ public class JdbcActivityLogDBIT {
         ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setType(USER_LOGIN).setTimestamp(now);
         assertEquals(1, activityLogDB.add(activityLog));
 
-        Optional<ActivityLog> fetched = activityLogDB.get(activityLog.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(activityLog.getUserId(), fetched.get().getUserId());
-        assertEquals(activityLog.getType(), fetched.get().getType());
-        assertEquals(activityLog.getTimestamp(), fetched.get().getTimestamp());
-        assertNull(fetched.get().getMarket());
-        assertNull(fetched.get().getSymbol());
-        assertNull(fetched.get().getShares());
-        assertNull(fetched.get().getPrice());
+        ActivityLog fetched = activityLogDB.get(activityLog.getId()).orElse(null);
+        assertEquals(activityLog, fetched);
     }
 
     @Test
@@ -360,15 +346,8 @@ public class JdbcActivityLogDBIT {
         ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setType(STOCK_SELL).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(10);
         assertEquals(1, activityLogDB.add(activityLog));
 
-        Optional<ActivityLog> fetched = activityLogDB.get(activityLog.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(activityLog.getUserId(), fetched.get().getUserId());
-        assertEquals(activityLog.getType(), fetched.get().getType());
-        assertEquals(activityLog.getTimestamp(), fetched.get().getTimestamp());
-        assertEquals(activityLog.getMarket(), fetched.get().getMarket());
-        assertEquals(activityLog.getSymbol(), fetched.get().getSymbol());
-        assertEquals(activityLog.getShares(), fetched.get().getShares());
-        assertEquals(activityLog.getPrice(), fetched.get().getPrice());
+        ActivityLog fetched = activityLogDB.get(activityLog.getId()).orElse(null);
+        assertEquals(activityLog, fetched);
     }
 
     @Test
@@ -377,15 +356,8 @@ public class JdbcActivityLogDBIT {
         ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setType(STOCK_BUY).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(-5);
         assertEquals(1, activityLogDB.add(activityLog));
 
-        Optional<ActivityLog> fetched = activityLogDB.get(activityLog.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(activityLog.getUserId(), fetched.get().getUserId());
-        assertEquals(activityLog.getType(), fetched.get().getType());
-        assertEquals(activityLog.getTimestamp(), fetched.get().getTimestamp());
-        assertEquals(activityLog.getMarket(), fetched.get().getMarket());
-        assertEquals(activityLog.getSymbol(), fetched.get().getSymbol());
-        assertEquals(activityLog.getShares(), fetched.get().getShares());
-        assertEquals(activityLog.getPrice(), fetched.get().getPrice());
+        ActivityLog fetched = activityLogDB.get(activityLog.getId()).orElse(null);
+        assertEquals(activityLog, fetched);
     }
 
     @Test
@@ -394,15 +366,8 @@ public class JdbcActivityLogDBIT {
         ActivityLog activityLog = new ActivityLog().setId("id").setUserId(user1.getId()).setType(STOCK_BUY).setTimestamp(now).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(1).setPrice(-15);
         assertEquals(1, activityLogDB.add(activityLog)); // not protected at this level
 
-        Optional<ActivityLog> fetched = activityLogDB.get(activityLog.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(activityLog.getUserId(), fetched.get().getUserId());
-        assertEquals(activityLog.getType(), fetched.get().getType());
-        assertEquals(activityLog.getTimestamp(), fetched.get().getTimestamp());
-        assertEquals(activityLog.getMarket(), fetched.get().getMarket());
-        assertEquals(activityLog.getSymbol(), fetched.get().getSymbol());
-        assertEquals(activityLog.getShares(), fetched.get().getShares());
-        assertEquals(activityLog.getPrice(), fetched.get().getPrice());
+        ActivityLog fetched = activityLogDB.get(activityLog.getId()).orElse(null);
+        assertEquals(activityLog, fetched);
     }
 
     @Test(expected = Exception.class)

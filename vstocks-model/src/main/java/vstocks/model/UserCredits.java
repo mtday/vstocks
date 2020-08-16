@@ -1,6 +1,5 @@
 package vstocks.model;
 
-import java.util.Comparator;
 import java.util.Objects;
 
 public class UserCredits {
@@ -9,12 +8,6 @@ public class UserCredits {
 
     public UserCredits() {
     }
-
-    public static final Comparator<UserCredits> FULL_COMPARATOR = Comparator
-            .comparing(UserCredits::getUserId)
-            .thenComparingLong(UserCredits::getCredits);
-
-    public static final Comparator<UserCredits> UNIQUE_COMPARATOR = Comparator.comparing(UserCredits::getUserId);
 
     public String getUserId() {
         return userId;
@@ -39,12 +32,13 @@ public class UserCredits {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserCredits that = (UserCredits) o;
-        return Objects.equals(userId, that.userId);
+        return credits == that.credits &&
+                Objects.equals(userId, that.userId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId);
+        return Objects.hash(userId, credits);
     }
 
     @Override

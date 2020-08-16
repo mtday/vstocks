@@ -3,6 +3,7 @@ package vstocks.model;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static vstocks.model.Market.TWITTER;
 
 public class StockTest {
@@ -18,15 +19,20 @@ public class StockTest {
         assertEquals("symbol", stock.getSymbol());
         assertEquals("name", stock.getName());
         assertEquals("link", stock.getProfileImage());
-
-        assertEquals(0, Stock.FULL_COMPARATOR.compare(stock, stock));
-        assertEquals(0, Stock.UNIQUE_COMPARATOR.compare(stock, stock));
     }
 
     @Test
     public void testEquals() {
-        Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name1");
-        Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym").setName("name2");
+        Stock stock1 = new Stock()
+                .setMarket(TWITTER)
+                .setSymbol("symbol")
+                .setName("name")
+                .setProfileImage("link");
+        Stock stock2 = new Stock()
+                .setMarket(TWITTER)
+                .setSymbol("symbol")
+                .setName("name")
+                .setProfileImage("link");
         assertEquals(stock1, stock2);
     }
 
@@ -37,7 +43,8 @@ public class StockTest {
                 .setSymbol("symbol")
                 .setName("name")
                 .setProfileImage("link");
-        assertEquals(1553141094, stock.hashCode());
+        assertEquals(923521, new Stock().hashCode());
+        assertNotEquals(0, stock.hashCode()); // enums make the value inconsistent
     }
 
     @Test

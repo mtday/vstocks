@@ -21,7 +21,7 @@ import static vstocks.model.DatabaseField.CREDITS;
 import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.Market.TWITTER;
 import static vstocks.model.Market.YOUTUBE;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 import static vstocks.model.User.generateId;
 
 public class JdbcPortfolioValueDBIT {
@@ -40,12 +40,12 @@ public class JdbcPortfolioValueDBIT {
     private final Instant now = Instant.now().truncatedTo(SECONDS);
     private final User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
     private final User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
-    private final Stock twitterStock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
-    private final Stock twitterStock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
-    private final Stock twitterStock3 = new Stock().setMarket(TWITTER).setSymbol("sym3").setName("name3");
-    private final Stock youtubeStock1 = new Stock().setMarket(YOUTUBE).setSymbol("sym1").setName("name1");
-    private final Stock youtubeStock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
-    private final Stock youtubeStock3 = new Stock().setMarket(YOUTUBE).setSymbol("sym3").setName("name3");
+    private final Stock twitterStock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
+    private final Stock twitterStock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2").setProfileImage("link");
+    private final Stock twitterStock3 = new Stock().setMarket(TWITTER).setSymbol("sym3").setName("name3").setProfileImage("link");
+    private final Stock youtubeStock1 = new Stock().setMarket(YOUTUBE).setSymbol("sym1").setName("name1").setProfileImage("link");
+    private final Stock youtubeStock2 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2").setProfileImage("link");
+    private final Stock youtubeStock3 = new Stock().setMarket(YOUTUBE).setSymbol("sym3").setName("name3").setProfileImage("link");
     private final StockPrice twitterStockPrice1 = new StockPrice().setMarket(twitterStock1.getMarket()).setSymbol(twitterStock1.getSymbol()).setTimestamp(now).setPrice(100);
     private final StockPrice twitterStockPrice2 = new StockPrice().setMarket(twitterStock2.getMarket()).setSymbol(twitterStock2.getSymbol()).setTimestamp(now).setPrice(200);
     private final StockPrice twitterStockPrice3 = new StockPrice().setMarket(twitterStock3.getMarket()).setSymbol(twitterStock3.getSymbol()).setTimestamp(now).setPrice(300);
@@ -252,13 +252,8 @@ public class JdbcPortfolioValueDBIT {
         PortfolioValue portfolioValue = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(singletonMap(TWITTER, 1000L)).setTotal(1010);
         assertEquals(1, portfolioValueDB.add(portfolioValue));
 
-        Optional<PortfolioValue> fetched = portfolioValueDB.getLatest(user1.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(portfolioValue.getUserId(), fetched.get().getUserId());
-        assertEquals(portfolioValue.getTimestamp(), fetched.get().getTimestamp());
-        assertEquals(portfolioValue.getCredits(), fetched.get().getCredits());
-        assertEquals(portfolioValue.getMarketValues(), fetched.get().getMarketValues());
-        assertEquals(portfolioValue.getTotal(), fetched.get().getTotal());
+        PortfolioValue fetched = portfolioValueDB.getLatest(user1.getId()).orElse(null);
+        assertEquals(portfolioValue, fetched);
     }
 
     @Test
@@ -425,11 +420,11 @@ public class JdbcPortfolioValueDBIT {
         assertEquals(1, portfolioValueDB.add(portfolioValue1));
         assertEquals(1, portfolioValueDB.add(portfolioValue2));
 
-        List<PortfolioValue> list = new ArrayList<>();
-        assertEquals(2, portfolioValueDB.consume(list::add, emptySet()));
-        assertEquals(2, list.size());
-        assertEquals(portfolioValue1, list.get(0));
-        assertEquals(portfolioValue2, list.get(1));
+        List<PortfolioValue> results = new ArrayList<>();
+        assertEquals(2, portfolioValueDB.consume(results::add, emptySet()));
+        assertEquals(2, results.size());
+        assertEquals(portfolioValue1, results.get(0));
+        assertEquals(portfolioValue2, results.get(1));
     }
 
     @Test
@@ -439,12 +434,12 @@ public class JdbcPortfolioValueDBIT {
         assertEquals(1, portfolioValueDB.add(portfolioValue1));
         assertEquals(1, portfolioValueDB.add(portfolioValue2));
 
-        List<PortfolioValue> list = new ArrayList<>();
+        List<PortfolioValue> results = new ArrayList<>();
         Set<Sort> sort = new LinkedHashSet<>(asList(CREDITS.toSort(DESC), USER_ID.toSort(DESC)));
-        assertEquals(2, portfolioValueDB.consume(list::add, sort));
-        assertEquals(2, list.size());
-        assertEquals(portfolioValue2, list.get(0));
-        assertEquals(portfolioValue1, list.get(1));
+        assertEquals(2, portfolioValueDB.consume(results::add, sort));
+        assertEquals(2, results.size());
+        assertEquals(portfolioValue2, results.get(0));
+        assertEquals(portfolioValue1, results.get(1));
     }
 
     @Test
@@ -459,13 +454,8 @@ public class JdbcPortfolioValueDBIT {
         assertEquals(1, portfolioValueDB.add(portfolioValue));
         assertEquals(0, portfolioValueDB.add(portfolioValue));
 
-        Optional<PortfolioValue> fetched = portfolioValueDB.getLatest(user1.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(portfolioValue.getUserId(), fetched.get().getUserId());
-        assertEquals(portfolioValue.getTimestamp(), fetched.get().getTimestamp());
-        assertEquals(portfolioValue.getCredits(), fetched.get().getCredits());
-        assertEquals(portfolioValue.getMarketValues(), fetched.get().getMarketValues());
-        assertEquals(portfolioValue.getTotal(), fetched.get().getTotal());
+        PortfolioValue fetched = portfolioValueDB.getLatest(user1.getId()).orElse(null);
+        assertEquals(portfolioValue, fetched);
     }
 
     @Test
@@ -476,13 +466,8 @@ public class JdbcPortfolioValueDBIT {
         portfolioValue.setTotal(1012);
         assertEquals(1, portfolioValueDB.add(portfolioValue));
 
-        Optional<PortfolioValue> fetched = portfolioValueDB.getLatest(user1.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(portfolioValue.getUserId(), fetched.get().getUserId());
-        assertEquals(portfolioValue.getTimestamp(), fetched.get().getTimestamp());
-        assertEquals(portfolioValue.getCredits(), fetched.get().getCredits());
-        assertEquals(portfolioValue.getMarketValues(), fetched.get().getMarketValues());
-        assertEquals(portfolioValue.getTotal(), fetched.get().getTotal());
+        PortfolioValue fetched = portfolioValueDB.getLatest(user1.getId()).orElse(null);
+        assertEquals(portfolioValue, fetched);
     }
 
     @Test

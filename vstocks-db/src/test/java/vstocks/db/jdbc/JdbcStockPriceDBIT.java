@@ -12,7 +12,10 @@ import vstocks.model.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
@@ -22,7 +25,7 @@ import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.PRICE;
 import static vstocks.model.DatabaseField.SYMBOL;
 import static vstocks.model.Market.TWITTER;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 
 public class JdbcStockPriceDBIT {
     @ClassRule
@@ -68,12 +71,8 @@ public class JdbcStockPriceDBIT {
         StockPrice stockPrice = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
         assertEquals(1, stockPriceDB.add(stockPrice));
 
-        Optional<StockPrice> fetched = stockPriceDB.getLatest(TWITTER, stockPrice.getSymbol());
-        assertTrue(fetched.isPresent());
-        assertEquals(stockPrice.getMarket(), fetched.get().getMarket());
-        assertEquals(stockPrice.getSymbol(), fetched.get().getSymbol());
-        assertEquals(stockPrice.getTimestamp(), fetched.get().getTimestamp());
-        assertEquals(stockPrice.getPrice(), fetched.get().getPrice());
+        StockPrice fetched = stockPriceDB.getLatest(stockPrice.getMarket(), stockPrice.getSymbol()).orElse(null);
+        assertEquals(stockPrice, fetched);
     }
 
     @Test
@@ -213,11 +212,11 @@ public class JdbcStockPriceDBIT {
         assertEquals(1, stockPriceDB.add(stockPrice1));
         assertEquals(1, stockPriceDB.add(stockPrice2));
 
-        List<StockPrice> list = new ArrayList<>();
-        assertEquals(2, stockPriceDB.consume(list::add, emptySet()));
-        assertEquals(2, list.size());
-        assertEquals(stockPrice1, list.get(0));
-        assertEquals(stockPrice2, list.get(1));
+        List<StockPrice> results = new ArrayList<>();
+        assertEquals(2, stockPriceDB.consume(results::add, emptySet()));
+        assertEquals(2, results.size());
+        assertEquals(stockPrice1, results.get(0));
+        assertEquals(stockPrice2, results.get(1));
     }
 
     @Test
@@ -228,12 +227,12 @@ public class JdbcStockPriceDBIT {
         assertEquals(1, stockPriceDB.add(stockPrice1));
         assertEquals(1, stockPriceDB.add(stockPrice2));
 
-        List<StockPrice> list = new ArrayList<>();
+        List<StockPrice> results = new ArrayList<>();
         Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(), PRICE.toSort(DESC)));
-        assertEquals(2, stockPriceDB.consume(list::add, sort));
-        assertEquals(2, list.size());
-        assertEquals(stockPrice2, list.get(0));
-        assertEquals(stockPrice1, list.get(1));
+        assertEquals(2, stockPriceDB.consume(results::add, sort));
+        assertEquals(2, results.size());
+        assertEquals(stockPrice2, results.get(0));
+        assertEquals(stockPrice1, results.get(1));
     }
 
     @Test
@@ -250,12 +249,8 @@ public class JdbcStockPriceDBIT {
         assertEquals(1, stockPriceDB.add(stockPrice));
         assertEquals(0, stockPriceDB.add(stockPrice));
 
-        Optional<StockPrice> fetched = stockPriceDB.getLatest(TWITTER, stockPrice.getSymbol());
-        assertTrue(fetched.isPresent());
-        assertEquals(stockPrice.getMarket(), fetched.get().getMarket());
-        assertEquals(stockPrice.getSymbol(), fetched.get().getSymbol());
-        assertEquals(stockPrice.getTimestamp(), fetched.get().getTimestamp());
-        assertEquals(stockPrice.getPrice(), fetched.get().getPrice());
+        StockPrice fetched = stockPriceDB.getLatest(stockPrice.getMarket(), stockPrice.getSymbol()).orElse(null);
+        assertEquals(stockPrice, fetched);
     }
 
     @Test
@@ -266,12 +261,8 @@ public class JdbcStockPriceDBIT {
         stockPrice.setPrice(12);
         assertEquals(1, stockPriceDB.add(stockPrice));
 
-        Optional<StockPrice> fetched = stockPriceDB.getLatest(TWITTER, stockPrice.getSymbol());
-        assertTrue(fetched.isPresent());
-        assertEquals(stockPrice.getMarket(), fetched.get().getMarket());
-        assertEquals(stockPrice.getSymbol(), fetched.get().getSymbol());
-        assertEquals(stockPrice.getTimestamp(), fetched.get().getTimestamp());
-        assertEquals(stockPrice.getPrice(), fetched.get().getPrice());
+        StockPrice fetched = stockPriceDB.getLatest(stockPrice.getMarket(), stockPrice.getSymbol()).orElse(null);
+        assertEquals(stockPrice, fetched);
     }
 
     @Test

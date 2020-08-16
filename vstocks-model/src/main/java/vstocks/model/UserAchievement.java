@@ -1,7 +1,6 @@
 package vstocks.model;
 
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.Objects;
 
 public class UserAchievement {
@@ -12,16 +11,6 @@ public class UserAchievement {
 
     public UserAchievement() {
     }
-
-    public static final Comparator<UserAchievement> FULL_COMPARATOR = Comparator
-            .comparing(UserAchievement::getUserId)
-            .thenComparing(UserAchievement::getAchievementId)
-            .thenComparing(UserAchievement::getTimestamp)
-            .thenComparing(UserAchievement::getDescription);
-
-    public static final Comparator<UserAchievement> UNIQUE_COMPARATOR = Comparator
-            .comparing(UserAchievement::getUserId)
-            .thenComparing(UserAchievement::getAchievementId);
 
     public String getUserId() {
         return userId;
@@ -64,12 +53,15 @@ public class UserAchievement {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserAchievement that = (UserAchievement) o;
-        return Objects.equals(userId, that.userId) && Objects.equals(achievementId, that.achievementId);
+        return Objects.equals(userId, that.userId) &&
+                Objects.equals(achievementId, that.achievementId) &&
+                Objects.equals(timestamp, that.timestamp) &&
+                Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, achievementId);
+        return Objects.hash(userId, achievementId, timestamp, description);
     }
 
     @Override

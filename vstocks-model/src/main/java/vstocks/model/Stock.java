@@ -1,6 +1,5 @@
 package vstocks.model;
 
-import java.util.Comparator;
 import java.util.Objects;
 
 public class Stock {
@@ -11,16 +10,6 @@ public class Stock {
 
     public Stock() {
     }
-
-    public static final Comparator<Stock> FULL_COMPARATOR = Comparator
-            .comparing(Stock::getMarket)
-            .thenComparing(Stock::getSymbol)
-            .thenComparing(Stock::getName)
-            .thenComparing(Stock::getProfileImage);
-
-    public static final Comparator<Stock> UNIQUE_COMPARATOR = Comparator
-            .comparing(Stock::getMarket)
-            .thenComparing(Stock::getSymbol);
 
     public Market getMarket() {
         return market;
@@ -64,12 +53,14 @@ public class Stock {
         if (o == null || getClass() != o.getClass()) return false;
         Stock stock = (Stock) o;
         return market == stock.market &&
-                Objects.equals(symbol, stock.symbol);
+                Objects.equals(symbol, stock.symbol) &&
+                Objects.equals(name, stock.name) &&
+                Objects.equals(profileImage, stock.profileImage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(market.name(), symbol);
+        return Objects.hash(market, symbol, name, profileImage);
     }
 
     @Override

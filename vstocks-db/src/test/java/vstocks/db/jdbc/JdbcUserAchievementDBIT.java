@@ -13,7 +13,10 @@ import vstocks.model.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
@@ -22,7 +25,7 @@ import static org.junit.Assert.*;
 import static vstocks.model.ActivityType.USER_LOGIN;
 import static vstocks.model.DatabaseField.ACHIEVEMENT_ID;
 import static vstocks.model.DatabaseField.USER_ID;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 import static vstocks.model.User.generateId;
 
 public class JdbcUserAchievementDBIT {
@@ -77,12 +80,9 @@ public class JdbcUserAchievementDBIT {
     public void testGetExists() {
         UserAchievement userAchievement = new UserAchievement().setUserId(user1.getId()).setAchievementId(achievement1.getId()).setTimestamp(now).setDescription("Description");
         assertEquals(1, userAchievementDB.add(userAchievement));
-        Optional<UserAchievement> fetched = userAchievementDB.get(userAchievement.getUserId(), userAchievement.getAchievementId());
-        assertTrue(fetched.isPresent());
-        assertEquals(userAchievement.getUserId(), fetched.get().getUserId());
-        assertEquals(userAchievement.getAchievementId(), fetched.get().getAchievementId());
-        assertEquals(userAchievement.getTimestamp(), fetched.get().getTimestamp());
-        assertEquals(userAchievement.getDescription(), fetched.get().getDescription());
+
+        UserAchievement fetched = userAchievementDB.get(user1.getId(), achievement1.getId()).orElse(null);
+        assertEquals(userAchievement, fetched);
     }
 
     @Test
@@ -97,6 +97,7 @@ public class JdbcUserAchievementDBIT {
         UserAchievement userAchievement2 = new UserAchievement().setUserId(user1.getId()).setAchievementId(achievement2.getId()).setTimestamp(now).setDescription("Description");
         assertEquals(1, userAchievementDB.add(userAchievement1));
         assertEquals(1, userAchievementDB.add(userAchievement2));
+
         List<UserAchievement> results = userAchievementDB.getForUser(user1.getId());
         assertEquals(2, results.size());
         assertEquals(userAchievement1, results.get(0));
@@ -189,11 +190,11 @@ public class JdbcUserAchievementDBIT {
         assertEquals(1, userAchievementDB.add(userAchievement1));
         assertEquals(1, userAchievementDB.add(userAchievement2));
 
-        List<UserAchievement> list = new ArrayList<>();
-        assertEquals(2, userAchievementDB.consume(list::add, emptySet()));
-        assertEquals(2, list.size());
-        assertEquals(userAchievement1, list.get(0));
-        assertEquals(userAchievement2, list.get(1));
+        List<UserAchievement> results = new ArrayList<>();
+        assertEquals(2, userAchievementDB.consume(results::add, emptySet()));
+        assertEquals(2, results.size());
+        assertEquals(userAchievement1, results.get(0));
+        assertEquals(userAchievement2, results.get(1));
     }
 
     @Test
@@ -203,12 +204,12 @@ public class JdbcUserAchievementDBIT {
         assertEquals(1, userAchievementDB.add(userAchievement1));
         assertEquals(1, userAchievementDB.add(userAchievement2));
 
-        List<UserAchievement> list = new ArrayList<>();
+        List<UserAchievement> results = new ArrayList<>();
         Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), ACHIEVEMENT_ID.toSort()));
-        assertEquals(2, userAchievementDB.consume(list::add, sort));
-        assertEquals(2, list.size());
-        assertEquals(userAchievement2, list.get(0));
-        assertEquals(userAchievement1, list.get(1));
+        assertEquals(2, userAchievementDB.consume(results::add, sort));
+        assertEquals(2, results.size());
+        assertEquals(userAchievement2, results.get(0));
+        assertEquals(userAchievement1, results.get(1));
     }
 
     @Test

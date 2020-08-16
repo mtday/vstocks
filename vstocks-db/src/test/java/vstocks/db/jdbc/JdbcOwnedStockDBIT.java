@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
 import static vstocks.model.Market.YOUTUBE;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 import static vstocks.model.User.generateId;
 
 public class JdbcOwnedStockDBIT {
@@ -40,10 +40,10 @@ public class JdbcOwnedStockDBIT {
     private JdbcOwnedStockDB ownedStockDB;
     private JdbcUserStockDB userStockDB;
 
-    private final Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
-    private final Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
-    private final Stock stock3 = new Stock().setMarket(YOUTUBE).setSymbol("sym1").setName("name1");
-    private final Stock stock4 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2");
+    private final Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
+    private final Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2").setProfileImage("link");
+    private final Stock stock3 = new Stock().setMarket(YOUTUBE).setSymbol("sym1").setName("name1").setProfileImage("link");
+    private final Stock stock4 = new Stock().setMarket(YOUTUBE).setSymbol("sym2").setName("name2").setProfileImage("link");
     private final User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("user1").setDisplayName("User 1");
     private final User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("user2").setDisplayName("User 2");
     private final User user3 = new User().setId(generateId("user3@domain.com")).setEmail("user3@domain.com").setUsername("user3").setDisplayName("User 3");
@@ -100,11 +100,11 @@ public class JdbcOwnedStockDBIT {
         assertEquals(1, userStockDB.add(userStock3));
         assertEquals(1, userStockDB.add(userStock4));
 
-        List<Stock> list = new ArrayList<>();
-        assertEquals(2, ownedStockDB.consumeForMarket(TWITTER, list::add, emptySet()));
-        assertEquals(2, list.size());
-        assertEquals(stock1, list.get(0));
-        assertEquals(stock2, list.get(1));
+        List<Stock> results = new ArrayList<>();
+        assertEquals(2, ownedStockDB.consumeForMarket(TWITTER, results::add, emptySet()));
+        assertEquals(2, results.size());
+        assertEquals(stock1, results.get(0));
+        assertEquals(stock2, results.get(1));
     }
 
     @Test
@@ -118,12 +118,12 @@ public class JdbcOwnedStockDBIT {
         assertEquals(1, userStockDB.add(userStock3));
         assertEquals(1, userStockDB.add(userStock4));
 
-        List<Stock> list = new ArrayList<>();
+        List<Stock> results = new ArrayList<>();
         Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), NAME.toSort()));
-        assertEquals(2, ownedStockDB.consumeForMarket(TWITTER, list::add, sort));
-        assertEquals(2, list.size());
-        assertEquals(stock2, list.get(0));
-        assertEquals(stock1, list.get(1));
+        assertEquals(2, ownedStockDB.consumeForMarket(TWITTER, results::add, sort));
+        assertEquals(2, results.size());
+        assertEquals(stock2, results.get(0));
+        assertEquals(stock1, results.get(1));
     }
 
     @Test
@@ -144,12 +144,12 @@ public class JdbcOwnedStockDBIT {
         assertEquals(1, userStockDB.add(userStock3));
         assertEquals(1, userStockDB.add(userStock4));
 
-        List<Stock> list = new ArrayList<>();
-        assertEquals(3, ownedStockDB.consume(list::add, emptySet()));
-        assertEquals(3, list.size());
-        assertEquals(stock1, list.get(0));
-        assertEquals(stock2, list.get(1));
-        assertEquals(stock3, list.get(2));
+        List<Stock> results = new ArrayList<>();
+        assertEquals(3, ownedStockDB.consume(results::add, emptySet()));
+        assertEquals(3, results.size());
+        assertEquals(stock1, results.get(0));
+        assertEquals(stock2, results.get(1));
+        assertEquals(stock3, results.get(2));
     }
 
     @Test
@@ -163,12 +163,12 @@ public class JdbcOwnedStockDBIT {
         assertEquals(1, userStockDB.add(userStock3));
         assertEquals(1, userStockDB.add(userStock4));
 
-        List<Stock> list = new ArrayList<>();
+        List<Stock> results = new ArrayList<>();
         Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), MARKET.toSort()));
-        assertEquals(3, ownedStockDB.consume(list::add, sort));
-        assertEquals(3, list.size());
-        assertEquals(stock2, list.get(0));
-        assertEquals(stock1, list.get(1));
-        assertEquals(stock3, list.get(2));
+        assertEquals(3, ownedStockDB.consume(results::add, sort));
+        assertEquals(3, results.size());
+        assertEquals(stock2, results.get(0));
+        assertEquals(stock1, results.get(1));
+        assertEquals(stock3, results.get(2));
     }
 }

@@ -17,7 +17,7 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 import static vstocks.model.DatabaseField.TIMESTAMP;
 import static vstocks.model.DatabaseField.USER_ID;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 
 public class PortfolioValueTable extends BaseTable {
     private static final RowMapper<PortfolioValue> ROW_MAPPER = rs -> {

@@ -91,7 +91,7 @@ public class LoginIT extends ResourceTest {
                 .setType(USER_LOGIN);
 
         verify(userDB, times(1)).add(argThat(user ->
-                getUser().equals(user) && !getUser().getUsername().equals(user.getUsername())));
+                getUser().getId().equals(user.getId()) && !getUser().getUsername().equals(user.getUsername())));
         verify(activityLogDB, times(1)).add(argThat(new ActivityLogArgumentMatcher(activityLog)));
     }
 

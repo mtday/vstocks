@@ -1,7 +1,6 @@
 package vstocks.model;
 
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.Objects;
 
 public class PricedStock {
@@ -14,19 +13,6 @@ public class PricedStock {
 
     public PricedStock() {
     }
-
-    public static final Comparator<PricedStock> FULL_COMPARATOR = Comparator
-            .comparing(PricedStock::getMarket)
-            .thenComparing(PricedStock::getSymbol)
-            .thenComparing(PricedStock::getTimestamp)
-            .thenComparing(PricedStock::getName)
-            .thenComparing(PricedStock::getProfileImage)
-            .thenComparingInt(PricedStock::getPrice);
-
-    public static final Comparator<PricedStock> UNIQUE_COMPARATOR = Comparator
-            .comparing(PricedStock::getMarket)
-            .thenComparing(PricedStock::getSymbol)
-            .thenComparing(PricedStock::getTimestamp);
 
     public Stock asStock() {
         return new Stock()
@@ -102,15 +88,18 @@ public class PricedStock {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PricedStock stock = (PricedStock) o;
-        return market == stock.market &&
-                Objects.equals(symbol, stock.symbol) &&
-                Objects.equals(timestamp, stock.timestamp);
+        PricedStock that = (PricedStock) o;
+        return price == that.price &&
+                market == that.market &&
+                Objects.equals(symbol, that.symbol) &&
+                Objects.equals(timestamp, that.timestamp) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(profileImage, that.profileImage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(market.name(), symbol, timestamp);
+        return Objects.hash(market, symbol, timestamp, name, profileImage, price);
     }
 
     @Override

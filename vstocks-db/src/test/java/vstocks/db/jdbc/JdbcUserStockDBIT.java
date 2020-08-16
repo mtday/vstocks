@@ -21,7 +21,7 @@ import static vstocks.model.ActivityType.STOCK_SELL;
 import static vstocks.model.DatabaseField.SYMBOL;
 import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.Market.TWITTER;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 import static vstocks.model.User.generateId;
 
 public class JdbcUserStockDBIT {

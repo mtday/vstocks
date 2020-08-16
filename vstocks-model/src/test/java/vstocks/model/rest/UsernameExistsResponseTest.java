@@ -15,4 +15,32 @@ public class UsernameExistsResponseTest {
         assertEquals("username", usernameExistsResponse.getUsername());
         assertTrue(usernameExistsResponse.isExists());
     }
+
+    @Test
+    public void testEquals() {
+        UsernameExistsResponse usernameExistsResponse1 = new UsernameExistsResponse()
+                .setUsername("username")
+                .setExists(true);
+        UsernameExistsResponse usernameExistsResponse2 = new UsernameExistsResponse()
+                .setUsername("username")
+                .setExists(true);
+        assertEquals(usernameExistsResponse1, usernameExistsResponse2);
+    }
+
+    @Test
+    public void testHashCode() {
+        UsernameExistsResponse usernameExistsResponse = new UsernameExistsResponse()
+                .setUsername("username")
+                .setExists(true);
+        assertEquals(2198, new UsernameExistsResponse().hashCode());
+        assertEquals(352819834, usernameExistsResponse.hashCode());
+    }
+
+    @Test
+    public void testToString() {
+        UsernameExistsResponse usernameExistsResponse = new UsernameExistsResponse()
+                .setUsername("username")
+                .setExists(true);
+        assertEquals("UsernameExistsResponse{username='username', exists=true}", usernameExistsResponse.toString());
+    }
 }

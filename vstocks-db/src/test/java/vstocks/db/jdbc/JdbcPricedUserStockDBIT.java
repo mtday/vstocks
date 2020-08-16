@@ -23,7 +23,7 @@ import static java.util.Collections.emptySet;
 import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 import static vstocks.model.User.generateId;
 
 public class JdbcPricedUserStockDBIT {

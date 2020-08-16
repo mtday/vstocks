@@ -12,7 +12,10 @@ import vstocks.model.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
@@ -21,7 +24,7 @@ import static java.util.Collections.singleton;
 import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.RANK;
 import static vstocks.model.DatabaseField.USER_ID;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 import static vstocks.model.User.generateId;
 
 public class JdbcPortfolioValueRankDBIT {
@@ -69,11 +72,8 @@ public class JdbcPortfolioValueRankDBIT {
         PortfolioValueRank portfolioValueRank = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank));
 
-        Optional<PortfolioValueRank> fetched = portfolioValueRankDB.getLatest(user1.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(portfolioValueRank.getUserId(), fetched.get().getUserId());
-        assertEquals(portfolioValueRank.getTimestamp(), fetched.get().getTimestamp());
-        assertEquals(portfolioValueRank.getRank(), fetched.get().getRank());
+        PortfolioValueRank fetched = portfolioValueRankDB.getLatest(user1.getId()).orElse(null);
+        assertEquals(portfolioValueRank, fetched);
     }
 
     @Test
@@ -228,9 +228,9 @@ public class JdbcPortfolioValueRankDBIT {
 
     @Test
     public void testConsumeNone() {
-        List<PortfolioValueRank> list = new ArrayList<>();
-        assertEquals(0, portfolioValueRankDB.consume(list::add, emptySet()));
-        assertTrue(list.isEmpty());
+        List<PortfolioValueRank> results = new ArrayList<>();
+        assertEquals(0, portfolioValueRankDB.consume(results::add, emptySet()));
+        assertTrue(results.isEmpty());
     }
 
     @Test
@@ -240,11 +240,11 @@ public class JdbcPortfolioValueRankDBIT {
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank1));
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank2));
 
-        List<PortfolioValueRank> list = new ArrayList<>();
-        assertEquals(2, portfolioValueRankDB.consume(list::add, emptySet()));
-        assertEquals(2, list.size());
-        assertEquals(portfolioValueRank1, list.get(0));
-        assertEquals(portfolioValueRank2, list.get(1));
+        List<PortfolioValueRank> results = new ArrayList<>();
+        assertEquals(2, portfolioValueRankDB.consume(results::add, emptySet()));
+        assertEquals(2, results.size());
+        assertEquals(portfolioValueRank1, results.get(0));
+        assertEquals(portfolioValueRank2, results.get(1));
     }
 
     @Test
@@ -254,12 +254,12 @@ public class JdbcPortfolioValueRankDBIT {
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank1));
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank2));
 
-        List<PortfolioValueRank> list = new ArrayList<>();
+        List<PortfolioValueRank> results = new ArrayList<>();
         Set<Sort> sort = new LinkedHashSet<>(asList(RANK.toSort(DESC), USER_ID.toSort(DESC)));
-        assertEquals(2, portfolioValueRankDB.consume(list::add, sort));
-        assertEquals(2, list.size());
-        assertEquals(portfolioValueRank2, list.get(0));
-        assertEquals(portfolioValueRank1, list.get(1));
+        assertEquals(2, portfolioValueRankDB.consume(results::add, sort));
+        assertEquals(2, results.size());
+        assertEquals(portfolioValueRank2, results.get(0));
+        assertEquals(portfolioValueRank1, results.get(1));
     }
 
     @Test
@@ -274,11 +274,8 @@ public class JdbcPortfolioValueRankDBIT {
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank));
         assertEquals(0, portfolioValueRankDB.add(portfolioValueRank));
 
-        Optional<PortfolioValueRank> fetched = portfolioValueRankDB.getLatest(user1.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(portfolioValueRank.getUserId(), fetched.get().getUserId());
-        assertEquals(portfolioValueRank.getTimestamp(), fetched.get().getTimestamp());
-        assertEquals(portfolioValueRank.getRank(), fetched.get().getRank());
+        PortfolioValueRank fetched = portfolioValueRankDB.getLatest(user1.getId()).orElse(null);
+        assertEquals(portfolioValueRank, fetched);
     }
 
     @Test
@@ -288,11 +285,8 @@ public class JdbcPortfolioValueRankDBIT {
         portfolioValueRank.setRank(12);
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank));
 
-        Optional<PortfolioValueRank> fetched = portfolioValueRankDB.getLatest(user1.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(portfolioValueRank.getUserId(), fetched.get().getUserId());
-        assertEquals(portfolioValueRank.getTimestamp(), fetched.get().getTimestamp());
-        assertEquals(portfolioValueRank.getRank(), fetched.get().getRank());
+        PortfolioValueRank fetched = portfolioValueRankDB.getLatest(user1.getId()).orElse(null);
+        assertEquals(portfolioValueRank, fetched);
     }
 
     @Test

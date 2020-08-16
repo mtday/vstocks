@@ -12,7 +12,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static vstocks.model.DatabaseField.*;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 
 public class StockPriceTable extends BaseTable {
     private static final RowMapper<StockPrice> ROW_MAPPER = rs ->

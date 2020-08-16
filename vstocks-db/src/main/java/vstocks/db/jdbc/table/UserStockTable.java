@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static vstocks.model.DatabaseField.*;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 
 public class UserStockTable extends BaseTable {
     private static final RowMapper<UserStock> ROW_MAPPER = rs ->

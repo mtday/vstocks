@@ -3,6 +3,7 @@ package vstocks.model;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static vstocks.model.AchievementCategory.BEGINNER;
 
 public class AchievementTest {
@@ -20,15 +21,22 @@ public class AchievementTest {
         assertEquals(BEGINNER, achievement.getCategory());
         assertEquals("description", achievement.getDescription());
         assertEquals(10, achievement.getOrder());
-
-        assertEquals(0, Achievement.FULL_COMPARATOR.compare(achievement, achievement));
-        assertEquals(0, Achievement.UNIQUE_COMPARATOR.compare(achievement, achievement));
     }
 
     @Test
     public void testEquals() {
-        Achievement achievement1 = new Achievement().setId("id").setName("user1");
-        Achievement achievement2 = new Achievement().setId("id").setName("user2");
+        Achievement achievement1 = new Achievement()
+                .setId("id")
+                .setName("name")
+                .setCategory(BEGINNER)
+                .setDescription("description")
+                .setOrder(10);
+        Achievement achievement2 = new Achievement()
+                .setId("id")
+                .setName("name")
+                .setCategory(BEGINNER)
+                .setDescription("description")
+                .setOrder(10);
         assertEquals(achievement1, achievement2);
     }
 
@@ -40,7 +48,8 @@ public class AchievementTest {
                 .setCategory(BEGINNER)
                 .setDescription("description")
                 .setOrder(10);
-        assertEquals(3386, achievement.hashCode());
+        assertEquals(28629151, new Achievement().hashCode());
+        assertNotEquals(0, achievement.hashCode()); // enums make the value inconsistent
     }
 
     @Test

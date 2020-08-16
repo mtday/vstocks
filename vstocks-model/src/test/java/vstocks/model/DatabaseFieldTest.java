@@ -4,8 +4,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static vstocks.model.DatabaseField.*;
-import static vstocks.model.Sort.SortDirection.ASC;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.ASC;
+import static vstocks.model.SortDirection.DESC;
 
 public class DatabaseFieldTest {
     @Test

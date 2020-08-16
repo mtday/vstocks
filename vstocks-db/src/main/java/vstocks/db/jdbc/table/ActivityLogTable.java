@@ -15,7 +15,7 @@ import static java.sql.Types.VARCHAR;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static vstocks.model.DatabaseField.*;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 
 public class ActivityLogTable extends BaseTable {
     private static final RowMapper<ActivityLog> ROW_MAPPER = rs -> {

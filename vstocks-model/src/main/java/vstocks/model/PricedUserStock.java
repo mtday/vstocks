@@ -1,7 +1,6 @@
 package vstocks.model;
 
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.Objects;
 
 public class PricedUserStock {
@@ -14,20 +13,6 @@ public class PricedUserStock {
 
     public PricedUserStock() {
     }
-
-    public static final Comparator<PricedUserStock> FULL_COMPARATOR = Comparator
-            .comparing(PricedUserStock::getUserId)
-            .thenComparing(PricedUserStock::getMarket)
-            .thenComparing(PricedUserStock::getSymbol)
-            .thenComparing(PricedUserStock::getTimestamp)
-            .thenComparingInt(PricedUserStock::getShares)
-            .thenComparingInt(PricedUserStock::getPrice);
-
-    public static final Comparator<PricedUserStock> UNIQUE_COMPARATOR = Comparator
-            .comparing(PricedUserStock::getUserId)
-            .thenComparing(PricedUserStock::getMarket)
-            .thenComparing(PricedUserStock::getSymbol)
-            .thenComparing(PricedUserStock::getTimestamp);
 
     public UserStock asUserStock() {
         return new UserStock()
@@ -103,16 +88,18 @@ public class PricedUserStock {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PricedUserStock userStock = (PricedUserStock) o;
-        return Objects.equals(userId, userStock.userId) &&
-                market == userStock.market &&
-                Objects.equals(symbol, userStock.symbol) &&
-                Objects.equals(timestamp, userStock.timestamp);
+        PricedUserStock that = (PricedUserStock) o;
+        return shares == that.shares &&
+                price == that.price &&
+                Objects.equals(userId, that.userId) &&
+                market == that.market &&
+                Objects.equals(symbol, that.symbol) &&
+                Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, market.name(), symbol, timestamp);
+        return Objects.hash(userId, market, symbol, timestamp, shares, price);
     }
 
     @Override

@@ -16,7 +16,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static vstocks.model.DatabaseField.TIMESTAMP;
 import static vstocks.model.DatabaseField.USER_ID;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.DESC;
 
 public class PortfolioValueRankTable extends BaseTable {
     private static final RowMapper<PortfolioValueRank> ROW_MAPPER = rs ->

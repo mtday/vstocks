@@ -2,11 +2,10 @@ package vstocks.model;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.CREDITS;
-import static vstocks.model.Sort.SortDirection.ASC;
-import static vstocks.model.Sort.SortDirection.DESC;
+import static vstocks.model.SortDirection.ASC;
+import static vstocks.model.SortDirection.DESC;
 
 public class SortTest {
     @Test
@@ -70,7 +69,8 @@ public class SortTest {
     @Test
     public void testHashCode() {
         Sort sort = new Sort().setField(CREDITS).setDirection(DESC);
-        assertEquals(-1687369448, sort.hashCode());
+        assertNotEquals(0, new Sort().hashCode()); // enums make the value inconsistent
+        assertNotEquals(0, sort.hashCode()); // enums make the value inconsistent
     }
 
     @Test

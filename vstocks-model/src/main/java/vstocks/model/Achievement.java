@@ -1,6 +1,5 @@
 package vstocks.model;
 
-import java.util.Comparator;
 import java.util.Objects;
 
 public class Achievement {
@@ -12,15 +11,6 @@ public class Achievement {
 
     public Achievement() {
     }
-
-    public static final Comparator<Achievement> FULL_COMPARATOR = Comparator
-            .comparing(Achievement::getId)
-            .thenComparing(Achievement::getName)
-            .thenComparing(Achievement::getCategory)
-            .thenComparing(Achievement::getDescription)
-            .thenComparingInt(Achievement::getOrder);
-
-    public static final Comparator<Achievement> UNIQUE_COMPARATOR = Comparator.comparing(Achievement::getId);
 
     public String getId() {
         return id;
@@ -71,13 +61,17 @@ public class Achievement {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Achievement achievement = (Achievement) o;
-        return Objects.equals(id, achievement.id);
+        Achievement that = (Achievement) o;
+        return order == that.order &&
+                Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                category == that.category &&
+                Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, name, category, description, order);
     }
 
     @Override

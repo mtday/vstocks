@@ -6,11 +6,12 @@ import java.time.Instant;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
+import static vstocks.model.User.generateId;
 
 public class UserAchievementTest {
     @Test
     public void testGettersAndSetters() {
-        String userId = User.generateId("user@domain.com");
+        String userId = generateId("user@domain.com");
         Instant now = Instant.now().truncatedTo(SECONDS);
         UserAchievement userAchievement = new UserAchievement()
                 .setUserId(userId)
@@ -22,14 +23,11 @@ public class UserAchievementTest {
         assertEquals("achievementId", userAchievement.getAchievementId());
         assertEquals(now, userAchievement.getTimestamp());
         assertEquals("description", userAchievement.getDescription());
-
-        assertEquals(0, UserAchievement.FULL_COMPARATOR.compare(userAchievement, userAchievement));
-        assertEquals(0, UserAchievement.UNIQUE_COMPARATOR.compare(userAchievement, userAchievement));
     }
 
     @Test
     public void testEquals() {
-        String userId = User.generateId("user@domain.com");
+        String userId = generateId("user@domain.com");
         UserAchievement userAchievement1 = new UserAchievement().setUserId(userId).setAchievementId("achievementId");
         UserAchievement userAchievement2 = new UserAchievement().setUserId(userId).setAchievementId("achievementId");
         assertEquals(userAchievement1, userAchievement2);
@@ -37,19 +35,18 @@ public class UserAchievementTest {
 
     @Test
     public void testHashCode() {
-        String userId = User.generateId("user@domain.com");
-        Instant now = Instant.now().truncatedTo(SECONDS);
         UserAchievement userAchievement = new UserAchievement()
-                .setUserId(userId)
+                .setUserId(generateId("user@domain.com"))
                 .setAchievementId("achievementId")
-                .setTimestamp(now)
+                .setTimestamp(Instant.parse("2020-08-10T01:02:03.00Z"))
                 .setDescription("description");
-        assertEquals(-421194587, userAchievement.hashCode());
+        assertEquals(923521, new UserAchievement().hashCode());
+        assertEquals(-502597578, userAchievement.hashCode());
     }
 
     @Test
     public void testToString() {
-        String userId = User.generateId("user@domain.com");
+        String userId = generateId("user@domain.com");
         Instant now = Instant.now().truncatedTo(SECONDS);
         UserAchievement userAchievement = new UserAchievement()
                 .setUserId(userId)

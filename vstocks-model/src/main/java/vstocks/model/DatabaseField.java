@@ -26,7 +26,7 @@ public enum DatabaseField {
         return new Sort(this);
     }
 
-    public Sort toSort(Sort.SortDirection direction) {
+    public Sort toSort(SortDirection direction) {
         return new Sort(this, direction);
     }
 
