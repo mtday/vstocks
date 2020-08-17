@@ -23,6 +23,7 @@ import vstocks.rest.resource.market.stock.*;
 import vstocks.rest.resource.security.Callback;
 import vstocks.rest.resource.security.Login;
 import vstocks.rest.resource.security.Logout;
+import vstocks.rest.resource.standings.GetRanks;
 import vstocks.rest.resource.user.GetUser;
 import vstocks.rest.resource.user.PutUser;
 import vstocks.rest.resource.user.ResetUser;
@@ -61,26 +62,39 @@ public class Application extends ResourceConfig {
     public Application(Environment environment) {
         property("jersey.config.server.wadl.disableWadl", "true");
 
+        // achievement
         register(GetAchievements.class);
 
+        // market
+        register(GetAllMarkets.class);
+        register(GetMarket.class);
+
+        // market/stock
         register(AddStock.class);
         register(BuyStock.class);
         register(GetStock.class);
         register(GetStocksForMarket.class);
         register(SearchStocks.class);
         register(SellStock.class);
-        register(GetAllMarkets.class);
-        register(GetMarket.class);
 
+        // security
         register(Callback.class);
         register(Login.class);
         register(Logout.class);
 
+        // standings
+        register(GetRanks.class);
+
+        // user
         register(GetUser.class);
         register(PutUser.class);
         register(ResetUser.class);
         register(UsernameExists.class);
+
+        // user/achievement
         register(GetUserAchievements.class);
+
+        // user/portfolio
         register(GetRank.class);
         register(GetStocks.class);
         register(GetValue.class);
