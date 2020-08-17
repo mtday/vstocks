@@ -18,11 +18,12 @@ import static vstocks.model.User.generateId;
 
 public abstract class BaseResource {
     private static final int DEFAULT_PAGE_SIZE = 25;
+    private static final int MAX_PAGE_SIZE = 50;
 
     protected Page getPage(Integer pageNum, Integer pageSize) {
         return new Page()
                 .setPage(ofNullable(pageNum).orElse(1))
-                .setSize(ofNullable(pageSize).orElse(DEFAULT_PAGE_SIZE));
+                .setSize(ofNullable(pageSize).map(size -> Math.min(MAX_PAGE_SIZE, size)).orElse(DEFAULT_PAGE_SIZE));
     }
 
     protected Set<Sort> getSort(String sortConfig) {

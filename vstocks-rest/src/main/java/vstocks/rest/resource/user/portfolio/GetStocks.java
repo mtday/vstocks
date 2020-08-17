@@ -18,7 +18,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-@Path("/user/stocks")
+@Path("/user/portfolio/stocks")
 @Singleton
 public class GetStocks extends BaseResource {
     private final DBFactory dbFactory;

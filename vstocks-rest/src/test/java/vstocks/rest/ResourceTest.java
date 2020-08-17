@@ -89,5 +89,6 @@ public abstract class ResourceTest extends JerseyTest {
     public static class MarketListGenericType extends GenericType<List<Market>> {}
     public static class PricedStockResultsGenericType extends GenericType<Results<PricedStock>> {}
     public static class PricedStockListGenericType extends GenericType<List<PricedStock>> {}
+    public static class PricedUserStockResultsGenericType extends GenericType<Results<PricedUserStock>> {}
     public static class UserAchievementListGenericType extends GenericType<List<UserAchievement>> {}
 }
