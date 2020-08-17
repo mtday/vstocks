@@ -35,7 +35,8 @@ public class Delta {
                 long firstValue = valueFn.apply(first);
                 long lastValue = valueFn.apply(last);
                 delta.setChange(firstValue - lastValue);
-                delta.setPercent((float) (firstValue - lastValue) / lastValue * 100f);
+                // We do this == comparison to prevent floating point precision errors in the tests
+                delta.setPercent(firstValue == lastValue ? 0 : (float) (firstValue - lastValue) / lastValue * 100f);
             }
             deltas.put(interval, delta);
         }

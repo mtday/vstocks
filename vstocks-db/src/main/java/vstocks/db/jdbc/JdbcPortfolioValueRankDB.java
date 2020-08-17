@@ -10,7 +10,6 @@ import vstocks.model.Sort;
 import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -30,16 +29,6 @@ public class JdbcPortfolioValueRankDB extends BaseService implements PortfolioVa
     @Override
     public Results<PortfolioValueRank> getLatest(Collection<String> userIds, Page page, Set<Sort> sort) {
         return withConnection(conn -> portfolioValueRankTable.getLatest(conn, userIds, page, sort));
-    }
-
-    @Override
-    public Results<PortfolioValueRank> getForUser(String userId, Page page, Set<Sort> sort) {
-        return withConnection(conn -> portfolioValueRankTable.getForUser(conn, userId, page, sort));
-    }
-
-    @Override
-    public List<PortfolioValueRank> getForUserSince(String userId, Instant earliest, Set<Sort> sort) {
-        return withConnection(conn -> portfolioValueRankTable.getForUserSince(conn, userId, earliest, sort));
     }
 
     @Override

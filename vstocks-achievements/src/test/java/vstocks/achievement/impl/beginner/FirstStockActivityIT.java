@@ -140,7 +140,7 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
                 .setMarket(stock.getMarket())
                 .setSymbol(stock.getSymbol())
                 .setShares(activityType == STOCK_BUY ? 5 : -5) // negative when selling
-                .setPrice(10);
+                .setPrice(10L);
 
         getDBFactory().getActivityLogDB().add(activityLog);
 

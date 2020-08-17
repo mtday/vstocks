@@ -11,7 +11,7 @@ public class ActivityLog {
     private Market market;
     private String symbol;
     private Integer shares;
-    private Integer price;
+    private Long price;
 
     public ActivityLog() {
     }
@@ -79,11 +79,11 @@ public class ActivityLog {
         return this;
     }
 
-    public Integer getPrice() {
+    public Long getPrice() {
         return price;
     }
 
-    public ActivityLog setPrice(Integer price) {
+    public ActivityLog setPrice(Long price) {
         this.price = price;
         return this;
     }

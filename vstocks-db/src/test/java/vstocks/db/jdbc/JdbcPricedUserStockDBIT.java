@@ -90,6 +90,11 @@ public class JdbcPricedUserStockDBIT {
         assertEquals(userStock.getShares(), fetched.get().getShares());
         assertNotNull(fetched.get().getTimestamp());
         assertEquals(1, fetched.get().getPrice());
+        assertEquals(DeltaInterval.values().length, fetched.get().getDeltas().size());
+        fetched.get().getDeltas().values().forEach(delta -> {
+            assertEquals(0, delta.getChange());
+            assertEquals(0f, delta.getPercent(), 0.001);
+        });
     }
 
     @Test
@@ -111,6 +116,11 @@ public class JdbcPricedUserStockDBIT {
         assertEquals(userStock.getShares(), fetched.get().getShares());
         assertEquals(stockPrice.getTimestamp(), fetched.get().getTimestamp());
         assertEquals(stockPrice.getPrice(), fetched.get().getPrice());
+        assertEquals(DeltaInterval.values().length, fetched.get().getDeltas().size());
+        fetched.get().getDeltas().values().forEach(delta -> {
+            assertEquals(0, delta.getChange());
+            assertEquals(0f, delta.getPercent(), 0.001);
+        });
     }
 
     @Test
@@ -134,6 +144,11 @@ public class JdbcPricedUserStockDBIT {
         assertEquals(userStock.getShares(), fetched.get().getShares());
         assertEquals(stockPrice1.getTimestamp(), fetched.get().getTimestamp());
         assertEquals(stockPrice1.getPrice(), fetched.get().getPrice());
+        assertEquals(DeltaInterval.values().length, fetched.get().getDeltas().size());
+        fetched.get().getDeltas().values().forEach(delta -> {
+            assertEquals(-2, delta.getChange());
+            assertEquals(-16.6666f, delta.getPercent(), 0.001);
+        });
     }
 
     @Test
@@ -172,6 +187,11 @@ public class JdbcPricedUserStockDBIT {
         assertEquals(userStock1.getShares(), results.getResults().get(0).getShares());
         assertEquals(stockPrice11.getTimestamp(), results.getResults().get(0).getTimestamp());
         assertEquals(stockPrice11.getPrice(), results.getResults().get(0).getPrice());
+        assertEquals(DeltaInterval.values().length, results.getResults().get(0).getDeltas().size());
+        results.getResults().get(0).getDeltas().forEach((interval, delta) -> {
+            assertEquals(-2, delta.getChange());
+            assertEquals(-16.6666f, delta.getPercent(), 0.001);
+        });
 
         assertEquals(userStock2.getUserId(), results.getResults().get(1).getUserId());
         assertEquals(userStock2.getMarket(), results.getResults().get(1).getMarket());
@@ -179,6 +199,11 @@ public class JdbcPricedUserStockDBIT {
         assertEquals(userStock2.getShares(), results.getResults().get(1).getShares());
         assertEquals(stockPrice21.getTimestamp(), results.getResults().get(1).getTimestamp());
         assertEquals(stockPrice21.getPrice(), results.getResults().get(1).getPrice());
+        assertEquals(DeltaInterval.values().length, results.getResults().get(1).getDeltas().size());
+        results.getResults().get(1).getDeltas().forEach((interval, delta) -> {
+            assertEquals(-2, delta.getChange());
+            assertEquals(-16.6666f, delta.getPercent(), 0.001);
+        });
     }
 
     @Test
@@ -211,6 +236,11 @@ public class JdbcPricedUserStockDBIT {
         assertEquals(userStock2.getShares(), results.getResults().get(0).getShares());
         assertEquals(stockPrice21.getTimestamp(), results.getResults().get(0).getTimestamp());
         assertEquals(stockPrice21.getPrice(), results.getResults().get(0).getPrice());
+        assertEquals(DeltaInterval.values().length, results.getResults().get(0).getDeltas().size());
+        results.getResults().get(0).getDeltas().forEach((interval, delta) -> {
+            assertEquals(-2, delta.getChange());
+            assertEquals(-16.6666f, delta.getPercent(), 0.001);
+        });
 
         assertEquals(userStock1.getUserId(), results.getResults().get(1).getUserId());
         assertEquals(userStock1.getMarket(), results.getResults().get(1).getMarket());
@@ -218,6 +248,11 @@ public class JdbcPricedUserStockDBIT {
         assertEquals(userStock1.getShares(), results.getResults().get(1).getShares());
         assertEquals(stockPrice11.getTimestamp(), results.getResults().get(1).getTimestamp());
         assertEquals(stockPrice11.getPrice(), results.getResults().get(1).getPrice());
+        assertEquals(DeltaInterval.values().length, results.getResults().get(1).getDeltas().size());
+        results.getResults().get(1).getDeltas().forEach((interval, delta) -> {
+            assertEquals(-2, delta.getChange());
+            assertEquals(-16.6666f, delta.getPercent(), 0.001);
+        });
     }
 
     @Test
@@ -378,81 +413,5 @@ public class JdbcPricedUserStockDBIT {
         assertEquals(userStock1.getShares(), results.getResults().get(1).getShares());
         assertEquals(stockPrice11.getTimestamp(), results.getResults().get(1).getTimestamp());
         assertEquals(stockPrice11.getPrice(), results.getResults().get(1).getPrice());
-    }
-
-    @Test
-    public void testConsumeNone() {
-        List<PricedUserStock> list = new ArrayList<>();
-        assertEquals(0, pricedUserStockDB.consume(list::add, emptySet()));
-        assertTrue(list.isEmpty());
-    }
-
-    @Test
-    public void testConsumeSomeNoSort() throws SQLException {
-        Instant now = Instant.now().truncatedTo(SECONDS);
-        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
-        UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
-        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(12);
-        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userStockTable.add(connection, userStock1));
-            assertEquals(1, userStockTable.add(connection, userStock2));
-            assertEquals(1, stockPriceTable.add(connection, stockPrice1));
-            assertEquals(1, stockPriceTable.add(connection, stockPrice2));
-            connection.commit();
-        }
-
-        List<PricedUserStock> list = new ArrayList<>();
-        assertEquals(2, pricedUserStockDB.consume(list::add, emptySet()));
-        assertEquals(2, list.size());
-
-        assertEquals(userStock1.getUserId(), list.get(0).getUserId());
-        assertEquals(userStock1.getMarket(), list.get(0).getMarket());
-        assertEquals(userStock1.getSymbol(), list.get(0).getSymbol());
-        assertEquals(userStock1.getShares(), list.get(0).getShares());
-        assertEquals(stockPrice1.getTimestamp(), list.get(0).getTimestamp());
-        assertEquals(stockPrice1.getPrice(), list.get(0).getPrice());
-
-        assertEquals(userStock2.getUserId(), list.get(1).getUserId());
-        assertEquals(userStock2.getMarket(), list.get(1).getMarket());
-        assertEquals(userStock2.getSymbol(), list.get(1).getSymbol());
-        assertEquals(userStock2.getShares(), list.get(1).getShares());
-        assertEquals(stockPrice1.getTimestamp(), list.get(1).getTimestamp());
-        assertEquals(stockPrice1.getPrice(), list.get(1).getPrice());
-    }
-
-    @Test
-    public void testConsumeSomeWithSort() throws SQLException {
-        Instant now = Instant.now().truncatedTo(SECONDS);
-        UserStock userStock1 = new UserStock().setUserId(user1.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
-        UserStock userStock2 = new UserStock().setUserId(user2.getId()).setMarket(TWITTER).setSymbol(stock1.getSymbol()).setShares(10);
-        StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now).setPrice(10);
-        StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol(stock1.getSymbol()).setTimestamp(now.minusSeconds(10)).setPrice(12);
-        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userStockTable.add(connection, userStock1));
-            assertEquals(1, userStockTable.add(connection, userStock2));
-            assertEquals(1, stockPriceTable.add(connection, stockPrice1));
-            assertEquals(1, stockPriceTable.add(connection, stockPrice2));
-            connection.commit();
-        }
-
-        List<PricedUserStock> list = new ArrayList<>();
-        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), SYMBOL.toSort()));
-        assertEquals(2, pricedUserStockDB.consume(list::add, sort));
-        assertEquals(2, list.size());
-
-        assertEquals(userStock2.getUserId(), list.get(0).getUserId());
-        assertEquals(userStock2.getMarket(), list.get(0).getMarket());
-        assertEquals(userStock2.getSymbol(), list.get(0).getSymbol());
-        assertEquals(userStock2.getShares(), list.get(0).getShares());
-        assertEquals(stockPrice1.getTimestamp(), list.get(0).getTimestamp());
-        assertEquals(stockPrice1.getPrice(), list.get(0).getPrice());
-
-        assertEquals(userStock1.getUserId(), list.get(1).getUserId());
-        assertEquals(userStock1.getMarket(), list.get(1).getMarket());
-        assertEquals(userStock1.getSymbol(), list.get(1).getSymbol());
-        assertEquals(userStock1.getShares(), list.get(1).getShares());
-        assertEquals(stockPrice1.getTimestamp(), list.get(1).getTimestamp());
-        assertEquals(stockPrice1.getPrice(), list.get(1).getPrice());
     }
 }

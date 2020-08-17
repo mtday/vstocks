@@ -24,7 +24,7 @@ public class ActivityLogTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setShares(10)
-                .setPrice(20);
+                .setPrice(20L);
 
         assertEquals("id", activityLog.getId());
         assertEquals(userId, activityLog.getUserId());
@@ -33,7 +33,7 @@ public class ActivityLogTest {
         assertEquals(TWITTER, activityLog.getMarket());
         assertEquals("symbol", activityLog.getSymbol());
         assertEquals(10, (int) activityLog.getShares());
-        assertEquals(20, (int) activityLog.getPrice());
+        assertEquals(20, (long) activityLog.getPrice());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class ActivityLogTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setShares(10)
-                .setPrice(20);
+                .setPrice(20L);
         ActivityLog activityLog2 = new ActivityLog()
                 .setId("id")
                 .setUserId(generateId("user@domain.com"))
@@ -76,7 +76,7 @@ public class ActivityLogTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setShares(10)
-                .setPrice(20);
+                .setPrice(20L);
         assertEquals(activityLog1, activityLog2);
     }
 
@@ -92,7 +92,7 @@ public class ActivityLogTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setShares(10)
-                .setPrice(20);
+                .setPrice(20L);
         assertEquals(-1807454463, new ActivityLog().hashCode());
         assertNotEquals(0, activityLog.hashCode()); // enums make the value inconsistent
     }
@@ -109,7 +109,7 @@ public class ActivityLogTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setShares(10)
-                .setPrice(20);
+                .setPrice(20L);
         assertEquals("ActivityLog{id='id', userId='" + userId + "', type=STOCK_SELL, timestamp=" + now.toString()
                 + ", market=TWITTER, symbol='symbol', shares=10, price=20}", activityLog.toString());
     }

@@ -9,7 +9,7 @@ public class StockPrice {
     private Market market;
     private String symbol;
     private Instant timestamp;
-    private int price;
+    private long price;
 
     public StockPrice() {
     }
@@ -41,11 +41,11 @@ public class StockPrice {
         return this;
     }
 
-    public int getPrice() {
+    public long getPrice() {
         return price;
     }
 
-    public StockPrice setPrice(int price) {
+    public StockPrice setPrice(long price) {
         this.price = price;
         return this;
     }

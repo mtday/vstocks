@@ -28,9 +28,9 @@ import vstocks.rest.resource.user.PutUser;
 import vstocks.rest.resource.user.ResetUser;
 import vstocks.rest.resource.user.UsernameExists;
 import vstocks.rest.resource.user.achievement.GetUserAchievements;
-import vstocks.rest.resource.user.portfolio.GetRanks;
+import vstocks.rest.resource.user.portfolio.GetRank;
 import vstocks.rest.resource.user.portfolio.GetStocks;
-import vstocks.rest.resource.user.portfolio.GetValues;
+import vstocks.rest.resource.user.portfolio.GetValue;
 import vstocks.rest.security.AccessLogFilter;
 import vstocks.rest.security.JwtSecurity;
 import vstocks.rest.security.JwtTokenFilter;
@@ -81,9 +81,9 @@ public class Application extends ResourceConfig {
         register(ResetUser.class);
         register(UsernameExists.class);
         register(GetUserAchievements.class);
-        register(GetRanks.class);
+        register(GetRank.class);
         register(GetStocks.class);
-        register(GetValues.class);
+        register(GetValue.class);
 
         register(BadRequestExceptionMapper.class);
         register(NotFoundExceptionMapper.class);

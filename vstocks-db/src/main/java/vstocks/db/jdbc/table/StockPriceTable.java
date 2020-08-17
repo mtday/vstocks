@@ -5,7 +5,10 @@ import vstocks.model.*;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
@@ -15,19 +18,19 @@ import static vstocks.model.DatabaseField.*;
 import static vstocks.model.SortDirection.DESC;
 
 public class StockPriceTable extends BaseTable {
-    private static final RowMapper<StockPrice> ROW_MAPPER = rs ->
+    static final RowMapper<StockPrice> ROW_MAPPER = rs ->
             new StockPrice()
                     .setMarket(Market.valueOf(rs.getString("market")))
                     .setSymbol(rs.getString("symbol"))
                     .setTimestamp(rs.getTimestamp("timestamp").toInstant())
-                    .setPrice(rs.getInt("price"));
+                    .setPrice(rs.getLong("price"));
 
     private static final RowSetter<StockPrice> INSERT_ROW_SETTER = (ps, stockPrice) -> {
         int index = 0;
         ps.setString(++index, stockPrice.getMarket().name());
         ps.setString(++index, stockPrice.getSymbol());
         ps.setTimestamp(++index, Timestamp.from(stockPrice.getTimestamp()));
-        ps.setInt(++index, stockPrice.getPrice());
+        ps.setLong(++index, stockPrice.getPrice());
     };
 
     @Override

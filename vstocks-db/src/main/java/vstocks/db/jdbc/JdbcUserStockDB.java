@@ -60,8 +60,8 @@ public class JdbcUserStockDB extends BaseService implements UserStockDB {
         return withConnection(conn -> {
             Optional<StockPrice> stockPrice = stockPriceTable.getLatest(conn, market, symbol);
             if (stockPrice.isPresent()) {
-                int price = stockPrice.get().getPrice();
-                int cost = price * shares;
+                long price = stockPrice.get().getPrice();
+                long cost = price * shares;
                 if (userCreditsTable.update(conn, userId, -cost) > 0
                         && userStockTable.update(conn, userId, market, symbol, shares) > 0) {
                     ActivityLog activityLog = new ActivityLog()
@@ -92,8 +92,8 @@ public class JdbcUserStockDB extends BaseService implements UserStockDB {
         return withConnection(conn -> {
             Optional<StockPrice> stockPrice = stockPriceTable.getLatest(conn, market, symbol);
             if (stockPrice.isPresent()) {
-                int price = stockPrice.get().getPrice();
-                int cost = price * shares;
+                long price = stockPrice.get().getPrice();
+                long cost = price * shares;
                 if (userCreditsTable.update(conn, userId, cost) > 0
                         && userStockTable.update(conn, userId, market, symbol, -shares) > 0) {
                     ActivityLog activityLog = new ActivityLog()

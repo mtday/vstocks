@@ -28,7 +28,7 @@ public class ActivityLogTable extends BaseTable {
         ofNullable(rs.getString("symbol")).ifPresent(activityLog::setSymbol);
         int shares = rs.getInt("shares");
         activityLog.setShares(rs.wasNull() ? null : shares);
-        int price = rs.getInt("price");
+        long price = rs.getLong("price");
         activityLog.setPrice(rs.wasNull() ? null : price);
         return activityLog;
     };
@@ -55,7 +55,7 @@ public class ActivityLogTable extends BaseTable {
             ps.setNull(++index, INTEGER);
         }
         if (activityLog.getPrice() != null) {
-            ps.setInt(++index, activityLog.getPrice());
+            ps.setLong(++index, activityLog.getPrice());
         } else {
             ps.setNull(++index, INTEGER);
         }

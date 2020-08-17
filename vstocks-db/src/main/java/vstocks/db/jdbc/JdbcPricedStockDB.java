@@ -1,13 +1,12 @@
 package vstocks.db.jdbc;
 
-import vstocks.model.*;
 import vstocks.db.PricedStockDB;
 import vstocks.db.jdbc.table.PricedStockJoin;
+import vstocks.model.*;
 
 import javax.sql.DataSource;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class JdbcPricedStockDB extends BaseService implements PricedStockDB {
     private final PricedStockJoin pricedStockJoin = new PricedStockJoin();
@@ -27,18 +26,8 @@ public class JdbcPricedStockDB extends BaseService implements PricedStockDB {
     }
 
     @Override
-    public int consumeForMarket(Market market, Consumer<PricedStock> consumer, Set<Sort> sort) {
-        return withConnection(conn -> pricedStockJoin.consumeForMarket(conn, market, consumer, sort));
-    }
-
-    @Override
     public Results<PricedStock> getAll(Page page, Set<Sort> sort) {
         return withConnection(conn -> pricedStockJoin.getAll(conn, page, sort));
-    }
-
-    @Override
-    public int consume(Consumer<PricedStock> consumer, Set<Sort> sort) {
-        return withConnection(conn -> pricedStockJoin.consume(conn, consumer, sort));
     }
 
     @Override

@@ -37,7 +37,7 @@ CREATE TABLE stock_prices (
     market             TEXT         NOT NULL,
     symbol             TEXT         NOT NULL,
     timestamp          TIMESTAMP(0) NOT NULL,
-    price              INTEGER      NOT NULL,
+    price              BIGINT       NOT NULL,
 
     CONSTRAINT stock_prices_pk PRIMARY KEY (market, symbol, timestamp),
     CONSTRAINT stock_prices_fk_stock FOREIGN KEY (market, symbol)
@@ -57,7 +57,7 @@ CREATE TABLE activity_logs (
     market             TEXT,
     symbol             TEXT,
     shares             INTEGER,
-    price              INTEGER,
+    price              BIGINT,
 
     CONSTRAINT activity_logs_pk PRIMARY KEY (id),
     CONSTRAINT activity_logs_fk_user_id FOREIGN KEY (user_id)

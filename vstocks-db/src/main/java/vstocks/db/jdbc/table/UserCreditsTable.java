@@ -60,7 +60,7 @@ public class UserCreditsTable extends BaseTable {
         return update(connection, INSERT_ROW_SETTER, sql, userCredits);
     }
 
-    public int update(Connection connection, String userId, int delta) {
+    public int update(Connection connection, String userId, long delta) {
         if (delta > 0) {
             // Adding to the credits due to a stock sale.
             return update(connection, "UPDATE user_credits SET credits = credits + ? WHERE user_id = ?", delta, userId);

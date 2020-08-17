@@ -11,7 +11,6 @@ import vstocks.model.Sort;
 import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -42,16 +41,6 @@ public class JdbcPortfolioValueDB extends BaseService implements PortfolioValueD
     @Override
     public Results<PortfolioValue> getLatest(Collection<String> userIds, Page page, Set<Sort> sort) {
         return withConnection(conn -> portfolioValueTable.getLatest(conn, userIds, page, sort));
-    }
-
-    @Override
-    public Results<PortfolioValue> getForUser(String userId, Page page, Set<Sort> sort) {
-        return withConnection(conn -> portfolioValueTable.getForUser(conn, userId, page, sort));
-    }
-
-    @Override
-    public List<PortfolioValue> getForUserSince(String userId, Instant earliest, Set<Sort> sort) {
-        return withConnection(conn -> portfolioValueTable.getForUserSince(conn, userId, earliest, sort));
     }
 
     @Override

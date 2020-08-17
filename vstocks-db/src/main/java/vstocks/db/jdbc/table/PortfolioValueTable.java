@@ -13,8 +13,8 @@ import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toMap;
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.*;
 import static vstocks.model.DatabaseField.TIMESTAMP;
 import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.SortDirection.DESC;
@@ -60,9 +60,38 @@ public class PortfolioValueTable extends BaseTable {
         return new LinkedHashSet<>(asList(USER_ID.toSort(), TIMESTAMP.toSort(DESC)));
     }
 
+    private void populateDeltas(Connection connection, List<PortfolioValue> portfolioValues) {
+        if (portfolioValues.isEmpty()) {
+            return;
+        }
+
+        Instant earliest = DeltaInterval.values()[DeltaInterval.values().length - 1].getEarliest();
+        Set<String> userIds = portfolioValues.stream().map(PortfolioValue::getUserId).collect(toSet());
+
+        Map<String, List<PortfolioValue>> values = new HashMap<>();
+        Consumer<PortfolioValue> consumer = portfolioValue ->
+                values.computeIfAbsent(portfolioValue.getUserId(), userId -> new ArrayList<>()).add(portfolioValue);
+
+        String sql = "SELECT * FROM portfolio_values "
+                + "WHERE timestamp >= ? AND user_id = ANY(?) "
+                + "ORDER BY user_id, timestamp DESC";
+        consume(connection, ROW_MAPPER, consumer, sql, earliest, userIds);
+
+        portfolioValues.forEach(portfolioValue -> {
+            List<PortfolioValue> pv = Stream.of(values.get(portfolioValue.getUserId()))
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElseGet(Collections::emptyList);
+            portfolioValue.setDeltas(Delta.getDeltas(pv, PortfolioValue::getTimestamp, PortfolioValue::getTotal));
+        });
+    }
+
     public Optional<PortfolioValue> getLatest(Connection connection, String userId) {
         String sql = "SELECT * FROM portfolio_values WHERE user_id = ? ORDER BY timestamp DESC LIMIT 1";
-        return getOne(connection, ROW_MAPPER, sql, userId);
+        return getOne(connection, ROW_MAPPER, sql, userId).map(portfolioValue -> {
+            populateDeltas(connection, singletonList(portfolioValue));
+            return portfolioValue;
+        });
     }
 
     public Results<PortfolioValue> getLatest(Connection connection, Collection<String> userIds, Page page, Set<Sort> sort) {
@@ -72,24 +101,17 @@ public class PortfolioValueTable extends BaseTable {
                 + ") AS data %s", getSort(sort));
         String count = "SELECT COUNT(*) FROM (SELECT DISTINCT ON (user_id) * FROM portfolio_values "
                 + "WHERE user_id = ANY(?)) AS data";
-        return results(connection, ROW_MAPPER, page, sql, count, userIds);
-    }
-
-    public Results<PortfolioValue> getForUser(Connection connection, String userId, Page page, Set<Sort> sort) {
-        String sql = format("SELECT * FROM portfolio_values WHERE user_id = ? %s LIMIT ? OFFSET ?", getSort(sort));
-        String count = "SELECT COUNT(*) FROM portfolio_values WHERE user_id = ?";
-        return results(connection, ROW_MAPPER, page, sql, count, userId);
-    }
-
-    public List<PortfolioValue> getForUserSince(Connection connection, String userId, Instant earliest, Set<Sort> sort) {
-        String sql = format("SELECT * FROM portfolio_values WHERE user_id = ? AND timestamp >= ? %s", getSort(sort));
-        return getList(connection, ROW_MAPPER, sql, userId, earliest);
+        Results<PortfolioValue> portfolioValueResults = results(connection, ROW_MAPPER, page, sql, count, userIds);
+        populateDeltas(connection, portfolioValueResults.getResults());
+        return portfolioValueResults;
     }
 
     public Results<PortfolioValue> getAll(Connection connection, Page page, Set<Sort> sort) {
         String sql = format("SELECT * FROM portfolio_values %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM portfolio_values";
-        return results(connection, ROW_MAPPER, page, sql, count);
+        Results<PortfolioValue> portfolioValueResults = results(connection, ROW_MAPPER, page, sql, count);
+        populateDeltas(connection, portfolioValueResults.getResults());
+        return portfolioValueResults;
     }
 
     public int consume(Connection connection, Consumer<PortfolioValue> consumer, Set<Sort> sort) {

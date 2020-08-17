@@ -12,15 +12,15 @@ import vstocks.model.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.RANK;
 import static vstocks.model.DatabaseField.USER_ID;
@@ -62,6 +62,12 @@ public class JdbcPortfolioValueRankDBIT {
         }
     }
 
+    private Map<DeltaInterval, Delta> getDeltas(int change, float percent) {
+        return stream(DeltaInterval.values())
+                .map(interval -> new Delta().setInterval(interval).setChange(change).setPercent(percent))
+                .collect(toMap(Delta::getInterval, identity()));
+    }
+
     @Test
     public void testGetLatestMissing() {
         assertFalse(portfolioValueRankDB.getLatest("missing-id").isPresent());
@@ -69,7 +75,7 @@ public class JdbcPortfolioValueRankDBIT {
 
     @Test
     public void testGetLatestExists() {
-        PortfolioValueRank portfolioValueRank = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
+        PortfolioValueRank portfolioValueRank = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10).setDeltas(getDeltas(0, 0));
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank));
 
         PortfolioValueRank fetched = portfolioValueRankDB.getLatest(user1.getId()).orElse(null);
@@ -85,9 +91,9 @@ public class JdbcPortfolioValueRankDBIT {
 
     @Test
     public void testGetLatestSomeNoSort() {
-        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
+        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10).setDeltas(getDeltas(10, -50f));
         PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setRank(20);
-        PortfolioValueRank portfolioValueRank3 = new PortfolioValueRank().setUserId(user2.getId()).setTimestamp(now).setRank(30);
+        PortfolioValueRank portfolioValueRank3 = new PortfolioValueRank().setUserId(user2.getId()).setTimestamp(now).setRank(30).setDeltas(getDeltas(10, -25f));
         PortfolioValueRank portfolioValueRank4 = new PortfolioValueRank().setUserId(user2.getId()).setTimestamp(now.minusSeconds(40)).setRank(40);
         assertEquals(4, portfolioValueRankDB.addAll(asList(portfolioValueRank1, portfolioValueRank2, portfolioValueRank3, portfolioValueRank4)));
 
@@ -100,9 +106,9 @@ public class JdbcPortfolioValueRankDBIT {
 
     @Test
     public void testGetLatestSomeWithSort() {
-        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
+        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10).setDeltas(getDeltas(10, -50f));
         PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setRank(20);
-        PortfolioValueRank portfolioValueRank3 = new PortfolioValueRank().setUserId(user2.getId()).setTimestamp(now).setRank(30);
+        PortfolioValueRank portfolioValueRank3 = new PortfolioValueRank().setUserId(user2.getId()).setTimestamp(now).setRank(30).setDeltas(getDeltas(10, -25f));
         PortfolioValueRank portfolioValueRank4 = new PortfolioValueRank().setUserId(user2.getId()).setTimestamp(now.minusSeconds(40)).setRank(40);
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank1));
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank2));
@@ -118,79 +124,6 @@ public class JdbcPortfolioValueRankDBIT {
     }
 
     @Test
-    public void testGetForUserNone() {
-        Results<PortfolioValueRank> results = portfolioValueRankDB.getForUser(user1.getId(), new Page(), emptySet());
-        assertEquals(0, results.getTotal());
-        assertTrue(results.getResults().isEmpty());
-    }
-
-    @Test
-    public void testGetForUserSomeNoSort() {
-        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
-        PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now.minusSeconds(10)).setRank(20);
-        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank1));
-        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank2));
-
-        Results<PortfolioValueRank> results = portfolioValueRankDB.getForUser(user1.getId(), new Page(), emptySet());
-        assertEquals(2, results.getTotal());
-        assertEquals(2, results.getResults().size());
-        assertEquals(portfolioValueRank1, results.getResults().get(0));
-        assertEquals(portfolioValueRank2, results.getResults().get(1));
-    }
-
-    @Test
-    public void testGetForUserSomeWithSort() {
-        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
-        PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now.minusSeconds(10)).setRank(20);
-        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank1));
-        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank2));
-
-        Set<Sort> sort = new LinkedHashSet<>(asList(RANK.toSort(DESC), USER_ID.toSort(DESC)));
-        Results<PortfolioValueRank> results = portfolioValueRankDB.getForUser(user1.getId(), new Page(), sort);
-        assertEquals(2, results.getTotal());
-        assertEquals(2, results.getResults().size());
-        assertEquals(portfolioValueRank2, results.getResults().get(0));
-        assertEquals(portfolioValueRank1, results.getResults().get(1));
-    }
-
-    @Test
-    public void testGetForUserSinceNone() {
-        List<PortfolioValueRank> results = portfolioValueRankDB.getForUserSince(user1.getId(), now, emptySet());
-        assertTrue(results.isEmpty());
-    }
-
-    @Test
-    public void testGetForUserSinceSomeNoSort() {
-        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
-        PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now.minusSeconds(10)).setRank(20);
-        PortfolioValueRank portfolioValueRank3 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setRank(18);
-        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank1));
-        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank2));
-        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank3));
-
-        List<PortfolioValueRank> results = portfolioValueRankDB.getForUserSince(user1.getId(), now.minusSeconds(15), emptySet());
-        assertEquals(2, results.size());
-        assertEquals(portfolioValueRank1, results.get(0));
-        assertEquals(portfolioValueRank2, results.get(1));
-    }
-
-    @Test
-    public void testGetForUserSinceSomeWithSort() {
-        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
-        PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now.minusSeconds(10)).setRank(20);
-        PortfolioValueRank portfolioValueRank3 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setRank(18);
-        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank1));
-        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank2));
-        assertEquals(1, portfolioValueRankDB.add(portfolioValueRank3));
-
-        Set<Sort> sort = new LinkedHashSet<>(asList(RANK.toSort(DESC), USER_ID.toSort(DESC)));
-        List<PortfolioValueRank> results = portfolioValueRankDB.getForUserSince(user1.getId(), now.minusSeconds(15), sort);
-        assertEquals(2, results.size());
-        assertEquals(portfolioValueRank2, results.get(0));
-        assertEquals(portfolioValueRank1, results.get(1));
-    }
-
-    @Test
     public void testGetAllNone() {
         Results<PortfolioValueRank> results = portfolioValueRankDB.getAll(new Page(), emptySet());
         assertEquals(0, results.getTotal());
@@ -199,8 +132,8 @@ public class JdbcPortfolioValueRankDBIT {
 
     @Test
     public void testGetAllSomeNoSort() {
-        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
-        PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setRank(20);
+        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10).setDeltas(getDeltas(0, 0f));
+        PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setRank(20).setDeltas(getDeltas(0, 0f));
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank1));
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank2));
 
@@ -213,8 +146,8 @@ public class JdbcPortfolioValueRankDBIT {
 
     @Test
     public void testGetAllSomeWithSort() {
-        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
-        PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setRank(20);
+        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10).setDeltas(getDeltas(0, 0f));
+        PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setRank(20).setDeltas(getDeltas(0, 0f));
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank1));
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank2));
 
@@ -270,7 +203,7 @@ public class JdbcPortfolioValueRankDBIT {
 
     @Test
     public void testAddConflictSameValues() {
-        PortfolioValueRank portfolioValueRank = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
+        PortfolioValueRank portfolioValueRank = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10).setDeltas(getDeltas(0, 0f));
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank));
         assertEquals(0, portfolioValueRankDB.add(portfolioValueRank));
 
@@ -280,7 +213,7 @@ public class JdbcPortfolioValueRankDBIT {
 
     @Test
     public void testAddConflictDifferentValues() {
-        PortfolioValueRank portfolioValueRank = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
+        PortfolioValueRank portfolioValueRank = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10).setDeltas(getDeltas(0, 0f));
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank));
         portfolioValueRank.setRank(12);
         assertEquals(1, portfolioValueRankDB.add(portfolioValueRank));
@@ -291,8 +224,8 @@ public class JdbcPortfolioValueRankDBIT {
 
     @Test
     public void testAddAll() {
-        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
-        PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setRank(20);
+        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10).setDeltas(getDeltas(0, 0f));
+        PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setRank(20).setDeltas(getDeltas(0, 0f));
         assertEquals(2, portfolioValueRankDB.addAll(asList(portfolioValueRank1, portfolioValueRank2)));
 
         Results<PortfolioValueRank> results = portfolioValueRankDB.getLatest(asList(user1.getId(), user2.getId()), new Page(), emptySet());
@@ -304,7 +237,7 @@ public class JdbcPortfolioValueRankDBIT {
 
     @Test
     public void testAgeOff() {
-        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10);
+        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now).setRank(10).setDeltas(getDeltas(0, 0f));
         PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now.minusSeconds(10)).setRank(10);
         PortfolioValueRank portfolioValueRank3 = new PortfolioValueRank().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setRank(10);
 
