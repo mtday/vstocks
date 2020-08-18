@@ -54,7 +54,7 @@ public class TwitterRemoteStockServiceTest {
     public void testGetPrice() {
         /*
         Stream.iterate(0, i -> i == 0 ? 5 : (("" + i).contains("5") ? i * 2 : i * 5)).limit(17).forEach(i ->
-                LOGGER.info("Price: {} => {}", i, getPrice(getUserWithFollowers.apply(i))));
+                System.out.printf("Price: %d => %d\n", i, getPrice(getUserWithFollowers.apply(i))));
          */
 
         assertEquals(1, getPrice(getUserWithFollowers.apply(0)));
@@ -62,18 +62,18 @@ public class TwitterRemoteStockServiceTest {
         assertEquals(1, getPrice(getUserWithFollowers.apply(10)));
         assertEquals(1, getPrice(getUserWithFollowers.apply(50)));
         assertEquals(1, getPrice(getUserWithFollowers.apply(100)));
-        assertEquals(3, getPrice(getUserWithFollowers.apply(500)));
-        assertEquals(5, getPrice(getUserWithFollowers.apply(1_000)));
-        assertEquals(25, getPrice(getUserWithFollowers.apply(5_000)));
-        assertEquals(50, getPrice(getUserWithFollowers.apply(10_000)));
-        assertEquals(239, getPrice(getUserWithFollowers.apply(50_000)));
-        assertEquals(455, getPrice(getUserWithFollowers.apply(100_000)));
-        assertEquals(1667, getPrice(getUserWithFollowers.apply(500_000)));
-        assertEquals(2501, getPrice(getUserWithFollowers.apply(1_000_000)));
-        assertEquals(4167, getPrice(getUserWithFollowers.apply(5_000_000)));
-        assertEquals(4546, getPrice(getUserWithFollowers.apply(10_000_000)));
-        assertEquals(4902, getPrice(getUserWithFollowers.apply(50_000_000)));
-        assertEquals(4951, getPrice(getUserWithFollowers.apply(100_000_000)));
+        assertEquals(1, getPrice(getUserWithFollowers.apply(500)));
+        assertEquals(1, getPrice(getUserWithFollowers.apply(1_000)));
+        assertEquals(2, getPrice(getUserWithFollowers.apply(5_000)));
+        assertEquals(4, getPrice(getUserWithFollowers.apply(10_000)));
+        assertEquals(20, getPrice(getUserWithFollowers.apply(50_000)));
+        assertEquals(40, getPrice(getUserWithFollowers.apply(100_000)));
+        assertEquals(200, getPrice(getUserWithFollowers.apply(500_000)));
+        assertEquals(400, getPrice(getUserWithFollowers.apply(1_000_000)));
+        assertEquals(1900, getPrice(getUserWithFollowers.apply(5_000_000)));
+        assertEquals(3321, getPrice(getUserWithFollowers.apply(10_000_000)));
+        assertEquals(4997, getPrice(getUserWithFollowers.apply(50_000_000)));
+        assertEquals(5000, getPrice(getUserWithFollowers.apply(100_000_000)));
     }
 
     private static User getUser(String username, int followers, String name, String link) {
@@ -94,7 +94,7 @@ public class TwitterRemoteStockServiceTest {
         assertEquals("name", pricedStock.getName());
         assertEquals("link", pricedStock.getProfileImage());
         assertNotNull(pricedStock.getTimestamp());
-        assertEquals(239, pricedStock.getPrice());
+        assertEquals(20, pricedStock.getPrice());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class TwitterRemoteStockServiceTest {
         assertEquals("name", pricedStock.getName());
         assertNull(pricedStock.getProfileImage());
         assertNotNull(pricedStock.getTimestamp());
-        assertEquals(239, pricedStock.getPrice());
+        assertEquals(20, pricedStock.getPrice());
     }
 
     @Test
@@ -146,12 +146,12 @@ public class TwitterRemoteStockServiceTest {
         assertEquals("user1", entries.get(0).getSymbol());
         assertEquals("User1", entries.get(0).getName());
         assertEquals("link", entries.get(0).getProfileImage());
-        assertEquals(239, entries.get(0).getPrice());
+        assertEquals(20, entries.get(0).getPrice());
 
         assertEquals("user2", entries.get(1).getSymbol());
         assertEquals("User2", entries.get(1).getName());
         assertEquals("link", entries.get(1).getProfileImage());
-        assertEquals(455, entries.get(1).getPrice());
+        assertEquals(40, entries.get(1).getPrice());
     }
 
     @Test
@@ -176,12 +176,12 @@ public class TwitterRemoteStockServiceTest {
         assertEquals("user1", stocks.get(0).getSymbol());
         assertEquals("User1", stocks.get(0).getName());
         assertEquals("link1", stocks.get(0).getProfileImage());
-        assertEquals(239, stocks.get(0).getPrice());
+        assertEquals(20, stocks.get(0).getPrice());
 
         assertEquals(TWITTER, stocks.get(1).getMarket());
         assertEquals("user2", stocks.get(1).getSymbol());
         assertEquals("User2", stocks.get(1).getName());
         assertEquals("link2", stocks.get(1).getProfileImage());
-        assertEquals(455, stocks.get(1).getPrice());
+        assertEquals(40, stocks.get(1).getPrice());
     }
 }

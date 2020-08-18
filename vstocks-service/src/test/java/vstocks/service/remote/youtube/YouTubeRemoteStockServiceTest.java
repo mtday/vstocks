@@ -19,7 +19,6 @@ import java.util.function.Function;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -39,7 +38,7 @@ public class YouTubeRemoteStockServiceTest {
     public void testGetPrice() {
         /*
         Stream.iterate(0, i -> i == 0 ? 5 : (("" + i).contains("5") ? i * 2 : i * 5)).limit(17).forEach(i ->
-                LOGGER.info("Price: {} => {}", i, getPrice(getChannelWithSubscribers.apply(i))));
+                System.out.printf("Price: %d => %d\n", i, getPrice(getChannelWithSubscribers.apply(i))));
          */
 
         assertEquals(1, getPrice(getChannelWithSubscribers.apply(0)));
@@ -47,18 +46,18 @@ public class YouTubeRemoteStockServiceTest {
         assertEquals(1, getPrice(getChannelWithSubscribers.apply(10)));
         assertEquals(1, getPrice(getChannelWithSubscribers.apply(50)));
         assertEquals(1, getPrice(getChannelWithSubscribers.apply(100)));
-        assertEquals(3, getPrice(getChannelWithSubscribers.apply(500)));
-        assertEquals(5, getPrice(getChannelWithSubscribers.apply(1_000)));
-        assertEquals(25, getPrice(getChannelWithSubscribers.apply(5_000)));
-        assertEquals(50, getPrice(getChannelWithSubscribers.apply(10_000)));
-        assertEquals(239, getPrice(getChannelWithSubscribers.apply(50_000)));
-        assertEquals(455, getPrice(getChannelWithSubscribers.apply(100_000)));
-        assertEquals(1667, getPrice(getChannelWithSubscribers.apply(500_000)));
-        assertEquals(2501, getPrice(getChannelWithSubscribers.apply(1_000_000)));
-        assertEquals(4167, getPrice(getChannelWithSubscribers.apply(5_000_000)));
-        assertEquals(4546, getPrice(getChannelWithSubscribers.apply(10_000_000)));
-        assertEquals(4902, getPrice(getChannelWithSubscribers.apply(50_000_000)));
-        assertEquals(4951, getPrice(getChannelWithSubscribers.apply(100_000_000)));
+        assertEquals(1, getPrice(getChannelWithSubscribers.apply(500)));
+        assertEquals(1, getPrice(getChannelWithSubscribers.apply(1_000)));
+        assertEquals(1, getPrice(getChannelWithSubscribers.apply(5_000)));
+        assertEquals(2, getPrice(getChannelWithSubscribers.apply(10_000)));
+        assertEquals(6, getPrice(getChannelWithSubscribers.apply(50_000)));
+        assertEquals(12, getPrice(getChannelWithSubscribers.apply(100_000)));
+        assertEquals(60, getPrice(getChannelWithSubscribers.apply(500_000)));
+        assertEquals(120, getPrice(getChannelWithSubscribers.apply(1_000_000)));
+        assertEquals(598, getPrice(getChannelWithSubscribers.apply(5_000_000)));
+        assertEquals(1178, getPrice(getChannelWithSubscribers.apply(10_000_000)));
+        assertEquals(4169, getPrice(getChannelWithSubscribers.apply(50_000_000)));
+        assertEquals(4919, getPrice(getChannelWithSubscribers.apply(100_000_000)));
     }
 
     private static Channel getChannel(String id, int subscribers, String title, String link) {
@@ -81,7 +80,7 @@ public class YouTubeRemoteStockServiceTest {
         assertEquals("title", pricedStock.getName());
         assertEquals("link", pricedStock.getProfileImage());
         assertNotNull(pricedStock.getTimestamp());
-        assertEquals(239, pricedStock.getPrice());
+        assertEquals(6, pricedStock.getPrice());
     }
 
     @Test
@@ -93,7 +92,7 @@ public class YouTubeRemoteStockServiceTest {
         assertEquals("title", pricedStock.getName());
         assertNull(pricedStock.getProfileImage());
         assertNotNull(pricedStock.getTimestamp());
-        assertEquals(239, pricedStock.getPrice());
+        assertEquals(6, pricedStock.getPrice());
     }
 
     @Test
@@ -107,7 +106,7 @@ public class YouTubeRemoteStockServiceTest {
         assertEquals("title", pricedStock.getName());
         assertNull(pricedStock.getProfileImage());
         assertNotNull(pricedStock.getTimestamp());
-        assertEquals(239, pricedStock.getPrice());
+        assertEquals(6, pricedStock.getPrice());
     }
 
     @Test
@@ -121,7 +120,7 @@ public class YouTubeRemoteStockServiceTest {
         assertEquals("title", pricedStock.getName());
         assertNull(pricedStock.getProfileImage());
         assertNotNull(pricedStock.getTimestamp());
-        assertEquals(239, pricedStock.getPrice());
+        assertEquals(6, pricedStock.getPrice());
     }
 
     @Test
@@ -157,12 +156,12 @@ public class YouTubeRemoteStockServiceTest {
         assertEquals("1", entries.get(0).getSymbol());
         assertEquals("Channel 1", entries.get(0).getName());
         assertEquals("link1", entries.get(0).getProfileImage());
-        assertEquals(239, entries.get(0).getPrice());
+        assertEquals(6, entries.get(0).getPrice());
 
         assertEquals("2", entries.get(1).getSymbol());
         assertEquals("Channel 2", entries.get(1).getName());
         assertEquals("link2", entries.get(1).getProfileImage());
-        assertEquals(455, entries.get(1).getPrice());
+        assertEquals(12, entries.get(1).getPrice());
     }
 
     @Test
@@ -181,12 +180,12 @@ public class YouTubeRemoteStockServiceTest {
         assertEquals("1", stocks.get(0).getSymbol());
         assertEquals("Channel 1", stocks.get(0).getName());
         assertEquals("link1", stocks.get(0).getProfileImage());
-        assertEquals(239, stocks.get(0).getPrice());
+        assertEquals(6, stocks.get(0).getPrice());
 
         assertEquals(YOUTUBE, stocks.get(1).getMarket());
         assertEquals("2", stocks.get(1).getSymbol());
         assertEquals("Channel 2", stocks.get(1).getName());
         assertEquals("link2", stocks.get(1).getProfileImage());
-        assertEquals(455, stocks.get(1).getPrice());
+        assertEquals(12, stocks.get(1).getPrice());
     }
 }

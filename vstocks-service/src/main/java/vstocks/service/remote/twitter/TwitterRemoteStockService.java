@@ -44,8 +44,24 @@ public class TwitterRemoteStockService implements RemoteStockService {
     }
 
     static int getPrice(User user) {
-        float followers = (float) user.getFollowersCount();
-        return (int) (((500_000 + followers) / (1_000_000 + followers)) * 10_000 - 5_000 + 1);
+        double followers = (float) user.getFollowersCount();
+        // Scale the number of followers into the range of (-0.8, 4), using the arbitrary estimation of
+        // 0 and 30_000_000 as the minimum and maximum number of followers for an account.
+        // The -0.8f determines how slowly the price ramps up at the beginning. We need it to scale up slowly
+        // to prevent users from "gaming" the system by mass following in concert to impact the price.
+        double scaledMin = -0.8f, scaledMax = 4f;
+        int max = 30_000_000;
+        double scaledFollowers = followers * (scaledMax - scaledMin) / max;
+
+        // Use a logistic function to apply a sigmoid shape to the price.
+        double f = 1 / (1 + Math.pow(Math.E, -scaledFollowers));
+
+        // Shift the sigmoid up by 0.5 to make the min ~0.0 and the max ~1.0
+        f = f - 0.5;
+
+        // Scale the price onto the sigmoid function result.
+        int maxPrice = 5_000;
+        return (int) (f * maxPrice * 2) + 1; // Add 1 so we don't get any 0 prices.
     }
 
     static PricedStock toPricedStock(User user) {
