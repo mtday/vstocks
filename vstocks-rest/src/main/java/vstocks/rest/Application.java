@@ -24,6 +24,7 @@ import vstocks.rest.resource.security.Callback;
 import vstocks.rest.resource.security.Login;
 import vstocks.rest.resource.security.Logout;
 import vstocks.rest.resource.standings.GetRanks;
+import vstocks.rest.resource.system.GetValueSummary;
 import vstocks.rest.resource.user.GetUser;
 import vstocks.rest.resource.user.PutUser;
 import vstocks.rest.resource.user.ResetUser;
@@ -81,6 +82,9 @@ public class Application extends ResourceConfig {
 
         // standings
         register(GetRanks.class);
+
+        // system
+        register(GetValueSummary.class);
 
         // user
         register(GetUser.class);
