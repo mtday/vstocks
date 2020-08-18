@@ -1,19 +1,19 @@
-package vstocks.model.rest;
+package vstocks.model;
 
 import java.util.Objects;
 
-public class UsernameExistsResponse {
+public class UsernameExists {
     private String username;
     private boolean exists;
 
-    public UsernameExistsResponse() {
+    public UsernameExists() {
     }
 
     public String getUsername() {
         return username;
     }
 
-    public UsernameExistsResponse setUsername(String username) {
+    public UsernameExists setUsername(String username) {
         this.username = username;
         return this;
     }
@@ -22,7 +22,7 @@ public class UsernameExistsResponse {
         return exists;
     }
 
-    public UsernameExistsResponse setExists(boolean exists) {
+    public UsernameExists setExists(boolean exists) {
         this.exists = exists;
         return this;
     }
@@ -31,7 +31,7 @@ public class UsernameExistsResponse {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UsernameExistsResponse that = (UsernameExistsResponse) o;
+        UsernameExists that = (UsernameExists) o;
         return exists == that.exists &&
                 Objects.equals(username, that.username);
     }

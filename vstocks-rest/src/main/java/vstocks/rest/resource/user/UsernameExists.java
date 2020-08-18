@@ -1,7 +1,6 @@
 package vstocks.rest.resource.user;
 
 import vstocks.db.DBFactory;
-import vstocks.model.rest.UsernameExistsResponse;
 import vstocks.rest.resource.BaseResource;
 import vstocks.rest.security.JwtTokenRequired;
 
@@ -25,12 +24,12 @@ public class UsernameExists extends BaseResource {
     @GET
     @Produces(APPLICATION_JSON)
     @JwtTokenRequired
-    public UsernameExistsResponse usernameExists(@QueryParam("username") String username) {
+    public vstocks.model.UsernameExists usernameExists(@QueryParam("username") String username) {
         String trimmed = ofNullable(username)
                 .map(String::trim)
                 .filter(u -> !u.isEmpty())
                 .orElseThrow(() -> new BadRequestException("Missing or invalid username parameter"));
-        return new UsernameExistsResponse()
+        return new vstocks.model.UsernameExists()
                 .setUsername(trimmed)
                 .setExists(dbFactory.getUserDB().usernameExists(trimmed));
     }

@@ -3,7 +3,7 @@ package vstocks.rest.resource.user;
 import org.junit.Test;
 import vstocks.db.UserDB;
 import vstocks.model.ErrorResponse;
-import vstocks.model.rest.UsernameExistsResponse;
+import vstocks.model.UsernameExists;
 import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;
@@ -68,9 +68,9 @@ public class UsernameExistsIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        UsernameExistsResponse usernameExistsResponse = response.readEntity(UsernameExistsResponse.class);
-        assertEquals("username", usernameExistsResponse.getUsername());
-        assertTrue(usernameExistsResponse.isExists());
+        UsernameExists usernameExists = response.readEntity(UsernameExists.class);
+        assertEquals("username", usernameExists.getUsername());
+        assertTrue(usernameExists.isExists());
     }
 
     @Test
@@ -90,9 +90,9 @@ public class UsernameExistsIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        UsernameExistsResponse usernameExistsResponse = response.readEntity(UsernameExistsResponse.class);
-        assertEquals("username", usernameExistsResponse.getUsername());
-        assertFalse(usernameExistsResponse.isExists());
+        UsernameExists usernameExists = response.readEntity(UsernameExists.class);
+        assertEquals("username", usernameExists.getUsername());
+        assertFalse(usernameExists.isExists());
     }
 
     @Test
