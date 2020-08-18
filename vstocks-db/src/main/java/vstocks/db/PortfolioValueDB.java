@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public interface PortfolioValueDB {
-    Optional<PortfolioValue> generate(String userId);
+    PortfolioValue generateForUser(String userId);
 
     int generateAll(Consumer<PortfolioValue> consumer);
 

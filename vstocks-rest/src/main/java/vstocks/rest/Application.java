@@ -36,10 +36,7 @@ import vstocks.rest.security.AccessLogFilter;
 import vstocks.rest.security.JwtSecurity;
 import vstocks.rest.security.JwtTokenFilter;
 import vstocks.rest.security.SecurityConfig;
-import vstocks.rest.task.MemoryUsageLoggingTask;
-import vstocks.rest.task.PortfolioValueAgeOffTask;
-import vstocks.rest.task.StockPriceAgeOffTask;
-import vstocks.rest.task.StockUpdateTask;
+import vstocks.rest.task.*;
 import vstocks.service.remote.DefaultRemoteStockServiceFactory;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
@@ -131,6 +128,7 @@ public class Application extends ResourceConfig {
 
             new MemoryUsageLoggingTask().schedule(scheduledExecutorService);
             new PortfolioValueAgeOffTask(environment).schedule(scheduledExecutorService);
+            new PortfolioValueGenerateTask(environment).schedule(scheduledExecutorService);
             new StockPriceAgeOffTask(environment).schedule(scheduledExecutorService);
             new StockUpdateTask(environment, stockPriceLookupExecutorService).schedule(scheduledExecutorService);
         }

@@ -9,6 +9,8 @@ public interface DBFactory {
 
     PortfolioValueRankDB getPortfolioValueRankDB();
 
+    PortfolioValueSummaryDB getPortfolioValueSummaryDB();
+
     PricedStockDB getPricedStockDB();
 
     PricedUserStockDB getPricedUserStockDB();

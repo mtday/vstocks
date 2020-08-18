@@ -105,10 +105,25 @@ CREATE INDEX idx_portfolio_values_credits ON portfolio_values (credits);
 CREATE INDEX idx_portfolio_values_total ON portfolio_values (total);
 
 
+CREATE TABLE portfolio_value_summaries (
+    timestamp          TIMESTAMP(0) NOT NULL,
+    credits            BIGINT       NOT NULL,
+    market_values      TEXT         NOT NULL,
+    total              BIGINT       NOT NULL,
+
+    CONSTRAINT portfolio_value_summaries_pk PRIMARY KEY (timestamp)
+);
+
+CREATE INDEX idx_portfolio_value_summaries_timestamp ON portfolio_value_summaries (timestamp);
+CREATE INDEX idx_portfolio_value_summaries_credits ON portfolio_value_summaries (credits);
+CREATE INDEX idx_portfolio_value_summaries_total ON portfolio_value_summaries (total);
+
+
+
 CREATE TABLE portfolio_value_ranks (
     user_id            TEXT         NOT NULL,
     timestamp          TIMESTAMP(0) NOT NULL,
-    rank               INTEGER      NOT NULL,
+    rank               BIGINT       NOT NULL,
 
     CONSTRAINT portfolio_value_ranks_pk PRIMARY KEY (user_id, timestamp),
     CONSTRAINT portfolio_value_ranks_fk_user_id FOREIGN KEY (user_id)

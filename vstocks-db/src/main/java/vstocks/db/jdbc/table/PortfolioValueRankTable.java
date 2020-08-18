@@ -23,13 +23,13 @@ public class PortfolioValueRankTable extends BaseTable {
             new PortfolioValueRank()
                     .setUserId(rs.getString("user_id"))
                     .setTimestamp(rs.getTimestamp("timestamp").toInstant())
-                    .setRank(rs.getInt("rank"));
+                    .setRank(rs.getLong("rank"));
 
     private static final RowSetter<PortfolioValueRank> INSERT_ROW_SETTER = (ps, portfolioValueRank) -> {
         int index = 0;
         ps.setString(++index, portfolioValueRank.getUserId());
         ps.setTimestamp(++index, Timestamp.from(portfolioValueRank.getTimestamp()));
-        ps.setInt(++index, portfolioValueRank.getRank());
+        ps.setLong(++index, portfolioValueRank.getRank());
     };
 
     @Override
@@ -60,7 +60,7 @@ public class PortfolioValueRankTable extends BaseTable {
                     .findFirst()
                     .orElseGet(Collections::emptyList);
             // We stick a "-" on the rank since lower ranks should be seen as positive deltas
-            portfolioValueRank.setDeltas(Delta.getDeltas(pv, PortfolioValueRank::getTimestamp, r -> -(long) r.getRank()));
+            portfolioValueRank.setDeltas(Delta.getDeltas(pv, PortfolioValueRank::getTimestamp, r -> -r.getRank()));
         });
     }
 

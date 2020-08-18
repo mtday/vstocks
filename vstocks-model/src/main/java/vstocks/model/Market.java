@@ -20,6 +20,11 @@ public enum Market {
         return displayName;
     }
 
+    @Override
+    public String toString() {
+        return displayName;
+    }
+
     public static Optional<Market> from(String name) {
         return Arrays.stream(values())
                 .filter(market -> market.name().equalsIgnoreCase(name) || market.getDisplayName().equalsIgnoreCase(name))

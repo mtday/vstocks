@@ -61,7 +61,7 @@ public class SellStockIT extends ResourceTest {
 
         ErrorResponse error = response.readEntity(ErrorResponse.class);
         assertEquals(BAD_REQUEST.getStatusCode(), error.getStatus());
-        assertEquals("Failed to sell 10 shares of TWITTER/symbol stock", error.getMessage());
+        assertEquals("Failed to sell 10 shares of Twitter/symbol stock", error.getMessage());
 
         verify(userStockDb, times(1)).sellStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10));
         verify(pricedUserStockDb, times(0)).get(any(), any(), any());

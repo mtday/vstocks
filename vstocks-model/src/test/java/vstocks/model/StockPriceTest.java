@@ -61,7 +61,7 @@ public class StockPriceTest {
                 .setSymbol("symbol")
                 .setTimestamp(now)
                 .setPrice(20);
-        assertEquals("StockPrice{market=TWITTER, symbol='symbol', "
+        assertEquals("StockPrice{market=Twitter, symbol='symbol', "
                 + "timestamp=" + now.toString() + ", price=20}", stockPrice.toString());
     }
 }

@@ -111,11 +111,11 @@ public class StockUpdateTaskTest {
         }
 
         List<String> expectedStocks = asList(
-                "TWITTER:s1", "TWITTER:s2",
-                "YOUTUBE:s1", "YOUTUBE:s2",
-                "INSTAGRAM:s1", "INSTAGRAM:s2",
-                "TWITCH:s1", "TWITCH:s2",
-                "FACEBOOK:s1", "FACEBOOK:s2"
+                "Twitter:s1", "Twitter:s2",
+                "YouTube:s1", "YouTube:s2",
+                "Instagram:s1", "Instagram:s2",
+                "Twitch:s1", "Twitch:s2",
+                "Facebook:s1", "Facebook:s2"
         );
         List<String> stocks = updatedStocks.stream()
                 .map(stock -> format("%s:%s", stock.getMarket(), stock.getSymbol()))
@@ -123,11 +123,11 @@ public class StockUpdateTaskTest {
         assertEquals(join("\n", expectedStocks), join("\n", stocks));
 
         List<String> expectedStockPrices = asList(
-                "TWITTER:s1:10", "TWITTER:s2:10",
-                "YOUTUBE:s1:10", "YOUTUBE:s2:10",
-                "INSTAGRAM:s1:10", "INSTAGRAM:s2:10",
-                "TWITCH:s1:10", "TWITCH:s2:10",
-                "FACEBOOK:s1:10", "FACEBOOK:s2:10"
+                "Twitter:s1:10", "Twitter:s2:10",
+                "YouTube:s1:10", "YouTube:s2:10",
+                "Instagram:s1:10", "Instagram:s2:10",
+                "Twitch:s1:10", "Twitch:s2:10",
+                "Facebook:s1:10", "Facebook:s2:10"
         );
         List<String> stockPrices = addedStockPrices.stream()
                 .map(price -> format("%s:%s:%d", price.getMarket(), price.getSymbol(), price.getPrice()))

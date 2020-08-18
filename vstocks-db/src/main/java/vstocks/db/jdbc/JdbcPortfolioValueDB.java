@@ -1,7 +1,6 @@
 package vstocks.db.jdbc;
 
 import vstocks.db.PortfolioValueDB;
-import vstocks.db.jdbc.table.PortfolioValueJoin;
 import vstocks.db.jdbc.table.PortfolioValueTable;
 import vstocks.model.Page;
 import vstocks.model.PortfolioValue;
@@ -16,7 +15,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class JdbcPortfolioValueDB extends BaseService implements PortfolioValueDB {
-    private final PortfolioValueJoin portfolioValueJoin = new PortfolioValueJoin();
     private final PortfolioValueTable portfolioValueTable = new PortfolioValueTable();
 
     public JdbcPortfolioValueDB(DataSource dataSource) {
@@ -24,13 +22,13 @@ public class JdbcPortfolioValueDB extends BaseService implements PortfolioValueD
     }
 
     @Override
-    public Optional<PortfolioValue> generate(String userId) {
-        return withConnection(conn -> portfolioValueJoin.generate(conn, userId));
+    public PortfolioValue generateForUser(String userId) {
+        return withConnection(conn -> portfolioValueTable.generateForUser(conn, userId));
     }
 
     @Override
     public int generateAll(Consumer<PortfolioValue> consumer) {
-        return withConnection(conn -> portfolioValueJoin.generateAll(conn, consumer));
+        return withConnection(conn -> portfolioValueTable.generateAll(conn, consumer));
     }
 
     @Override

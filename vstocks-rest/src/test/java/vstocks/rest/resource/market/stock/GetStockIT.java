@@ -48,7 +48,7 @@ public class GetStockIT extends ResourceTest {
 
         ErrorResponse error = response.readEntity(ErrorResponse.class);
         assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
-        assertEquals("Stock TWITTER/missing not found", error.getMessage());
+        assertEquals("Stock Twitter/missing not found", error.getMessage());
     }
 
     @Test

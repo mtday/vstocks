@@ -111,6 +111,6 @@ public class ActivityLogTest {
                 .setShares(10)
                 .setPrice(20L);
         assertEquals("ActivityLog{id='id', userId='" + userId + "', type=STOCK_SELL, timestamp=" + now.toString()
-                + ", market=TWITTER, symbol='symbol', shares=10, price=20}", activityLog.toString());
+                + ", market=Twitter, symbol='symbol', shares=10, price=20}", activityLog.toString());
     }
 }

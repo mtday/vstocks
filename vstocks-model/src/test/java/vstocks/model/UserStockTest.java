@@ -58,7 +58,7 @@ public class UserStockTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setShares(10);
-        assertEquals("UserStock{userId='" + userId + "', market=TWITTER, symbol='symbol', shares=10}",
+        assertEquals("UserStock{userId='" + userId + "', market=Twitter, symbol='symbol', shares=10}",
                 userStock.toString());
     }
 }

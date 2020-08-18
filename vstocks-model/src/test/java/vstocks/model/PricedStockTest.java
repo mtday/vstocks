@@ -148,7 +148,7 @@ public class PricedStockTest {
                         HOUR12, new Delta().setInterval(HOUR12).setChange(5).setPercent(5.25f),
                         DAY1, new Delta().setInterval(DAY1).setChange(10).setPercent(10.25f)
                 )));
-        assertEquals("PricedStock{market=TWITTER, symbol='symbol', timestamp=" + now.toString() + ", name='name', "
+        assertEquals("PricedStock{market=Twitter, symbol='symbol', timestamp=" + now.toString() + ", name='name', "
                 + "profileImage='link', price=20, deltas={6h=Delta{interval=6h, change=5, percent=5.25}, "
                 + "12h=Delta{interval=12h, change=5, percent=5.25}, 1d=Delta{interval=1d, change=10, percent=10.25}}}",
                 pricedStock.toString());

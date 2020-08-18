@@ -60,7 +60,7 @@ public class BuyStockIT extends ResourceTest {
 
         ErrorResponse error = response.readEntity(ErrorResponse.class);
         assertEquals(BAD_REQUEST.getStatusCode(), error.getStatus());
-        assertEquals("Failed to buy 10 shares of TWITTER/symbol stock", error.getMessage());
+        assertEquals("Failed to buy 10 shares of Twitter/symbol stock", error.getMessage());
 
         verify(userStockDb, times(1)).buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10));
         verify(pricedUserStockDb, times(0)).get(any(), any(), any());
@@ -112,7 +112,7 @@ public class BuyStockIT extends ResourceTest {
 
         ErrorResponse error = response.readEntity(ErrorResponse.class);
         assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
-        assertEquals("Stock TWITTER/symbol not found", error.getMessage());
+        assertEquals("Stock Twitter/symbol not found", error.getMessage());
 
         verify(userStockDb, times(1)).buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10));
         verify(pricedUserStockDb, times(1)).get(eq(user.getId()), eq(TWITTER), eq("symbol"));

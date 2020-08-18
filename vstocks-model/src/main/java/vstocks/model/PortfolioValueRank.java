@@ -7,7 +7,7 @@ import java.util.Objects;
 public class PortfolioValueRank {
     private String userId;
     private Instant timestamp;
-    private int rank;
+    private long rank;
     private Map<DeltaInterval, Delta> deltas;
 
     public PortfolioValueRank() {
@@ -31,11 +31,11 @@ public class PortfolioValueRank {
         return this;
     }
 
-    public int getRank() {
+    public long getRank() {
         return rank;
     }
 
-    public PortfolioValueRank setRank(int rank) {
+    public PortfolioValueRank setRank(long rank) {
         this.rank = rank;
         return this;
     }

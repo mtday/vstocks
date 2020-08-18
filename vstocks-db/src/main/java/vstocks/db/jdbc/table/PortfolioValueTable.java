@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -21,15 +22,18 @@ import static vstocks.model.SortDirection.DESC;
 
 public class PortfolioValueTable extends BaseTable {
     private static final RowMapper<PortfolioValue> ROW_MAPPER = rs -> {
-        Map<Market, Long> marketValues = Stream.of(rs.getString("market_values"))
+        Map<Market, Long> marketValues = new TreeMap<>();
+        Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 0L));
+
+        Stream.of(rs.getString("market_values"))
                 .filter(Objects::nonNull)
                 .map(values -> values.split(";"))
                 .flatMap(Arrays::stream)
                 .map(String::trim)
                 .filter(marketValue -> !marketValue.isEmpty())
                 .map(marketValue -> marketValue.split(":", 2))
-                .map(arr -> new AbstractMap.SimpleEntry<>(Market.valueOf(arr[0]), Long.parseLong(arr[1])))
-                .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .map(arr -> new SimpleEntry<>(Market.valueOf(arr[0]), Long.parseLong(arr[1])))
+                .forEach(entry -> marketValues.put(entry.getKey(), entry.getValue()));
 
         return new PortfolioValue()
                 .setUserId(rs.getString("user_id"))
@@ -58,6 +62,50 @@ public class PortfolioValueTable extends BaseTable {
     @Override
     protected Set<Sort> getDefaultSort() {
         return new LinkedHashSet<>(asList(USER_ID.toSort(), TIMESTAMP.toSort(DESC)));
+    }
+
+    public PortfolioValue generateForUser(Connection connection, String userId) {
+        String sql = "SELECT uc.user_id, NOW() AS timestamp, uc.credits, COALESCE(market_values, '') AS market_values, "
+                + "  credits + COALESCE(stock_total, 0) AS total "
+                + "FROM user_credits uc LEFT JOIN ("
+                + "  SELECT user_id, STRING_AGG(market || ':' || value, ';') AS market_values, SUM(value) AS stock_total FROM ("
+                + "    SELECT user_id, market, SUM(value) AS value FROM ("
+                + "      SELECT DISTINCT ON (us.user_id, us.market, us.symbol) "
+                + "        us.user_id, us.market, us.symbol, us.shares * sp.price AS value "
+                + "      FROM user_stocks us "
+                + "      JOIN stock_prices sp ON (us.market = sp.market AND us.symbol = sp.symbol) "
+                + "      WHERE us.user_id = ? "
+                + "      ORDER BY us.user_id, us.market, us.symbol, sp.timestamp DESC"
+                + "    ) AS priced_stocks GROUP BY user_id, market "
+                + "  ) AS grouped_markets GROUP BY user_id "
+                + ") AS stock_values ON (uc.user_id = stock_values.user_id) WHERE uc.user_id = ?";
+        return getOne(connection, ROW_MAPPER, sql, userId, userId).orElseGet(() -> {
+            Map<Market, Long> marketValues = new TreeMap<>();
+            Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 0L));
+            return new PortfolioValue()
+                    .setUserId(userId)
+                    .setTimestamp(Instant.now().truncatedTo(SECONDS))
+                    .setCredits(0)
+                    .setMarketValues(marketValues)
+                    .setTotal(0);
+        });
+    }
+
+    public int generateAll(Connection connection, Consumer<PortfolioValue> consumer) {
+        String sql = "SELECT uc.user_id, NOW() AS timestamp, uc.credits, COALESCE(market_values, '') AS market_values, "
+                + "  credits + COALESCE(stock_total, 0) AS total "
+                + "FROM user_credits uc LEFT JOIN ("
+                + "  SELECT user_id, STRING_AGG(market || ':' || value, ';') AS market_values, SUM(value) AS stock_total FROM ("
+                + "    SELECT user_id, market, SUM(value) AS value FROM ("
+                + "      SELECT DISTINCT ON (us.user_id, us.market, us.symbol) "
+                + "        us.user_id, us.market, us.symbol, us.shares * sp.price AS value "
+                + "      FROM user_stocks us "
+                + "      JOIN stock_prices sp ON (us.market = sp.market AND us.symbol = sp.symbol) "
+                + "      ORDER BY us.user_id, us.market, us.symbol, sp.timestamp DESC"
+                + "    ) AS priced_stocks GROUP BY user_id, market "
+                + "  ) AS grouped_markets GROUP BY user_id "
+                + ") AS stock_values ON (uc.user_id = stock_values.user_id) ORDER BY total DESC";
+        return consume(connection, ROW_MAPPER, consumer, sql);
     }
 
     private void populateDeltas(Connection connection, List<PortfolioValue> portfolioValues) {

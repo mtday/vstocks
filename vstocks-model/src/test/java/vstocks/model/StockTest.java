@@ -54,6 +54,6 @@ public class StockTest {
                 .setSymbol("symbol")
                 .setName("name")
                 .setProfileImage("link");
-        assertEquals("Stock{market=TWITTER, symbol='symbol', name='name', profileImage='link'}", stock.toString());
+        assertEquals("Stock{market=Twitter, symbol='symbol', name='name', profileImage='link'}", stock.toString());
     }
 }

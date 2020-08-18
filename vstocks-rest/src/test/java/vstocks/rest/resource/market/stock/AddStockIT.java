@@ -59,7 +59,7 @@ public class AddStockIT extends ResourceTest {
 
         ErrorResponse error = response.readEntity(ErrorResponse.class);
         assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
-        assertEquals("Stock TWITTER/symbol not found", error.getMessage());
+        assertEquals("Stock Twitter/symbol not found", error.getMessage());
 
         verify(pricedStockDb, times(0)).add(any());
     }
@@ -134,7 +134,7 @@ public class AddStockIT extends ResourceTest {
 
         ErrorResponse error = response.readEntity(ErrorResponse.class);
         assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
-        assertEquals("Stock TWITTER/sym not found", error.getMessage());
+        assertEquals("Stock Twitter/sym not found", error.getMessage());
 
         verify(pricedStockDb, times(0)).add(any());
     }
@@ -158,7 +158,7 @@ public class AddStockIT extends ResourceTest {
 
         ErrorResponse error = response.readEntity(ErrorResponse.class);
         assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
-        assertEquals("Stock TWITTER/symbol not found", error.getMessage());
+        assertEquals("Stock Twitter/symbol not found", error.getMessage());
 
         verify(pricedStockDb, times(0)).add(any());
     }
