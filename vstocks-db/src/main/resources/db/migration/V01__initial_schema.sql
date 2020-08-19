@@ -119,7 +119,6 @@ CREATE INDEX idx_portfolio_value_summaries_credits ON portfolio_value_summaries 
 CREATE INDEX idx_portfolio_value_summaries_total ON portfolio_value_summaries (total);
 
 
-
 CREATE TABLE portfolio_value_ranks (
     user_id            TEXT         NOT NULL,
     timestamp          TIMESTAMP(0) NOT NULL,
@@ -168,3 +167,15 @@ CREATE TABLE user_achievements (
 CREATE INDEX idx_user_achievements_user_id ON user_achievements (user_id);
 CREATE INDEX idx_user_achievements_achievement_id ON user_achievements (achievement_id);
 CREATE INDEX idx_user_achievements_timestamp ON user_achievements (timestamp);
+
+
+CREATE TABLE user_counts (
+    timestamp          TIMESTAMP(0) NOT NULL,
+    users              BIGINT       NOT NULL,
+
+    CONSTRAINT user_counts_pk PRIMARY KEY (timestamp)
+);
+
+CREATE INDEX idx_user_counts_timestamp ON user_counts (timestamp);
+CREATE INDEX idx_user_counts_users ON user_counts (users);
+

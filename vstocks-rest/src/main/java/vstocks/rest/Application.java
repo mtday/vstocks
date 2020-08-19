@@ -24,6 +24,7 @@ import vstocks.rest.resource.security.Callback;
 import vstocks.rest.resource.security.Login;
 import vstocks.rest.resource.security.Logout;
 import vstocks.rest.resource.standings.GetRanks;
+import vstocks.rest.resource.system.GetUserCount;
 import vstocks.rest.resource.system.GetValueSummary;
 import vstocks.rest.resource.user.GetUser;
 import vstocks.rest.resource.user.PutUser;
@@ -84,6 +85,7 @@ public class Application extends ResourceConfig {
         register(GetRanks.class);
 
         // system
+        register(GetUserCount.class);
         register(GetValueSummary.class);
 
         // user
@@ -135,6 +137,7 @@ public class Application extends ResourceConfig {
             new PortfolioValueGenerateTask(environment).schedule(scheduledExecutorService);
             new StockPriceAgeOffTask(environment).schedule(scheduledExecutorService);
             new StockUpdateTask(environment, stockPriceLookupExecutorService).schedule(scheduledExecutorService);
+            new UserCountGenerateTask(environment).schedule(scheduledExecutorService);
         }
     }
 

@@ -20,7 +20,8 @@ public enum DatabaseField {
     TOTAL,
     TYPE,
     USERNAME,
-    USER_ID;
+    USER_ID,
+    USERS;
 
     public Sort toSort() {
         return new Sort(this);

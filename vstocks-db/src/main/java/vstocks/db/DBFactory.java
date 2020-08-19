@@ -21,6 +21,8 @@ public interface DBFactory {
 
     UserAchievementDB getUserAchievementDB();
 
+    UserCountDB getUserCountDB();
+
     UserCreditsDB getUserCreditsDB();
 
     UserDB getUserDB();

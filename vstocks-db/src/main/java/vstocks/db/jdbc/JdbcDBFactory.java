@@ -15,6 +15,7 @@ public class JdbcDBFactory implements DBFactory {
     private final StockDB stockDB;
     private final StockPriceDB stockPriceDB;
     private final UserAchievementDB userAchievementDB;
+    private final UserCountDB userCountDB;
     private final UserCreditsDB userCreditsDB;
     private final UserDB userDB;
     private final UserStockDB userStockDB;
@@ -30,6 +31,7 @@ public class JdbcDBFactory implements DBFactory {
         this.stockDB = new JdbcStockDB(dataSource);
         this.stockPriceDB = new JdbcStockPriceDB(dataSource);
         this.userAchievementDB = new JdbcUserAchievementDB(dataSource);
+        this.userCountDB = new JdbcUserCountDB(dataSource);
         this.userCreditsDB = new JdbcUserCreditsDB(dataSource);
         this.userDB = new JdbcUserDB(dataSource);
         this.userStockDB = new JdbcUserStockDB(dataSource);
@@ -83,6 +85,11 @@ public class JdbcDBFactory implements DBFactory {
     @Override
     public UserAchievementDB getUserAchievementDB() {
         return userAchievementDB;
+    }
+
+    @Override
+    public UserCountDB getUserCountDB() {
+        return userCountDB;
     }
 
     @Override
