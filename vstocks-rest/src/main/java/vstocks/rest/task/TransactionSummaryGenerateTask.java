@@ -2,7 +2,7 @@ package vstocks.rest.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import vstocks.model.UserCount;
+import vstocks.model.TransactionSummary;
 import vstocks.rest.Environment;
 
 import java.time.LocalDateTime;
@@ -12,12 +12,12 @@ import static java.time.temporal.ChronoField.*;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
-public class UserCountGenerateTask implements Task {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserCountGenerateTask.class);
+public class TransactionSummaryGenerateTask implements Task {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionSummaryGenerateTask.class);
 
     private final Environment environment;
 
-    public UserCountGenerateTask(Environment environment) {
+    public TransactionSummaryGenerateTask(Environment environment) {
         this.environment = environment;
     }
 
@@ -38,14 +38,11 @@ public class UserCountGenerateTask implements Task {
 
     @Override
     public void run() {
-        LOGGER.info("Starting user count generation");
+        LOGGER.info("Starting transaction summary generation");
 
-        UserCount userCountTotal = environment.getDBFactory().getUserCountDB().generateTotal();
-        environment.getDBFactory().getUserCountDB().addTotal(userCountTotal);
+        TransactionSummary transactionSummary = environment.getDBFactory().getTransactionSummaryDB().generate();
+        environment.getDBFactory().getTransactionSummaryDB().add(transactionSummary);
 
-        UserCount userCountActive = environment.getDBFactory().getUserCountDB().generateActive();
-        environment.getDBFactory().getUserCountDB().addActive(userCountActive);
-
-        LOGGER.info("Completed user count generation");
+        LOGGER.info("Completed transaction summary generation");
     }
 }

@@ -190,3 +190,15 @@ CREATE TABLE active_user_counts (
 CREATE INDEX idx_active_user_counts_timestamp ON active_user_counts (timestamp);
 CREATE INDEX idx_active_user_counts_users ON active_user_counts (users);
 
+
+CREATE TABLE transaction_summaries (
+    timestamp          TIMESTAMP(0) NOT NULL,
+    transactions       TEXT         NOT NULL,
+    total              BIGINT       NOT NULL,
+
+    CONSTRAINT transaction_summaries_pk PRIMARY KEY (timestamp)
+);
+
+CREATE INDEX idx_transaction_summaries_timestamp ON transaction_summaries (timestamp);
+CREATE INDEX idx_transaction_summaries_total ON transaction_summaries (total);
+

@@ -19,6 +19,8 @@ public interface DBFactory {
 
     StockPriceDB getStockPriceDB();
 
+    TransactionSummaryDB getTransactionSummaryDB();
+
     UserAchievementDB getUserAchievementDB();
 
     UserCountDB getUserCountDB();

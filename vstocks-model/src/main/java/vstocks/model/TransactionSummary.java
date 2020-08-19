@@ -4,39 +4,39 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 
-public class TransactionCount {
-    private Market market;
+public class TransactionSummary {
     private Instant timestamp;
-    private long transactions;
+    private Map<Market, Long> transactions;
+    private long total;
     private Map<DeltaInterval, Delta> deltas;
 
-    public TransactionCount() {
-    }
-
-    public Market getMarket() {
-        return market;
-    }
-
-    public TransactionCount setMarket(Market market) {
-        this.market = market;
-        return this;
+    public TransactionSummary() {
     }
 
     public Instant getTimestamp() {
         return timestamp;
     }
 
-    public TransactionCount setTimestamp(Instant timestamp) {
+    public TransactionSummary setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
         return this;
     }
 
-    public long getTransactions() {
+    public Map<Market, Long> getTransactions() {
         return transactions;
     }
 
-    public TransactionCount setTransactions(long transactions) {
+    public TransactionSummary setTransactions(Map<Market, Long> transactions) {
         this.transactions = transactions;
+        return this;
+    }
+
+    public long getTotal() {
+        return total;
+    }
+
+    public TransactionSummary setTotal(long total) {
+        this.total = total;
         return this;
     }
 
@@ -44,7 +44,7 @@ public class TransactionCount {
         return deltas;
     }
 
-    public TransactionCount setDeltas(Map<DeltaInterval, Delta> deltas) {
+    public TransactionSummary setDeltas(Map<DeltaInterval, Delta> deltas) {
         this.deltas = deltas;
         return this;
     }
@@ -53,24 +53,24 @@ public class TransactionCount {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TransactionCount that = (TransactionCount) o;
-        return transactions == that.transactions &&
-                market == that.market &&
+        TransactionSummary that = (TransactionSummary) o;
+        return total == that.total &&
                 Objects.equals(timestamp, that.timestamp) &&
+                Objects.equals(transactions, that.transactions) &&
                 Objects.equals(deltas, that.deltas);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(market, timestamp, transactions, deltas);
+        return Objects.hash(timestamp, transactions, total, deltas);
     }
 
     @Override
     public String toString() {
-        return "TransactionCount{" +
-                "market=" + market +
-                ", timestamp=" + timestamp +
+        return "TransactionSummary{" +
+                "timestamp=" + timestamp +
                 ", transactions=" + transactions +
+                ", total=" + total +
                 ", deltas=" + deltas +
                 '}';
     }

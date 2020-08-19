@@ -58,6 +58,8 @@ INSERT INTO activity_logs (id, user_id, type, timestamp, market, symbol, shares,
 ('3', 'user2', 'STOCK_BUY', '2020-01-01 00:00:00', 'TWITTER', 'POTUS', 1, 2678),
 ('4', 'user2', 'STOCK_SELL', '2020-02-01 00:00:00', 'TWITTER', 'POTUS', 1, 2693),
 ('5', 'user1', 'STOCK_BUY', '2020-01-01 00:00:00', 'YOUTUBE', 'UCe02lGcO-ahAURWuxAJnjdA', 1, 1430),
-('6', 'user1', 'STOCK_BUY', '2020-02-01 00:00:00', 'YOUTUBE', 'UCe02lGcO-ahAURWuxAJnjdA', 1, 1468)
+('6', 'user1', 'STOCK_BUY', '2020-02-01 00:00:00', 'YOUTUBE', 'UCe02lGcO-ahAURWuxAJnjdA', 1, 1468),
+('7', 'user1', 'USER_LOGIN', '2020-01-01 00:00:00', NULL, NULL, NULL, NULL),
+('8', 'user2', 'USER_LOGIN', '2020-02-01 00:00:00', NULL, NULL, NULL, NULL)
 ON CONFLICT DO NOTHING;
 
