@@ -112,7 +112,6 @@ public class JdbcPortfolioValueDBIT {
         assertEquals(Market.values().length, portfolioValue.getMarketValues().size());
         assertEquals(0, portfolioValue.getMarketValues().values().stream().mapToLong(l -> l).sum());
         assertEquals(0, portfolioValue.getTotal());
-        assertNull(portfolioValue.getDeltas());
     }
 
     @Test
@@ -123,7 +122,6 @@ public class JdbcPortfolioValueDBIT {
         assertEquals(Market.values().length, portfolioValue.getMarketValues().size());
         assertEquals(0, portfolioValue.getMarketValues().values().stream().mapToLong(l -> l).sum());
         assertEquals(0, portfolioValue.getTotal());
-        assertNull(portfolioValue.getDeltas());
     }
 
     @Test
@@ -140,7 +138,6 @@ public class JdbcPortfolioValueDBIT {
         assertEquals(Market.values().length, fetched.getMarketValues().size());
         assertEquals(0, fetched.getMarketValues().values().stream().mapToLong(l -> l).sum());
         assertEquals(userCredits.getCredits(), fetched.getTotal());
-        assertNull(fetched.getDeltas());
     }
 
     @Test
@@ -161,7 +158,6 @@ public class JdbcPortfolioValueDBIT {
         assertTrue(marketValues.containsKey(TWITTER));
         assertEquals(twitterStockPrice1.getPrice() * userStock.getShares(), (long) marketValues.get(TWITTER));
         assertEquals(userCredits.getCredits() + twitterStockPrice1.getPrice() * userStock.getShares(), fetched.getTotal());
-        assertNull(fetched.getDeltas());
     }
 
     @Test
@@ -192,7 +188,6 @@ public class JdbcPortfolioValueDBIT {
                 + twitterStockPrice1.getPrice() * userStock1.getShares()
                 + youtubeStockPrice1.getPrice() * userStock2.getShares()
                 + youtubeStockPrice2.getPrice() * userStock3.getShares(), fetched.getTotal());
-        assertNull(fetched.getDeltas());
     }
 
     @Test
@@ -247,7 +242,6 @@ public class JdbcPortfolioValueDBIT {
                 + twitterStockPrice2.getPrice() * userStock22.getShares()
                 + twitterStockPrice3.getPrice() * userStock23.getShares()
                 + youtubeStockPrice3.getPrice() * userStock24.getShares(), portfolioValue1.getTotal());
-        assertNull(portfolioValue1.getDeltas());
 
         PortfolioValue portfolioValue2 = results.get(1);
         assertEquals(user1.getId(), portfolioValue2.getUserId());
@@ -263,75 +257,44 @@ public class JdbcPortfolioValueDBIT {
                 + twitterStockPrice1.getPrice() * userStock11.getShares()
                 + youtubeStockPrice1.getPrice() * userStock12.getShares()
                 + youtubeStockPrice2.getPrice() * userStock13.getShares(), portfolioValue2.getTotal());
-        assertNull(portfolioValue2.getDeltas());
     }
 
     @Test
     public void testGetLatestMissing() {
-        assertFalse(portfolioValueDB.getLatest("missing-id").isPresent());
+        PortfolioValueCollection collection = portfolioValueDB.getLatest("missing-id");
+        assertTrue(collection.getValues().isEmpty());
+        assertEquals(getDeltas(0, 0f), collection.getDeltas());
     }
 
     @Test
-    public void testGetLatestExists() {
+    public void testGetLatestSingle() {
         Map<Market, Long> marketValues = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 10L));
 
-        PortfolioValue portfolioValue = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(1010).setDeltas(getDeltas(0, 0f));
+        PortfolioValue portfolioValue = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(1010);
         assertEquals(1, portfolioValueDB.add(portfolioValue));
 
-        PortfolioValue fetched = portfolioValueDB.getLatest(user1.getId()).orElse(null);
-        assertEquals(portfolioValue, fetched);
+        PortfolioValueCollection collection = portfolioValueDB.getLatest(user1.getId());
+        assertEquals(1, collection.getValues().size());
+        assertEquals(portfolioValue, collection.getValues().iterator().next());
+        assertEquals(getDeltas(0, 0f), collection.getDeltas());
     }
 
     @Test
-    public void testGetLatestNone() {
-        Results<PortfolioValue> results = portfolioValueDB.getLatest(singleton(user1.getId()), new Page(), emptySet());
-        assertEquals(0, results.getTotal());
-        assertTrue(results.getResults().isEmpty());
-    }
+    public void testGetLatestMultiple() {
+        Map<Market, Long> marketValues = new TreeMap<>();
+        Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 10L));
 
-    @Test
-    public void testGetLatestSomeNoSort() {
-        Map<Market, Long> marketValues1 = new TreeMap<>();
-        Arrays.stream(Market.values()).forEach(market -> marketValues1.put(market, 10L));
-        Map<Market, Long> marketValues2 = new TreeMap<>();
-        Arrays.stream(Market.values()).forEach(market -> marketValues2.put(market, 8L));
-
-        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues1).setTotal(60).setDeltas(getDeltas(8, 15.384616f));
-        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setCredits(12).setMarketValues(marketValues2).setTotal(52);
-        PortfolioValue portfolioValue3 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now).setCredits(30).setMarketValues(marketValues1).setTotal(80).setDeltas(getDeltas(8, 11.111112f));
-        PortfolioValue portfolioValue4 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(40)).setCredits(32).setMarketValues(marketValues2).setTotal(72);
-        assertEquals(4, portfolioValueDB.addAll(asList(portfolioValue1, portfolioValue2, portfolioValue3, portfolioValue4)));
-
-        Results<PortfolioValue> results = portfolioValueDB.getLatest(asList(user1.getId(), user2.getId()), new Page(), emptySet());
-        assertEquals(2, results.getTotal());
-        assertEquals(2, results.getResults().size());
-        assertEquals(portfolioValue1, results.getResults().get(0));
-        assertEquals(portfolioValue3, results.getResults().get(1));
-    }
-
-    @Test
-    public void testGetLatestSomeWithSort() {
-        Map<Market, Long> marketValues1 = new TreeMap<>();
-        Arrays.stream(Market.values()).forEach(market -> marketValues1.put(market, 10L));
-        Map<Market, Long> marketValues2 = new TreeMap<>();
-        Arrays.stream(Market.values()).forEach(market -> marketValues2.put(market, 8L));
-
-        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues1).setTotal(60).setDeltas(getDeltas(-8, -11.764706f));
-        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setCredits(20).setMarketValues(marketValues2).setTotal(68);
-        PortfolioValue portfolioValue3 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now).setCredits(30).setMarketValues(marketValues1).setTotal(80).setDeltas(getDeltas(-8, -9.090909f));
-        PortfolioValue portfolioValue4 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(40)).setCredits(40).setMarketValues(marketValues2).setTotal(88);
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(1010);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setCredits(10).setMarketValues(marketValues).setTotal(2020);
         assertEquals(1, portfolioValueDB.add(portfolioValue1));
         assertEquals(1, portfolioValueDB.add(portfolioValue2));
-        assertEquals(1, portfolioValueDB.add(portfolioValue3));
-        assertEquals(1, portfolioValueDB.add(portfolioValue4));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(CREDITS.toSort(DESC), USER_ID.toSort(DESC)));
-        Results<PortfolioValue> results = portfolioValueDB.getLatest(asList(user1.getId(), user2.getId()), new Page(), sort);
-        assertEquals(2, results.getTotal());
-        assertEquals(2, results.getResults().size());
-        assertEquals(portfolioValue3, results.getResults().get(0));
-        assertEquals(portfolioValue1, results.getResults().get(1));
+        PortfolioValueCollection collection = portfolioValueDB.getLatest(user1.getId());
+        assertEquals(2, collection.getValues().size());
+        assertEquals(portfolioValue1, collection.getValues().get(0));
+        assertEquals(portfolioValue2, collection.getValues().get(1));
+        assertEquals(getDeltas(-1010, -50f), collection.getDeltas());
     }
 
     @Test
@@ -346,8 +309,8 @@ public class JdbcPortfolioValueDBIT {
         Map<Market, Long> marketValues = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 10L));
 
-        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60).setDeltas(getDeltas(0, 0f));
-        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(marketValues).setTotal(70).setDeltas(getDeltas(0, 0f));
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(marketValues).setTotal(70);
         assertEquals(1, portfolioValueDB.add(portfolioValue1));
         assertEquals(1, portfolioValueDB.add(portfolioValue2));
 
@@ -363,8 +326,8 @@ public class JdbcPortfolioValueDBIT {
         Map<Market, Long> marketValues = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 10L));
 
-        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60).setDeltas(getDeltas(0, 0f));
-        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(marketValues).setTotal(70).setDeltas(getDeltas(0, 0f));
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(marketValues).setTotal(70);
         assertEquals(1, portfolioValueDB.add(portfolioValue1));
         assertEquals(1, portfolioValueDB.add(portfolioValue2));
 
@@ -429,12 +392,14 @@ public class JdbcPortfolioValueDBIT {
         Map<Market, Long> marketValues = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 10L));
 
-        PortfolioValue portfolioValue = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60).setDeltas(getDeltas(0, 0f));
+        PortfolioValue portfolioValue = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60);
         assertEquals(1, portfolioValueDB.add(portfolioValue));
         assertEquals(0, portfolioValueDB.add(portfolioValue));
 
-        PortfolioValue fetched = portfolioValueDB.getLatest(user1.getId()).orElse(null);
-        assertEquals(portfolioValue, fetched);
+        List<PortfolioValue> results = new ArrayList<>();
+        assertEquals(1, portfolioValueDB.consume(results::add, emptySet()));
+        assertEquals(1, results.size());
+        assertEquals(portfolioValue, results.get(0));
     }
 
     @Test
@@ -442,14 +407,16 @@ public class JdbcPortfolioValueDBIT {
         Map<Market, Long> marketValues = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 10L));
 
-        PortfolioValue portfolioValue = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60).setDeltas(getDeltas(0, 0f));
+        PortfolioValue portfolioValue = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60);
         assertEquals(1, portfolioValueDB.add(portfolioValue));
         portfolioValue.setCredits(12);
         portfolioValue.setTotal(1012);
         assertEquals(1, portfolioValueDB.add(portfolioValue));
 
-        PortfolioValue fetched = portfolioValueDB.getLatest(user1.getId()).orElse(null);
-        assertEquals(portfolioValue, fetched);
+        List<PortfolioValue> results = new ArrayList<>();
+        assertEquals(1, portfolioValueDB.consume(results::add, emptySet()));
+        assertEquals(1, results.size());
+        assertEquals(portfolioValue, results.get(0));
     }
 
     @Test
@@ -457,15 +424,15 @@ public class JdbcPortfolioValueDBIT {
         Map<Market, Long> marketValues = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 10L));
 
-        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60).setDeltas(getDeltas(0, 0f));
-        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(marketValues).setTotal(70).setDeltas(getDeltas(0, 0f));
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60);
+        PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user2.getId()).setTimestamp(now.minusSeconds(10)).setCredits(20).setMarketValues(marketValues).setTotal(70);
         assertEquals(2, portfolioValueDB.addAll(asList(portfolioValue1, portfolioValue2)));
 
-        Results<PortfolioValue> results = portfolioValueDB.getLatest(asList(user1.getId(), user2.getId()), new Page(), emptySet());
-        assertEquals(2, results.getTotal());
-        assertEquals(2, results.getResults().size());
-        assertEquals(portfolioValue1, results.getResults().get(0));
-        assertEquals(portfolioValue2, results.getResults().get(1));
+        List<PortfolioValue> results = new ArrayList<>();
+        assertEquals(2, portfolioValueDB.consume(results::add, emptySet()));
+        assertEquals(2, results.size());
+        assertEquals(portfolioValue1, results.get(0));
+        assertEquals(portfolioValue2, results.get(1));
     }
 
     @Test
@@ -473,7 +440,7 @@ public class JdbcPortfolioValueDBIT {
         Map<Market, Long> marketValues = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 10L));
 
-        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60).setDeltas(getDeltas(0, 0f));
+        PortfolioValue portfolioValue1 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60);
         PortfolioValue portfolioValue2 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(10)).setCredits(10).setMarketValues(marketValues).setTotal(60);
         PortfolioValue portfolioValue3 = new PortfolioValue().setUserId(user1.getId()).setTimestamp(now.minusSeconds(20)).setCredits(10).setMarketValues(marketValues).setTotal(60);
 
@@ -482,9 +449,9 @@ public class JdbcPortfolioValueDBIT {
         assertEquals(1, portfolioValueDB.add(portfolioValue3));
         assertEquals(2, portfolioValueDB.ageOff(now.minusSeconds(5)));
 
-        Results<PortfolioValue> results = portfolioValueDB.getAll(new Page(), emptySet());
-        assertEquals(1, results.getTotal());
-        assertEquals(1, results.getResults().size());
-        assertEquals(portfolioValue1, results.getResults().iterator().next());
+        List<PortfolioValue> results = new ArrayList<>();
+        assertEquals(1, portfolioValueDB.consume(results::add, emptySet()));
+        assertEquals(1, results.size());
+        assertEquals(portfolioValue1, results.get(0));
     }
 }

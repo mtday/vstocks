@@ -70,7 +70,6 @@ public class JdbcUserCountDBIT {
     public void testGenerateTotalMissing() {
         UserCount userCount = userCountDB.generateTotal();
         assertEquals(0, userCount.getUsers());
-        assertNull(userCount.getDeltas());
     }
 
     @Test
@@ -78,7 +77,6 @@ public class JdbcUserCountDBIT {
         UserCount userCount = userCountDB.generateTotal();
         assertNotNull(userCount.getTimestamp());
         assertEquals(0, userCount.getUsers());
-        assertNull(userCount.getDeltas());
     }
 
     @Test
@@ -95,14 +93,12 @@ public class JdbcUserCountDBIT {
         UserCount fetched = userCountDB.generateTotal();
         assertNotNull(fetched.getTimestamp());
         assertEquals(2, fetched.getUsers());
-        assertNull(fetched.getDeltas());
     }
 
     @Test
     public void testGenerateActiveMissing() {
         UserCount userCount = userCountDB.generateActive();
         assertEquals(0, userCount.getUsers());
-        assertNull(userCount.getDeltas());
     }
 
     @Test
@@ -110,7 +106,6 @@ public class JdbcUserCountDBIT {
         UserCount userCount = userCountDB.generateActive();
         assertNotNull(userCount.getTimestamp());
         assertEquals(0, userCount.getUsers());
-        assertNull(userCount.getDeltas());
     }
 
     @Test
@@ -131,67 +126,76 @@ public class JdbcUserCountDBIT {
         UserCount fetched = userCountDB.generateActive();
         assertNotNull(fetched.getTimestamp());
         assertEquals(2, fetched.getUsers());
-        assertNull(fetched.getDeltas());
     }
 
     @Test
     public void testGetLatestTotalMissing() {
-        UserCount fetched = userCountDB.getLatestTotal();
-        assertNotNull(fetched.getTimestamp());
-        assertEquals(0, fetched.getUsers());
+        UserCountCollection fetched = userCountDB.getLatestTotal();
+        assertTrue(fetched.getUserCounts().isEmpty());
         assertEquals(getDeltas(0, 0f), fetched.getDeltas());
     }
 
     @Test
     public void testGetLatestTotalSingleExists() {
-        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10).setDeltas(getDeltas(0, 0f));
+        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10);
         assertEquals(1, userCountDB.addTotal(userCount));
 
-        UserCount fetched = userCountDB.getLatestTotal();
-        assertEquals(userCount, fetched);
+        UserCountCollection fetched = userCountDB.getLatestTotal();
+        assertEquals(1, fetched.getUserCounts().size());
+        assertEquals(userCount, fetched.getUserCounts().iterator().next());
+        assertEquals(getDeltas(0, 0f), fetched.getDeltas());
     }
 
     @Test
     public void testGetLatestTotalMultipleExists() {
-        UserCount userCount1 = new UserCount().setTimestamp(now).setUsers(10).setDeltas(getDeltas(4, 66.66667f));
+        UserCount userCount1 = new UserCount().setTimestamp(now).setUsers(10);
         UserCount userCount2 = new UserCount().setTimestamp(now.minusSeconds(10)).setUsers(8);
         UserCount userCount3 = new UserCount().setTimestamp(now.minusSeconds(20)).setUsers(6);
         assertEquals(1, userCountDB.addTotal(userCount1));
         assertEquals(1, userCountDB.addTotal(userCount2));
         assertEquals(1, userCountDB.addTotal(userCount3));
 
-        UserCount fetched = userCountDB.getLatestTotal();
-        assertEquals(userCount1, fetched);
+        UserCountCollection fetched = userCountDB.getLatestTotal();
+        assertEquals(3, fetched.getUserCounts().size());
+        assertEquals(userCount1, fetched.getUserCounts().get(0));
+        assertEquals(userCount2, fetched.getUserCounts().get(1));
+        assertEquals(userCount3, fetched.getUserCounts().get(2));
+        assertEquals(getDeltas(4, 66.66667f), fetched.getDeltas());
     }
 
     @Test
     public void testGetLatestActiveMissing() {
-        UserCount fetched = userCountDB.getLatestActive();
-        assertNotNull(fetched.getTimestamp());
-        assertEquals(0, fetched.getUsers());
+        UserCountCollection fetched = userCountDB.getLatestActive();
+        assertTrue(fetched.getUserCounts().isEmpty());
         assertEquals(getDeltas(0, 0f), fetched.getDeltas());
     }
 
     @Test
     public void testGetLatestActiveSingleExists() {
-        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10).setDeltas(getDeltas(0, 0f));
+        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10);
         assertEquals(1, userCountDB.addActive(userCount));
 
-        UserCount fetched = userCountDB.getLatestActive();
-        assertEquals(userCount, fetched);
+        UserCountCollection fetched = userCountDB.getLatestActive();
+        assertEquals(1, fetched.getUserCounts().size());
+        assertEquals(userCount, fetched.getUserCounts().iterator().next());
+        assertEquals(getDeltas(0, 0f), fetched.getDeltas());
     }
 
     @Test
     public void testGetLatestActiveMultipleExists() {
-        UserCount userCount1 = new UserCount().setTimestamp(now).setUsers(10).setDeltas(getDeltas(4, 66.66667f));
+        UserCount userCount1 = new UserCount().setTimestamp(now).setUsers(10);
         UserCount userCount2 = new UserCount().setTimestamp(now.minusSeconds(10)).setUsers(8);
         UserCount userCount3 = new UserCount().setTimestamp(now.minusSeconds(20)).setUsers(6);
         assertEquals(1, userCountDB.addActive(userCount1));
         assertEquals(1, userCountDB.addActive(userCount2));
         assertEquals(1, userCountDB.addActive(userCount3));
 
-        UserCount fetched = userCountDB.getLatestActive();
-        assertEquals(userCount1, fetched);
+        UserCountCollection fetched = userCountDB.getLatestActive();
+        assertEquals(3, fetched.getUserCounts().size());
+        assertEquals(userCount1, fetched.getUserCounts().get(0));
+        assertEquals(userCount2, fetched.getUserCounts().get(1));
+        assertEquals(userCount3, fetched.getUserCounts().get(2));
+        assertEquals(getDeltas(4, 66.66667f), fetched.getDeltas());
     }
 
     @Test
@@ -268,62 +272,68 @@ public class JdbcUserCountDBIT {
 
     @Test
     public void testAddTotal() {
-        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10).setDeltas(getDeltas(0, 0f));
+        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10);
         assertEquals(1, userCountDB.addTotal(userCount));
 
-        UserCount fetched = userCountDB.getLatestTotal();
-        assertEquals(userCount, fetched);
+        UserCountCollection fetched = userCountDB.getLatestTotal();
+        assertEquals(1, fetched.getUserCounts().size());
+        assertEquals(userCount, fetched.getUserCounts().iterator().next());
     }
 
     @Test
     public void testAddTotalConflictSameValues() {
-        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10).setDeltas(getDeltas(0, 0f));
+        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10);
         assertEquals(1, userCountDB.addTotal(userCount));
         assertEquals(0, userCountDB.addTotal(userCount));
 
-        UserCount fetched = userCountDB.getLatestTotal();
-        assertEquals(userCount, fetched);
+        UserCountCollection fetched = userCountDB.getLatestTotal();
+        assertEquals(1, fetched.getUserCounts().size());
+        assertEquals(userCount, fetched.getUserCounts().iterator().next());
     }
 
     @Test
     public void testAddTotalConflictDifferentValues() {
-        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10).setDeltas(getDeltas(0, 0f));
+        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10);
         assertEquals(1, userCountDB.addTotal(userCount));
         userCount.setUsers(12);
         assertEquals(1, userCountDB.addTotal(userCount));
 
-        UserCount fetched = userCountDB.getLatestTotal();
-        assertEquals(userCount, fetched);
+        UserCountCollection fetched = userCountDB.getLatestTotal();
+        assertEquals(1, fetched.getUserCounts().size());
+        assertEquals(userCount, fetched.getUserCounts().iterator().next());
     }
 
     @Test
     public void testAddActive() {
-        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10).setDeltas(getDeltas(0, 0f));
+        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10);
         assertEquals(1, userCountDB.addActive(userCount));
 
-        UserCount fetched = userCountDB.getLatestActive();
-        assertEquals(userCount, fetched);
+        UserCountCollection fetched = userCountDB.getLatestActive();
+        assertEquals(1, fetched.getUserCounts().size());
+        assertEquals(userCount, fetched.getUserCounts().iterator().next());
     }
 
     @Test
     public void testAddActiveConflictSameValues() {
-        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10).setDeltas(getDeltas(0, 0f));
+        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10);
         assertEquals(1, userCountDB.addActive(userCount));
         assertEquals(0, userCountDB.addActive(userCount));
 
-        UserCount fetched = userCountDB.getLatestActive();
-        assertEquals(userCount, fetched);
+        UserCountCollection fetched = userCountDB.getLatestActive();
+        assertEquals(1, fetched.getUserCounts().size());
+        assertEquals(userCount, fetched.getUserCounts().iterator().next());
     }
 
     @Test
     public void testAddActiveConflictDifferentValues() {
-        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10).setDeltas(getDeltas(0, 0f));
+        UserCount userCount = new UserCount().setTimestamp(now).setUsers(10);
         assertEquals(1, userCountDB.addActive(userCount));
         userCount.setUsers(12);
         assertEquals(1, userCountDB.addActive(userCount));
 
-        UserCount fetched = userCountDB.getLatestActive();
-        assertEquals(userCount, fetched);
+        UserCountCollection fetched = userCountDB.getLatestActive();
+        assertEquals(1, fetched.getUserCounts().size());
+        assertEquals(userCount, fetched.getUserCounts().iterator().next());
     }
 
     @Test

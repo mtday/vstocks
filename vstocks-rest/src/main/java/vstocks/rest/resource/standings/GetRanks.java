@@ -26,9 +26,9 @@ public class GetRanks extends BaseResource {
 
     @GET
     @Produces(APPLICATION_JSON)
-    public Results<PortfolioValueRank> getStocks(@QueryParam("pageNum") Integer pageNum,
-                                                 @QueryParam("pageSize") Integer pageSize,
-                                                 @QueryParam("sort") String sort) {
+    public Results<PortfolioValueRank> getRanks(@QueryParam("pageNum") Integer pageNum,
+                                                @QueryParam("pageSize") Integer pageSize,
+                                                @QueryParam("sort") String sort) {
         return dbFactory.getPortfolioValueRankDB().getAll(getPage(pageNum, pageSize), getSort(sort));
     }
 }

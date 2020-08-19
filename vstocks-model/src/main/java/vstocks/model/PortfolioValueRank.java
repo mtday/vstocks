@@ -1,14 +1,12 @@
 package vstocks.model;
 
 import java.time.Instant;
-import java.util.Map;
 import java.util.Objects;
 
 public class PortfolioValueRank {
     private String userId;
     private Instant timestamp;
     private long rank;
-    private Map<DeltaInterval, Delta> deltas;
 
     public PortfolioValueRank() {
     }
@@ -40,15 +38,6 @@ public class PortfolioValueRank {
         return this;
     }
 
-    public Map<DeltaInterval, Delta> getDeltas() {
-        return deltas;
-    }
-
-    public PortfolioValueRank setDeltas(Map<DeltaInterval, Delta> deltas) {
-        this.deltas = deltas;
-        return this;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -56,13 +45,12 @@ public class PortfolioValueRank {
         PortfolioValueRank that = (PortfolioValueRank) o;
         return rank == that.rank &&
                 Objects.equals(userId, that.userId) &&
-                Objects.equals(timestamp, that.timestamp) &&
-                Objects.equals(deltas, that.deltas);
+                Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, timestamp, rank, deltas);
+        return Objects.hash(userId, timestamp, rank);
     }
 
     @Override
@@ -71,7 +59,6 @@ public class PortfolioValueRank {
                 "userId='" + userId + '\'' +
                 ", timestamp=" + timestamp +
                 ", rank=" + rank +
-                ", deltas=" + deltas +
                 '}';
     }
 }

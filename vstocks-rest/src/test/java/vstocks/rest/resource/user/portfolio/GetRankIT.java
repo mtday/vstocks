@@ -6,6 +6,7 @@ import vstocks.db.UserDB;
 import vstocks.model.Delta;
 import vstocks.model.ErrorResponse;
 import vstocks.model.PortfolioValueRank;
+import vstocks.model.PortfolioValueRankCollection;
 import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
@@ -55,37 +57,22 @@ public class GetRankIT extends ResourceTest {
     }
 
     @Test
-    public void testUserPortfolioRanksNoData() {
-        UserDB userDB = mock(UserDB.class);
-        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
-
-        PortfolioValueRankDB portfolioValueRankDB = mock(PortfolioValueRankDB.class);
-        when(portfolioValueRankDB.getLatest(eq(getUser().getId()))).thenReturn(empty());
-        when(getDBFactory().getPortfolioValueRankDB()).thenReturn(portfolioValueRankDB);
-
-        when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
-
-        Response response = target("/user/portfolio/rank").request().header(AUTHORIZATION, "Bearer token").get();
-
-        assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
-        assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
-
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
-        assertEquals(NOT_FOUND.getStatusCode(), errorResponse.getStatus());
-        assertEquals("No portfolio rank found", errorResponse.getMessage());
-    }
-
-    @Test
     public void testUserPortfolioRanksWithData() {
         UserDB userDB = mock(UserDB.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getDBFactory().getUserDB()).thenReturn(userDB);
 
-        PortfolioValueRank portfolioValueRank = new PortfolioValueRank()
+        PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank()
                 .setUserId(getUser().getId())
                 .setRank(10)
-                .setTimestamp(Instant.now().minusSeconds(10).truncatedTo(SECONDS))
+                .setTimestamp(Instant.now().minusSeconds(10).truncatedTo(SECONDS));
+        PortfolioValueRank portfolioValueRank2 = new PortfolioValueRank()
+                .setUserId(getUser().getId())
+                .setRank(10)
+                .setTimestamp(Instant.now().minusSeconds(10).truncatedTo(SECONDS));
+
+        PortfolioValueRankCollection collection = new PortfolioValueRankCollection()
+                .setRanks(asList(portfolioValueRank1, portfolioValueRank2))
                 .setDeltas(new TreeMap<>(Map.of(
                         HOUR6, new Delta().setInterval(HOUR6).setChange(5).setPercent(5.25f),
                         HOUR12, new Delta().setInterval(HOUR12).setChange(5).setPercent(5.25f),
@@ -93,7 +80,7 @@ public class GetRankIT extends ResourceTest {
                 )));
 
         PortfolioValueRankDB portfolioValueRankDB = mock(PortfolioValueRankDB.class);
-        when(portfolioValueRankDB.getLatest(eq(getUser().getId()))).thenReturn(Optional.of(portfolioValueRank));
+        when(portfolioValueRankDB.getLatest(eq(getUser().getId()))).thenReturn(collection);
         when(getDBFactory().getPortfolioValueRankDB()).thenReturn(portfolioValueRankDB);
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
@@ -103,11 +90,6 @@ public class GetRankIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        PortfolioValueRank rank = response.readEntity(PortfolioValueRank.class);
-
-        assertEquals(portfolioValueRank.getUserId(), rank.getUserId());
-        assertEquals(portfolioValueRank.getRank(), rank.getRank());
-        assertEquals(portfolioValueRank.getTimestamp(), rank.getTimestamp());
-        assertEquals(portfolioValueRank.getDeltas(), rank.getDeltas());
+        assertEquals(collection, response.readEntity(PortfolioValueRankCollection.class));
     }
 }

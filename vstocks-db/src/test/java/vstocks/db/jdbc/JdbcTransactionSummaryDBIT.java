@@ -89,7 +89,6 @@ public class JdbcTransactionSummaryDBIT {
         assertEquals(Market.values().length, transactionSummary.getTransactions().size());
         assertEquals(0, transactionSummary.getTransactions().values().stream().mapToLong(l -> l).sum());
         assertEquals(0, transactionSummary.getTotal());
-        assertNull(transactionSummary.getDeltas());
     }
 
     @Test
@@ -106,16 +105,12 @@ public class JdbcTransactionSummaryDBIT {
         assertEquals(Market.values().length, fetched.getTransactions().size());
         assertEquals(2, fetched.getTransactions().values().stream().mapToLong(l -> l).sum());
         assertEquals(2, fetched.getTotal());
-        assertNull(fetched.getDeltas());
     }
 
     @Test
     public void testGetLatestMissing() {
-        TransactionSummary fetched = transactionSummaryDB.getLatest();
-        assertNotNull(fetched.getTimestamp());
-        assertEquals(Market.values().length, fetched.getTransactions().size());
-        assertEquals(0, fetched.getTransactions().values().stream().mapToLong(l -> l).sum());
-        assertEquals(0, fetched.getTotal());
+        TransactionSummaryCollection fetched = transactionSummaryDB.getLatest();
+        assertTrue(fetched.getSummaries().isEmpty());
         assertEquals(getDeltas(0, 0f), fetched.getDeltas());
     }
 
@@ -124,11 +119,13 @@ public class JdbcTransactionSummaryDBIT {
         Map<Market, Long> transactions = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> transactions.put(market, 10L));
 
-        TransactionSummary transactionSummary = new TransactionSummary().setTimestamp(now).setTransactions(transactions).setTotal(60).setDeltas(getDeltas(0, 0f));
+        TransactionSummary transactionSummary = new TransactionSummary().setTimestamp(now).setTransactions(transactions).setTotal(60);
         assertEquals(1, transactionSummaryDB.add(transactionSummary));
 
-        TransactionSummary fetched = transactionSummaryDB.getLatest();
-        assertEquals(transactionSummary, fetched);
+        TransactionSummaryCollection fetched = transactionSummaryDB.getLatest();
+        assertEquals(1, fetched.getSummaries().size());
+        assertEquals(transactionSummary, fetched.getSummaries().iterator().next());
+        assertEquals(getDeltas(0, 0f), fetched.getDeltas());
     }
 
     @Test
@@ -136,15 +133,19 @@ public class JdbcTransactionSummaryDBIT {
         Map<Market, Long> transactions = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> transactions.put(market, 10L));
 
-        TransactionSummary transactionSummary1 = new TransactionSummary().setTimestamp(now).setTransactions(transactions).setTotal(60).setDeltas(getDeltas(4, 7.1428576f));
+        TransactionSummary transactionSummary1 = new TransactionSummary().setTimestamp(now).setTransactions(transactions).setTotal(60);
         TransactionSummary transactionSummary2 = new TransactionSummary().setTimestamp(now.minusSeconds(10)).setTransactions(transactions).setTotal(58);
         TransactionSummary transactionSummary3 = new TransactionSummary().setTimestamp(now.minusSeconds(20)).setTransactions(transactions).setTotal(56);
         assertEquals(1, transactionSummaryDB.add(transactionSummary1));
         assertEquals(1, transactionSummaryDB.add(transactionSummary2));
         assertEquals(1, transactionSummaryDB.add(transactionSummary3));
 
-        TransactionSummary fetched = transactionSummaryDB.getLatest();
-        assertEquals(transactionSummary1, fetched);
+        TransactionSummaryCollection fetched = transactionSummaryDB.getLatest();
+        assertEquals(3, fetched.getSummaries().size());
+        assertEquals(transactionSummary1, fetched.getSummaries().get(0));
+        assertEquals(transactionSummary2, fetched.getSummaries().get(1));
+        assertEquals(transactionSummary3, fetched.getSummaries().get(2));
+        assertEquals(getDeltas(4, 7.1428576f), fetched.getDeltas());
     }
 
     @Test
@@ -200,12 +201,14 @@ public class JdbcTransactionSummaryDBIT {
         Map<Market, Long> transactions = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> transactions.put(market, 10L));
 
-        TransactionSummary transactionSummary = new TransactionSummary().setTimestamp(now).setTransactions(transactions).setTotal(60).setDeltas(getDeltas(0, 0f));
+        TransactionSummary transactionSummary = new TransactionSummary().setTimestamp(now).setTransactions(transactions).setTotal(60);
         assertEquals(1, transactionSummaryDB.add(transactionSummary));
         assertEquals(0, transactionSummaryDB.add(transactionSummary));
 
-        TransactionSummary fetched = transactionSummaryDB.getLatest();
-        assertEquals(transactionSummary, fetched);
+        Results<TransactionSummary> results = transactionSummaryDB.getAll(new Page(), emptySet());
+        assertEquals(1, results.getTotal());
+        assertEquals(1, results.getResults().size());
+        assertEquals(transactionSummary, results.getResults().iterator().next());
     }
 
     @Test
@@ -213,13 +216,15 @@ public class JdbcTransactionSummaryDBIT {
         Map<Market, Long> transactions = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> transactions.put(market, 10L));
 
-        TransactionSummary transactionSummary = new TransactionSummary().setTimestamp(now).setTransactions(transactions).setTotal(60).setDeltas(getDeltas(0, 0f));
+        TransactionSummary transactionSummary = new TransactionSummary().setTimestamp(now).setTransactions(transactions).setTotal(60);
         assertEquals(1, transactionSummaryDB.add(transactionSummary));
         transactionSummary.setTotal(1012);
         assertEquals(1, transactionSummaryDB.add(transactionSummary));
 
-        TransactionSummary fetched = transactionSummaryDB.getLatest();
-        assertEquals(transactionSummary, fetched);
+        Results<TransactionSummary> results = transactionSummaryDB.getAll(new Page(), emptySet());
+        assertEquals(1, results.getTotal());
+        assertEquals(1, results.getResults().size());
+        assertEquals(transactionSummary, results.getResults().iterator().next());
     }
 
     @Test

@@ -78,24 +78,16 @@ public class PortfolioValueSummaryTable extends BaseTable {
         return getOne(connection, ROW_MAPPER, sql).orElse(null); // there will always be a result
     }
 
-    public PortfolioValueSummary getLatest(Connection connection) {
+    public PortfolioValueSummaryCollection getLatest(Connection connection) {
         Instant earliest = DeltaInterval.values()[DeltaInterval.values().length - 1].getEarliest();
 
-        List<PortfolioValueSummary> values = new ArrayList<>();
+        List<PortfolioValueSummary> summaries = new ArrayList<>();
         String sql = "SELECT * FROM portfolio_value_summaries WHERE timestamp >= ? ORDER BY timestamp DESC";
-        consume(connection, ROW_MAPPER, values::add, sql, earliest);
+        consume(connection, ROW_MAPPER, summaries::add, sql, earliest);
 
-        PortfolioValueSummary portfolioValueSummary = values.stream().findFirst().orElseGet(() -> {
-            Map<Market, Long> marketValues = new TreeMap<>();
-            Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 0L));
-            return new PortfolioValueSummary()
-                    .setTimestamp(Instant.now().truncatedTo(SECONDS))
-                    .setCredits(0)
-                    .setMarketValues(marketValues)
-                    .setTotal(0);
-        });
-        portfolioValueSummary.setDeltas(Delta.getDeltas(values, PortfolioValueSummary::getTimestamp, PortfolioValueSummary::getTotal));
-        return portfolioValueSummary;
+        return new PortfolioValueSummaryCollection()
+                .setSummaries(summaries)
+                .setDeltas(Delta.getDeltas(summaries, PortfolioValueSummary::getTimestamp, PortfolioValueSummary::getTotal));
     }
 
     public Results<PortfolioValueSummary> getAll(Connection connection, Page page, Set<Sort> sort) {

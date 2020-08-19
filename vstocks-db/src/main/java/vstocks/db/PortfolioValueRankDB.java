@@ -1,20 +1,14 @@
 package vstocks.db;
 
-import vstocks.model.Page;
-import vstocks.model.PortfolioValueRank;
-import vstocks.model.Results;
-import vstocks.model.Sort;
+import vstocks.model.*;
 
 import java.time.Instant;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
 public interface PortfolioValueRankDB {
-    Optional<PortfolioValueRank> getLatest(String userId);
-
-    Results<PortfolioValueRank> getLatest(Collection<String> userIds, Page page, Set<Sort> sort);
+    PortfolioValueRankCollection getLatest(String userId);
 
     Results<PortfolioValueRank> getAll(Page page, Set<Sort> sort);
 

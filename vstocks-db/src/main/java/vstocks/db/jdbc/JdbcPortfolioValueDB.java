@@ -2,15 +2,11 @@ package vstocks.db.jdbc;
 
 import vstocks.db.PortfolioValueDB;
 import vstocks.db.jdbc.table.PortfolioValueTable;
-import vstocks.model.Page;
-import vstocks.model.PortfolioValue;
-import vstocks.model.Results;
-import vstocks.model.Sort;
+import vstocks.model.*;
 
 import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -32,13 +28,8 @@ public class JdbcPortfolioValueDB extends BaseService implements PortfolioValueD
     }
 
     @Override
-    public Optional<PortfolioValue> getLatest(String userId) {
+    public PortfolioValueCollection getLatest(String userId) {
         return withConnection(conn -> portfolioValueTable.getLatest(conn, userId));
-    }
-
-    @Override
-    public Results<PortfolioValue> getLatest(Collection<String> userIds, Page page, Set<Sort> sort) {
-        return withConnection(conn -> portfolioValueTable.getLatest(conn, userIds, page, sort));
     }
 
     @Override

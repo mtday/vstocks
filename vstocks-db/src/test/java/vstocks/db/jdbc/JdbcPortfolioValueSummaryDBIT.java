@@ -112,7 +112,6 @@ public class JdbcPortfolioValueSummaryDBIT {
         assertEquals(Market.values().length, portfolioValueSummary.getMarketValues().size());
         assertEquals(0, portfolioValueSummary.getMarketValues().values().stream().mapToLong(l -> l).sum());
         assertEquals(0, portfolioValueSummary.getTotal());
-        assertNull(portfolioValueSummary.getDeltas());
     }
 
     @Test
@@ -122,7 +121,6 @@ public class JdbcPortfolioValueSummaryDBIT {
         assertEquals(Market.values().length, portfolioValueSummary.getMarketValues().size());
         assertEquals(0, portfolioValueSummary.getMarketValues().values().stream().mapToLong(l -> l).sum());
         assertEquals(0, portfolioValueSummary.getTotal());
-        assertNull(portfolioValueSummary.getDeltas());
     }
 
     @Test
@@ -138,7 +136,6 @@ public class JdbcPortfolioValueSummaryDBIT {
         assertEquals(Market.values().length, fetched.getMarketValues().size());
         assertEquals(0, fetched.getMarketValues().values().stream().mapToLong(l -> l).sum());
         assertEquals(userCredits.getCredits(), fetched.getTotal());
-        assertNull(fetched.getDeltas());
     }
 
     @Test
@@ -158,7 +155,6 @@ public class JdbcPortfolioValueSummaryDBIT {
         assertTrue(marketValues.containsKey(TWITTER));
         assertEquals(twitterStockPrice1.getPrice() * userStock.getShares(), (long) marketValues.get(TWITTER));
         assertEquals(userCredits.getCredits() + twitterStockPrice1.getPrice() * userStock.getShares(), fetched.getTotal());
-        assertNull(fetched.getDeltas());
     }
 
     @Test
@@ -188,17 +184,12 @@ public class JdbcPortfolioValueSummaryDBIT {
                 + twitterStockPrice1.getPrice() * userStock1.getShares()
                 + youtubeStockPrice1.getPrice() * userStock2.getShares()
                 + youtubeStockPrice2.getPrice() * userStock3.getShares(), fetched.getTotal());
-        assertNull(fetched.getDeltas());
     }
 
     @Test
     public void testGetLatestMissing() {
-        PortfolioValueSummary fetched = portfolioValueSummaryDB.getLatest();
-        assertNotNull(fetched.getTimestamp());
-        assertEquals(0, fetched.getCredits());
-        assertEquals(Market.values().length, fetched.getMarketValues().size());
-        assertEquals(0, fetched.getMarketValues().values().stream().mapToLong(l -> l).sum());
-        assertEquals(0, fetched.getTotal());
+        PortfolioValueSummaryCollection fetched = portfolioValueSummaryDB.getLatest();
+        assertTrue(fetched.getSummaries().isEmpty());
         assertEquals(getDeltas(0, 0f), fetched.getDeltas());
     }
 
@@ -207,11 +198,13 @@ public class JdbcPortfolioValueSummaryDBIT {
         Map<Market, Long> marketValues = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 10L));
 
-        PortfolioValueSummary portfolioValueSummary = new PortfolioValueSummary().setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60).setDeltas(getDeltas(0, 0f));
+        PortfolioValueSummary portfolioValueSummary = new PortfolioValueSummary().setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60);
         assertEquals(1, portfolioValueSummaryDB.add(portfolioValueSummary));
 
-        PortfolioValueSummary fetched = portfolioValueSummaryDB.getLatest();
-        assertEquals(portfolioValueSummary, fetched);
+        PortfolioValueSummaryCollection fetched = portfolioValueSummaryDB.getLatest();
+        assertEquals(1, fetched.getSummaries().size());
+        assertEquals(portfolioValueSummary, fetched.getSummaries().iterator().next());
+        assertEquals(getDeltas(0, 0f), fetched.getDeltas());
     }
 
     @Test
@@ -219,15 +212,19 @@ public class JdbcPortfolioValueSummaryDBIT {
         Map<Market, Long> marketValues = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 10L));
 
-        PortfolioValueSummary portfolioValueSummary1 = new PortfolioValueSummary().setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60).setDeltas(getDeltas(4, 7.1428576f));
+        PortfolioValueSummary portfolioValueSummary1 = new PortfolioValueSummary().setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60);
         PortfolioValueSummary portfolioValueSummary2 = new PortfolioValueSummary().setTimestamp(now.minusSeconds(10)).setCredits(8).setMarketValues(marketValues).setTotal(58);
         PortfolioValueSummary portfolioValueSummary3 = new PortfolioValueSummary().setTimestamp(now.minusSeconds(20)).setCredits(6).setMarketValues(marketValues).setTotal(56);
         assertEquals(1, portfolioValueSummaryDB.add(portfolioValueSummary1));
         assertEquals(1, portfolioValueSummaryDB.add(portfolioValueSummary2));
         assertEquals(1, portfolioValueSummaryDB.add(portfolioValueSummary3));
 
-        PortfolioValueSummary fetched = portfolioValueSummaryDB.getLatest();
-        assertEquals(portfolioValueSummary1, fetched);
+        PortfolioValueSummaryCollection fetched = portfolioValueSummaryDB.getLatest();
+        assertEquals(3, fetched.getSummaries().size());
+        assertEquals(portfolioValueSummary1, fetched.getSummaries().get(0));
+        assertEquals(portfolioValueSummary2, fetched.getSummaries().get(1));
+        assertEquals(portfolioValueSummary3, fetched.getSummaries().get(2));
+        assertEquals(getDeltas(4, 7.1428576f), fetched.getDeltas());
     }
 
     @Test
@@ -283,12 +280,14 @@ public class JdbcPortfolioValueSummaryDBIT {
         Map<Market, Long> marketValues = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 10L));
 
-        PortfolioValueSummary portfolioValueSummary = new PortfolioValueSummary().setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60).setDeltas(getDeltas(0, 0f));
+        PortfolioValueSummary portfolioValueSummary = new PortfolioValueSummary().setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60);
         assertEquals(1, portfolioValueSummaryDB.add(portfolioValueSummary));
         assertEquals(0, portfolioValueSummaryDB.add(portfolioValueSummary));
 
-        PortfolioValueSummary fetched = portfolioValueSummaryDB.getLatest();
-        assertEquals(portfolioValueSummary, fetched);
+        PortfolioValueSummaryCollection fetched = portfolioValueSummaryDB.getLatest();
+        assertEquals(1, fetched.getSummaries().size());
+        assertEquals(portfolioValueSummary, fetched.getSummaries().iterator().next());
+        assertEquals(getDeltas(0, 0f), fetched.getDeltas());
     }
 
     @Test
@@ -296,14 +295,16 @@ public class JdbcPortfolioValueSummaryDBIT {
         Map<Market, Long> marketValues = new TreeMap<>();
         Arrays.stream(Market.values()).forEach(market -> marketValues.put(market, 10L));
 
-        PortfolioValueSummary portfolioValueSummary = new PortfolioValueSummary().setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60).setDeltas(getDeltas(0, 0f));
+        PortfolioValueSummary portfolioValueSummary = new PortfolioValueSummary().setTimestamp(now).setCredits(10).setMarketValues(marketValues).setTotal(60);
         assertEquals(1, portfolioValueSummaryDB.add(portfolioValueSummary));
         portfolioValueSummary.setCredits(12);
         portfolioValueSummary.setTotal(1012);
         assertEquals(1, portfolioValueSummaryDB.add(portfolioValueSummary));
 
-        PortfolioValueSummary fetched = portfolioValueSummaryDB.getLatest();
-        assertEquals(portfolioValueSummary, fetched);
+        PortfolioValueSummaryCollection fetched = portfolioValueSummaryDB.getLatest();
+        assertEquals(1, fetched.getSummaries().size());
+        assertEquals(portfolioValueSummary, fetched.getSummaries().iterator().next());
+        assertEquals(getDeltas(0, 0f), fetched.getDeltas());
     }
 
     @Test
@@ -320,9 +321,9 @@ public class JdbcPortfolioValueSummaryDBIT {
         assertEquals(1, portfolioValueSummaryDB.add(portfolioValueSummary3));
         assertEquals(2, portfolioValueSummaryDB.ageOff(now.minusSeconds(5)));
 
-        Results<PortfolioValueSummary> results = portfolioValueSummaryDB.getAll(new Page(), emptySet());
-        assertEquals(1, results.getTotal());
-        assertEquals(1, results.getResults().size());
-        assertEquals(portfolioValueSummary1, results.getResults().iterator().next());
+        PortfolioValueSummaryCollection fetched = portfolioValueSummaryDB.getLatest();
+        assertEquals(1, fetched.getSummaries().size());
+        assertEquals(portfolioValueSummary1, fetched.getSummaries().iterator().next());
+        assertEquals(getDeltas(0, 0f), fetched.getDeltas());
     }
 }

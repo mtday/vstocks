@@ -45,24 +45,23 @@ public class UserCountTable extends BaseTable {
         return getOne(connection, ROW_MAPPER, sql, oneDayAgo).orElse(null); // there will always be a result
     }
 
-    private UserCount getTotal(Connection connection, String table) {
+    private UserCountCollection getTotal(Connection connection, String table) {
         Instant earliest = DeltaInterval.values()[DeltaInterval.values().length - 1].getEarliest();
 
-        List<UserCount> values = new ArrayList<>();
+        List<UserCount> userCounts = new ArrayList<>();
         String sql = format("SELECT * FROM %s WHERE timestamp >= ? ORDER BY timestamp DESC", table);
-        consume(connection, ROW_MAPPER, values::add, sql, earliest);
+        consume(connection, ROW_MAPPER, userCounts::add, sql, earliest);
 
-        UserCount userCount = values.stream().findFirst().orElseGet(() ->
-                new UserCount().setTimestamp(Instant.now().truncatedTo(SECONDS)).setUsers(0));
-        userCount.setDeltas(Delta.getDeltas(values, UserCount::getTimestamp, UserCount::getUsers));
-        return userCount;
+        return new UserCountCollection()
+                .setUserCounts(userCounts)
+                .setDeltas(Delta.getDeltas(userCounts, UserCount::getTimestamp, UserCount::getUsers));
     }
 
-    public UserCount getLatestTotal(Connection connection) {
+    public UserCountCollection getLatestTotal(Connection connection) {
         return getTotal(connection, "total_user_counts");
     }
 
-    public UserCount getLatestActive(Connection connection) {
+    public UserCountCollection getLatestActive(Connection connection) {
         return getTotal(connection, "active_user_counts");
     }
 

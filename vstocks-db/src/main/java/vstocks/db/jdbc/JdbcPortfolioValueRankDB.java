@@ -2,15 +2,11 @@ package vstocks.db.jdbc;
 
 import vstocks.db.PortfolioValueRankDB;
 import vstocks.db.jdbc.table.PortfolioValueRankTable;
-import vstocks.model.Page;
-import vstocks.model.PortfolioValueRank;
-import vstocks.model.Results;
-import vstocks.model.Sort;
+import vstocks.model.*;
 
 import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -22,13 +18,8 @@ public class JdbcPortfolioValueRankDB extends BaseService implements PortfolioVa
     }
 
     @Override
-    public Optional<PortfolioValueRank> getLatest(String userId) {
+    public PortfolioValueRankCollection getLatest(String userId) {
         return withConnection(conn -> portfolioValueRankTable.getLatest(conn, userId));
-    }
-
-    @Override
-    public Results<PortfolioValueRank> getLatest(Collection<String> userIds, Page page, Set<Sort> sort) {
-        return withConnection(conn -> portfolioValueRankTable.getLatest(conn, userIds, page, sort));
     }
 
     @Override

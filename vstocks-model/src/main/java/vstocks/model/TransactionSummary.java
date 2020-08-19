@@ -8,7 +8,6 @@ public class TransactionSummary {
     private Instant timestamp;
     private Map<Market, Long> transactions;
     private long total;
-    private Map<DeltaInterval, Delta> deltas;
 
     public TransactionSummary() {
     }
@@ -40,15 +39,6 @@ public class TransactionSummary {
         return this;
     }
 
-    public Map<DeltaInterval, Delta> getDeltas() {
-        return deltas;
-    }
-
-    public TransactionSummary setDeltas(Map<DeltaInterval, Delta> deltas) {
-        this.deltas = deltas;
-        return this;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -56,13 +46,12 @@ public class TransactionSummary {
         TransactionSummary that = (TransactionSummary) o;
         return total == that.total &&
                 Objects.equals(timestamp, that.timestamp) &&
-                Objects.equals(transactions, that.transactions) &&
-                Objects.equals(deltas, that.deltas);
+                Objects.equals(transactions, that.transactions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(timestamp, transactions, total, deltas);
+        return Objects.hash(timestamp, transactions, total);
     }
 
     @Override
@@ -71,7 +60,6 @@ public class TransactionSummary {
                 "timestamp=" + timestamp +
                 ", transactions=" + transactions +
                 ", total=" + total +
-                ", deltas=" + deltas +
                 '}';
     }
 }

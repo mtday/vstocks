@@ -6,6 +6,7 @@ import vstocks.db.UserDB;
 import vstocks.model.Delta;
 import vstocks.model.ErrorResponse;
 import vstocks.model.PortfolioValue;
+import vstocks.model.PortfolioValueCollection;
 import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
@@ -57,39 +59,26 @@ public class GetValueIT extends ResourceTest {
     }
 
     @Test
-    public void testUserPortfolioValuesNoData() {
-        UserDB userDB = mock(UserDB.class);
-        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
-
-        PortfolioValueDB portfolioValueDB = mock(PortfolioValueDB.class);
-        when(portfolioValueDB.getLatest(eq(getUser().getId()))).thenReturn(empty());
-        when(getDBFactory().getPortfolioValueDB()).thenReturn(portfolioValueDB);
-
-        when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
-
-        Response response = target("/user/portfolio/value").request().header(AUTHORIZATION, "Bearer token").get();
-
-        assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
-        assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
-
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
-        assertEquals(NOT_FOUND.getStatusCode(), errorResponse.getStatus());
-        assertEquals("No portfolio value found", errorResponse.getMessage());
-    }
-
-    @Test
     public void testUserPortfolioValuesWithData() {
         UserDB userDB = mock(UserDB.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getDBFactory().getUserDB()).thenReturn(userDB);
 
-        PortfolioValue portfolioValue = new PortfolioValue()
+        PortfolioValue portfolioValue1 = new PortfolioValue()
                 .setUserId(getUser().getId())
                 .setTimestamp(Instant.now().minusSeconds(10).truncatedTo(SECONDS))
                 .setCredits(10_000)
                 .setMarketValues(Map.of(TWITTER, 1_000L, YOUTUBE, 2_000L))
-                .setTotal(13_000)
+                .setTotal(13_000);
+        PortfolioValue portfolioValue2 = new PortfolioValue()
+                .setUserId(getUser().getId())
+                .setTimestamp(Instant.now().minusSeconds(10).truncatedTo(SECONDS))
+                .setCredits(10_000)
+                .setMarketValues(Map.of(TWITTER, 1_000L, YOUTUBE, 2_000L))
+                .setTotal(13_000);
+
+        PortfolioValueCollection collection = new PortfolioValueCollection()
+                .setValues(asList(portfolioValue1, portfolioValue2))
                 .setDeltas(new TreeMap<>(Map.of(
                         HOUR6, new Delta().setInterval(HOUR6).setChange(5).setPercent(5.25f),
                         HOUR12, new Delta().setInterval(HOUR12).setChange(5).setPercent(5.25f),
@@ -97,7 +86,7 @@ public class GetValueIT extends ResourceTest {
                 )));
 
         PortfolioValueDB portfolioValueDB = mock(PortfolioValueDB.class);
-        when(portfolioValueDB.getLatest(eq(getUser().getId()))).thenReturn(Optional.of(portfolioValue));
+        when(portfolioValueDB.getLatest(eq(getUser().getId()))).thenReturn(collection);
         when(getDBFactory().getPortfolioValueDB()).thenReturn(portfolioValueDB);
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
@@ -107,13 +96,6 @@ public class GetValueIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        PortfolioValue value = response.readEntity(PortfolioValue.class);
-
-        assertEquals(portfolioValue.getUserId(), value.getUserId());
-        assertEquals(portfolioValue.getCredits(), value.getCredits());
-        assertEquals(portfolioValue.getMarketValues(), value.getMarketValues());
-        assertEquals(portfolioValue.getTotal(), value.getTotal());
-        assertEquals(portfolioValue.getTimestamp(), value.getTimestamp());
-        assertEquals(portfolioValue.getDeltas(), value.getDeltas());
+        assertEquals(collection, response.readEntity(PortfolioValueCollection.class));
     }
 }

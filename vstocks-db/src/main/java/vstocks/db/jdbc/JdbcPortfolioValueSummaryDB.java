@@ -21,7 +21,7 @@ public class JdbcPortfolioValueSummaryDB extends BaseService implements Portfoli
     }
 
     @Override
-    public PortfolioValueSummary getLatest() {
+    public PortfolioValueSummaryCollection getLatest() {
         return withConnection(portfolioValueSummaryTable::getLatest);
     }
 

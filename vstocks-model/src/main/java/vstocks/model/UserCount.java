@@ -1,13 +1,11 @@
 package vstocks.model;
 
 import java.time.Instant;
-import java.util.Map;
 import java.util.Objects;
 
 public class UserCount {
     private Instant timestamp;
     private long users;
-    private Map<DeltaInterval, Delta> deltas;
 
     public UserCount() {
     }
@@ -30,28 +28,17 @@ public class UserCount {
         return this;
     }
 
-    public Map<DeltaInterval, Delta> getDeltas() {
-        return deltas;
-    }
-
-    public UserCount setDeltas(Map<DeltaInterval, Delta> deltas) {
-        this.deltas = deltas;
-        return this;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserCount that = (UserCount) o;
-        return users == that.users &&
-                Objects.equals(timestamp, that.timestamp) &&
-                Objects.equals(deltas, that.deltas);
+        return users == that.users && Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(timestamp, users, deltas);
+        return Objects.hash(timestamp, users);
     }
 
     @Override
@@ -59,7 +46,6 @@ public class UserCount {
         return "UserCount{" +
                 "timestamp=" + timestamp +
                 ", users=" + users +
-                ", deltas=" + deltas +
                 '}';
     }
 }

@@ -10,9 +10,9 @@ public interface UserCountDB {
 
     UserCount generateActive();
 
-    UserCount getLatestTotal();
+    UserCountCollection getLatestTotal();
 
-    UserCount getLatestActive();
+    UserCountCollection getLatestActive();
 
     Results<UserCount> getAllTotal(Page page, Set<Sort> sort);
 

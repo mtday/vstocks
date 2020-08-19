@@ -70,23 +70,16 @@ public class TransactionSummaryTable extends BaseTable {
         return getOne(connection, ROW_MAPPER, sql, oneDayAgo).orElse(null); // there will always be a result
     }
 
-    public TransactionSummary getLatest(Connection connection) {
+    public TransactionSummaryCollection getLatest(Connection connection) {
         Instant earliest = DeltaInterval.values()[DeltaInterval.values().length - 1].getEarliest();
 
-        List<TransactionSummary> values = new ArrayList<>();
+        List<TransactionSummary> summaries = new ArrayList<>();
         String sql = "SELECT * FROM transaction_summaries WHERE timestamp >= ? ORDER BY timestamp DESC";
-        consume(connection, ROW_MAPPER, values::add, sql, earliest);
+        consume(connection, ROW_MAPPER, summaries::add, sql, earliest);
 
-        TransactionSummary transactionSummary = values.stream().findFirst().orElseGet(() -> {
-            Map<Market, Long> transactions = new TreeMap<>();
-            Arrays.stream(Market.values()).forEach(market -> transactions.put(market, 0L));
-            return new TransactionSummary()
-                    .setTimestamp(Instant.now().truncatedTo(SECONDS))
-                    .setTransactions(transactions)
-                    .setTotal(0);
-        });
-        transactionSummary.setDeltas(Delta.getDeltas(values, TransactionSummary::getTimestamp, TransactionSummary::getTotal));
-        return transactionSummary;
+        return new TransactionSummaryCollection()
+                .setSummaries(summaries)
+                .setDeltas(Delta.getDeltas(summaries, TransactionSummary::getTimestamp, TransactionSummary::getTotal));
     }
 
     public Results<TransactionSummary> getAll(Connection connection, Page page, Set<Sort> sort) {

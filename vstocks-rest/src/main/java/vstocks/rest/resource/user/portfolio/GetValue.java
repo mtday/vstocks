@@ -1,15 +1,13 @@
 package vstocks.rest.resource.user.portfolio;
 
 import vstocks.db.DBFactory;
-import vstocks.model.PortfolioValue;
-import vstocks.model.User;
+import vstocks.model.PortfolioValueCollection;
 import vstocks.rest.resource.BaseResource;
 import vstocks.rest.security.JwtTokenRequired;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -30,9 +28,7 @@ public class GetValue extends BaseResource {
     @GET
     @Produces(APPLICATION_JSON)
     @JwtTokenRequired
-    public PortfolioValue getPortfolio(@Context SecurityContext securityContext) {
-        User user = getUser(securityContext);
-        return dbFactory.getPortfolioValueDB().getLatest(user.getId())
-                .orElseThrow(() -> new NotFoundException("No portfolio value found"));
+    public PortfolioValueCollection getPortfolio(@Context SecurityContext securityContext) {
+        return dbFactory.getPortfolioValueDB().getLatest(getUser(securityContext).getId());
     }
 }

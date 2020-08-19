@@ -10,7 +10,6 @@ public class PortfolioValue {
     private long credits;
     private Map<Market, Long> marketValues;
     private long total;
-    private Map<DeltaInterval, Delta> deltas;
 
     public PortfolioValue() {
     }
@@ -60,15 +59,6 @@ public class PortfolioValue {
         return this;
     }
 
-    public Map<DeltaInterval, Delta> getDeltas() {
-        return deltas;
-    }
-
-    public PortfolioValue setDeltas(Map<DeltaInterval, Delta> deltas) {
-        this.deltas = deltas;
-        return this;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -78,13 +68,12 @@ public class PortfolioValue {
                 total == that.total &&
                 Objects.equals(userId, that.userId) &&
                 Objects.equals(timestamp, that.timestamp) &&
-                Objects.equals(marketValues, that.marketValues) &&
-                Objects.equals(deltas, that.deltas);
+                Objects.equals(marketValues, that.marketValues);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, timestamp, credits, marketValues, total, deltas);
+        return Objects.hash(userId, timestamp, credits, marketValues, total);
     }
 
     @Override
@@ -95,7 +84,6 @@ public class PortfolioValue {
                 ", credits=" + credits +
                 ", marketValues=" + marketValues +
                 ", total=" + total +
-                ", deltas=" + deltas +
                 '}';
     }
 }

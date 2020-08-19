@@ -2,10 +2,7 @@ package vstocks.db.jdbc;
 
 import vstocks.db.TransactionSummaryDB;
 import vstocks.db.jdbc.table.TransactionSummaryTable;
-import vstocks.model.Page;
-import vstocks.model.TransactionSummary;
-import vstocks.model.Results;
-import vstocks.model.Sort;
+import vstocks.model.*;
 
 import javax.sql.DataSource;
 import java.time.Instant;
@@ -24,7 +21,7 @@ public class JdbcTransactionSummaryDB extends BaseService implements Transaction
     }
 
     @Override
-    public TransactionSummary getLatest() {
+    public TransactionSummaryCollection getLatest() {
         return withConnection(transactionSummaryTable::getLatest);
     }
 

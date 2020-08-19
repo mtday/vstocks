@@ -1,7 +1,7 @@
 package vstocks.rest.resource.system;
 
 import vstocks.db.DBFactory;
-import vstocks.model.PortfolioValueSummary;
+import vstocks.model.PortfolioValueSummaryCollection;
 import vstocks.rest.resource.BaseResource;
 
 import javax.inject.Inject;
@@ -24,7 +24,7 @@ public class GetValueSummary extends BaseResource {
 
     @GET
     @Produces(APPLICATION_JSON)
-    public PortfolioValueSummary getValueSummary() {
+    public PortfolioValueSummaryCollection getValueSummary() {
         return dbFactory.getPortfolioValueSummaryDB().getLatest();
     }
 }

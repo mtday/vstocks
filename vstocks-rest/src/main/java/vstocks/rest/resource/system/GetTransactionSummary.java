@@ -1,7 +1,7 @@
 package vstocks.rest.resource.system;
 
 import vstocks.db.DBFactory;
-import vstocks.model.TransactionSummary;
+import vstocks.model.TransactionSummaryCollection;
 import vstocks.rest.resource.BaseResource;
 
 import javax.inject.Inject;
@@ -24,7 +24,7 @@ public class GetTransactionSummary extends BaseResource {
 
     @GET
     @Produces(APPLICATION_JSON)
-    public TransactionSummary getTransactionSummary() {
+    public TransactionSummaryCollection getTransactionSummary() {
         return dbFactory.getTransactionSummaryDB().getLatest();
     }
 }

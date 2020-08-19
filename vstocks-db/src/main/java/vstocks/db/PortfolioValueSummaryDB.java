@@ -8,7 +8,7 @@ import java.util.Set;
 public interface PortfolioValueSummaryDB {
     PortfolioValueSummary generate();
 
-    PortfolioValueSummary getLatest();
+    PortfolioValueSummaryCollection getLatest();
 
     Results<PortfolioValueSummary> getAll(Page page, Set<Sort> sort);
 

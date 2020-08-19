@@ -26,12 +26,12 @@ public class JdbcUserCountDB extends BaseService implements UserCountDB {
     }
 
     @Override
-    public UserCount getLatestTotal() {
+    public UserCountCollection getLatestTotal() {
         return withConnection(userCountTable::getLatestTotal);
     }
 
     @Override
-    public UserCount getLatestActive() {
+    public UserCountCollection getLatestActive() {
         return withConnection(userCountTable::getLatestActive);
     }
 

@@ -1,7 +1,7 @@
 package vstocks.rest.resource.system;
 
 import vstocks.db.DBFactory;
-import vstocks.model.UserCount;
+import vstocks.model.UserCountCollection;
 import vstocks.rest.resource.BaseResource;
 
 import javax.inject.Inject;
@@ -24,7 +24,7 @@ public class GetUserCountTotal extends BaseResource {
 
     @GET
     @Produces(APPLICATION_JSON)
-    public UserCount getTotal() {
+    public UserCountCollection getTotal() {
         return dbFactory.getUserCountDB().getLatestTotal();
     }
 }
