@@ -56,6 +56,8 @@ INSERT INTO activity_logs (id, user_id, type, timestamp, market, symbol, shares,
 ('1', 'user1', 'STOCK_BUY', '2020-01-01 00:00:00', 'TWITTER', 'realDonaldTrump', 5, 4867),
 ('2', 'user2', 'STOCK_BUY', '2020-01-01 00:00:00', 'TWITTER', 'realDonaldTrump', 1, 4867),
 ('3', 'user2', 'STOCK_BUY', '2020-01-01 00:00:00', 'TWITTER', 'POTUS', 1, 2678),
-('4', 'user2', 'STOCK_SELL', '2020-02-01 00:00:00', 'TWITTER', 'POTUS', 1, 2693)
+('4', 'user2', 'STOCK_SELL', '2020-02-01 00:00:00', 'TWITTER', 'POTUS', 1, 2693),
+('5', 'user1', 'STOCK_BUY', '2020-01-01 00:00:00', 'YOUTUBE', 'UCe02lGcO-ahAURWuxAJnjdA', 1, 1430),
+('6', 'user1', 'STOCK_BUY', '2020-02-01 00:00:00', 'YOUTUBE', 'UCe02lGcO-ahAURWuxAJnjdA', 1, 1468)
 ON CONFLICT DO NOTHING;
 

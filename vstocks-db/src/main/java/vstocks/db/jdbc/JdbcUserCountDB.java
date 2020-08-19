@@ -16,27 +16,52 @@ public class JdbcUserCountDB extends BaseService implements UserCountDB {
     }
 
     @Override
-    public UserCount generate() {
-        return withConnection(userCountTable::generate);
+    public UserCount generateTotal() {
+        return withConnection(userCountTable::generateTotal);
     }
 
     @Override
-    public UserCount getLatest() {
-        return withConnection(userCountTable::getLatest);
+    public UserCount generateActive() {
+        return withConnection(userCountTable::generateActive);
     }
 
     @Override
-    public Results<UserCount> getAll(Page page, Set<Sort> sort) {
-        return withConnection(conn -> userCountTable.getAll(conn, page, sort));
+    public UserCount getLatestTotal() {
+        return withConnection(userCountTable::getLatestTotal);
     }
 
     @Override
-    public int add(UserCount userCount) {
-        return withConnection(conn -> userCountTable.add(conn, userCount));
+    public UserCount getLatestActive() {
+        return withConnection(userCountTable::getLatestActive);
     }
 
     @Override
-    public int ageOff(Instant cutoff) {
-        return withConnection(conn -> userCountTable.ageOff(conn, cutoff));
+    public Results<UserCount> getAllTotal(Page page, Set<Sort> sort) {
+        return withConnection(conn -> userCountTable.getAllTotal(conn, page, sort));
+    }
+
+    @Override
+    public Results<UserCount> getAllActive(Page page, Set<Sort> sort) {
+        return withConnection(conn -> userCountTable.getAllActive(conn, page, sort));
+    }
+
+    @Override
+    public int addTotal(UserCount userCount) {
+        return withConnection(conn -> userCountTable.addTotal(conn, userCount));
+    }
+
+    @Override
+    public int addActive(UserCount userCount) {
+        return withConnection(conn -> userCountTable.addActive(conn, userCount));
+    }
+
+    @Override
+    public int ageOffTotal(Instant cutoff) {
+        return withConnection(conn -> userCountTable.ageOffTotal(conn, cutoff));
+    }
+
+    @Override
+    public int ageOffActive(Instant cutoff) {
+        return withConnection(conn -> userCountTable.ageOffActive(conn, cutoff));
     }
 }

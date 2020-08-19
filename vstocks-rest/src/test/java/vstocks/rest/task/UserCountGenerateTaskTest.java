@@ -29,12 +29,22 @@ public class UserCountGenerateTaskTest {
 
     @Test
     public void testRun() {
-        UserCount userCount = new UserCount().setTimestamp(Instant.now().truncatedTo(SECONDS)).setUsers(0);
+        UserCount userCountTotal = new UserCount().setTimestamp(Instant.now().truncatedTo(SECONDS)).setUsers(10);
+        UserCount userCountActive = new UserCount().setTimestamp(Instant.now().truncatedTo(SECONDS)).setUsers(5);
+
         UserCountDB userCountDB = mock(UserCountDB.class);
-        when(userCountDB.generate()).thenReturn(userCount);
-        List<UserCount> userCountsAdded = new ArrayList<>();
-        when(userCountDB.add(any())).then((Answer<Integer>) invocation -> {
-            userCountsAdded.add(invocation.getArgument(0));
+        when(userCountDB.generateTotal()).thenReturn(userCountTotal);
+        when(userCountDB.generateActive()).thenReturn(userCountActive);
+
+        List<UserCount> totalUserCountsAdded = new ArrayList<>();
+        when(userCountDB.addTotal(any())).then((Answer<Integer>) invocation -> {
+            totalUserCountsAdded.add(invocation.getArgument(0));
+            return 1;
+        });
+
+        List<UserCount> activeUserCountsAdded = new ArrayList<>();
+        when(userCountDB.addActive(any())).then((Answer<Integer>) invocation -> {
+            activeUserCountsAdded.add(invocation.getArgument(0));
             return 1;
         });
 
@@ -46,7 +56,10 @@ public class UserCountGenerateTaskTest {
 
         new UserCountGenerateTask(environment).run();
 
-        assertEquals(1, userCountsAdded.size());
-        assertEquals(userCount, userCountsAdded.iterator().next());
+        assertEquals(1, totalUserCountsAdded.size());
+        assertEquals(userCountTotal, totalUserCountsAdded.iterator().next());
+
+        assertEquals(1, activeUserCountsAdded.size());
+        assertEquals(userCountActive, activeUserCountsAdded.iterator().next());
     }
 }

@@ -47,8 +47,11 @@ public class UserCountGenerateTask implements Task {
     public void run() {
         LOGGER.info("Starting user count generation");
 
-        UserCount userCount = environment.getDBFactory().getUserCountDB().generate();
-        environment.getDBFactory().getUserCountDB().add(userCount);
+        UserCount userCountTotal = environment.getDBFactory().getUserCountDB().generateTotal();
+        environment.getDBFactory().getUserCountDB().addTotal(userCountTotal);
+
+        UserCount userCountActive = environment.getDBFactory().getUserCountDB().generateActive();
+        environment.getDBFactory().getUserCountDB().addActive(userCountActive);
 
         LOGGER.info("Completed user count generation");
     }

@@ -12,19 +12,19 @@ import javax.ws.rs.Produces;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-@Path("/system/user-count")
+@Path("/system/user-count/active")
 @Singleton
-public class GetUserCount extends BaseResource {
+public class GetUserCountActive extends BaseResource {
     private final DBFactory dbFactory;
 
     @Inject
-    public GetUserCount(DBFactory dbFactory) {
+    public GetUserCountActive(DBFactory dbFactory) {
         this.dbFactory = dbFactory;
     }
 
     @GET
     @Produces(APPLICATION_JSON)
-    public UserCount getValueSummary() {
-        return dbFactory.getUserCountDB().getLatest();
+    public UserCount getActive() {
+        return dbFactory.getUserCountDB().getLatestActive();
     }
 }

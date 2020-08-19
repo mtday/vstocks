@@ -6,13 +6,23 @@ import java.time.Instant;
 import java.util.Set;
 
 public interface UserCountDB {
-    UserCount generate();
+    UserCount generateTotal();
 
-    UserCount getLatest();
+    UserCount generateActive();
 
-    Results<UserCount> getAll(Page page, Set<Sort> sort);
+    UserCount getLatestTotal();
 
-    int add(UserCount userCount);
+    UserCount getLatestActive();
 
-    int ageOff(Instant cutoff);
+    Results<UserCount> getAllTotal(Page page, Set<Sort> sort);
+
+    Results<UserCount> getAllActive(Page page, Set<Sort> sort);
+
+    int addTotal(UserCount userCount);
+
+    int addActive(UserCount userCount);
+
+    int ageOffTotal(Instant cutoff);
+
+    int ageOffActive(Instant cutoff);
 }

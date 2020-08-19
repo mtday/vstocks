@@ -169,13 +169,24 @@ CREATE INDEX idx_user_achievements_achievement_id ON user_achievements (achievem
 CREATE INDEX idx_user_achievements_timestamp ON user_achievements (timestamp);
 
 
-CREATE TABLE user_counts (
+CREATE TABLE total_user_counts (
     timestamp          TIMESTAMP(0) NOT NULL,
     users              BIGINT       NOT NULL,
 
-    CONSTRAINT user_counts_pk PRIMARY KEY (timestamp)
+    CONSTRAINT total_user_counts_pk PRIMARY KEY (timestamp)
 );
 
-CREATE INDEX idx_user_counts_timestamp ON user_counts (timestamp);
-CREATE INDEX idx_user_counts_users ON user_counts (users);
+CREATE INDEX idx_total_user_counts_timestamp ON total_user_counts (timestamp);
+CREATE INDEX idx_total_user_counts_users ON total_user_counts (users);
+
+
+CREATE TABLE active_user_counts (
+    timestamp          TIMESTAMP(0) NOT NULL,
+    users              BIGINT       NOT NULL,
+
+    CONSTRAINT active_user_counts_pk PRIMARY KEY (timestamp)
+);
+
+CREATE INDEX idx_active_user_counts_timestamp ON active_user_counts (timestamp);
+CREATE INDEX idx_active_user_counts_users ON active_user_counts (users);
 

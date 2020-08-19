@@ -12,6 +12,7 @@ import java.util.Set;
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Collections.singleton;
+import static java.util.concurrent.TimeUnit.DAYS;
 import static vstocks.model.DatabaseField.TIMESTAMP;
 import static vstocks.model.SortDirection.DESC;
 
@@ -32,16 +33,23 @@ public class UserCountTable extends BaseTable {
         return singleton(TIMESTAMP.toSort(DESC));
     }
 
-    public UserCount generate(Connection connection) {
+    public UserCount generateTotal(Connection connection) {
         String sql = "SELECT NOW() AS timestamp, COUNT(id) AS users FROM users";
         return getOne(connection, ROW_MAPPER, sql).orElse(null); // there will always be a result
     }
 
-    public UserCount getLatest(Connection connection) {
+    public UserCount generateActive(Connection connection) {
+        Instant oneDayAgo = Instant.now().truncatedTo(SECONDS).minusSeconds(DAYS.toSeconds(1));
+        String sql = "SELECT NOW() AS timestamp, COUNT(*) AS users FROM ("
+                + "SELECT user_id FROM activity_logs WHERE timestamp >= ? GROUP BY user_id) AS data";
+        return getOne(connection, ROW_MAPPER, sql, oneDayAgo).orElse(null); // there will always be a result
+    }
+
+    private UserCount getTotal(Connection connection, String table) {
         Instant earliest = DeltaInterval.values()[DeltaInterval.values().length - 1].getEarliest();
 
         List<UserCount> values = new ArrayList<>();
-        String sql = "SELECT * FROM user_counts WHERE timestamp >= ? ORDER BY timestamp DESC";
+        String sql = format("SELECT * FROM %s WHERE timestamp >= ? ORDER BY timestamp DESC", table);
         consume(connection, ROW_MAPPER, values::add, sql, earliest);
 
         UserCount userCount = values.stream().findFirst().orElseGet(() ->
@@ -50,24 +58,61 @@ public class UserCountTable extends BaseTable {
         return userCount;
     }
 
-    public Results<UserCount> getAll(Connection connection, Page page, Set<Sort> sort) {
-        String sql = format("SELECT * FROM user_counts %s LIMIT ? OFFSET ?", getSort(sort));
-        String count = "SELECT COUNT(*) FROM user_counts";
+    public UserCount getLatestTotal(Connection connection) {
+        return getTotal(connection, "total_user_counts");
+    }
+
+    public UserCount getLatestActive(Connection connection) {
+        return getTotal(connection, "active_user_counts");
+    }
+
+    private Results<UserCount> getAll(Connection connection, String table, Page page, Set<Sort> sort) {
+        String sql = format("SELECT * FROM %s %s LIMIT ? OFFSET ?", table, getSort(sort));
+        String count = format("SELECT COUNT(*) FROM %s", table);
         return results(connection, ROW_MAPPER, page, sql, count);
     }
 
-    public int add(Connection connection, UserCount userCount) {
-        String sql = "INSERT INTO user_counts (timestamp, users) VALUES (?, ?) "
-                + "ON CONFLICT ON CONSTRAINT user_counts_pk DO UPDATE SET users = EXCLUDED.users "
-                + "WHERE user_counts.users != EXCLUDED.users";
+    public Results<UserCount> getAllTotal(Connection connection, Page page, Set<Sort> sort) {
+        return getAll(connection, "total_user_counts", page, sort);
+    }
+
+    public Results<UserCount> getAllActive(Connection connection, Page page, Set<Sort> sort) {
+        return getAll(connection, "active_user_counts", page, sort);
+    }
+
+    private int add(Connection connection, String table, UserCount userCount) {
+        String sql = format("INSERT INTO %s (timestamp, users) VALUES (?, ?) "
+                + "ON CONFLICT ON CONSTRAINT %s_pk DO UPDATE SET users = EXCLUDED.users "
+                + "WHERE %s.users != EXCLUDED.users", table, table, table);
         return update(connection, INSERT_ROW_SETTER, sql, userCount);
     }
 
-    public int ageOff(Connection connection, Instant cutoff) {
-        return update(connection, "DELETE FROM user_counts WHERE timestamp < ?", cutoff);
+    public int addTotal(Connection connection, UserCount userCount) {
+        return add(connection, "total_user_counts", userCount);
     }
 
-    public int truncate(Connection connection) {
-        return update(connection, "DELETE FROM user_counts");
+    public int addActive(Connection connection, UserCount userCount) {
+        return add(connection, "active_user_counts", userCount);
+    }
+
+    private int ageOff(Connection connection, String table, Instant cutoff) {
+        String sql = format("DELETE FROM %s WHERE timestamp < ?", table);
+        return update(connection, sql, cutoff);
+    }
+
+    public int ageOffTotal(Connection connection, Instant cutoff) {
+        return ageOff(connection, "total_user_counts", cutoff);
+    }
+
+    public int ageOffActive(Connection connection, Instant cutoff) {
+        return ageOff(connection, "active_user_counts", cutoff);
+    }
+
+    public int truncateTotal(Connection connection) {
+        return update(connection, "DELETE FROM total_user_counts");
+    }
+
+    public int truncateActive(Connection connection) {
+        return update(connection, "DELETE FROM active_user_counts");
     }
 }

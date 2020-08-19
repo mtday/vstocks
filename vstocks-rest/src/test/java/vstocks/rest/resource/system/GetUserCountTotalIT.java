@@ -20,9 +20,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static vstocks.model.DeltaInterval.*;
 
-public class GetUserCountIT extends ResourceTest {
+public class GetUserCountTotalIT extends ResourceTest {
     @Test
-    public void testValueSummaryWithData() {
+    public void testUserCountWithData() {
         UserCount userCount = new UserCount()
                 .setTimestamp(Instant.now().truncatedTo(SECONDS))
                 .setUsers(20_000)
@@ -33,10 +33,10 @@ public class GetUserCountIT extends ResourceTest {
                 )));
 
         UserCountDB userCountDB = mock(UserCountDB.class);
-        when(userCountDB.getLatest()).thenReturn(userCount);
+        when(userCountDB.getLatestTotal()).thenReturn(userCount);
         when(getDBFactory().getUserCountDB()).thenReturn(userCountDB);
 
-        Response response = target("/system/user-count").request().get();
+        Response response = target("/system/user-count/total").request().get();
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
