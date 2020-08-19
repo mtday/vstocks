@@ -1,22 +1,36 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
+// Pages (Public)
+import { PublicDashboardComponent } from './pages/public/dashboard/dashboard.component';
+import { PublicStandingsComponent } from './pages/public/standings/standings.component';
+
 // Pages (Legal)
-import { PrivacyComponent } from './pages/legal/privacy/privacy.component';
-import { TermsComponent } from './pages/legal/terms/terms.component';
+import { LegalPrivacyComponent } from './pages/legal/privacy/privacy.component';
+import { LegalTermsComponent } from './pages/legal/terms/terms.component';
 
 // Pages (User)
-import { ProfileComponent } from './pages/user/profile/profile.component';
-import { LoginComponent } from './pages/user/login/login.component';
+import { UserDashboardComponent } from './pages/user/dashboard/dashboard.component';
+import { UserLoginComponent     } from './pages/user/login/login.component';
+import { UserPortfolioComponent } from './pages/user/portfolio/portfolio.component';
+import { UserProfileComponent   } from './pages/user/profile/profile.component';
+import { UserStandingsComponent } from './pages/user/standings/standings.component';
 
 const routes: Routes = [
+  // Pages (Public)
+  { path: 'public/dashboard', component: PublicDashboardComponent },
+  { path: 'public/standings', component: PublicStandingsComponent },
+
   // Pages (Legal)
-  { path: 'legal/privacy', component: PrivacyComponent },
-  { path: 'legal/terms',   component: TermsComponent   },
+  { path: 'legal/privacy',    component: LegalPrivacyComponent    },
+  { path: 'legal/terms',      component: LegalTermsComponent      },
 
   // Pages (User)
-  { path: 'user/login',    component: LoginComponent   },
-  { path: 'user/profile',  component: ProfileComponent },
+  { path: 'user/dashboard',   component: UserDashboardComponent   },
+  { path: 'user/login',       component: UserLoginComponent       },
+  { path: 'user/portfolio',   component: UserPortfolioComponent   },
+  { path: 'user/profile',     component: UserProfileComponent     },
+  { path: 'user/standings',   component: UserStandingsComponent   },
 ];
 
 @NgModule({

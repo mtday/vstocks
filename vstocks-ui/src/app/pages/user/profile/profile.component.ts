@@ -5,11 +5,11 @@ import { User } from '../../../models/user';
 import { UserService } from '../../../services/user.service';
 
 @Component({
-  selector: 'app-profile',
+  selector: 'app-user-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })
-export class ProfileComponent implements OnInit {
+export class UserProfileComponent implements OnInit {
   public user: User;
   private userObservable: Observable<User>;
 

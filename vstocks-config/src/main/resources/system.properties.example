@@ -52,3 +52,4 @@ google.api.credentials = vstocks-googleapi.json
 facebook.api.client.id = TODO
 facebook.api.client.secret = TODO
 facebook.api.login.callback = https://localhost:8443/api/security/callback
+
