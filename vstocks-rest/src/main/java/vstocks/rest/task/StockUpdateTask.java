@@ -44,9 +44,7 @@ public class StockUpdateTask implements Task {
         long delayMillis = millis > 0 ? 1000 - millis : 1000;
         long delay = delayMinutes + delaySeconds + delayMillis;
 
-        //scheduledExecutorService.scheduleAtFixedRate(this, delay, MINUTES.toMillis(10), MILLISECONDS);
-        // More frequent schedule for testing (once per minute):
-        scheduledExecutorService.scheduleAtFixedRate(this, delay % MINUTES.toMillis(1), MINUTES.toMillis(1), MILLISECONDS);
+        scheduledExecutorService.scheduleAtFixedRate(this, delay, MINUTES.toMillis(10), MILLISECONDS);
     }
 
     @Override
