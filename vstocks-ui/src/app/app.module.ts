@@ -15,19 +15,20 @@ import { FooterComponent } from './layout/footer/footer.component';
 
 // Pages (Public)
 import { PublicDashboardComponent } from './pages/public/dashboard/dashboard.component';
+import { PublicHomeComponent      } from './pages/public/home/home.component';
 import { PublicStandingsComponent } from './pages/public/standings/standings.component';
 
 // Pages (Legal)
 import { LegalPrivacyComponent } from './pages/legal/privacy/privacy.component';
-import { LegalTermsComponent } from './pages/legal/terms/terms.component';
+import { LegalTermsComponent   } from './pages/legal/terms/terms.component';
 
 // Pages (User)
 import { UserAchievementsComponent } from './pages/user/achievements/achievements.component';
-import { UserDashboardComponent } from './pages/user/dashboard/dashboard.component';
-import { UserLoginComponent } from './pages/user/login/login.component';
-import { UserPortfolioComponent } from './pages/user/portfolio/portfolio.component';
-import { UserProfileComponent } from './pages/user/profile/profile.component';
-import { UserStandingsComponent } from './pages/user/standings/standings.component';
+import { UserDashboardComponent    } from './pages/user/dashboard/dashboard.component';
+import { UserLoginComponent        } from './pages/user/login/login.component';
+import { UserPortfolioComponent    } from './pages/user/portfolio/portfolio.component';
+import { UserProfileComponent      } from './pages/user/profile/profile.component';
+import { UserStandingsComponent    } from './pages/user/standings/standings.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { UserStandingsComponent } from './pages/user/standings/standings.compone
 
     // pages (Public)
     PublicDashboardComponent,
+    PublicHomeComponent,
     PublicStandingsComponent,
 
     // Pages (Legal)

@@ -6,20 +6,28 @@
         </label>
 
         <ul *ngIf="isLoggedIn">
-            <li><a href="#" routerLink="/user/dashboard" class="active">Dashboard</a></li>
-            <li><a href="#" routerLink="/user/standings">Standings</a></li>
-            <li><a href="#" routerLink="/user/portfolio">Portfolio</a></li>
-            <li><a href="#" routerLink="/user/achievements">Achievements</a></li>
+            <li><a href="#" routerLink="/user/dashboard"
+                [ngClass]="page() == '/user/dashboard' ? 'active' : ''">Dashboard</a></li>
+            <li><a href="#" routerLink="/user/standings"
+                [ngClass]="page() == '/user/standings' ? 'active' : ''">Standings</a></li>
+            <li><a href="#" routerLink="/user/portfolio"
+                [ngClass]="page() == '/user/portfolio' ? 'active' : ''">Portfolio</a></li>
+            <li><a href="#" routerLink="/user/achievements"
+                [ngClass]="page() == '/user/achievements' ? 'active' : ''">Achievements</a></li>
             <li><span class="separator"></span></li>
-            <li><a href="#" routerLink="/user/profile">Profile</a></li>
+            <li><a href="#" routerLink="/user/profile"
+                [ngClass]="page() == '/user/profile' ? 'active' : ''">Profile</a></li>
             <li><a href="#" (click)="logout()">Logout</a></li>
         </ul>
 
         <ul *ngIf="!isLoggedIn">
-            <li><a href="#" routerLink="/public/dashboard">Dashboard</a></li>
-            <li><a href="#" routerLink="/public/standings">Standings</a></li>
+            <li><a href="#" routerLink="/public/dashboard"
+                [ngClass]="page() == '/public/dashboard' ? 'active' : ''">Dashboard</a></li>
+            <li><a href="#" routerLink="/public/standings"
+                [ngClass]="page() == '/public/standings' ? 'active' : ''">Standings</a></li>
             <li><span class="separator"></span></li>
-            <li><a href="#" routerLink="/user/login">Login</a></li>
+            <li><a href="#" routerLink="/user/login"
+                [ngClass]="page() == '/user/login' ? 'active' : ''">Login</a></li>
         </ul>
     </nav>
 </header>

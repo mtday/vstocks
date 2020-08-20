@@ -3,34 +3,39 @@ import { Routes, RouterModule } from '@angular/router';
 
 // Pages (Public)
 import { PublicDashboardComponent } from './pages/public/dashboard/dashboard.component';
+import { PublicHomeComponent      } from './pages/public/home/home.component';
 import { PublicStandingsComponent } from './pages/public/standings/standings.component';
 
 // Pages (Legal)
 import { LegalPrivacyComponent } from './pages/legal/privacy/privacy.component';
-import { LegalTermsComponent } from './pages/legal/terms/terms.component';
+import { LegalTermsComponent   } from './pages/legal/terms/terms.component';
 
 // Pages (User)
-import { UserDashboardComponent } from './pages/user/dashboard/dashboard.component';
-import { UserLoginComponent     } from './pages/user/login/login.component';
-import { UserPortfolioComponent } from './pages/user/portfolio/portfolio.component';
-import { UserProfileComponent   } from './pages/user/profile/profile.component';
-import { UserStandingsComponent } from './pages/user/standings/standings.component';
+import { UserAchievementsComponent } from './pages/user/achievements/achievements.component';
+import { UserDashboardComponent    } from './pages/user/dashboard/dashboard.component';
+import { UserLoginComponent        } from './pages/user/login/login.component';
+import { UserPortfolioComponent    } from './pages/user/portfolio/portfolio.component';
+import { UserProfileComponent      } from './pages/user/profile/profile.component';
+import { UserStandingsComponent    } from './pages/user/standings/standings.component';
 
 const routes: Routes = [
   // Pages (Public)
-  { path: 'public/dashboard', component: PublicDashboardComponent },
-  { path: 'public/standings', component: PublicStandingsComponent },
+  { path: '',                  component: PublicHomeComponent       },
+  { path: 'public/dashboard',  component: PublicDashboardComponent  },
+  { path: 'public/home',       component: PublicHomeComponent       },
+  { path: 'public/standings',  component: PublicStandingsComponent  },
 
   // Pages (Legal)
-  { path: 'legal/privacy',    component: LegalPrivacyComponent    },
-  { path: 'legal/terms',      component: LegalTermsComponent      },
+  { path: 'legal/privacy',     component: LegalPrivacyComponent     },
+  { path: 'legal/terms',       component: LegalTermsComponent       },
 
   // Pages (User)
-  { path: 'user/dashboard',   component: UserDashboardComponent   },
-  { path: 'user/login',       component: UserLoginComponent       },
-  { path: 'user/portfolio',   component: UserPortfolioComponent   },
-  { path: 'user/profile',     component: UserProfileComponent     },
-  { path: 'user/standings',   component: UserStandingsComponent   },
+  { path: 'user/achievements', component: UserAchievementsComponent },
+  { path: 'user/dashboard',    component: UserDashboardComponent    },
+  { path: 'user/login',        component: UserLoginComponent        },
+  { path: 'user/portfolio',    component: UserPortfolioComponent    },
+  { path: 'user/profile',      component: UserProfileComponent      },
+  { path: 'user/standings',    component: UserStandingsComponent    },
 ];
 
 @NgModule({

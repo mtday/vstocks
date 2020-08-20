@@ -36,6 +36,7 @@ jwt.encryption.secret = secret
 jwt.expiration.hours = 4
 
 
+# https://developer.twitter.com/en/portal/dashboard
 twitter.api.consumer.key = TODO
 twitter.api.consumer.secret = TODO
 twitter.api.accesstoken.key = TODO
@@ -43,12 +44,17 @@ twitter.api.accesstoken.secret = TODO
 twitter.api.bearer = TODO
 twitter.api.login.callback = https://localhost:8443/api/security/callback
 
+
+# https://console.developers.google.com/apis/credentials?project=vstocks&folder=&organizationId=
 google.api.client.id = TODO
 google.api.client.secret = TODO
 google.api.login.callback = https://localhost:8443/api/security/callback
+# https://console.cloud.google.com/projectselector2/iam-admin/serviceaccounts?supportedpurview=project
 google.api.scopes = https://www.googleapis.com/auth/youtube.readonly
 google.api.credentials = vstocks-googleapi.json
 
+
+# https://developers.facebook.com/apps/
 facebook.api.client.id = TODO
 facebook.api.client.secret = TODO
 facebook.api.login.callback = https://localhost:8443/api/security/callback

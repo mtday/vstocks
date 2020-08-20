@@ -1,11 +1,13 @@
 package vstocks.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.pac4j.jax.rs.features.JaxRsConfigProvider;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
@@ -44,13 +46,21 @@ import vstocks.rest.task.*;
 import vstocks.service.remote.DefaultRemoteStockServiceFactory;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
+import javax.inject.Inject;
 import javax.sql.DataSource;
 import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Feature;
+import javax.ws.rs.core.FeatureContext;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import static java.util.Optional.ofNullable;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static vstocks.config.Config.*;
 
 @ApplicationPath("/")
@@ -112,6 +122,8 @@ public class Application extends ResourceConfig {
         register(AccessLogFilter.class);
         register(JwtTokenFilter.class);
 
+        register(JsonFeature.class);
+
         register(new AbstractBinder() {
             @Override
             protected void configure() {
@@ -157,7 +169,9 @@ public class Application extends ResourceConfig {
     }
 
     private static ObjectMapper getObjectMapper() {
-        return new ObjectMapper().registerModule(new JavaTimeModule());
+        return new ObjectMapper()
+                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                .registerModule(new JavaTimeModule());
     }
 
     private static DataSource getDataSource() {
@@ -175,5 +189,29 @@ public class Application extends ResourceConfig {
         HikariDataSource dataSource = new HikariDataSource(config);
         Flyway.configure().dataSource(dataSource).load().migrate();
         return dataSource;
+    }
+
+    static class JsonFeature implements Feature {
+        private final ObjectMapper objectMapper;
+
+        @Inject
+        public JsonFeature(ObjectMapper objectMapper) {
+            this.objectMapper = objectMapper;
+        }
+
+        @Override
+        public boolean configure(FeatureContext featureContext) {
+            featureContext.register(new ObjectMapperProvider(objectMapper), MessageBodyReader.class, MessageBodyWriter.class);
+            return true;
+        }
+
+        @Provider
+        @Produces(APPLICATION_JSON)
+        public static class ObjectMapperProvider extends JacksonJaxbJsonProvider {
+            public ObjectMapperProvider(ObjectMapper objectMapper) {
+                super();
+                setMapper(objectMapper);
+            }
+        }
     }
 }

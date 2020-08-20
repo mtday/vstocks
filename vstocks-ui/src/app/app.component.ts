@@ -17,7 +17,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      console.log(params);
       if (params.token) {
         this.authService.token = params.token;
 

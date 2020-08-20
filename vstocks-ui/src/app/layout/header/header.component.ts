@@ -29,4 +29,8 @@ export class HeaderComponent implements OnInit {
     this.authService.clear();
     this.router.navigate(['/']);
   }
+
+  page(): string {
+    return this.router.url;
+  }
 }
