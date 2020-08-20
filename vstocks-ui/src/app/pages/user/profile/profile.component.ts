@@ -22,4 +22,6 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
+  profileSave(): void {
+  }
 }

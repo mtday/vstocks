@@ -1,0 +1,84 @@
+@import '../../../../variables.scss';
+
+
+.profile-container {
+    padding: 20px;
+
+    .profile-box {
+        height: 450px;
+        width: 550px;
+        margin: auto;
+
+        .profile-box-header {
+            background-color: $boxHeaderBackgroundColor;
+            border: 1px solid $boxBorderColor;
+            border-radius: 7px 7px 0px 0px;
+            color: $fontColorBright;
+            line-height: 50px;
+            padding: 0 20px;
+        }
+
+        .profile-box-body {
+            background-color: $boxBodyBackgroundColor;
+            border: 1px solid $boxBorderColor;
+            color: white;
+            padding: 20px;
+
+            div.profile-image {
+                color: $fontColorNormal;
+                padding: 20px;
+                margin: auto;
+
+                img {
+                    height: 88px;
+                    width: 88px;
+                }
+            }
+
+            div.user-info {
+                margin: auto;
+                padding: 20px;
+
+                table.user-info-table {
+                    border: 0;
+                    width: 100%;
+
+                    td.field-label {
+                        color: $fontColorBright;
+                        padding: 5px 15px 5px 0px;
+                    }
+
+                    td.field-value {
+                        color: $fontColorNormal;
+                        width: 100%;
+
+                        input {
+                            font-family: Nunito;
+                            width: 100%;
+                        }
+                    }
+
+                    td.actions {
+                        padding-top: 20px;
+
+                        div.save-button {
+                            background-color: $buttonColor;
+                            border-radius: 7px;
+                            float: right;
+                            text-align: center;
+                            width: 120px;
+
+                            a {
+                                color: white;
+                                display: block;
+                                line-height: 40px;
+                                text-decoration: none;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

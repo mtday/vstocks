@@ -47,13 +47,19 @@ public abstract class BaseResource {
     }
 
     protected User getUser(CommonProfile commonProfile) {
-        return ofNullable(commonProfile).map(profile ->
-                new User()
-                        .setId(generateId(profile.getEmail()))
-                        .setEmail(profile.getEmail())
-                        .setUsername(profile.getUsername())
-                        .setDisplayName(profile.getDisplayName())
-                        .setProfileImage(ofNullable(profile.getProfileUrl()).map(String::valueOf).orElse(null))
-        ).orElse(null);
+        return ofNullable(commonProfile).map(profile -> {
+            String profileImage = Stream.of("profile_url", "picture_url", "profile_image_url_https", "profile_image_url")
+                    .map(commonProfile::getAttribute)
+                    .filter(Objects::nonNull)
+                    .map(String::valueOf)
+                    .findFirst()
+                    .orElse(null);
+            return new User()
+                    .setId(generateId(profile.getEmail()))
+                    .setEmail(profile.getEmail())
+                    .setUsername(profile.getUsername())
+                    .setDisplayName(profile.getDisplayName())
+                    .setProfileImage(profileImage);
+        }).orElse(null);
     }
 }
