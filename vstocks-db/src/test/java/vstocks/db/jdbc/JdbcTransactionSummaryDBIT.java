@@ -10,6 +10,8 @@ import vstocks.db.jdbc.table.StockTable;
 import vstocks.db.jdbc.table.TransactionSummaryTable;
 import vstocks.db.jdbc.table.UserTable;
 import vstocks.model.*;
+import vstocks.model.system.TransactionSummary;
+import vstocks.model.system.TransactionSummaryCollection;
 
 import java.sql.Connection;
 import java.sql.SQLException;

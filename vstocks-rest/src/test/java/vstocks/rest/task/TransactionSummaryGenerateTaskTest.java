@@ -5,7 +5,7 @@ import org.mockito.stubbing.Answer;
 import vstocks.db.DBFactory;
 import vstocks.db.TransactionSummaryDB;
 import vstocks.model.Market;
-import vstocks.model.TransactionSummary;
+import vstocks.model.system.TransactionSummary;
 import vstocks.rest.Environment;
 
 import java.time.Instant;

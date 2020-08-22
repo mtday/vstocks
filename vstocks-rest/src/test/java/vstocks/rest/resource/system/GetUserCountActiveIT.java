@@ -4,8 +4,8 @@ import org.junit.Test;
 import vstocks.db.UserCountDB;
 import vstocks.model.Delta;
 import vstocks.model.DeltaInterval;
-import vstocks.model.UserCount;
-import vstocks.model.UserCountCollection;
+import vstocks.model.system.UserCount;
+import vstocks.model.system.UserCountCollection;
 import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;

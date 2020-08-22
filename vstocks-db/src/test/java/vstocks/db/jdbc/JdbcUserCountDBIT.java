@@ -9,6 +9,8 @@ import vstocks.db.jdbc.table.ActivityLogTable;
 import vstocks.db.jdbc.table.UserCountTable;
 import vstocks.db.jdbc.table.UserTable;
 import vstocks.model.*;
+import vstocks.model.system.UserCount;
+import vstocks.model.system.UserCountCollection;
 
 import java.sql.Connection;
 import java.sql.SQLException;

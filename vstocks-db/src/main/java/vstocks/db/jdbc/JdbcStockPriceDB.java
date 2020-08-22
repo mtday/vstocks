@@ -1,5 +1,6 @@
 package vstocks.db.jdbc;
 
+import vstocks.db.BaseService;
 import vstocks.model.*;
 import vstocks.db.StockPriceDB;
 import vstocks.db.jdbc.table.StockPriceTable;

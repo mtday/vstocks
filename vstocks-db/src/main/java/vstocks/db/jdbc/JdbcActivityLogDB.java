@@ -1,6 +1,7 @@
 package vstocks.db.jdbc;
 
 import vstocks.db.ActivityLogDB;
+import vstocks.db.BaseService;
 import vstocks.db.jdbc.table.ActivityLogTable;
 import vstocks.db.jdbc.table.PreparedStatementCreator;
 import vstocks.db.jdbc.table.RowMapper;

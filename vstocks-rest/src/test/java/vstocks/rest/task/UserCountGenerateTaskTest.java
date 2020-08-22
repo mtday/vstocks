@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.mockito.stubbing.Answer;
 import vstocks.db.DBFactory;
 import vstocks.db.UserCountDB;
-import vstocks.model.UserCount;
+import vstocks.model.system.UserCount;
 import vstocks.rest.Environment;
 
 import java.time.Instant;

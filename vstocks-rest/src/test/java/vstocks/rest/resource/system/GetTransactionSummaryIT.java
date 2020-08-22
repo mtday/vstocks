@@ -4,8 +4,8 @@ import org.junit.Test;
 import vstocks.db.TransactionSummaryDB;
 import vstocks.model.Delta;
 import vstocks.model.Market;
-import vstocks.model.TransactionSummary;
-import vstocks.model.TransactionSummaryCollection;
+import vstocks.model.system.TransactionSummary;
+import vstocks.model.system.TransactionSummaryCollection;
 import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;

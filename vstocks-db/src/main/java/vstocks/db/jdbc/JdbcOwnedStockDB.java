@@ -1,5 +1,6 @@
 package vstocks.db.jdbc;
 
+import vstocks.db.BaseService;
 import vstocks.db.OwnedStockDB;
 import vstocks.db.jdbc.table.OwnedStockJoin;
 import vstocks.model.Market;

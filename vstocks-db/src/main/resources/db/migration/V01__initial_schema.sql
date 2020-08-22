@@ -87,53 +87,6 @@ CREATE INDEX idx_user_credits_user_id ON user_credits (user_id);
 CREATE INDEX idx_user_credits_credits ON user_credits (credits);
 
 
-CREATE TABLE portfolio_values (
-    user_id            TEXT         NOT NULL,
-    timestamp          TIMESTAMP(0) NOT NULL,
-    credits            BIGINT       NOT NULL,
-    market_values      TEXT         NOT NULL,
-    total              BIGINT       NOT NULL,
-
-    CONSTRAINT portfolio_values_pk PRIMARY KEY (user_id, timestamp),
-    CONSTRAINT portfolio_values_fk_user_id FOREIGN KEY (user_id)
-        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE INDEX idx_portfolio_values_user_id ON portfolio_values (user_id);
-CREATE INDEX idx_portfolio_values_timestamp ON portfolio_values (timestamp);
-CREATE INDEX idx_portfolio_values_credits ON portfolio_values (credits);
-CREATE INDEX idx_portfolio_values_total ON portfolio_values (total);
-
-
-CREATE TABLE portfolio_value_summaries (
-    timestamp          TIMESTAMP(0) NOT NULL,
-    credits            BIGINT       NOT NULL,
-    market_values      TEXT         NOT NULL,
-    total              BIGINT       NOT NULL,
-
-    CONSTRAINT portfolio_value_summaries_pk PRIMARY KEY (timestamp)
-);
-
-CREATE INDEX idx_portfolio_value_summaries_timestamp ON portfolio_value_summaries (timestamp);
-CREATE INDEX idx_portfolio_value_summaries_credits ON portfolio_value_summaries (credits);
-CREATE INDEX idx_portfolio_value_summaries_total ON portfolio_value_summaries (total);
-
-
-CREATE TABLE portfolio_value_ranks (
-    user_id            TEXT         NOT NULL,
-    timestamp          TIMESTAMP(0) NOT NULL,
-    rank               BIGINT       NOT NULL,
-
-    CONSTRAINT portfolio_value_ranks_pk PRIMARY KEY (user_id, timestamp),
-    CONSTRAINT portfolio_value_ranks_fk_user_id FOREIGN KEY (user_id)
-        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE INDEX idx_portfolio_value_ranks_user_id ON portfolio_value_ranks (user_id);
-CREATE INDEX idx_portfolio_value_ranks_timestamp ON portfolio_value_ranks (timestamp);
-CREATE INDEX idx_portfolio_value_ranks_rank ON portfolio_value_ranks (rank);
-
-
 CREATE TABLE user_stocks (
     user_id            TEXT    NOT NULL,
     market             TEXT    NOT NULL,
@@ -169,36 +122,176 @@ CREATE INDEX idx_user_achievements_achievement_id ON user_achievements (achievem
 CREATE INDEX idx_user_achievements_timestamp ON user_achievements (timestamp);
 
 
-CREATE TABLE total_user_counts (
-    timestamp          TIMESTAMP(0) NOT NULL,
-    users              BIGINT       NOT NULL,
+-- portfolio tables
 
-    CONSTRAINT total_user_counts_pk PRIMARY KEY (timestamp)
+CREATE TABLE credit_ranks (
+    user_id            TEXT         NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
+    rank               BIGINT       NOT NULL,
+
+    CONSTRAINT credit_ranks_pk PRIMARY KEY (user_id, timestamp),
+    CONSTRAINT credit_ranks_fk_user_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE INDEX idx_total_user_counts_timestamp ON total_user_counts (timestamp);
-CREATE INDEX idx_total_user_counts_users ON total_user_counts (users);
+CREATE INDEX idx_credit_ranks_user_id ON credit_ranks (user_id);
+CREATE INDEX idx_credit_ranks_timestamp ON credit_ranks (timestamp);
+CREATE INDEX idx_credit_ranks_rank ON credit_ranks (rank);
 
+
+CREATE TABLE credit_values (
+    user_id            TEXT         NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
+    value              BIGINT       NOT NULL,
+
+    CONSTRAINT credit_values_pk PRIMARY KEY (user_id, timestamp),
+    CONSTRAINT credit_values_fk_user_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX idx_credit_values_user_id ON credit_values (user_id);
+CREATE INDEX idx_credit_values_timestamp ON credit_values (timestamp);
+CREATE INDEX idx_credit_values_value ON credit_values (value);
+
+
+CREATE TABLE market_ranks (
+    user_id            TEXT         NOT NULL,
+    market             TEXT         NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
+    rank               BIGINT       NOT NULL,
+
+    CONSTRAINT market_ranks_pk PRIMARY KEY (user_id, market, timestamp),
+    CONSTRAINT market_ranks_fk_user_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX idx_market_ranks_user_id ON market_ranks (user_id);
+CREATE INDEX idx_market_ranks_market ON market_ranks (market);
+CREATE INDEX idx_market_ranks_timestamp ON market_ranks (timestamp);
+CREATE INDEX idx_market_ranks_rank ON market_ranks (rank);
+
+
+CREATE TABLE market_values (
+    user_id            TEXT         NOT NULL,
+    market             TEXT         NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
+    value              BIGINT       NOT NULL,
+
+    CONSTRAINT market_values_pk PRIMARY KEY (user_id, market, timestamp),
+    CONSTRAINT market_values_fk_user_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX idx_market_values_user_id ON market_values (user_id);
+CREATE INDEX idx_market_values_market ON market_values (market);
+CREATE INDEX idx_market_values_timestamp ON market_values (timestamp);
+CREATE INDEX idx_market_values_value ON market_values (value);
+
+
+CREATE TABLE market_total_ranks (
+    user_id            TEXT         NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
+    rank               BIGINT       NOT NULL,
+
+    CONSTRAINT market_total_ranks_pk PRIMARY KEY (user_id, timestamp),
+    CONSTRAINT market_total_ranks_fk_user_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX idx_market_total_ranks_user_id ON market_total_ranks (user_id);
+CREATE INDEX idx_market_total_ranks_timestamp ON market_total_ranks (timestamp);
+CREATE INDEX idx_market_total_ranks_rank ON market_total_ranks (rank);
+
+
+CREATE TABLE market_total_values (
+    user_id            TEXT         NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
+    value              BIGINT       NOT NULL,
+
+    CONSTRAINT market_total_values_pk PRIMARY KEY (user_id, timestamp),
+    CONSTRAINT market_total_values_fk_user_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX idx_market_total_values_user_id ON market_total_values (user_id);
+CREATE INDEX idx_market_total_values_timestamp ON market_total_values (timestamp);
+CREATE INDEX idx_market_total_values_value ON market_total_values (value);
+
+
+CREATE TABLE total_ranks (
+    user_id            TEXT         NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
+    rank               BIGINT       NOT NULL,
+
+    CONSTRAINT total_ranks_pk PRIMARY KEY (user_id, timestamp),
+    CONSTRAINT total_ranks_fk_user_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX idx_total_ranks_user_id ON total_ranks (user_id);
+CREATE INDEX idx_total_ranks_timestamp ON total_ranks (timestamp);
+CREATE INDEX idx_total_ranks_rank ON total_ranks (rank);
+
+
+CREATE TABLE total_values (
+    user_id            TEXT         NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
+    value              BIGINT       NOT NULL,
+
+    CONSTRAINT total_values_pk PRIMARY KEY (user_id, timestamp),
+    CONSTRAINT total_values_fk_user_id FOREIGN KEY (user_id)
+        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX idx_total_values_user_id ON total_values (user_id);
+CREATE INDEX idx_total_values_timestamp ON total_values (timestamp);
+CREATE INDEX idx_total_values_value ON total_values (value);
+
+
+-- system metric tables
 
 CREATE TABLE active_user_counts (
     timestamp          TIMESTAMP(0) NOT NULL,
-    users              BIGINT       NOT NULL,
+    count              BIGINT       NOT NULL,
 
     CONSTRAINT active_user_counts_pk PRIMARY KEY (timestamp)
 );
 
 CREATE INDEX idx_active_user_counts_timestamp ON active_user_counts (timestamp);
-CREATE INDEX idx_active_user_counts_users ON active_user_counts (users);
+CREATE INDEX idx_active_user_counts_count ON active_user_counts (count);
 
 
-CREATE TABLE transaction_summaries (
+CREATE TABLE total_user_counts (
     timestamp          TIMESTAMP(0) NOT NULL,
-    transactions       TEXT         NOT NULL,
-    total              BIGINT       NOT NULL,
+    count              BIGINT       NOT NULL,
 
-    CONSTRAINT transaction_summaries_pk PRIMARY KEY (timestamp)
+    CONSTRAINT total_user_counts_pk PRIMARY KEY (timestamp)
 );
 
-CREATE INDEX idx_transaction_summaries_timestamp ON transaction_summaries (timestamp);
-CREATE INDEX idx_transaction_summaries_total ON transaction_summaries (total);
+CREATE INDEX idx_total_user_counts_timestamp ON total_user_counts (timestamp);
+CREATE INDEX idx_total_user_counts_count ON total_user_counts (count);
+
+
+CREATE TABLE market_transaction_counts (
+    market             TEXT         NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
+    count              BIGINT       NOT NULL,
+
+    CONSTRAINT market_transaction_counts_pk PRIMARY KEY (market, timestamp)
+);
+
+CREATE INDEX idx_market_transaction_counts_market ON market_transaction_counts (market);
+CREATE INDEX idx_market_transaction_counts_timestamp ON market_transaction_counts (timestamp);
+CREATE INDEX idx_market_transaction_counts_count ON market_transaction_counts (count);
+
+
+CREATE TABLE total_transaction_counts (
+    timestamp          TIMESTAMP(0) NOT NULL,
+    count              BIGINT       NOT NULL,
+
+    CONSTRAINT total_transaction_counts_pk PRIMARY KEY (timestamp)
+);
+
+CREATE INDEX idx_total_transaction_counts_timestamp ON total_transaction_counts (timestamp);
+CREATE INDEX idx_total_transaction_counts_count ON total_transaction_counts (count);
 

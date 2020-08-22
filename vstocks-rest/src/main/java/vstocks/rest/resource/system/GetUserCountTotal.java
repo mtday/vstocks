@@ -1,7 +1,7 @@
 package vstocks.rest.resource.system;
 
 import vstocks.db.DBFactory;
-import vstocks.model.UserCountCollection;
+import vstocks.model.system.UserCountCollection;
 import vstocks.rest.resource.BaseResource;
 
 import javax.inject.Inject;

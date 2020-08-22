@@ -21,7 +21,8 @@ public enum DatabaseField {
     TYPE,
     USERNAME,
     USER_ID,
-    USERS;
+    USERS,
+    VALUE;
 
     public Sort toSort() {
         return new Sort(this);

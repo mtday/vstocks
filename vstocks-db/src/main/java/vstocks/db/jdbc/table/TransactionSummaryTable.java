@@ -1,6 +1,8 @@
 package vstocks.db.jdbc.table;
 
 import vstocks.model.*;
+import vstocks.model.system.TransactionSummary;
+import vstocks.model.system.TransactionSummaryCollection;
 
 import java.sql.Connection;
 import java.sql.Timestamp;

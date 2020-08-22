@@ -2,7 +2,7 @@ package vstocks.rest.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import vstocks.model.TransactionSummary;
+import vstocks.model.system.TransactionSummary;
 import vstocks.rest.Environment;
 
 import java.time.LocalDateTime;

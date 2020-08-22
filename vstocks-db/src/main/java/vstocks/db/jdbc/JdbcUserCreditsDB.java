@@ -1,5 +1,6 @@
 package vstocks.db.jdbc;
 
+import vstocks.db.BaseService;
 import vstocks.model.Page;
 import vstocks.model.Results;
 import vstocks.model.Sort;

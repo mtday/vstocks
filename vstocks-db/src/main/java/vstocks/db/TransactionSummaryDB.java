@@ -1,6 +1,8 @@
 package vstocks.db;
 
 import vstocks.model.*;
+import vstocks.model.system.TransactionSummary;
+import vstocks.model.system.TransactionSummaryCollection;
 
 import java.time.Instant;
 import java.util.Set;

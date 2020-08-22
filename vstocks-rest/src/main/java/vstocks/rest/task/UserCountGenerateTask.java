@@ -2,7 +2,7 @@ package vstocks.rest.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import vstocks.model.UserCount;
+import vstocks.model.system.UserCount;
 import vstocks.rest.Environment;
 
 import java.time.LocalDateTime;

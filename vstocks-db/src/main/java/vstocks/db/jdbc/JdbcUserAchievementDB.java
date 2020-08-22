@@ -1,5 +1,6 @@
 package vstocks.db.jdbc;
 
+import vstocks.db.BaseService;
 import vstocks.db.UserAchievementDB;
 import vstocks.db.jdbc.table.UserAchievementTable;
 import vstocks.model.Page;
