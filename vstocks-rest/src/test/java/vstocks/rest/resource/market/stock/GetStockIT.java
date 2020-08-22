@@ -1,7 +1,7 @@
 package vstocks.rest.resource.market.stock;
 
 import org.junit.Test;
-import vstocks.db.PricedStockDB;
+import vstocks.db.PricedStockService;
 import vstocks.model.ErrorResponse;
 import vstocks.model.PricedStock;
 import vstocks.rest.ResourceTest;
@@ -37,7 +37,7 @@ public class GetStockIT extends ResourceTest {
 
     @Test
     public void testStockMissing() {
-        PricedStockDB pricedStockDb = mock(PricedStockDB.class);
+        PricedStockService pricedStockDb = mock(PricedStockService.class);
         when(pricedStockDb.get(eq(TWITTER), eq("missing"))).thenReturn(empty());
         when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
 
@@ -55,7 +55,7 @@ public class GetStockIT extends ResourceTest {
     public void testMarketExists() {
         Instant now = Instant.now().truncatedTo(SECONDS);
         PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setName("name").setSymbol("symbol").setTimestamp(now).setPrice(10);
-        PricedStockDB pricedStockDb = mock(PricedStockDB.class);
+        PricedStockService pricedStockDb = mock(PricedStockService.class);
         when(pricedStockDb.get(eq(TWITTER), eq("symbol"))).thenReturn(Optional.of(pricedStock));
         when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
 

@@ -14,8 +14,8 @@ import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
 import vstocks.achievement.AchievementService;
-import vstocks.db.DBFactory;
-import vstocks.db.jdbc.JdbcDBFactory;
+import vstocks.db.ServiceFactory;
+import vstocks.db.ServiceFactoryImpl;
 import vstocks.rest.exception.BadRequestExceptionMapper;
 import vstocks.rest.exception.NotFoundExceptionMapper;
 import vstocks.rest.resource.achievement.GetAchievements;
@@ -128,7 +128,7 @@ public class Application extends ResourceConfig {
             @Override
             protected void configure() {
                 bind(getObjectMapper()).to(ObjectMapper.class);
-                ofNullable(environment.getDBFactory()).ifPresent(d -> bind(d).to(DBFactory.class));
+                ofNullable(environment.getDBFactory()).ifPresent(d -> bind(d).to(ServiceFactory.class));
                 ofNullable(environment.getRemoteStockServiceFactory()).ifPresent(r -> bind(r).to(RemoteStockServiceFactory.class));
                 ofNullable(environment.getAchievementService()).ifPresent(a -> bind(a).to(AchievementService.class));
                 ofNullable(environment.getJwtSecurity()).ifPresent(j -> bind(j).to(JwtSecurity.class));
@@ -160,7 +160,7 @@ public class Application extends ResourceConfig {
 
     private static Environment getEnvironment() {
         return new Environment()
-                .setDBFactory(new JdbcDBFactory(getDataSource()))
+                .setDBFactory(new ServiceFactoryImpl(getDataSource()))
                 .setRemoteStockServiceFactory(new DefaultRemoteStockServiceFactory())
                 .setAchievementService(new AchievementService())
                 .setJwtSecurity(new JwtSecurity())

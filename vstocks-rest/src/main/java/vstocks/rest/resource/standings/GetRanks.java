@@ -1,6 +1,6 @@
 package vstocks.rest.resource.standings;
 
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.model.PortfolioValueRank;
 import vstocks.model.Results;
 import vstocks.rest.resource.BaseResource;
@@ -17,10 +17,10 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/standings/ranks")
 @Singleton
 public class GetRanks extends BaseResource {
-    private final DBFactory dbFactory;
+    private final ServiceFactory dbFactory;
 
     @Inject
-    public GetRanks(DBFactory dbFactory) {
+    public GetRanks(ServiceFactory dbFactory) {
         this.dbFactory = dbFactory;
     }
 

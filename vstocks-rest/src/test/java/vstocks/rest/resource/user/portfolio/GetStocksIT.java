@@ -1,8 +1,8 @@
 package vstocks.rest.resource.user.portfolio;
 
 import org.junit.Test;
-import vstocks.db.PricedUserStockDB;
-import vstocks.db.UserDB;
+import vstocks.db.PricedUserStockService;
+import vstocks.db.UserService;
 import vstocks.model.*;
 import vstocks.rest.ResourceTest;
 
@@ -61,7 +61,7 @@ public class GetStocksIT extends ResourceTest {
 
     @Test
     public void testUserPortfolioStocksPageAndSort() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getDBFactory().getUserDB()).thenReturn(userDB);
 
@@ -69,7 +69,7 @@ public class GetStocksIT extends ResourceTest {
         Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(), PRICE.toSort(DESC)));
         Results<PricedUserStock> results =
                 new Results<PricedUserStock>().setTotal(0).setPage(page).setResults(emptyList());
-        PricedUserStockDB pricedUserStockDB = mock(PricedUserStockDB.class);
+        PricedUserStockService pricedUserStockDB = mock(PricedUserStockService.class);
         when(pricedUserStockDB.getForUser(eq(getUser().getId()), eq(page), eq(sort))).thenReturn(results);
         when(getDBFactory().getPricedUserStockDB()).thenReturn(pricedUserStockDB);
 
@@ -91,7 +91,7 @@ public class GetStocksIT extends ResourceTest {
 
     @Test
     public void testUserPortfolioStocksWithData() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getDBFactory().getUserDB()).thenReturn(userDB);
 
@@ -111,7 +111,7 @@ public class GetStocksIT extends ResourceTest {
                 .setTotal(1)
                 .setPage(new Page())
                 .setResults(singletonList(pricedUserStock));
-        PricedUserStockDB pricedUserStockDB = mock(PricedUserStockDB.class);
+        PricedUserStockService pricedUserStockDB = mock(PricedUserStockService.class);
         when(pricedUserStockDB.getForUser(eq(getUser().getId()), any(), any())).thenReturn(results);
         when(getDBFactory().getPricedUserStockDB()).thenReturn(pricedUserStockDB);
 

@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class TotalValueServiceImpl extends BaseService implements TotalValueService {
-    private final TotalValueTable totalValueTable = new TotalValueTable();
+    private final TotalValueDB totalValueTable = new TotalValueDB();
 
     public TotalValueServiceImpl(DataSource dataSource) {
         super(dataSource);

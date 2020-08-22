@@ -1,6 +1,6 @@
 package vstocks.rest.resource.user;
 
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.model.User;
 import vstocks.rest.resource.BaseResource;
 import vstocks.rest.security.JwtTokenRequired;
@@ -31,10 +31,10 @@ public class PutUser extends BaseResource {
             "The specified username contains invalid characters. Only alphanumeric characters, along with " +
                     "underscores and dashes are allowed.";
 
-    private final DBFactory dbFactory;
+    private final ServiceFactory dbFactory;
 
     @Inject
-    public PutUser(DBFactory dbFactory) {
+    public PutUser(ServiceFactory dbFactory) {
         this.dbFactory = dbFactory;
     }
 

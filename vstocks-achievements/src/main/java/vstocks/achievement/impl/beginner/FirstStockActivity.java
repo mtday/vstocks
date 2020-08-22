@@ -2,9 +2,9 @@ package vstocks.achievement.impl.beginner;
 
 import vstocks.achievement.AchievementFinder;
 import vstocks.achievement.AchievementProvider;
-import vstocks.db.DBFactory;
-import vstocks.db.jdbc.table.PreparedStatementCreator;
-import vstocks.db.jdbc.table.RowMapper;
+import vstocks.db.ServiceFactory;
+import vstocks.db.PreparedStatementCreator;
+import vstocks.db.RowMapper;
 import vstocks.model.Achievement;
 import vstocks.model.ActivityType;
 import vstocks.model.Market;
@@ -64,7 +64,7 @@ public class FirstStockActivity implements AchievementProvider {
         }
 
         @Override
-        public int find(DBFactory dbFactory, Set<String> userIds, Consumer<UserAchievement> consumer) {
+        public int find(ServiceFactory dbFactory, Set<String> userIds, Consumer<UserAchievement> consumer) {
             PreparedStatementCreator psc = conn -> {
                 String sql = "WITH data AS ("
                         + "  SELECT user_id, COUNT(user_id) AS count "

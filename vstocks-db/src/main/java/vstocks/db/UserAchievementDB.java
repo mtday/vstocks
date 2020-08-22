@@ -5,25 +5,82 @@ import vstocks.model.Results;
 import vstocks.model.Sort;
 import vstocks.model.UserAchievement;
 
+import java.sql.Connection;
+import java.sql.Timestamp;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public interface UserAchievementDB {
-    Optional<UserAchievement> get(String userId, String achievementId);
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static vstocks.model.DatabaseField.*;
+import static vstocks.model.SortDirection.DESC;
 
-    List<UserAchievement> getForUser(String userId);
+class UserAchievementDB extends BaseTable {
+    private static final RowMapper<UserAchievement> ROW_MAPPER = rs ->
+            new UserAchievement()
+                    .setUserId(rs.getString("user_id"))
+                    .setAchievementId(rs.getString("achievement_id"))
+                    .setTimestamp(rs.getTimestamp("timestamp").toInstant())
+                    .setDescription(rs.getString("description"));
 
-    Results<UserAchievement> getForAchievement(String achievementId, Page page, Set<Sort> sort);
+    private static final RowSetter<UserAchievement> INSERT_ROW_SETTER = (ps, userAchievement) -> {
+        int index = 0;
+        ps.setString(++index, userAchievement.getUserId());
+        ps.setString(++index, userAchievement.getAchievementId());
+        ps.setTimestamp(++index, Timestamp.from(userAchievement.getTimestamp()));
+        ps.setString(++index, userAchievement.getDescription());
+    };
 
-    Results<UserAchievement> getAll(Page page, Set<Sort> sort);
+    @Override
+    protected Set<Sort> getDefaultSort() {
+        return new LinkedHashSet<>(asList(TIMESTAMP.toSort(DESC), USER_ID.toSort(), ACHIEVEMENT_ID.toSort()));
+    }
 
-    int consume(Consumer<UserAchievement> consumer, Set<Sort> sort);
+    public Optional<UserAchievement> get(Connection connection, String userId, String achievementId) {
+        String sql = "SELECT * FROM user_achievements WHERE user_id = ? AND achievement_id = ?";
+        return getOne(connection, ROW_MAPPER, sql, userId, achievementId);
+    }
 
-    int add(UserAchievement userAchievement);
+    public List<UserAchievement> getForUser(Connection connection, String userId) {
+        String sql = "SELECT * FROM user_achievements WHERE user_id = ? ORDER BY timestamp DESC";
+        return getList(connection, ROW_MAPPER, sql, userId);
+    }
 
-    int deleteForUser(String userId);
+    public Results<UserAchievement> getForAchievement(Connection connection, String achievementId, Page page, Set<Sort> sort) {
+        String sql = format("SELECT * FROM user_achievements WHERE achievement_id = ? %s LIMIT ? OFFSET ?", getSort(sort));
+        String count = "SELECT COUNT(*) FROM user_achievements WHERE achievement_id = ?";
+        return results(connection, ROW_MAPPER, page, sql, count, achievementId);
+    }
 
-    int delete(String userId, String achievementId);
+    public Results<UserAchievement> getAll(Connection connection, Page page, Set<Sort> sort) {
+        String sql = format("SELECT * FROM user_achievements %s LIMIT ? OFFSET ?", getSort(sort));
+        String count = "SELECT COUNT(*) FROM user_achievements";
+        return results(connection, ROW_MAPPER, page, sql, count);
+    }
+
+    public int consume(Connection connection, Consumer<UserAchievement> consumer, Set<Sort> sort) {
+        String sql = format("SELECT * FROM user_achievements %s", getSort(sort));
+        return consume(connection, ROW_MAPPER, consumer, sql);
+    }
+
+    public int add(Connection connection, UserAchievement userAchievement) {
+        String sql = "INSERT INTO user_achievements (user_id, achievement_id, timestamp, description) VALUES (?, ?, ?, ?)";
+        return update(connection, INSERT_ROW_SETTER, sql, userAchievement);
+    }
+
+    public int deleteForUser(Connection connection, String userId) {
+        return update(connection, "DELETE FROM user_achievements WHERE user_id = ?", userId);
+    }
+
+    public int delete(Connection connection, String userId, String achievementId) {
+        String sql = "DELETE FROM user_achievements WHERE user_id = ? AND achievement_id = ?";
+        return update(connection, sql, userId, achievementId);
+    }
+
+    public int truncate(Connection connection) {
+        return update(connection, "DELETE FROM user_achievements");
+    }
 }

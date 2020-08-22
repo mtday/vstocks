@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class CreditValueServiceImpl extends BaseService implements CreditValueService {
-    private final CreditValueTable creditValueTable = new CreditValueTable();
+    private final CreditValueDB creditValueTable = new CreditValueDB();
 
     public CreditValueServiceImpl(DataSource dataSource) {
         super(dataSource);

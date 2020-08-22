@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class MarketTotalValueServiceImpl extends BaseService implements MarketTotalValueService {
-    private final MarketTotalValueTable marketTotalValueTable = new MarketTotalValueTable();
+    private final MarketTotalValueDB marketTotalValueTable = new MarketTotalValueDB();
 
     public MarketTotalValueServiceImpl(DataSource dataSource) {
         super(dataSource);

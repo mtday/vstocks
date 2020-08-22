@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.Set;
 
 public class ActiveUserCountServiceImpl extends BaseService implements ActiveUserCountService {
-    private final ActiveUserCountTable activeUserCountTable = new ActiveUserCountTable();
+    private final ActiveUserCountDB activeUserCountTable = new ActiveUserCountDB();
 
     public ActiveUserCountServiceImpl(DataSource dataSource) {
         super(dataSource);

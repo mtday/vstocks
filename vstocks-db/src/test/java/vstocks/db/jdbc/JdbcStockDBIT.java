@@ -5,7 +5,8 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import vstocks.db.DataSourceExternalResource;
-import vstocks.db.jdbc.table.StockTable;
+import vstocks.db.StockServiceImpl;
+import vstocks.db.StockDB;
 import vstocks.model.Page;
 import vstocks.model.Results;
 import vstocks.model.Sort;
@@ -28,13 +29,13 @@ public class JdbcStockDBIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private StockTable stockTable;
-    private JdbcStockDB stockDB;
+    private StockDB stockTable;
+    private StockServiceImpl stockDB;
 
     @Before
     public void setup() throws SQLException {
-        stockTable = new StockTable();
-        stockDB = new JdbcStockDB(dataSourceExternalResource.get());
+        stockTable = new StockDB();
+        stockDB = new StockServiceImpl(dataSourceExternalResource.get());
 
         // Clean out the stocks added via flyway
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {

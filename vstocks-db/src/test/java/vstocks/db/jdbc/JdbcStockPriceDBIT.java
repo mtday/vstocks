@@ -5,8 +5,9 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import vstocks.db.DataSourceExternalResource;
-import vstocks.db.jdbc.table.StockPriceTable;
-import vstocks.db.jdbc.table.StockTable;
+import vstocks.db.StockPriceServiceImpl;
+import vstocks.db.StockPriceDB;
+import vstocks.db.StockDB;
 import vstocks.model.*;
 
 import java.sql.Connection;
@@ -31,18 +32,18 @@ public class JdbcStockPriceDBIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private StockTable stockTable;
-    private StockPriceTable stockPriceTable;
-    private JdbcStockPriceDB stockPriceDB;
+    private StockDB stockTable;
+    private StockPriceDB stockPriceTable;
+    private StockPriceServiceImpl stockPriceDB;
 
     private final Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1");
     private final Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2");
 
     @Before
     public void setup() throws SQLException {
-        stockTable = new StockTable();
-        stockPriceTable = new StockPriceTable();
-        stockPriceDB = new JdbcStockPriceDB(dataSourceExternalResource.get());
+        stockTable = new StockDB();
+        stockPriceTable = new StockPriceDB();
+        stockPriceDB = new StockPriceServiceImpl(dataSourceExternalResource.get());
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, stockTable.add(connection, stock1));

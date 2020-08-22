@@ -6,7 +6,7 @@ import org.pac4j.jax.rs.annotations.Pac4JSecurity;
 import vstocks.model.Market;
 import vstocks.model.PricedUserStock;
 import vstocks.rest.resource.BaseResource;
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -18,10 +18,10 @@ import static javax.ws.rs.core.MediaType.WILDCARD;
 @Path("/market/{market}/stock/{symbol}/buy/{shares:[0-9]+}")
 @Singleton
 public class BuyStock extends BaseResource {
-    private final DBFactory dbFactory;
+    private final ServiceFactory dbFactory;
 
     @Inject
-    public BuyStock(DBFactory dbFactory) {
+    public BuyStock(ServiceFactory dbFactory) {
         this.dbFactory = dbFactory;
     }
 

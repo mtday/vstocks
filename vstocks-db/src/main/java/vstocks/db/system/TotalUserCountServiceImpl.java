@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.Set;
 
 public class TotalUserCountServiceImpl extends BaseService implements TotalUserCountService {
-    private final TotalUserCountTable totalUserCountTable = new TotalUserCountTable();
+    private final TotalUserCountDB totalUserCountTable = new TotalUserCountDB();
 
     public TotalUserCountServiceImpl(DataSource dataSource) {
         super(dataSource);

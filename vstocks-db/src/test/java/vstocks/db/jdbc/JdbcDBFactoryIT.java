@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import vstocks.db.DataSourceExternalResource;
+import vstocks.db.ServiceFactoryImpl;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -11,11 +12,11 @@ public class JdbcDBFactoryIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private JdbcDBFactory dbFactory;
+    private ServiceFactoryImpl dbFactory;
 
     @Before
     public void setup() {
-        dbFactory = new JdbcDBFactory(dataSourceExternalResource.get());
+        dbFactory = new ServiceFactoryImpl(dataSourceExternalResource.get());
     }
 
     @Test

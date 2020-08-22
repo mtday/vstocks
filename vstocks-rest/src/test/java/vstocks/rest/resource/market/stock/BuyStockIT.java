@@ -1,8 +1,8 @@
 package vstocks.rest.resource.market.stock;
 
 import org.junit.Test;
-import vstocks.db.PricedUserStockDB;
-import vstocks.db.UserStockDB;
+import vstocks.db.PricedUserStockService;
+import vstocks.db.UserStockService;
 import vstocks.model.ErrorResponse;
 import vstocks.model.PricedUserStock;
 import vstocks.model.User;
@@ -26,9 +26,9 @@ import static vstocks.model.Market.TWITTER;
 public class BuyStockIT extends ResourceTest {
     @Test
     public void testMarketMissing() {
-        UserStockDB userStockDb = mock(UserStockDB.class);
+        UserStockService userStockDb = mock(UserStockService.class);
         when(getDBFactory().getUserStockDB()).thenReturn(userStockDb);
-        PricedUserStockDB pricedUserStockDb = mock(PricedUserStockDB.class);
+        PricedUserStockService pricedUserStockDb = mock(PricedUserStockService.class);
         when(getDBFactory().getPricedUserStockDB()).thenReturn(pricedUserStockDb);
 
         Response response = target("/market/missing/stock/symbol/buy/10").request().post(entity("", APPLICATION_JSON_TYPE));
@@ -47,10 +47,10 @@ public class BuyStockIT extends ResourceTest {
     @Test
     public void testStockMissing() {
         User user = getUser();
-        UserStockDB userStockDb = mock(UserStockDB.class);
+        UserStockService userStockDb = mock(UserStockService.class);
         when(userStockDb.buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10))).thenReturn(0);
         when(getDBFactory().getUserStockDB()).thenReturn(userStockDb);
-        PricedUserStockDB pricedUserStockDb = mock(PricedUserStockDB.class);
+        PricedUserStockService pricedUserStockDb = mock(PricedUserStockService.class);
         when(getDBFactory().getPricedUserStockDB()).thenReturn(pricedUserStockDb);
 
         Response response = target("/market/twitter/stock/symbol/buy/10").request().post(entity("", APPLICATION_JSON_TYPE));
@@ -69,12 +69,12 @@ public class BuyStockIT extends ResourceTest {
     @Test
     public void testBuySuccessStockFound() {
         User user = getUser();
-        UserStockDB userStockDb = mock(UserStockDB.class);
+        UserStockService userStockDb = mock(UserStockService.class);
         when(userStockDb.buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10))).thenReturn(1);
         when(getDBFactory().getUserStockDB()).thenReturn(userStockDb);
         Instant now = Instant.now().truncatedTo(SECONDS);
         PricedUserStock pricedUserStock = new PricedUserStock().setUserId(user.getId()).setMarket(TWITTER).setSymbol("symbol").setShares(10).setTimestamp(now).setPrice(10);
-        PricedUserStockDB pricedUserStockDb = mock(PricedUserStockDB.class);
+        PricedUserStockService pricedUserStockDb = mock(PricedUserStockService.class);
         when(pricedUserStockDb.get(eq(user.getId()), eq(TWITTER), eq("symbol"))).thenReturn(Optional.of(pricedUserStock));
         when(getDBFactory().getPricedUserStockDB()).thenReturn(pricedUserStockDb);
 
@@ -98,10 +98,10 @@ public class BuyStockIT extends ResourceTest {
     @Test
     public void testBuySuccessStockNotFound() {
         User user = getUser();
-        UserStockDB userStockDb = mock(UserStockDB.class);
+        UserStockService userStockDb = mock(UserStockService.class);
         when(userStockDb.buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10))).thenReturn(1);
         when(getDBFactory().getUserStockDB()).thenReturn(userStockDb);
-        PricedUserStockDB pricedUserStockDb = mock(PricedUserStockDB.class);
+        PricedUserStockService pricedUserStockDb = mock(PricedUserStockService.class);
         when(pricedUserStockDb.get(eq(user.getId()), eq(TWITTER), eq("symbol"))).thenReturn(empty());
         when(getDBFactory().getPricedUserStockDB()).thenReturn(pricedUserStockDb);
 

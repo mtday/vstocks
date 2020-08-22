@@ -2,7 +2,7 @@ package vstocks.rest.resource.user;
 
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
-import vstocks.db.UserDB;
+import vstocks.db.UserService;
 import vstocks.model.ErrorResponse;
 import vstocks.model.User;
 import vstocks.rest.ResourceTest;
@@ -56,7 +56,7 @@ public class PutUserIT extends ResourceTest {
 
     @Test
     public void testPutUserNoChange() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenAnswer((Answer<Optional<User>>) invocation -> Optional.of(getUser()));
         when(userDB.update(any())).thenReturn(0); // 0 means db was not updated
         when(getDBFactory().getUserDB()).thenReturn(userDB);
@@ -93,7 +93,7 @@ public class PutUserIT extends ResourceTest {
 
     @Test
     public void testPutUserChanged() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.update(any())).thenReturn(1); // 1 means db was updated
         when(getDBFactory().getUserDB()).thenReturn(userDB);
@@ -130,7 +130,7 @@ public class PutUserIT extends ResourceTest {
 
     @Test
     public void testPutUserInvalidDisplayName() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.update(any())).thenReturn(1); // 1 means db was updated
         when(getDBFactory().getUserDB()).thenReturn(userDB);
@@ -157,7 +157,7 @@ public class PutUserIT extends ResourceTest {
         User user = getUser();
         user.setDisplayName("Invalid<>");
 
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(user.getId()))).thenReturn(Optional.of(user));
         when(userDB.update(any())).thenReturn(1); // 1 means db was updated
         when(getDBFactory().getUserDB()).thenReturn(userDB);
@@ -193,7 +193,7 @@ public class PutUserIT extends ResourceTest {
 
     @Test
     public void testPutUserInvalidUsername() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.update(any())).thenReturn(1); // 1 means db was updated
         when(getDBFactory().getUserDB()).thenReturn(userDB);
@@ -220,7 +220,7 @@ public class PutUserIT extends ResourceTest {
         User user = getUser();
         user.setUsername("Invalid<>");
 
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(user.getId()))).thenReturn(Optional.of(user));
         when(userDB.update(any())).thenReturn(1); // 1 means db was updated
         when(getDBFactory().getUserDB()).thenReturn(userDB);

@@ -1,7 +1,7 @@
 package vstocks.rest.resource.user;
 
 import org.junit.Test;
-import vstocks.db.UserDB;
+import vstocks.db.UserService;
 import vstocks.model.ErrorResponse;
 import vstocks.model.UsernameExists;
 import vstocks.rest.ResourceTest;
@@ -53,7 +53,7 @@ public class UsernameExistsIT extends ResourceTest {
 
     @Test
     public void testUsernameExists() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.usernameExists(eq("username"))).thenReturn(true);
         when(getDBFactory().getUserDB()).thenReturn(userDB);
@@ -75,7 +75,7 @@ public class UsernameExistsIT extends ResourceTest {
 
     @Test
     public void testUsernameDoesNotExist() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.usernameExists(eq("username"))).thenReturn(false);
         when(getDBFactory().getUserDB()).thenReturn(userDB);
@@ -97,7 +97,7 @@ public class UsernameExistsIT extends ResourceTest {
 
     @Test
     public void testNoQueryParam() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.usernameExists(eq("username"))).thenReturn(false);
         when(getDBFactory().getUserDB()).thenReturn(userDB);
@@ -118,7 +118,7 @@ public class UsernameExistsIT extends ResourceTest {
 
     @Test
     public void testEmptyQueryParam() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.usernameExists(eq("username"))).thenReturn(false);
         when(getDBFactory().getUserDB()).thenReturn(userDB);
@@ -140,7 +140,7 @@ public class UsernameExistsIT extends ResourceTest {
 
     @Test
     public void testWhiteSpaceQueryParam() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.usernameExists(eq("username"))).thenReturn(false);
         when(getDBFactory().getUserDB()).thenReturn(userDB);

@@ -1,6 +1,6 @@
 package vstocks.rest.resource.user.achievement;
 
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.model.UserAchievement;
 import vstocks.rest.resource.BaseResource;
 import vstocks.rest.security.JwtTokenRequired;
@@ -19,10 +19,10 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/user/achievements")
 @Singleton
 public class GetUserAchievements extends BaseResource {
-    private final DBFactory dbFactory;
+    private final ServiceFactory dbFactory;
 
     @Inject
-    public GetUserAchievements(DBFactory dbFactory) {
+    public GetUserAchievements(ServiceFactory dbFactory) {
         this.dbFactory = dbFactory;
     }
 

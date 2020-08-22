@@ -5,9 +5,9 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import vstocks.db.DataSourceExternalResource;
-import vstocks.db.jdbc.table.ActivityLogTable;
+import vstocks.db.ActivityLogTable;
 import vstocks.db.jdbc.table.UserCountTable;
-import vstocks.db.jdbc.table.UserTable;
+import vstocks.db.UserDB;
 import vstocks.model.*;
 import vstocks.model.system.UserCount;
 import vstocks.model.system.UserCountCollection;
@@ -34,7 +34,7 @@ public class JdbcUserCountDBIT {
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
     private ActivityLogTable activityLogTable;
-    private UserTable userTable;
+    private UserDB userTable;
     private UserCountTable userCountTable;
 
     private JdbcUserCountDB userCountDB;
@@ -44,7 +44,7 @@ public class JdbcUserCountDBIT {
     @Before
     public void setup() {
         activityLogTable = new ActivityLogTable();
-        userTable = new UserTable();
+        userTable = new UserDB();
         userCountTable = new UserCountTable();
         userCountDB = new JdbcUserCountDB(dataSourceExternalResource.get());
     }

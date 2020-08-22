@@ -1,7 +1,7 @@
 package vstocks.rest.resource.market.stock;
 
 import org.junit.Test;
-import vstocks.db.PricedStockDB;
+import vstocks.db.PricedStockService;
 import vstocks.model.ErrorResponse;
 import vstocks.model.Page;
 import vstocks.model.PricedStock;
@@ -39,7 +39,7 @@ public class GetStocksForMarketIT extends ResourceTest {
 
     @Test
     public void testGetForMarketsNone() {
-        PricedStockDB pricedStockDb = mock(PricedStockDB.class);
+        PricedStockService pricedStockDb = mock(PricedStockService.class);
         when(pricedStockDb.getForMarket(eq(TWITTER), any(), anySet())).thenReturn(new Results<>());
         when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
 
@@ -64,7 +64,7 @@ public class GetStocksForMarketIT extends ResourceTest {
 
         Results<PricedStock> results = new Results<PricedStock>().setPage(new Page()).setTotal(3)
                 .setResults(asList(pricedStock1, pricedStock2, pricedStock3));
-        PricedStockDB pricedStockDb = mock(PricedStockDB.class);
+        PricedStockService pricedStockDb = mock(PricedStockService.class);
         when(pricedStockDb.getForMarket(eq(TWITTER), any(), anySet())).thenReturn(results);
         when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
 

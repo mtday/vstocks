@@ -4,9 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.db.DataSourceExternalResource;
-import vstocks.db.jdbc.table.StockPriceTable;
-import vstocks.db.jdbc.table.StockTable;
+import vstocks.db.*;
 import vstocks.model.*;
 
 import java.sql.Connection;
@@ -27,20 +25,20 @@ public class JdbcPricedStockDBIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private StockTable stockTable;
-    private StockPriceTable stockPriceTable;
+    private StockDB stockTable;
+    private StockPriceDB stockPriceTable;
 
-    private JdbcStockDB stockDB;
-    private JdbcStockPriceDB stockPriceDB;
-    private JdbcPricedStockDB pricedStockDB;
+    private StockServiceImpl stockDB;
+    private StockPriceServiceImpl stockPriceDB;
+    private PricedStockServiceImpl pricedStockDB;
 
     @Before
     public void setup() throws SQLException {
-        stockTable = new StockTable();
-        stockPriceTable = new StockPriceTable();
-        stockDB = new JdbcStockDB(dataSourceExternalResource.get());
-        stockPriceDB = new JdbcStockPriceDB(dataSourceExternalResource.get());
-        pricedStockDB = new JdbcPricedStockDB(dataSourceExternalResource.get());
+        stockTable = new StockDB();
+        stockPriceTable = new StockPriceDB();
+        stockDB = new StockServiceImpl(dataSourceExternalResource.get());
+        stockPriceDB = new StockPriceServiceImpl(dataSourceExternalResource.get());
+        pricedStockDB = new PricedStockServiceImpl(dataSourceExternalResource.get());
 
         // Clear out the initial stocks from the Flyway script
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {

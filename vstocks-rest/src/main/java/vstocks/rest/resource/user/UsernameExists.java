@@ -1,6 +1,6 @@
 package vstocks.rest.resource.user;
 
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.rest.resource.BaseResource;
 import vstocks.rest.security.JwtTokenRequired;
 
@@ -14,10 +14,10 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/user/exists")
 @Singleton
 public class UsernameExists extends BaseResource {
-    private final DBFactory dbFactory;
+    private final ServiceFactory dbFactory;
 
     @Inject
-    public UsernameExists(DBFactory dbFactory) {
+    public UsernameExists(ServiceFactory dbFactory) {
         this.dbFactory = dbFactory;
     }
 

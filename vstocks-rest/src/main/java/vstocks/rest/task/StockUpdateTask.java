@@ -2,7 +2,7 @@ package vstocks.rest.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.model.Market;
 import vstocks.model.PricedStock;
 import vstocks.rest.Environment;
@@ -52,7 +52,7 @@ public class StockUpdateTask implements Task {
         try {
             LOGGER.info("Updating all stock prices");
             RemoteStockServiceFactory remoteStockServiceFactory = environment.getRemoteStockServiceFactory();
-            DBFactory dbFactory = environment.getDBFactory();
+            ServiceFactory dbFactory = environment.getDBFactory();
 
             Consumer<PricedStock> updateConsumer = pricedStock -> {
                 LOGGER.info("Updating: {}", pricedStock);

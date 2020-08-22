@@ -4,9 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import vstocks.achievement.DataSourceExternalResource;
-import vstocks.db.DBFactory;
-import vstocks.db.jdbc.JdbcDBFactory;
-import vstocks.db.jdbc.table.*;
+import vstocks.db.*;
+import vstocks.db.ServiceFactoryImpl;
 import vstocks.model.Stock;
 import vstocks.model.StockPrice;
 import vstocks.model.User;
@@ -37,24 +36,24 @@ public abstract class BaseAchievementProviderIT {
     public final Stock facebookStock = new Stock().setMarket(FACEBOOK).setSymbol("symbol").setName("Name").setProfileImage("link");
     public final StockPrice facebookStockPrice = new StockPrice().setMarket(FACEBOOK).setSymbol("symbol").setPrice(10).setTimestamp(now);
 
-    public DBFactory getDBFactory() {
-        return new JdbcDBFactory(dataSourceExternalResource.get());
+    public ServiceFactory getDBFactory() {
+        return new ServiceFactoryImpl(dataSourceExternalResource.get());
     }
 
     @Before
     public void setup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            new UserTable().add(connection, user);
-            new StockTable().add(connection, twitterStock);
-            new StockTable().add(connection, youtubeStock);
-            new StockTable().add(connection, instagramStock);
-            new StockTable().add(connection, twitchStock);
-            new StockTable().add(connection, facebookStock);
-            new StockPriceTable().add(connection, twitterStockPrice);
-            new StockPriceTable().add(connection, youtubeStockPrice);
-            new StockPriceTable().add(connection, instagramStockPrice);
-            new StockPriceTable().add(connection, twitchStockPrice);
-            new StockPriceTable().add(connection, facebookStockPrice);
+            new UserDB().add(connection, user);
+            new StockDB().add(connection, twitterStock);
+            new StockDB().add(connection, youtubeStock);
+            new StockDB().add(connection, instagramStock);
+            new StockDB().add(connection, twitchStock);
+            new StockDB().add(connection, facebookStock);
+            new StockPriceDB().add(connection, twitterStockPrice);
+            new StockPriceDB().add(connection, youtubeStockPrice);
+            new StockPriceDB().add(connection, instagramStockPrice);
+            new StockPriceDB().add(connection, twitchStockPrice);
+            new StockPriceDB().add(connection, facebookStockPrice);
             connection.commit();
         }
     }
@@ -63,12 +62,12 @@ public abstract class BaseAchievementProviderIT {
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             new ActivityLogTable().truncate(connection);
-            new StockTable().truncate(connection);
-            new StockPriceTable().truncate(connection);
-            new UserAchievementTable().truncate(connection);
-            new UserCreditsTable().truncate(connection);
-            new UserStockTable().truncate(connection);
-            new UserTable().truncate(connection);
+            new StockDB().truncate(connection);
+            new StockPriceDB().truncate(connection);
+            new UserAchievementDB().truncate(connection);
+            new UserCreditsDB().truncate(connection);
+            new UserStockDB().truncate(connection);
+            new UserDB().truncate(connection);
             connection.commit();
         }
     }

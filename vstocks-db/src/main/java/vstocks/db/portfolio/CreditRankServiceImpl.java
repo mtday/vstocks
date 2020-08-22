@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class CreditRankServiceImpl extends BaseService implements CreditRankService {
-    private final CreditRankTable creditRankTable = new CreditRankTable();
+    private final CreditRankDB creditRankTable = new CreditRankDB();
 
     public CreditRankServiceImpl(DataSource dataSource) {
         super(dataSource);

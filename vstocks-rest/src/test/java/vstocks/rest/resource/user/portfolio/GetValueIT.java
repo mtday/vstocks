@@ -2,7 +2,7 @@ package vstocks.rest.resource.user.portfolio;
 
 import org.junit.Test;
 import vstocks.db.PortfolioValueDB;
-import vstocks.db.UserDB;
+import vstocks.db.UserService;
 import vstocks.model.Delta;
 import vstocks.model.ErrorResponse;
 import vstocks.model.PortfolioValue;
@@ -60,7 +60,7 @@ public class GetValueIT extends ResourceTest {
 
     @Test
     public void testUserPortfolioValuesWithData() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getDBFactory().getUserDB()).thenReturn(userDB);
 

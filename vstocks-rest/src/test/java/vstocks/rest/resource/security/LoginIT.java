@@ -2,8 +2,8 @@ package vstocks.rest.resource.security;
 
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
-import vstocks.db.ActivityLogDB;
-import vstocks.db.UserDB;
+import vstocks.db.ActivityLogService;
+import vstocks.db.UserService;
 import vstocks.model.ActivityLog;
 import vstocks.model.User;
 import vstocks.rest.ResourceTest;
@@ -32,11 +32,11 @@ public class LoginIT extends ResourceTest {
     }
 
     private void testLoginNoExistingUserNoExistingUsername(String type) {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(empty());
         when(userDB.usernameExists(eq(getUser().getUsername()))).thenReturn(false);
 
-        ActivityLogDB activityLogDB = mock(ActivityLogDB.class);
+        ActivityLogService activityLogDB = mock(ActivityLogService.class);
 
         when(getDBFactory().getUserDB()).thenReturn(userDB);
         when(getDBFactory().getActivityLogDB()).thenReturn(activityLogDB);
@@ -67,11 +67,11 @@ public class LoginIT extends ResourceTest {
     }
 
     private void testLoginNoExistingUserExistingUsernameConflict(String type) {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(empty());
         when(userDB.usernameExists(eq(getUser().getUsername()))).thenReturn(true, false);
 
-        ActivityLogDB activityLogDB = mock(ActivityLogDB.class);
+        ActivityLogService activityLogDB = mock(ActivityLogService.class);
 
         when(getDBFactory().getUserDB()).thenReturn(userDB);
         when(getDBFactory().getActivityLogDB()).thenReturn(activityLogDB);
@@ -103,11 +103,11 @@ public class LoginIT extends ResourceTest {
     }
 
     private void testLoginExistingUserDifferentProfileImage(String type) {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId())))
                 .thenReturn(Optional.of(getUser().setProfileImage("https://different/image.png")));
 
-        ActivityLogDB activityLogDB = mock(ActivityLogDB.class);
+        ActivityLogService activityLogDB = mock(ActivityLogService.class);
 
         when(getDBFactory().getUserDB()).thenReturn(userDB);
         when(getDBFactory().getActivityLogDB()).thenReturn(activityLogDB);

@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class TotalRankServiceImpl extends BaseService implements TotalRankService {
-    private final TotalRankTable totalRankTable = new TotalRankTable();
+    private final TotalRankDB totalRankTable = new TotalRankDB();
 
     public TotalRankServiceImpl(DataSource dataSource) {
         super(dataSource);

@@ -4,8 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.db.DataSourceExternalResource;
-import vstocks.db.jdbc.table.*;
+import vstocks.db.*;
 import vstocks.model.*;
 
 import java.sql.Connection;
@@ -30,11 +29,11 @@ public class JdbcPortfolioValueSummaryDBIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private UserTable userTable;
-    private StockTable stockTable;
-    private StockPriceTable stockPriceTable;
-    private UserCreditsTable userCreditsTable;
-    private UserStockTable userStockTable;
+    private UserDB userTable;
+    private StockDB stockTable;
+    private StockPriceDB stockPriceTable;
+    private UserCreditsDB userCreditsTable;
+    private UserStockDB userStockTable;
     private PortfolioValueSummaryTable portfolioValueSummaryTable;
 
     private JdbcPortfolioValueSummaryDB portfolioValueSummaryDB;
@@ -57,11 +56,11 @@ public class JdbcPortfolioValueSummaryDBIT {
 
     @Before
     public void setup() throws SQLException {
-        userTable = new UserTable();
-        stockTable = new StockTable();
-        stockPriceTable = new StockPriceTable();
-        userCreditsTable = new UserCreditsTable();
-        userStockTable = new UserStockTable();
+        userTable = new UserDB();
+        stockTable = new StockDB();
+        stockPriceTable = new StockPriceDB();
+        userCreditsTable = new UserCreditsDB();
+        userStockTable = new UserStockDB();
         portfolioValueSummaryTable = new PortfolioValueSummaryTable();
         portfolioValueSummaryDB = new JdbcPortfolioValueSummaryDB(dataSourceExternalResource.get());
 

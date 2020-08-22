@@ -1,6 +1,6 @@
 package vstocks.rest.security;
 
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.model.ErrorResponse;
 
 import javax.annotation.Priority;
@@ -26,11 +26,11 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 public class JwtTokenFilter implements ContainerRequestFilter {
     public static final String INVALID_JWT_MESSAGE = "Missing or invalid JWT authorization bearer token";
 
-    private final DBFactory dbFactory;
+    private final ServiceFactory dbFactory;
     private final JwtSecurity jwtSecurity;
 
     @Inject
-    public JwtTokenFilter(DBFactory dbFactory, JwtSecurity jwtSecurity) {
+    public JwtTokenFilter(ServiceFactory dbFactory, JwtSecurity jwtSecurity) {
         this.dbFactory = dbFactory;
         this.jwtSecurity = jwtSecurity;
     }

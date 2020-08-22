@@ -2,10 +2,10 @@ package vstocks.rest.task;
 
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
-import vstocks.db.DBFactory;
-import vstocks.db.OwnedStockDB;
-import vstocks.db.StockDB;
-import vstocks.db.StockPriceDB;
+import vstocks.db.ServiceFactory;
+import vstocks.db.OwnedStockService;
+import vstocks.db.StockService;
+import vstocks.db.StockPriceService;
 import vstocks.model.Market;
 import vstocks.model.PricedStock;
 import vstocks.model.Stock;
@@ -70,21 +70,21 @@ public class StockUpdateTaskTest {
         RemoteStockServiceFactory remoteStockServiceFactory = mock(RemoteStockServiceFactory.class);
         when(remoteStockServiceFactory.getForMarket(any())).thenReturn(remoteStockService);
 
-        StockDB stockDB = mock(StockDB.class);
+        StockService stockDB = mock(StockService.class);
         List<Stock> updatedStocks = new ArrayList<>();
         when(stockDB.update(any())).thenAnswer((Answer<Integer>) invocation -> {
             updatedStocks.add(invocation.getArgument(0));
             return 1;
         });
 
-        StockPriceDB stockPriceDB = mock(StockPriceDB.class);
+        StockPriceService stockPriceDB = mock(StockPriceService.class);
         List<StockPrice> addedStockPrices = new ArrayList<>();
         when(stockPriceDB.add(any())).thenAnswer((Answer<Integer>) invocation -> {
             addedStockPrices.add(invocation.getArgument(0));
             return 1;
         });
 
-        OwnedStockDB ownedStockDB = mock(OwnedStockDB.class);
+        OwnedStockService ownedStockDB = mock(OwnedStockService.class);
         when(ownedStockDB.consumeForMarket(any(), any(), any())).thenAnswer((Answer<Integer>) invocation -> {
             Market market = invocation.getArgument(0);
             Consumer<Stock> consumer = invocation.getArgument(1);
@@ -93,7 +93,7 @@ public class StockUpdateTaskTest {
             return 2;
         });
 
-        DBFactory dbFactory = mock(DBFactory.class);
+        ServiceFactory dbFactory = mock(ServiceFactory.class);
         when(dbFactory.getOwnedStockDB()).thenReturn(ownedStockDB);
         when(dbFactory.getStockDB()).thenReturn(stockDB);
         when(dbFactory.getStockPriceDB()).thenReturn(stockPriceDB);

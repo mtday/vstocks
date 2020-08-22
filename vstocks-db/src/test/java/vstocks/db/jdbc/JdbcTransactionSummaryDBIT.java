@@ -4,11 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.db.DataSourceExternalResource;
-import vstocks.db.jdbc.table.ActivityLogTable;
-import vstocks.db.jdbc.table.StockTable;
-import vstocks.db.jdbc.table.TransactionSummaryTable;
-import vstocks.db.jdbc.table.UserTable;
+import vstocks.db.*;
 import vstocks.model.*;
 import vstocks.model.system.TransactionSummary;
 import vstocks.model.system.TransactionSummaryCollection;
@@ -37,8 +33,8 @@ public class JdbcTransactionSummaryDBIT {
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
     private ActivityLogTable activityLogTable;
-    private UserTable userTable;
-    private StockTable stockTable;
+    private UserDB userTable;
+    private StockDB stockTable;
     private TransactionSummaryTable transactionSummaryTable;
 
     private JdbcTransactionSummaryDB transactionSummaryDB;
@@ -52,8 +48,8 @@ public class JdbcTransactionSummaryDBIT {
     @Before
     public void setup() throws SQLException {
         activityLogTable = new ActivityLogTable();
-        userTable = new UserTable();
-        stockTable = new StockTable();
+        userTable = new UserDB();
+        stockTable = new StockDB();
         transactionSummaryTable = new TransactionSummaryTable();
         transactionSummaryDB = new JdbcTransactionSummaryDB(dataSourceExternalResource.get());
 

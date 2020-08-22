@@ -2,7 +2,7 @@ package vstocks.rest.task;
 
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.db.UserCountDB;
 import vstocks.model.system.UserCount;
 import vstocks.rest.Environment;
@@ -48,7 +48,7 @@ public class UserCountGenerateTaskTest {
             return 1;
         });
 
-        DBFactory dbFactory = mock(DBFactory.class);
+        ServiceFactory dbFactory = mock(ServiceFactory.class);
         when(dbFactory.getUserCountDB()).thenReturn(userCountDB);
 
         Environment environment = mock(Environment.class);

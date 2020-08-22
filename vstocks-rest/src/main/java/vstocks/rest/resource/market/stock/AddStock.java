@@ -3,7 +3,7 @@ package vstocks.rest.resource.market.stock;
 import vstocks.model.Market;
 import vstocks.model.PricedStock;
 import vstocks.rest.resource.BaseResource;
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
 import javax.inject.Inject;
@@ -16,11 +16,11 @@ import static javax.ws.rs.core.MediaType.WILDCARD;
 @Path("/market/{market}/stock/{symbol}")
 @Singleton
 public class AddStock extends BaseResource {
-    private final DBFactory dbFactory;
+    private final ServiceFactory dbFactory;
     private final RemoteStockServiceFactory remoteStockServiceFactory;
 
     @Inject
-    public AddStock(DBFactory dbFactory, RemoteStockServiceFactory remoteStockServiceFactory) {
+    public AddStock(ServiceFactory dbFactory, RemoteStockServiceFactory remoteStockServiceFactory) {
         this.dbFactory = dbFactory;
         this.remoteStockServiceFactory = remoteStockServiceFactory;
     }

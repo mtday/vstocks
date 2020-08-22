@@ -3,7 +3,7 @@ package vstocks.rest.resource.market.stock;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.model.Market;
 import vstocks.model.PricedUserStock;
 import vstocks.rest.resource.BaseResource;
@@ -20,10 +20,10 @@ import static javax.ws.rs.core.MediaType.WILDCARD;
 @Path("/market/{market}/stock/{symbol}/sell/{shares:[0-9]+}")
 @Singleton
 public class SellStock extends BaseResource {
-    private final DBFactory dbFactory;
+    private final ServiceFactory dbFactory;
 
     @Inject
-    public SellStock(DBFactory dbFactory) {
+    public SellStock(ServiceFactory dbFactory) {
         this.dbFactory = dbFactory;
     }
 

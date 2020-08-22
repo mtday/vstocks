@@ -1,6 +1,6 @@
 package vstocks.rest.resource.market.stock;
 
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.model.Market;
 import vstocks.model.PricedStock;
 import vstocks.model.Results;
@@ -15,10 +15,10 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/market/{marketId}/stocks")
 @Singleton
 public class GetStocksForMarket extends BaseResource {
-    private final DBFactory dbFactory;
+    private final ServiceFactory dbFactory;
 
     @Inject
-    public GetStocksForMarket(DBFactory dbFactory) {
+    public GetStocksForMarket(ServiceFactory dbFactory) {
         this.dbFactory = dbFactory;
     }
 

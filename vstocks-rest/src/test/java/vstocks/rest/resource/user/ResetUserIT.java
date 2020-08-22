@@ -1,7 +1,7 @@
 package vstocks.rest.resource.user;
 
 import org.junit.Test;
-import vstocks.db.UserDB;
+import vstocks.db.UserService;
 import vstocks.model.ErrorResponse;
 import vstocks.rest.ResourceTest;
 
@@ -48,7 +48,7 @@ public class ResetUserIT extends ResourceTest {
 
     @Test
     public void testResetUser() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getDBFactory().getUserDB()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));

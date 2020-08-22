@@ -2,7 +2,7 @@ package vstocks.rest.resource.user.portfolio;
 
 import org.junit.Test;
 import vstocks.db.PortfolioValueRankDB;
-import vstocks.db.UserDB;
+import vstocks.db.UserService;
 import vstocks.model.Delta;
 import vstocks.model.ErrorResponse;
 import vstocks.model.PortfolioValueRank;
@@ -58,7 +58,7 @@ public class GetRankIT extends ResourceTest {
 
     @Test
     public void testUserPortfolioRanksWithData() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getDBFactory().getUserDB()).thenReturn(userDB);
 

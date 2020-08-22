@@ -3,11 +3,11 @@ package vstocks.achievement;
 import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.db.DBFactory;
-import vstocks.db.jdbc.JdbcDBFactory;
-import vstocks.db.jdbc.table.ActivityLogTable;
-import vstocks.db.jdbc.table.StockTable;
-import vstocks.db.jdbc.table.UserTable;
+import vstocks.db.ServiceFactory;
+import vstocks.db.ServiceFactoryImpl;
+import vstocks.db.ActivityLogTable;
+import vstocks.db.StockDB;
+import vstocks.db.UserDB;
 import vstocks.model.*;
 
 import java.sql.Connection;
@@ -34,8 +34,8 @@ public class AchievementServiceIT {
     public void cleanup() throws SQLException {
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             new ActivityLogTable().truncate(connection);
-            new StockTable().truncate(connection);
-            new UserTable().truncate(connection);
+            new StockDB().truncate(connection);
+            new UserDB().truncate(connection);
             connection.commit();
         }
     }
@@ -64,7 +64,7 @@ public class AchievementServiceIT {
 
     @Test
     public void testCheck() {
-        DBFactory dbFactory = new JdbcDBFactory(dataSourceExternalResource.get());
+        ServiceFactory dbFactory = new ServiceFactoryImpl(dataSourceExternalResource.get());
 
         Instant now = Instant.now().truncatedTo(SECONDS);
         User user = new User().setId(generateId("testuser@domain.com")).setEmail("testuser@domain.com").setUsername("testuser").setDisplayName("User");

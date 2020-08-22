@@ -4,12 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.db.DataSourceExternalResource;
-import vstocks.db.PricedUserStockDB;
-import vstocks.db.jdbc.table.StockPriceTable;
-import vstocks.db.jdbc.table.StockTable;
-import vstocks.db.jdbc.table.UserStockTable;
-import vstocks.db.jdbc.table.UserTable;
+import vstocks.db.*;
 import vstocks.model.*;
 
 import java.sql.Connection;
@@ -30,11 +25,11 @@ public class JdbcPricedUserStockDBIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private UserTable userTable;
-    private UserStockTable userStockTable;
-    private StockTable stockTable;
-    private StockPriceTable stockPriceTable;
-    private PricedUserStockDB pricedUserStockDB;
+    private UserDB userTable;
+    private UserStockDB userStockTable;
+    private StockDB stockTable;
+    private StockPriceDB stockPriceTable;
+    private PricedUserStockService pricedUserStockDB;
 
     private final User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
     private final User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
@@ -43,11 +38,11 @@ public class JdbcPricedUserStockDBIT {
 
     @Before
     public void setup() throws SQLException {
-        userTable = new UserTable();
-        userStockTable = new UserStockTable();
-        stockTable = new StockTable();
-        stockPriceTable = new StockPriceTable();
-        pricedUserStockDB = new JdbcPricedUserStockDB(dataSourceExternalResource.get());
+        userTable = new UserDB();
+        userStockTable = new UserStockDB();
+        stockTable = new StockDB();
+        stockPriceTable = new StockPriceDB();
+        pricedUserStockDB = new PricedUserStockServiceImpl(dataSourceExternalResource.get());
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user1));

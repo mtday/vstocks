@@ -2,8 +2,8 @@ package vstocks.rest.task;
 
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
-import vstocks.db.DBFactory;
-import vstocks.db.TransactionSummaryDB;
+import vstocks.db.ServiceFactory;
+import vstocks.db.TransactionSummaryService;
 import vstocks.model.Market;
 import vstocks.model.system.TransactionSummary;
 import vstocks.rest.Environment;
@@ -35,7 +35,7 @@ public class TransactionSummaryGenerateTaskTest {
         Instant now = Instant.now().truncatedTo(SECONDS);
         TransactionSummary transactionSummary = new TransactionSummary().setTimestamp(now).setTransactions(transactions).setTotal(50);
 
-        TransactionSummaryDB transactionSummaryDB = mock(TransactionSummaryDB.class);
+        TransactionSummaryService transactionSummaryDB = mock(TransactionSummaryService.class);
         when(transactionSummaryDB.generate()).thenReturn(transactionSummary);
 
         List<TransactionSummary> transactionSummariesAdded = new ArrayList<>();
@@ -44,7 +44,7 @@ public class TransactionSummaryGenerateTaskTest {
             return 1;
         });
 
-        DBFactory dbFactory = mock(DBFactory.class);
+        ServiceFactory dbFactory = mock(ServiceFactory.class);
         when(dbFactory.getTransactionSummaryDB()).thenReturn(transactionSummaryDB);
 
         Environment environment = mock(Environment.class);

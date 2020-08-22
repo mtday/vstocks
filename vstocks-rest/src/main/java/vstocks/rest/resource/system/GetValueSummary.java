@@ -1,6 +1,6 @@
 package vstocks.rest.resource.system;
 
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.model.PortfolioValueSummaryCollection;
 import vstocks.rest.resource.BaseResource;
 
@@ -15,10 +15,10 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/system/value-summary")
 @Singleton
 public class GetValueSummary extends BaseResource {
-    private final DBFactory dbFactory;
+    private final ServiceFactory dbFactory;
 
     @Inject
-    public GetValueSummary(DBFactory dbFactory) {
+    public GetValueSummary(ServiceFactory dbFactory) {
         this.dbFactory = dbFactory;
     }
 

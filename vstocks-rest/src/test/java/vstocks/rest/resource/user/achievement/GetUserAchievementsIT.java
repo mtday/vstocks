@@ -1,8 +1,8 @@
 package vstocks.rest.resource.user.achievement;
 
 import org.junit.Test;
-import vstocks.db.UserAchievementDB;
-import vstocks.db.UserDB;
+import vstocks.db.UserAchievementService;
+import vstocks.db.UserService;
 import vstocks.model.ErrorResponse;
 import vstocks.model.UserAchievement;
 import vstocks.rest.ResourceTest;
@@ -56,12 +56,12 @@ public class GetUserAchievementsIT extends ResourceTest {
 
     @Test
     public void testGetUserAchievementsNone() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getDBFactory().getUserDB()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
-        UserAchievementDB userAchievementDB = mock(UserAchievementDB.class);
+        UserAchievementService userAchievementDB = mock(UserAchievementService.class);
         when(userAchievementDB.getForUser(eq(getUser().getId()))).thenReturn(emptyList());
         when(getDBFactory().getUserAchievementDB()).thenReturn(userAchievementDB);
 
@@ -77,7 +77,7 @@ public class GetUserAchievementsIT extends ResourceTest {
 
     @Test
     public void testGetUserAchievementsSomeAvailable() {
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getDBFactory().getUserDB()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
@@ -88,7 +88,7 @@ public class GetUserAchievementsIT extends ResourceTest {
                 .setTimestamp(Instant.now().truncatedTo(SECONDS))
                 .setDescription("description");
 
-        UserAchievementDB userAchievementDB = mock(UserAchievementDB.class);
+        UserAchievementService userAchievementDB = mock(UserAchievementService.class);
         when(userAchievementDB.getForUser(eq(getUser().getId()))).thenReturn(singletonList(userAchievement));
         when(getDBFactory().getUserAchievementDB()).thenReturn(userAchievementDB);
 

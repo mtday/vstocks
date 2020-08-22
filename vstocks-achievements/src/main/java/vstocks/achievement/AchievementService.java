@@ -4,7 +4,7 @@ import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.model.Achievement;
 import vstocks.model.UserAchievement;
 
@@ -43,7 +43,7 @@ public class AchievementService {
         return achievements.keySet();
     }
 
-    public int find(DBFactory dbFactory, Set<String> userIds, Consumer<UserAchievement> consumer) {
+    public int find(ServiceFactory dbFactory, Set<String> userIds, Consumer<UserAchievement> consumer) {
         return achievements.values().stream()
                 .mapToInt(finder -> finder.find(dbFactory, userIds, consumer))
                 .sum();

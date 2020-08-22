@@ -1,7 +1,7 @@
 package vstocks.rest.resource.system;
 
 import org.junit.Test;
-import vstocks.db.TransactionSummaryDB;
+import vstocks.db.TransactionSummaryService;
 import vstocks.model.Delta;
 import vstocks.model.Market;
 import vstocks.model.system.TransactionSummary;
@@ -47,7 +47,7 @@ public class GetTransactionSummaryIT extends ResourceTest {
                         DAY1, new Delta().setInterval(DAY1).setChange(10).setPercent(10.25f)
                 )));
 
-        TransactionSummaryDB transactionSummaryDB = mock(TransactionSummaryDB.class);
+        TransactionSummaryService transactionSummaryDB = mock(TransactionSummaryService.class);
         when(transactionSummaryDB.getLatest()).thenReturn(collection);
         when(getDBFactory().getTransactionSummaryDB()).thenReturn(transactionSummaryDB);
 

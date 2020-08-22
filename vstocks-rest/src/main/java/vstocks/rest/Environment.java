@@ -1,12 +1,12 @@
 package vstocks.rest;
 
 import vstocks.achievement.AchievementService;
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.rest.security.JwtSecurity;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
 public class Environment {
-    private DBFactory dbFactory;
+    private ServiceFactory dbFactory;
     private RemoteStockServiceFactory remoteStockServiceFactory;
     private AchievementService achievementService;
     private JwtSecurity jwtSecurity;
@@ -16,11 +16,11 @@ public class Environment {
     public Environment() {
     }
 
-    public DBFactory getDBFactory() {
+    public ServiceFactory getDBFactory() {
         return dbFactory;
     }
 
-    public Environment setDBFactory(DBFactory dbFactory) {
+    public Environment setDBFactory(ServiceFactory dbFactory) {
         this.dbFactory = dbFactory;
         return this;
     }

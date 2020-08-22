@@ -1,8 +1,8 @@
 package vstocks.rest.task;
 
 import org.junit.Test;
-import vstocks.db.DBFactory;
-import vstocks.db.StockPriceDB;
+import vstocks.db.ServiceFactory;
+import vstocks.db.StockPriceService;
 import vstocks.rest.Environment;
 
 import java.time.Instant;
@@ -23,9 +23,9 @@ public class StockPriceAgeOffTaskTest {
 
     @Test
     public void testRun() {
-        StockPriceDB stockPriceDB = mock(StockPriceDB.class);
+        StockPriceService stockPriceDB = mock(StockPriceService.class);
 
-        DBFactory dbFactory = mock(DBFactory.class);
+        ServiceFactory dbFactory = mock(ServiceFactory.class);
         when(dbFactory.getStockPriceDB()).thenReturn(stockPriceDB);
 
         Environment environment = mock(Environment.class);

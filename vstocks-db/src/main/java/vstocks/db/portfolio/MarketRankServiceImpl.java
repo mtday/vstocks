@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class MarketRankServiceImpl extends BaseService implements MarketRankService {
-    private final MarketRankTable marketRankTable = new MarketRankTable();
+    private final MarketRankDB marketRankTable = new MarketRankDB();
 
     public MarketRankServiceImpl(DataSource dataSource) {
         super(dataSource);

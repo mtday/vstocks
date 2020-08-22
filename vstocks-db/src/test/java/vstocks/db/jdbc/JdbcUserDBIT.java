@@ -4,8 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.db.DataSourceExternalResource;
-import vstocks.db.jdbc.table.*;
+import vstocks.db.*;
 import vstocks.model.*;
 
 import java.sql.Connection;
@@ -28,29 +27,29 @@ public class JdbcUserDBIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private UserTable userTable;
-    private UserCreditsTable userCreditsTable;
-    private StockTable stockTable;
-    private StockPriceTable stockPriceTable;
-    private UserStockTable userStockTable;
+    private UserDB userTable;
+    private UserCreditsDB userCreditsTable;
+    private StockDB stockTable;
+    private StockPriceDB stockPriceTable;
+    private UserStockDB userStockTable;
     private ActivityLogTable activityLogTable;
 
-    private JdbcUserDB userDB;
-    private JdbcUserCreditsDB userCreditsDB;
-    private JdbcUserStockDB userStockDB;
+    private UserServiceImpl userDB;
+    private UserCreditsServiceImpl userCreditsDB;
+    private UserStockServiceImpl userStockDB;
 
     @Before
     public void setup() {
-        userTable = new UserTable();
-        userCreditsTable = new UserCreditsTable();
-        stockTable = new StockTable();
-        stockPriceTable = new StockPriceTable();
-        userStockTable = new UserStockTable();
+        userTable = new UserDB();
+        userCreditsTable = new UserCreditsDB();
+        stockTable = new StockDB();
+        stockPriceTable = new StockPriceDB();
+        userStockTable = new UserStockDB();
         activityLogTable = new ActivityLogTable();
 
-        userDB = new JdbcUserDB(dataSourceExternalResource.get());
-        userCreditsDB = new JdbcUserCreditsDB(dataSourceExternalResource.get());
-        userStockDB = new JdbcUserStockDB(dataSourceExternalResource.get());
+        userDB = new UserServiceImpl(dataSourceExternalResource.get());
+        userCreditsDB = new UserCreditsServiceImpl(dataSourceExternalResource.get());
+        userStockDB = new UserStockServiceImpl(dataSourceExternalResource.get());
     }
 
     @After

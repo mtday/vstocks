@@ -4,7 +4,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.pac4j.core.profile.CommonProfile;
 import vstocks.achievement.AchievementService;
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.model.*;
 import vstocks.rest.security.JwtSecurity;
 import vstocks.service.remote.RemoteStockServiceFactory;
@@ -23,14 +23,14 @@ public abstract class ResourceTest extends JerseyTest {
         LogManager.getLogManager().reset();
     }
 
-    private DBFactory dbFactory;
+    private ServiceFactory dbFactory;
     private RemoteStockServiceFactory remoteStockServiceFactory;
     private AchievementService achievementService;
     private JwtSecurity jwtSecurity;
 
     @Override
     protected ResourceConfig configure() {
-        dbFactory = mock(DBFactory.class);
+        dbFactory = mock(ServiceFactory.class);
         remoteStockServiceFactory = mock(RemoteStockServiceFactory.class);
         achievementService = mock(AchievementService.class);
         jwtSecurity = mock(JwtSecurity.class);
@@ -69,7 +69,7 @@ public abstract class ResourceTest extends JerseyTest {
         return commonProfile;
     }
 
-    public DBFactory getDBFactory() {
+    public ServiceFactory getDBFactory() {
         return dbFactory;
     }
 

@@ -6,7 +6,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import vstocks.db.DataSourceExternalResource;
 import vstocks.db.jdbc.table.PortfolioValueRankTable;
-import vstocks.db.jdbc.table.UserTable;
+import vstocks.db.UserDB;
 import vstocks.model.*;
 
 import java.sql.Connection;
@@ -31,7 +31,7 @@ public class JdbcPortfolioValueRankDBIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private UserTable userTable;
+    private UserDB userTable;
     private PortfolioValueRankTable portfolioValueRankTable;
 
     private JdbcPortfolioValueRankDB portfolioValueRankDB;
@@ -42,7 +42,7 @@ public class JdbcPortfolioValueRankDBIT {
 
     @Before
     public void setup() throws SQLException {
-        userTable = new UserTable();
+        userTable = new UserDB();
         portfolioValueRankTable = new PortfolioValueRankTable();
         portfolioValueRankDB = new JdbcPortfolioValueRankDB(dataSourceExternalResource.get());
 

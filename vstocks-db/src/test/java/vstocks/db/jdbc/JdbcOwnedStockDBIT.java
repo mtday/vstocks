@@ -4,10 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.db.DataSourceExternalResource;
-import vstocks.db.jdbc.table.StockTable;
-import vstocks.db.jdbc.table.UserStockTable;
-import vstocks.db.jdbc.table.UserTable;
+import vstocks.db.*;
 import vstocks.model.Sort;
 import vstocks.model.Stock;
 import vstocks.model.User;
@@ -34,11 +31,11 @@ public class JdbcOwnedStockDBIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private StockTable stockTable;
-    private UserTable userTable;
-    private UserStockTable userStockTable;
-    private JdbcOwnedStockDB ownedStockDB;
-    private JdbcUserStockDB userStockDB;
+    private StockDB stockTable;
+    private UserDB userTable;
+    private UserStockDB userStockTable;
+    private OwnedStockServiceImpl ownedStockDB;
+    private UserStockServiceImpl userStockDB;
 
     private final Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("name1").setProfileImage("link");
     private final Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("name2").setProfileImage("link");
@@ -50,11 +47,11 @@ public class JdbcOwnedStockDBIT {
 
     @Before
     public void setup() throws SQLException {
-        stockTable = new StockTable();
-        userTable = new UserTable();
-        userStockTable = new UserStockTable();
-        ownedStockDB = new JdbcOwnedStockDB(dataSourceExternalResource.get());
-        userStockDB = new JdbcUserStockDB(dataSourceExternalResource.get());
+        stockTable = new StockDB();
+        userTable = new UserDB();
+        userStockTable = new UserStockDB();
+        ownedStockDB = new OwnedStockServiceImpl(dataSourceExternalResource.get());
+        userStockDB = new UserStockServiceImpl(dataSourceExternalResource.get());
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             // Clean out the stocks added via flyway

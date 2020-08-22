@@ -1,7 +1,7 @@
 package vstocks.rest.task;
 
 import org.junit.Test;
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.db.PortfolioValueDB;
 import vstocks.db.PortfolioValueRankDB;
 import vstocks.rest.Environment;
@@ -27,7 +27,7 @@ public class PortfolioValueAgeOffTaskTest {
         PortfolioValueDB portfolioValueDB = mock(PortfolioValueDB.class);
         PortfolioValueRankDB portfolioValueRankDB = mock(PortfolioValueRankDB.class);
 
-        DBFactory dbFactory = mock(DBFactory.class);
+        ServiceFactory dbFactory = mock(ServiceFactory.class);
         when(dbFactory.getPortfolioValueDB()).thenReturn(portfolioValueDB);
         when(dbFactory.getPortfolioValueRankDB()).thenReturn(portfolioValueRankDB);
 

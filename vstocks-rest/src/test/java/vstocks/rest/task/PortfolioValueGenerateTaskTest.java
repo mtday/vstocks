@@ -2,7 +2,7 @@ package vstocks.rest.task;
 
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.db.PortfolioValueDB;
 import vstocks.db.PortfolioValueRankDB;
 import vstocks.db.PortfolioValueSummaryDB;
@@ -68,7 +68,7 @@ public class PortfolioValueGenerateTaskTest {
             return 1;
         });
 
-        DBFactory dbFactory = mock(DBFactory.class);
+        ServiceFactory dbFactory = mock(ServiceFactory.class);
         when(dbFactory.getPortfolioValueDB()).thenReturn(portfolioValueDB);
         when(dbFactory.getPortfolioValueRankDB()).thenReturn(portfolioValueRankDB);
         when(dbFactory.getPortfolioValueSummaryDB()).thenReturn(portfolioValueSummaryDB);
@@ -143,7 +143,7 @@ public class PortfolioValueGenerateTaskTest {
             return 1;
         });
 
-        DBFactory dbFactory = mock(DBFactory.class);
+        ServiceFactory dbFactory = mock(ServiceFactory.class);
         when(dbFactory.getPortfolioValueDB()).thenReturn(portfolioValueDB);
         when(dbFactory.getPortfolioValueRankDB()).thenReturn(portfolioValueRankDB);
         when(dbFactory.getPortfolioValueSummaryDB()).thenReturn(portfolioValueSummaryDB);

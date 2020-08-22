@@ -1,8 +1,8 @@
 package vstocks.rest.security;
 
 import org.junit.Test;
-import vstocks.db.DBFactory;
-import vstocks.db.UserDB;
+import vstocks.db.ServiceFactory;
+import vstocks.db.UserService;
 import vstocks.model.ErrorResponse;
 import vstocks.model.User;
 
@@ -36,7 +36,7 @@ public class JwtTokenFilterTest {
         ContainerRequestContext containerRequestContext = mock(ContainerRequestContext.class);
         when(containerRequestContext.getHeaderString(eq(AUTHORIZATION))).thenReturn(null);
 
-        DBFactory dbFactory = mock(DBFactory.class);
+        ServiceFactory dbFactory = mock(ServiceFactory.class);
         JwtSecurity jwtSecurity = mock(JwtSecurity.class);
 
         new JwtTokenFilter(dbFactory, jwtSecurity).filter(containerRequestContext);
@@ -48,7 +48,7 @@ public class JwtTokenFilterTest {
         ContainerRequestContext containerRequestContext = mock(ContainerRequestContext.class);
         when(containerRequestContext.getHeaderString(eq(AUTHORIZATION))).thenReturn("Basic user:pass");
 
-        DBFactory dbFactory = mock(DBFactory.class);
+        ServiceFactory dbFactory = mock(ServiceFactory.class);
         JwtSecurity jwtSecurity = mock(JwtSecurity.class);
 
         new JwtTokenFilter(dbFactory, jwtSecurity).filter(containerRequestContext);
@@ -60,7 +60,7 @@ public class JwtTokenFilterTest {
         ContainerRequestContext containerRequestContext = mock(ContainerRequestContext.class);
         when(containerRequestContext.getHeaderString(eq(AUTHORIZATION))).thenReturn("Bearer token");
 
-        DBFactory dbFactory = mock(DBFactory.class);
+        ServiceFactory dbFactory = mock(ServiceFactory.class);
         JwtSecurity jwtSecurity = mock(JwtSecurity.class);
         when(jwtSecurity.validateToken(eq("token"))).thenReturn(empty());
 
@@ -73,9 +73,9 @@ public class JwtTokenFilterTest {
         ContainerRequestContext containerRequestContext = mock(ContainerRequestContext.class);
         when(containerRequestContext.getHeaderString(eq(AUTHORIZATION))).thenReturn("Bearer token");
 
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq("userId"))).thenReturn(empty());
-        DBFactory dbFactory = mock(DBFactory.class);
+        ServiceFactory dbFactory = mock(ServiceFactory.class);
         when(dbFactory.getUserDB()).thenReturn(userDB);
 
         JwtSecurity jwtSecurity = mock(JwtSecurity.class);
@@ -89,9 +89,9 @@ public class JwtTokenFilterTest {
     public void testValid() {
         User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("user").setDisplayName("User");
 
-        UserDB userDB = mock(UserDB.class);
+        UserService userDB = mock(UserService.class);
         when(userDB.get(eq("userId"))).thenReturn(Optional.of(user));
-        DBFactory dbFactory = mock(DBFactory.class);
+        ServiceFactory dbFactory = mock(ServiceFactory.class);
         when(dbFactory.getUserDB()).thenReturn(userDB);
 
         JwtSecurity jwtSecurity = mock(JwtSecurity.class);

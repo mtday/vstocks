@@ -3,7 +3,7 @@ package vstocks.rest.resource.security;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.jax.rs.annotations.Pac4JProfile;
 import org.pac4j.jax.rs.annotations.Pac4JSecurity;
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.model.ActivityLog;
 import vstocks.model.User;
 import vstocks.rest.resource.BaseResource;
@@ -40,11 +40,11 @@ public class Login extends BaseResource {
     private static final Random RANDOM = new Random();
     private static final String REDIRECT = "/";
 
-    private final DBFactory dbFactory;
+    private final ServiceFactory dbFactory;
     private final JwtSecurity jwtSecurity;
 
     @Inject
-    public Login(DBFactory dbFactory, JwtSecurity jwtSecurity) {
+    public Login(ServiceFactory dbFactory, JwtSecurity jwtSecurity) {
         this.dbFactory = dbFactory;
         this.jwtSecurity = jwtSecurity;
     }

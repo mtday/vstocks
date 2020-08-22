@@ -4,9 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.db.jdbc.table.*;
+import vstocks.db.*;
 import vstocks.model.*;
-import vstocks.db.DataSourceExternalResource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -29,12 +28,12 @@ public class JdbcUserStockDBIT {
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
     private ActivityLogTable activityLogTable;
-    private UserTable userTable;
-    private StockTable stockTable;
-    private StockPriceTable stockPriceTable;
-    private UserCreditsTable userCreditsTable;
-    private UserStockTable userStockTable;
-    private JdbcUserStockDB userStockDB;
+    private UserDB userTable;
+    private StockDB stockTable;
+    private StockPriceDB stockPriceTable;
+    private UserCreditsDB userCreditsTable;
+    private UserStockDB userStockTable;
+    private UserStockServiceImpl userStockDB;
 
     private final User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
     private final User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
@@ -48,12 +47,12 @@ public class JdbcUserStockDBIT {
     @Before
     public void setup() throws SQLException {
         activityLogTable = new ActivityLogTable();
-        userTable = new UserTable();
-        stockTable = new StockTable();
-        stockPriceTable = new StockPriceTable();
-        userCreditsTable = new UserCreditsTable();
-        userStockTable = new UserStockTable();
-        userStockDB = new JdbcUserStockDB(dataSourceExternalResource.get());
+        userTable = new UserDB();
+        stockTable = new StockDB();
+        stockPriceTable = new StockPriceDB();
+        userCreditsTable = new UserCreditsDB();
+        userStockTable = new UserStockDB();
+        userStockDB = new UserStockServiceImpl(dataSourceExternalResource.get());
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user1));

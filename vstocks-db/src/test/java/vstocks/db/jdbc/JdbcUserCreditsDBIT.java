@@ -4,10 +4,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import vstocks.db.UserCreditsServiceImpl;
 import vstocks.model.*;
 import vstocks.db.DataSourceExternalResource;
-import vstocks.db.jdbc.table.UserCreditsTable;
-import vstocks.db.jdbc.table.UserTable;
+import vstocks.db.UserCreditsDB;
+import vstocks.db.UserDB;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -24,18 +25,18 @@ public class JdbcUserCreditsDBIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
-    private UserTable userTable;
-    private UserCreditsTable userCreditsTable;
-    private JdbcUserCreditsDB userCreditsDB;
+    private UserDB userTable;
+    private UserCreditsDB userCreditsTable;
+    private UserCreditsServiceImpl userCreditsDB;
 
     private final User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1");
     private final User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2");
 
     @Before
     public void setup() throws SQLException {
-        userTable = new UserTable();
-        userCreditsTable = new UserCreditsTable();
-        userCreditsDB = new JdbcUserCreditsDB(dataSourceExternalResource.get());
+        userTable = new UserDB();
+        userCreditsTable = new UserCreditsDB();
+        userCreditsDB = new UserCreditsServiceImpl(dataSourceExternalResource.get());
 
         try (Connection connection = dataSourceExternalResource.get().getConnection()) {
             assertEquals(1, userTable.add(connection, user1));

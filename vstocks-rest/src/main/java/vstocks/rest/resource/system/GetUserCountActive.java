@@ -1,6 +1,6 @@
 package vstocks.rest.resource.system;
 
-import vstocks.db.DBFactory;
+import vstocks.db.ServiceFactory;
 import vstocks.model.system.UserCountCollection;
 import vstocks.rest.resource.BaseResource;
 
@@ -15,10 +15,10 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/system/user-count/active")
 @Singleton
 public class GetUserCountActive extends BaseResource {
-    private final DBFactory dbFactory;
+    private final ServiceFactory dbFactory;
 
     @Inject
-    public GetUserCountActive(DBFactory dbFactory) {
+    public GetUserCountActive(ServiceFactory dbFactory) {
         this.dbFactory = dbFactory;
     }
 

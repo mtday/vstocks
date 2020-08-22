@@ -1,8 +1,8 @@
 package vstocks.db.system;
 
-import vstocks.db.jdbc.table.BaseTable;
-import vstocks.db.jdbc.table.RowMapper;
-import vstocks.db.jdbc.table.RowSetter;
+import vstocks.db.BaseTable;
+import vstocks.db.RowMapper;
+import vstocks.db.RowSetter;
 import vstocks.model.*;
 import vstocks.model.system.TotalTransactionCount;
 import vstocks.model.system.TotalTransactionCountCollection;
