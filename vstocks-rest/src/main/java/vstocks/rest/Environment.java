@@ -6,7 +6,7 @@ import vstocks.rest.security.JwtSecurity;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
 public class Environment {
-    private ServiceFactory dbFactory;
+    private ServiceFactory serviceFactory;
     private RemoteStockServiceFactory remoteStockServiceFactory;
     private AchievementService achievementService;
     private JwtSecurity jwtSecurity;
@@ -16,12 +16,12 @@ public class Environment {
     public Environment() {
     }
 
-    public ServiceFactory getDBFactory() {
-        return dbFactory;
+    public ServiceFactory getServiceFactory() {
+        return serviceFactory;
     }
 
-    public Environment setDBFactory(ServiceFactory dbFactory) {
-        this.dbFactory = dbFactory;
+    public Environment setServiceFactory(ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
         return this;
     }
 

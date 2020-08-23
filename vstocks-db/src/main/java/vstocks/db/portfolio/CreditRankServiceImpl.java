@@ -9,9 +9,7 @@ import vstocks.model.portfolio.CreditRankCollection;
 
 import javax.sql.DataSource;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class CreditRankServiceImpl extends BaseService implements CreditRankService {
     private final CreditRankDB creditRankTable = new CreditRankDB();
@@ -21,8 +19,8 @@ public class CreditRankServiceImpl extends BaseService implements CreditRankServ
     }
 
     @Override
-    public int generate(Consumer<CreditRank> consumer) {
-        return withConnection(conn -> creditRankTable.generate(conn, consumer));
+    public int generate() {
+        return withConnection(creditRankTable::generate);
     }
 
     @Override
@@ -38,11 +36,6 @@ public class CreditRankServiceImpl extends BaseService implements CreditRankServ
     @Override
     public int add(CreditRank creditRank) {
         return withConnection(conn -> creditRankTable.add(conn, creditRank));
-    }
-
-    @Override
-    public int addAll(Collection<CreditRank> creditRanks) {
-        return withConnection(conn -> creditRankTable.addAll(conn, creditRanks));
     }
 
     @Override

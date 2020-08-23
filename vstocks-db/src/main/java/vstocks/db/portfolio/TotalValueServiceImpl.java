@@ -9,9 +9,7 @@ import vstocks.model.portfolio.TotalValueCollection;
 
 import javax.sql.DataSource;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class TotalValueServiceImpl extends BaseService implements TotalValueService {
     private final TotalValueDB totalValueTable = new TotalValueDB();
@@ -21,8 +19,8 @@ public class TotalValueServiceImpl extends BaseService implements TotalValueServ
     }
 
     @Override
-    public int generate(Consumer<TotalValue> consumer) {
-        return withConnection(conn -> totalValueTable.generate(conn, consumer));
+    public int generate() {
+        return withConnection(totalValueTable::generate);
     }
 
     @Override
@@ -38,11 +36,6 @@ public class TotalValueServiceImpl extends BaseService implements TotalValueServ
     @Override
     public int add(TotalValue totalValue) {
         return withConnection(conn -> totalValueTable.add(conn, totalValue));
-    }
-
-    @Override
-    public int addAll(Collection<TotalValue> totalValues) {
-        return withConnection(conn -> totalValueTable.addAll(conn, totalValues));
     }
 
     @Override

@@ -31,6 +31,6 @@ public class UsernameExists extends BaseResource {
                 .orElseThrow(() -> new BadRequestException("Missing or invalid username parameter"));
         return new vstocks.model.UsernameExists()
                 .setUsername(trimmed)
-                .setExists(dbFactory.getUserDB().usernameExists(trimmed));
+                .setExists(dbFactory.getUserService().usernameExists(trimmed));
     }
 }

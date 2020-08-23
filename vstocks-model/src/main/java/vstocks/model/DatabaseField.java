@@ -4,6 +4,7 @@ import static java.util.Locale.ENGLISH;
 
 public enum DatabaseField {
     ACHIEVEMENT_ID,
+    COUNT,
     CREDITS,
     DESCRIPTION,
     DIFFICULTY,

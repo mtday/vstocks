@@ -11,14 +11,13 @@ import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Consumer;
 
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
-import static vstocks.model.DatabaseField.RANK;
 import static vstocks.model.DatabaseField.USER_ID;
+import static vstocks.model.DatabaseField.VALUE;
 import static vstocks.model.SortDirection.DESC;
 
 class MarketValueDB extends BaseTable {
@@ -39,25 +38,29 @@ class MarketValueDB extends BaseTable {
 
     @Override
     protected Set<Sort> getDefaultSort() {
-        return new LinkedHashSet<>(asList(RANK.toSort(DESC), USER_ID.toSort()));
+        return new LinkedHashSet<>(asList(VALUE.toSort(DESC), USER_ID.toSort()));
     }
 
-    public int generate(Connection connection, Market market, Consumer<MarketValue> consumer) {
-        String sql = "SELECT user_id, market, NOW() AS timestamp, SUM(value) AS value FROM (" +
-                "  SELECT DISTINCT ON (us.user_id, us.market, us.symbol)" +
-                "    us.user_id, us.market, us.symbol, us.shares * sp.price AS value" +
-                "  FROM user_stocks us" +
-                "  JOIN stock_prices sp ON (us.market = sp.market AND us.symbol = sp.symbol)" +
-                "  WHERE us.market = ?" +
-                "  ORDER BY us.user_id, us.market, us.symbol, sp.timestamp DESC" +
-                ") AS priced_stocks GROUP BY user_id, market ORDER BY value DESC";
-        return consume(connection, ROW_MAPPER, consumer, sql, market);
+    public int generate(Connection connection, Market market) {
+        String sql = "INSERT INTO market_values (user_id, market, timestamp, value)"
+                + "(SELECT user_id, market, NOW() AS timestamp, SUM(value) AS value FROM ("
+                + "  (SELECT id AS user_id, ? AS market, NULL AS symbol, 0 AS value FROM users)"
+                + "  UNION"
+                + "  (SELECT DISTINCT ON (us.user_id, us.market, us.symbol)"
+                + "    us.user_id, us.market, us.symbol, us.shares * sp.price AS value"
+                + "  FROM user_stocks us"
+                + "  JOIN stock_prices sp ON (us.market = sp.market AND us.symbol = sp.symbol)"
+                + "  WHERE us.market = ?"
+                + "  ORDER BY us.user_id, us.market, us.symbol, sp.timestamp DESC)"
+                + ") AS priced_stocks GROUP BY user_id, market ORDER BY value DESC)";
+        return update(connection, sql, market, market);
     }
 
     public MarketValueCollection getLatest(Connection connection, String userId, Market market) {
         Instant earliest = DeltaInterval.values()[DeltaInterval.values().length - 1].getEarliest();
 
-        String sql = "SELECT * FROM market_values WHERE timestamp >= ? AND user_id = ? AND market = ? ORDER BY timestamp DESC";
+        String sql = "SELECT * FROM market_values WHERE timestamp >= ? AND user_id = ? AND market = ? "
+                + "ORDER BY timestamp DESC";
         List<MarketValue> values = new ArrayList<>();
         consume(connection, ROW_MAPPER, values::add, sql, earliest, userId, market);
 

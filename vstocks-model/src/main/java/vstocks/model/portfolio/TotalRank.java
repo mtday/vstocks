@@ -55,7 +55,7 @@ public class TotalRank {
 
     @Override
     public String toString() {
-        return "PortfolioTotalRank{" +
+        return "TotalRank{" +
                 "userId='" + userId + '\'' +
                 ", timestamp=" + timestamp +
                 ", rank=" + rank +

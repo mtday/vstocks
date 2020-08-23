@@ -7,20 +7,16 @@ import vstocks.model.portfolio.CreditRank;
 import vstocks.model.portfolio.CreditRankCollection;
 
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public interface CreditRankService {
-    int generate(Consumer<CreditRank> consumer);
+    int generate();
 
     CreditRankCollection getLatest(String userId);
 
     Results<CreditRank> getAll(Page page, Set<Sort> sort);
 
     int add(CreditRank creditRank);
-
-    int addAll(Collection<CreditRank> creditRanks);
 
     int ageOff(Instant cutoff);
 

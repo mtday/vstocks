@@ -1,0 +1,172 @@
+package vstocks.db.portfolio;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import vstocks.db.*;
+import vstocks.model.Page;
+import vstocks.model.Results;
+import vstocks.model.Sort;
+import vstocks.model.User;
+import vstocks.model.portfolio.TotalValue;
+import vstocks.model.portfolio.TotalValueCollection;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static vstocks.model.DatabaseField.USER_ID;
+import static vstocks.model.DatabaseField.VALUE;
+import static vstocks.model.User.generateId;
+
+public class TotalValueServiceImplIT extends BaseServiceImplIT {
+    private UserService userService;
+    private UserCreditsService userCreditsService;
+    private TotalValueService totalValueService;
+
+    private final User user1 = new User()
+            .setId(generateId("user1@domain.com"))
+            .setEmail("user1@domain.com")
+            .setUsername("name1")
+            .setDisplayName("Name1");
+    private final User user2 = new User()
+            .setId(generateId("user2@domain.com"))
+            .setEmail("user2@domain.com")
+            .setUsername("name2")
+            .setDisplayName("Name2");
+
+    private final TotalValue totalValue11 = new TotalValue()
+            .setUserId(user1.getId())
+            .setTimestamp(now)
+            .setValue(11);
+    private final TotalValue totalValue12 = new TotalValue()
+            .setUserId(user1.getId())
+            .setTimestamp(now.minusSeconds(10))
+            .setValue(12);
+    private final TotalValue totalValue21 = new TotalValue()
+            .setUserId(user2.getId())
+            .setTimestamp(now)
+            .setValue(21);
+    private final TotalValue totalValue22 = new TotalValue()
+            .setUserId(user2.getId())
+            .setTimestamp(now.minusSeconds(10))
+            .setValue(22);
+
+    @Before
+    public void setup() {
+        userService = new UserServiceImpl(dataSourceExternalResource.get());
+        userCreditsService = new UserCreditsServiceImpl(dataSourceExternalResource.get());
+        totalValueService = new TotalValueServiceImpl(dataSourceExternalResource.get());
+
+        assertEquals(1, userService.add(user1));
+        assertEquals(1, userService.add(user2));
+    }
+
+    @After
+    public void cleanup() {
+        totalValueService.truncate();
+        userCreditsService.truncate();
+        userService.truncate();
+    }
+
+    @Test
+    public void testGenerateTie() {
+        assertEquals(2, totalValueService.generate());
+
+        Results<TotalValue> results = totalValueService.getAll(new Page(), emptySet());
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertTrue(results.getResults().stream().map(TotalValue::getValue).allMatch(value -> value == 10000));
+    }
+
+    @Test
+    public void testGenerateNoTie() {
+        userCreditsService.update(user1.getId(), 10);
+
+        assertEquals(2, totalValueService.generate());
+
+        Results<TotalValue> results = totalValueService.getAll(new Page(), emptySet());
+        assertEquals(2, results.getTotal());
+        assertEquals(2, results.getResults().size());
+        assertEquals(20010, results.getResults().stream().mapToLong(TotalValue::getValue).sum());
+    }
+
+    @Test
+    public void testGetLatestNone() {
+        TotalValueCollection latest = totalValueService.getLatest(user1.getId());
+        assertTrue(latest.getValues().isEmpty());
+        assertEquals(getZeroDeltas(), latest.getDeltas());
+    }
+
+    @Test
+    public void testGetLatestSome() {
+        assertEquals(1, totalValueService.add(totalValue11));
+        assertEquals(1, totalValueService.add(totalValue12));
+
+        TotalValueCollection latest = totalValueService.getLatest(user1.getId());
+        validateResults(latest.getValues(), totalValue11, totalValue12);
+        assertEquals(getDeltas(-1, -8.333334f), latest.getDeltas());
+    }
+
+    @Test
+    public void testGetAllNone() {
+        Results<TotalValue> results = totalValueService.getAll(new Page(), emptySet());
+        validateResults(results);
+    }
+
+    @Test
+    public void testGetAllSome() {
+        assertEquals(1, totalValueService.add(totalValue11));
+        assertEquals(1, totalValueService.add(totalValue12));
+
+        Results<TotalValue> results = totalValueService.getAll(new Page(), emptySet());
+        validateResults(results, totalValue12, totalValue11);
+    }
+
+    @Test
+    public void testGetAllSomeSort() {
+        assertEquals(1, totalValueService.add(totalValue11));
+        assertEquals(1, totalValueService.add(totalValue12));
+        assertEquals(1, totalValueService.add(totalValue21));
+        assertEquals(1, totalValueService.add(totalValue22));
+
+        Set<Sort> sort = new LinkedHashSet<>(asList(VALUE.toSort(), USER_ID.toSort()));
+        Results<TotalValue> results = totalValueService.getAll(new Page(), sort);
+        validateResults(results, totalValue11, totalValue12, totalValue21, totalValue22);
+    }
+
+    @Test
+    public void testAddConflict() {
+        assertEquals(1, totalValueService.add(totalValue11));
+        assertEquals(0, totalValueService.add(totalValue11));
+    }
+
+    @Test
+    public void testAgeOff() {
+        assertEquals(1, totalValueService.add(totalValue11));
+        assertEquals(1, totalValueService.add(totalValue12));
+        assertEquals(1, totalValueService.add(totalValue21));
+        assertEquals(1, totalValueService.add(totalValue22));
+
+        totalValueService.ageOff(now.minusSeconds(5));
+
+        Results<TotalValue> results = totalValueService.getAll(new Page(), emptySet());
+        validateResults(results, totalValue21, totalValue11);
+    }
+
+    @Test
+    public void testTruncate() {
+        assertEquals(1, totalValueService.add(totalValue11));
+        assertEquals(1, totalValueService.add(totalValue12));
+        assertEquals(1, totalValueService.add(totalValue21));
+        assertEquals(1, totalValueService.add(totalValue22));
+
+        totalValueService.truncate();
+
+        Results<TotalValue> results = totalValueService.getAll(new Page(), emptySet());
+        validateResults(results);
+    }
+}

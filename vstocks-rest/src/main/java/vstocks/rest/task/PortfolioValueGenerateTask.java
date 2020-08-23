@@ -56,7 +56,7 @@ public class PortfolioValueGenerateTask implements Task {
         List<PortfolioValueRank> ranks = new ArrayList<>();
         AtomicLong rank = new AtomicLong(0);
 
-        environment.getDBFactory().getPortfolioValueDB().generateAll(portfolioValue -> {
+        environment.getServiceFactory().getPortfolioValueDB().generateAll(portfolioValue -> {
             values.add(portfolioValue);
 
             PortfolioValueRank portfolioValueRank = new PortfolioValueRank()
@@ -66,23 +66,23 @@ public class PortfolioValueGenerateTask implements Task {
             ranks.add(portfolioValueRank);
 
             if (values.size() >= batchSize) {
-                environment.getDBFactory().getPortfolioValueDB().addAll(values);
+                environment.getServiceFactory().getPortfolioValueDB().addAll(values);
                 values.clear();
             }
             if (ranks.size() >= batchSize) {
-                environment.getDBFactory().getPortfolioValueRankDB().addAll(ranks);
+                environment.getServiceFactory().getPortfolioValueRankDB().addAll(ranks);
                 ranks.clear();
             }
         });
         if (!values.isEmpty()) {
-            environment.getDBFactory().getPortfolioValueDB().addAll(values);
+            environment.getServiceFactory().getPortfolioValueDB().addAll(values);
         }
         if (!ranks.isEmpty()) {
-            environment.getDBFactory().getPortfolioValueRankDB().addAll(ranks);
+            environment.getServiceFactory().getPortfolioValueRankDB().addAll(ranks);
         }
 
-        PortfolioValueSummary summary = environment.getDBFactory().getPortfolioValueSummaryDB().generate();
-        environment.getDBFactory().getPortfolioValueSummaryDB().add(summary);
+        PortfolioValueSummary summary = environment.getServiceFactory().getPortfolioValueSummaryDB().generate();
+        environment.getServiceFactory().getPortfolioValueSummaryDB().add(summary);
 
         LOGGER.info("Completed portfolio value generation");
     }

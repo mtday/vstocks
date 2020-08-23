@@ -64,8 +64,8 @@ public class PutUser extends BaseResource {
             }
         });
 
-        return dbFactory.getUserDB().update(existingUser) == 1
+        return dbFactory.getUserService().update(existingUser) == 1
                 ? existingUser
-                : dbFactory.getUserDB().get(existingUser.getId()).orElse(null); // not expecting a missing user here
+                : dbFactory.getUserService().get(existingUser.getId()).orElse(null); // not expecting a missing user here
     }
 }

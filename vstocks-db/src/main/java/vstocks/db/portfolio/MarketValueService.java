@@ -8,13 +8,11 @@ import vstocks.model.portfolio.MarketValue;
 import vstocks.model.portfolio.MarketValueCollection;
 
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public interface MarketValueService {
-    int generate(Market market, Consumer<MarketValue> consumer);
+    int generate(Market market);
 
     MarketValueCollection getLatest(String userId, Market market);
 
@@ -23,8 +21,6 @@ public interface MarketValueService {
     Results<MarketValue> getAll(Market market, Page page, Set<Sort> sort);
 
     int add(MarketValue marketValue);
-
-    int addAll(Collection<MarketValue> marketValues);
 
     int ageOff(Instant cutoff);
 

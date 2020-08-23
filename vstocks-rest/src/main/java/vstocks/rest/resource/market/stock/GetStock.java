@@ -26,7 +26,7 @@ public class GetStock extends BaseResource {
     public PricedStock getStock(@PathParam("market") String marketId, @PathParam("symbol") String symbol) {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
-        return dbFactory.getPricedStockDB().get(market, symbol)
+        return dbFactory.getPricedStockService().get(market, symbol)
                 .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + symbol + " not found"));
     }
 }

@@ -30,6 +30,6 @@ public class GetStocksForMarket extends BaseResource {
                                              @QueryParam("sort") String sort) {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
-        return dbFactory.getPricedStockDB().getForMarket(market, getPage(pageNum, pageSize), getSort(sort));
+        return dbFactory.getPricedStockService().getForMarket(market, getPage(pageNum, pageSize), getSort(sort));
     }
 }

@@ -63,7 +63,7 @@ public class GetStocksIT extends ResourceTest {
     public void testUserPortfolioStocksPageAndSort() {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
+        when(getDBFactory().getUserService()).thenReturn(userDB);
 
         Page page = new Page().setPage(2).setSize(15);
         Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(), PRICE.toSort(DESC)));
@@ -71,7 +71,7 @@ public class GetStocksIT extends ResourceTest {
                 new Results<PricedUserStock>().setTotal(0).setPage(page).setResults(emptyList());
         PricedUserStockService pricedUserStockDB = mock(PricedUserStockService.class);
         when(pricedUserStockDB.getForUser(eq(getUser().getId()), eq(page), eq(sort))).thenReturn(results);
-        when(getDBFactory().getPricedUserStockDB()).thenReturn(pricedUserStockDB);
+        when(getDBFactory().getPricedUserStockService()).thenReturn(pricedUserStockDB);
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
@@ -93,7 +93,7 @@ public class GetStocksIT extends ResourceTest {
     public void testUserPortfolioStocksWithData() {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
+        when(getDBFactory().getUserService()).thenReturn(userDB);
 
         PricedUserStock pricedUserStock = new PricedUserStock()
                 .setUserId(getUser().getId())
@@ -113,7 +113,7 @@ public class GetStocksIT extends ResourceTest {
                 .setResults(singletonList(pricedUserStock));
         PricedUserStockService pricedUserStockDB = mock(PricedUserStockService.class);
         when(pricedUserStockDB.getForUser(eq(getUser().getId()), any(), any())).thenReturn(results);
-        when(getDBFactory().getPricedUserStockDB()).thenReturn(pricedUserStockDB);
+        when(getDBFactory().getPricedUserStockService()).thenReturn(pricedUserStockDB);
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 

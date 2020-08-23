@@ -8,13 +8,11 @@ import vstocks.model.portfolio.MarketRank;
 import vstocks.model.portfolio.MarketRankCollection;
 
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public interface MarketRankService {
-    int generate(Market market, Consumer<MarketRank> consumer);
+    int generate(Market market);
 
     MarketRankCollection getLatest(String userId, Market market);
 
@@ -23,8 +21,6 @@ public interface MarketRankService {
     Results<MarketRank> getAll(Market market, Page page, Set<Sort> sort);
 
     int add(MarketRank marketRank);
-
-    int addAll(Collection<MarketRank> marketRanks);
 
     int ageOff(Instant cutoff);
 

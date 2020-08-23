@@ -19,7 +19,7 @@ public class TotalUserCountServiceImpl extends BaseService implements TotalUserC
     }
 
     @Override
-    public TotalUserCount generate() {
+    public int generate() {
         return withConnection(totalUserCountTable::generate);
     }
 

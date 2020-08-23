@@ -68,7 +68,7 @@ public class MarketRank {
 
     @Override
     public String toString() {
-        return "PortfolioMarketRank{" +
+        return "MarketRank{" +
                 "userId='" + userId + '\'' +
                 ", market=" + market +
                 ", timestamp=" + timestamp +

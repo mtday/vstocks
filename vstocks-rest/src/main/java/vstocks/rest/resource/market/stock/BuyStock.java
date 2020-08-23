@@ -36,10 +36,10 @@ public class BuyStock extends BaseResource {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
         String userId = getUser(profile).getId();
-        if (dbFactory.getUserStockDB().buyStock(userId, market, symbol, shares) == 0) {
+        if (dbFactory.getUserStockService().buyStock(userId, market, symbol, shares) == 0) {
             throw new BadRequestException("Failed to buy " + shares + " shares of " + market + "/" + symbol + " stock");
         }
-        return dbFactory.getPricedUserStockDB().get(userId, market, symbol)
+        return dbFactory.getPricedUserStockService().get(userId, market, symbol)
                 .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + symbol + " not found"));
     }
 }

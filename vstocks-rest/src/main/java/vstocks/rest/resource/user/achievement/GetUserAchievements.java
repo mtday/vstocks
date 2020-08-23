@@ -30,6 +30,6 @@ public class GetUserAchievements extends BaseResource {
     @Produces(APPLICATION_JSON)
     @JwtTokenRequired
     public List<UserAchievement> getUserAchievements(@Context SecurityContext securityContext) {
-        return dbFactory.getUserAchievementDB().getForUser(getUser(securityContext).getId());
+        return dbFactory.getUserAchievementService().getForUser(getUser(securityContext).getId());
     }
 }

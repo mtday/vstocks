@@ -36,7 +36,7 @@ public abstract class ResourceTest extends JerseyTest {
         jwtSecurity = mock(JwtSecurity.class);
 
         Environment environment = new Environment()
-                .setDBFactory(dbFactory)
+                .setServiceFactory(dbFactory)
                 .setRemoteStockServiceFactory(remoteStockServiceFactory)
                 .setAchievementService(achievementService)
                 .setJwtSecurity(jwtSecurity)

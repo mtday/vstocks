@@ -59,7 +59,7 @@ public class PutUserIT extends ResourceTest {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenAnswer((Answer<Optional<User>>) invocation -> Optional.of(getUser()));
         when(userDB.update(any())).thenReturn(0); // 0 means db was not updated
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
+        when(getDBFactory().getUserService()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         User updateUser = new User()
@@ -96,7 +96,7 @@ public class PutUserIT extends ResourceTest {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.update(any())).thenReturn(1); // 1 means db was updated
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
+        when(getDBFactory().getUserService()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         User updateUser = new User()
@@ -133,7 +133,7 @@ public class PutUserIT extends ResourceTest {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.update(any())).thenReturn(1); // 1 means db was updated
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
+        when(getDBFactory().getUserService()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         User updateUser = new User()
@@ -160,7 +160,7 @@ public class PutUserIT extends ResourceTest {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(user.getId()))).thenReturn(Optional.of(user));
         when(userDB.update(any())).thenReturn(1); // 1 means db was updated
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
+        when(getDBFactory().getUserService()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(user.getId()));
 
         User updateUser = new User()
@@ -196,7 +196,7 @@ public class PutUserIT extends ResourceTest {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.update(any())).thenReturn(1); // 1 means db was updated
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
+        when(getDBFactory().getUserService()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         User updateUser = new User()
@@ -223,7 +223,7 @@ public class PutUserIT extends ResourceTest {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(user.getId()))).thenReturn(Optional.of(user));
         when(userDB.update(any())).thenReturn(1); // 1 means db was updated
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
+        when(getDBFactory().getUserService()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(user.getId()));
 
         User updateUser = new User()

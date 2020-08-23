@@ -9,9 +9,7 @@ import vstocks.model.portfolio.TotalRankCollection;
 
 import javax.sql.DataSource;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class TotalRankServiceImpl extends BaseService implements TotalRankService {
     private final TotalRankDB totalRankTable = new TotalRankDB();
@@ -21,8 +19,8 @@ public class TotalRankServiceImpl extends BaseService implements TotalRankServic
     }
 
     @Override
-    public int generate(Consumer<TotalRank> consumer) {
-        return withConnection(conn -> totalRankTable.generate(conn, consumer));
+    public int generate() {
+        return withConnection(totalRankTable::generate);
     }
 
     @Override
@@ -38,11 +36,6 @@ public class TotalRankServiceImpl extends BaseService implements TotalRankServic
     @Override
     public int add(TotalRank totalRank) {
         return withConnection(conn -> totalRankTable.add(conn, totalRank));
-    }
-
-    @Override
-    public int addAll(Collection<TotalRank> totalRanks) {
-        return withConnection(conn -> totalRankTable.addAll(conn, totalRanks));
     }
 
     @Override

@@ -29,7 +29,7 @@ public class AddStockIT extends ResourceTest {
     @Test
     public void testMarketMissing() {
         PricedStockService pricedStockDb = mock(PricedStockService.class);
-        when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
+        when(getDBFactory().getPricedStockService()).thenReturn(pricedStockDb);
 
         Response response = target("/market/missing/stock/symbol").request().post(entity("", APPLICATION_JSON_TYPE));
 
@@ -46,7 +46,7 @@ public class AddStockIT extends ResourceTest {
     @Test
     public void testStockMissing() {
         PricedStockService pricedStockDb = mock(PricedStockService.class);
-        when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
+        when(getDBFactory().getPricedStockService()).thenReturn(pricedStockDb);
 
         RemoteStockService remoteStockService = mock(RemoteStockService.class);
         when(remoteStockService.search(eq("symbol"), eq(10))).thenReturn(emptyList());
@@ -73,7 +73,7 @@ public class AddStockIT extends ResourceTest {
         when(getRemoteStockServiceFactory().getForMarket(eq(TWITTER))).thenReturn(remoteStockService);
 
         PricedStockService pricedStockDb = mock(PricedStockService.class);
-        when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
+        when(getDBFactory().getPricedStockService()).thenReturn(pricedStockDb);
 
         Response response = target("/market/twitter/stock/symbol").request().post(entity("", APPLICATION_JSON_TYPE));
 
@@ -99,7 +99,7 @@ public class AddStockIT extends ResourceTest {
         when(getRemoteStockServiceFactory().getForMarket(eq(TWITTER))).thenReturn(remoteStockService);
 
         PricedStockService pricedStockDb = mock(PricedStockService.class);
-        when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
+        when(getDBFactory().getPricedStockService()).thenReturn(pricedStockDb);
 
         Response response = target("/market/twitter/stock/SYMBOL").request().post(entity("", APPLICATION_JSON_TYPE));
 
@@ -125,7 +125,7 @@ public class AddStockIT extends ResourceTest {
         when(getRemoteStockServiceFactory().getForMarket(eq(TWITTER))).thenReturn(remoteStockService);
 
         PricedStockService pricedStockDb = mock(PricedStockService.class);
-        when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
+        when(getDBFactory().getPricedStockService()).thenReturn(pricedStockDb);
 
         Response response = target("/market/twitter/stock/sym").request().post(entity("", APPLICATION_JSON_TYPE));
 
@@ -149,7 +149,7 @@ public class AddStockIT extends ResourceTest {
         when(getRemoteStockServiceFactory().getForMarket(eq(TWITTER))).thenReturn(remoteStockService);
 
         PricedStockService pricedStockDb = mock(PricedStockService.class);
-        when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
+        when(getDBFactory().getPricedStockService()).thenReturn(pricedStockDb);
 
         Response response = target("/market/twitter/stock/symbol").request().post(entity("", APPLICATION_JSON_TYPE));
 

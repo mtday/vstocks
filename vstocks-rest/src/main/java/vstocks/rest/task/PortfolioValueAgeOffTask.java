@@ -43,7 +43,7 @@ public class PortfolioValueAgeOffTask implements Task {
         int days = DATA_HISTORY_DAYS.getInt();
         Instant cutoff = Instant.now().truncatedTo(DAYS).minus(days, DAYS);
         LOGGER.info("Aging off portfolio value data older than {} days ({})", days, cutoff);
-        environment.getDBFactory().getPortfolioValueDB().ageOff(cutoff);
-        environment.getDBFactory().getPortfolioValueRankDB().ageOff(cutoff);
+        environment.getServiceFactory().getPortfolioValueDB().ageOff(cutoff);
+        environment.getServiceFactory().getPortfolioValueRankDB().ageOff(cutoff);
     }
 }

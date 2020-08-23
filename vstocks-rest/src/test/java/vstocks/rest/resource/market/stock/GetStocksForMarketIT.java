@@ -41,7 +41,7 @@ public class GetStocksForMarketIT extends ResourceTest {
     public void testGetForMarketsNone() {
         PricedStockService pricedStockDb = mock(PricedStockService.class);
         when(pricedStockDb.getForMarket(eq(TWITTER), any(), anySet())).thenReturn(new Results<>());
-        when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
+        when(getDBFactory().getPricedStockService()).thenReturn(pricedStockDb);
 
         Response response = target("/market/twitter/stocks").request().get();
 
@@ -66,7 +66,7 @@ public class GetStocksForMarketIT extends ResourceTest {
                 .setResults(asList(pricedStock1, pricedStock2, pricedStock3));
         PricedStockService pricedStockDb = mock(PricedStockService.class);
         when(pricedStockDb.getForMarket(eq(TWITTER), any(), anySet())).thenReturn(results);
-        when(getDBFactory().getPricedStockDB()).thenReturn(pricedStockDb);
+        when(getDBFactory().getPricedStockService()).thenReturn(pricedStockDb);
 
         Response response = target("/market/twitter/stocks").request().get();
 

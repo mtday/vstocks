@@ -25,7 +25,7 @@ public class ResetUser extends BaseResource {
     @PUT
     @JwtTokenRequired
     public Response reset(@Context SecurityContext securityContext) {
-        dbFactory.getUserDB().reset(getUser(securityContext).getId());
+        dbFactory.getUserService().reset(getUser(securityContext).getId());
         return Response.ok().build();
     }
 }

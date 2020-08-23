@@ -10,7 +10,7 @@ import java.time.Instant;
 import java.util.Set;
 
 public interface ActiveUserCountService {
-    ActiveUserCount generate();
+    int generate();
 
     ActiveUserCountCollection getLatest();
 

@@ -285,6 +285,17 @@ CREATE INDEX idx_market_transaction_counts_timestamp ON market_transaction_count
 CREATE INDEX idx_market_transaction_counts_count ON market_transaction_counts (count);
 
 
+CREATE TABLE active_transaction_counts (
+    timestamp          TIMESTAMP(0) NOT NULL,
+    count              BIGINT       NOT NULL,
+
+    CONSTRAINT active_transaction_counts_pk PRIMARY KEY (timestamp)
+);
+
+CREATE INDEX idx_active_transaction_counts_timestamp ON active_transaction_counts (timestamp);
+CREATE INDEX idx_active_transaction_counts_count ON active_transaction_counts (count);
+
+
 CREATE TABLE total_transaction_counts (
     timestamp          TIMESTAMP(0) NOT NULL,
     count              BIGINT       NOT NULL,

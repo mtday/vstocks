@@ -9,10 +9,11 @@ import static org.junit.Assert.assertEquals;
 import static vstocks.model.User.generateId;
 
 public class UserAchievementTest {
+    private final String userId = generateId("user@domain.com");
+    private final Instant now = Instant.now().truncatedTo(SECONDS);
+
     @Test
     public void testGettersAndSetters() {
-        String userId = generateId("user@domain.com");
-        Instant now = Instant.now().truncatedTo(SECONDS);
         UserAchievement userAchievement = new UserAchievement()
                 .setUserId(userId)
                 .setAchievementId("achievementId")
@@ -27,7 +28,6 @@ public class UserAchievementTest {
 
     @Test
     public void testEquals() {
-        String userId = generateId("user@domain.com");
         UserAchievement userAchievement1 = new UserAchievement().setUserId(userId).setAchievementId("achievementId");
         UserAchievement userAchievement2 = new UserAchievement().setUserId(userId).setAchievementId("achievementId");
         assertEquals(userAchievement1, userAchievement2);
@@ -46,8 +46,6 @@ public class UserAchievementTest {
 
     @Test
     public void testToString() {
-        String userId = generateId("user@domain.com");
-        Instant now = Instant.now().truncatedTo(SECONDS);
         UserAchievement userAchievement = new UserAchievement()
                 .setUserId(userId)
                 .setAchievementId("achievementId")

@@ -99,7 +99,7 @@ public class FirstStockActivity implements AchievementProvider {
                         .setDescription(description);
             };
 
-            return dbFactory.getActivityLogDB().consume(psc, rowMapper, consumer);
+            return dbFactory.getActivityLogService().consume(psc, rowMapper, consumer);
         }
     }
 }

@@ -58,8 +58,8 @@ public class TotalMarketTransactionCount {
     @Override
     public String toString() {
         return "TotalMarketTransactionCount{" +
-                "timestamp=" + timestamp +
-                ", market=" + market +
+                "market=" + market +
+                ", timestamp=" + timestamp +
                 ", count=" + count +
                 '}';
     }

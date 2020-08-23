@@ -38,10 +38,10 @@ public class SellStock extends BaseResource {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
         String userId = getUser(profile).getId();
-        if (dbFactory.getUserStockDB().sellStock(userId, market, symbol, shares) == 0) {
+        if (dbFactory.getUserStockService().sellStock(userId, market, symbol, shares) == 0) {
             throw new BadRequestException("Failed to sell " + shares + " shares of " + market + "/" + symbol + " stock");
         }
-        return dbFactory.getPricedUserStockDB().get(userId, market, symbol).orElseGet(() -> {
+        return dbFactory.getPricedUserStockService().get(userId, market, symbol).orElseGet(() -> {
             // Not found likely means the user sold all their shares of stock.
             Instant instant = Instant.now().truncatedTo(SECONDS);
             return new PricedUserStock().setUserId(userId).setMarket(market).setSymbol(symbol).setShares(0).setTimestamp(instant).setPrice(1);

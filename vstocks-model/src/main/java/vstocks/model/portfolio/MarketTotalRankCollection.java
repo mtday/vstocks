@@ -48,7 +48,7 @@ public class MarketTotalRankCollection {
 
     @Override
     public String toString() {
-        return "PortfolioMarketTotalRankCollection{" +
+        return "MarketTotalRankCollection{" +
                 "ranks=" + ranks +
                 ", deltas=" + deltas +
                 '}';

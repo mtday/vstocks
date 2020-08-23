@@ -40,7 +40,7 @@ public class AddStock extends BaseResource {
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + symbol + " not found"));
 
-        dbFactory.getPricedStockDB().add(pricedStock);
+        dbFactory.getPricedStockService().add(pricedStock);
         return pricedStock;
     }
 }

@@ -48,7 +48,7 @@ public class MarketRankCollection {
 
     @Override
     public String toString() {
-        return "PortfolioMarketRankCollection{" +
+        return "MarketRankCollection{" +
                 "ranks=" + ranks +
                 ", deltas=" + deltas +
                 '}';

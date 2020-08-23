@@ -45,7 +45,7 @@ public class JwtTokenFilter implements ContainerRequestFilter {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .findFirst()
-                .flatMap(userId -> dbFactory.getUserDB().get(userId))
+                .flatMap(userId -> dbFactory.getUserService().get(userId))
                 .map(UserSecurityContext::new);
 
         if (securityContext.isEmpty()) {

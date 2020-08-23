@@ -1,0 +1,67 @@
+package vstocks.model.system;
+
+import org.junit.Test;
+import vstocks.model.Delta;
+import vstocks.model.DeltaInterval;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
+public class TotalTransactionCountCollectionTest {
+    private final Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
+
+    private final TotalTransactionCount totalTransactionCount1 = new TotalTransactionCount()
+            .setTimestamp(timestamp)
+            .setCount(20);
+    private final TotalTransactionCount totalTransactionCount2 = new TotalTransactionCount()
+            .setTimestamp(timestamp.minusSeconds(10))
+            .setCount(18);
+
+    private final List<TotalTransactionCount> counts = asList(totalTransactionCount1, totalTransactionCount2);
+    private final Map<DeltaInterval, Delta> deltas =
+            Delta.getDeltas(counts, TotalTransactionCount::getTimestamp, TotalTransactionCount::getCount);
+
+    @Test
+    public void testGettersAndSetters() {
+        TotalTransactionCountCollection collection = new TotalTransactionCountCollection()
+                .setCounts(counts)
+                .setDeltas(deltas);
+
+        assertEquals(counts, collection.getCounts());
+        assertEquals(deltas, collection.getDeltas());
+    }
+
+    @Test
+    public void testEquals() {
+        TotalTransactionCountCollection collection1 = new TotalTransactionCountCollection()
+                .setCounts(counts)
+                .setDeltas(deltas);
+        TotalTransactionCountCollection collection2 = new TotalTransactionCountCollection()
+                .setCounts(counts)
+                .setDeltas(deltas);
+
+        assertEquals(collection1, collection2);
+    }
+
+    @Test
+    public void testHashCode() {
+        TotalTransactionCountCollection collection = new TotalTransactionCountCollection()
+                .setCounts(counts)
+                .setDeltas(deltas);
+        assertNotEquals(0, collection.hashCode()); // enums make the value inconsistent
+    }
+
+    @Test
+    public void testToString() {
+        TotalTransactionCountCollection collection = new TotalTransactionCountCollection()
+                .setCounts(counts)
+                .setDeltas(deltas);
+        assertEquals("TotalTransactionCountCollection{counts=" + counts + ", deltas=" + deltas + "}",
+                collection.toString());
+    }
+}

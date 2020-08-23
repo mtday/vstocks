@@ -21,8 +21,8 @@ public class CreditValueServiceImpl extends BaseService implements CreditValueSe
     }
 
     @Override
-    public int generate(Consumer<CreditValue> consumer) {
-        return withConnection(conn -> creditValueTable.generate(conn, consumer));
+    public int generate() {
+        return withConnection(conn -> creditValueTable.generate(conn));
     }
 
     @Override
@@ -38,11 +38,6 @@ public class CreditValueServiceImpl extends BaseService implements CreditValueSe
     @Override
     public int add(CreditValue creditValue) {
         return withConnection(conn -> creditValueTable.add(conn, creditValue));
-    }
-
-    @Override
-    public int addAll(Collection<CreditValue> creditValues) {
-        return withConnection(conn -> creditValueTable.addAll(conn, creditValues));
     }
 
     @Override

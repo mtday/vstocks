@@ -11,13 +11,13 @@ import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Consumer;
 
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
-import static vstocks.model.DatabaseField.*;
+import static vstocks.model.DatabaseField.USER_ID;
+import static vstocks.model.DatabaseField.VALUE;
 import static vstocks.model.SortDirection.DESC;
 
 class CreditValueDB extends BaseTable {
@@ -39,9 +39,10 @@ class CreditValueDB extends BaseTable {
         return new LinkedHashSet<>(asList(VALUE.toSort(DESC), USER_ID.toSort()));
     }
 
-    public int generate(Connection connection, Consumer<CreditValue> consumer) {
-        String sql = "SELECT user_id, NOW() AS timestamp, credits AS value FROM user_credits ORDER BY credits DESC";
-        return consume(connection, ROW_MAPPER, consumer, sql);
+    public int generate(Connection connection) {
+        String sql = "INSERT INTO credit_values (user_id, timestamp, value) "
+                + "(SELECT user_id, NOW(), credits FROM user_credits)";
+        return update(connection, sql);
     }
 
     public CreditValueCollection getLatest(Connection connection, String userId) {

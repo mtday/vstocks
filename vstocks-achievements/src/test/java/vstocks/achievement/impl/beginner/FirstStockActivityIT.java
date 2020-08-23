@@ -121,7 +121,7 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
                 .setType(USER_LOGIN)
                 .setTimestamp(Instant.now().truncatedTo(SECONDS));
 
-        getDBFactory().getActivityLogDB().add(activityLog);
+        getDBFactory().getActivityLogService().add(activityLog);
 
         // with no buy/sell activity in the db, none of the finders will match
         List<UserAchievement> userAchievements = new ArrayList<>();
@@ -142,7 +142,7 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
                 .setShares(activityType == STOCK_BUY ? 5 : -5) // negative when selling
                 .setPrice(10L);
 
-        getDBFactory().getActivityLogDB().add(activityLog);
+        getDBFactory().getActivityLogService().add(activityLog);
 
         List<UserAchievement> userAchievements = new ArrayList<>();
         finders.forEach(f -> f.find(getDBFactory(), singleton(user.getId()), userAchievements::add));

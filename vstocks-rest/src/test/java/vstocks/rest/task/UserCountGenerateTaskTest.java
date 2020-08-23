@@ -52,7 +52,7 @@ public class UserCountGenerateTaskTest {
         when(dbFactory.getUserCountDB()).thenReturn(userCountDB);
 
         Environment environment = mock(Environment.class);
-        when(environment.getDBFactory()).thenReturn(dbFactory);
+        when(environment.getServiceFactory()).thenReturn(dbFactory);
 
         new UserCountGenerateTask(environment).run();
 

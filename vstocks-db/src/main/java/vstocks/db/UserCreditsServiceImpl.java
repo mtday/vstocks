@@ -43,7 +43,7 @@ public class UserCreditsServiceImpl extends BaseService implements UserCreditsSe
     }
 
     @Override
-    public int update(String userId, int delta) {
+    public int update(String userId, long delta) {
         return withConnection(conn -> userCreditsTable.update(conn, userId, delta));
     }
 

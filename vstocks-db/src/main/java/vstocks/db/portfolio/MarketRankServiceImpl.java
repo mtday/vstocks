@@ -23,8 +23,8 @@ public class MarketRankServiceImpl extends BaseService implements MarketRankServ
     }
 
     @Override
-    public int generate(Market market, Consumer<MarketRank> consumer) {
-        return withConnection(conn -> marketRankTable.generate(conn, market, consumer));
+    public int generate(Market market) {
+        return withConnection(conn -> marketRankTable.generate(conn, market));
     }
 
     @Override
@@ -45,11 +45,6 @@ public class MarketRankServiceImpl extends BaseService implements MarketRankServ
     @Override
     public int add(MarketRank marketRank) {
         return withConnection(conn -> marketRankTable.add(conn, marketRank));
-    }
-
-    @Override
-    public int addAll(Collection<MarketRank> marketRanks) {
-        return withConnection(conn -> marketRankTable.addAll(conn, marketRanks));
     }
 
     @Override

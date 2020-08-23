@@ -12,10 +12,11 @@ import static vstocks.model.Market.TWITTER;
 import static vstocks.model.User.generateId;
 
 public class ActivityLogTest {
+    private final String userId = generateId("user@domain.com");
+    private final Instant now = Instant.now().truncatedTo(SECONDS);
+
     @Test
     public void testGettersAndSettersAll() {
-        String userId = generateId("user@domain.com");
-        Instant now = Instant.now().truncatedTo(SECONDS);
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")
                 .setUserId(userId)
@@ -38,8 +39,6 @@ public class ActivityLogTest {
 
     @Test
     public void testGettersAndSettersSimple() {
-        String userId = generateId("user@domain.com");
-        Instant now = Instant.now().truncatedTo(SECONDS);
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")
                 .setUserId(userId)
@@ -58,7 +57,6 @@ public class ActivityLogTest {
 
     @Test
     public void testEquals() {
-        Instant now = Instant.now().truncatedTo(SECONDS);
         ActivityLog activityLog1 = new ActivityLog()
                 .setId("id")
                 .setUserId(generateId("user@domain.com"))
@@ -82,8 +80,6 @@ public class ActivityLogTest {
 
     @Test
     public void testHashCode() {
-        String userId = generateId("user@domain.com");
-        Instant now = Instant.now().truncatedTo(SECONDS);
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")
                 .setUserId(userId)
@@ -99,8 +95,6 @@ public class ActivityLogTest {
 
     @Test
     public void testToString() {
-        String userId = generateId("user@domain.com");
-        Instant now = Instant.now().truncatedTo(SECONDS);
         ActivityLog activityLog = new ActivityLog()
                 .setId("id")
                 .setUserId(userId)
@@ -110,7 +104,7 @@ public class ActivityLogTest {
                 .setSymbol("symbol")
                 .setShares(10)
                 .setPrice(20L);
-        assertEquals("ActivityLog{id='id', userId='" + userId + "', type=STOCK_SELL, timestamp=" + now.toString()
+        assertEquals("ActivityLog{id='id', userId='" + userId + "', type=STOCK_SELL, timestamp=" + now
                 + ", market=Twitter, symbol='symbol', shares=10, price=20}", activityLog.toString());
     }
 }

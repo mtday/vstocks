@@ -60,7 +60,7 @@ public class GetRankIT extends ResourceTest {
     public void testUserPortfolioRanksWithData() {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
+        when(getDBFactory().getUserService()).thenReturn(userDB);
 
         PortfolioValueRank portfolioValueRank1 = new PortfolioValueRank()
                 .setUserId(getUser().getId())

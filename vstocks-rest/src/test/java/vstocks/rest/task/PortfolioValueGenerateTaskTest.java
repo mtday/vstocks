@@ -74,7 +74,7 @@ public class PortfolioValueGenerateTaskTest {
         when(dbFactory.getPortfolioValueSummaryDB()).thenReturn(portfolioValueSummaryDB);
 
         Environment environment = mock(Environment.class);
-        when(environment.getDBFactory()).thenReturn(dbFactory);
+        when(environment.getServiceFactory()).thenReturn(dbFactory);
 
         new PortfolioValueGenerateTask(environment).run();
 
@@ -149,7 +149,7 @@ public class PortfolioValueGenerateTaskTest {
         when(dbFactory.getPortfolioValueSummaryDB()).thenReturn(portfolioValueSummaryDB);
 
         Environment environment = mock(Environment.class);
-        when(environment.getDBFactory()).thenReturn(dbFactory);
+        when(environment.getServiceFactory()).thenReturn(dbFactory);
 
         new PortfolioValueGenerateTask(environment, 2).run();
 

@@ -1,17 +1,13 @@
 package vstocks.achievement;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import vstocks.db.ServiceFactory;
 import vstocks.db.ServiceFactoryImpl;
-import vstocks.db.ActivityLogTable;
-import vstocks.db.StockDB;
-import vstocks.db.UserDB;
 import vstocks.model.*;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +26,18 @@ public class AchievementServiceIT {
     @ClassRule
     public static DataSourceExternalResource dataSourceExternalResource = new DataSourceExternalResource();
 
+    private ServiceFactory serviceFactory = new ServiceFactoryImpl(dataSourceExternalResource.get());
+
+    @Before
+    public void setup() {
+        serviceFactory = new ServiceFactoryImpl(dataSourceExternalResource.get());
+    }
+
     @After
-    public void cleanup() throws SQLException {
-        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            new ActivityLogTable().truncate(connection);
-            new StockDB().truncate(connection);
-            new UserDB().truncate(connection);
-            connection.commit();
-        }
+    public void cleanup() {
+        serviceFactory.getActivityLogService().truncate();
+        serviceFactory.getStockService().truncate();
+        serviceFactory.getUserService().truncate();
     }
 
     @Test
@@ -64,7 +64,7 @@ public class AchievementServiceIT {
 
     @Test
     public void testCheck() {
-        ServiceFactory dbFactory = new ServiceFactoryImpl(dataSourceExternalResource.get());
+        ServiceFactory serviceFactory = new ServiceFactoryImpl(dataSourceExternalResource.get());
 
         Instant now = Instant.now().truncatedTo(SECONDS);
         User user = new User().setId(generateId("testuser@domain.com")).setEmail("testuser@domain.com").setUsername("testuser").setDisplayName("User");
@@ -81,14 +81,14 @@ public class AchievementServiceIT {
                 .setShares(5)
                 .setPrice(stockPrice.getPrice());
 
-        assertEquals(1, dbFactory.getUserDB().add(user));
-        assertEquals(1, dbFactory.getStockDB().add(stock));
-        assertEquals(1, dbFactory.getStockPriceDB().add(stockPrice));
-        assertEquals(1, dbFactory.getActivityLogDB().add(activityLog));
+        assertEquals(1, serviceFactory.getUserService().add(user));
+        assertEquals(1, serviceFactory.getStockService().add(stock));
+        assertEquals(1, serviceFactory.getStockPriceService().add(stockPrice));
+        assertEquals(1, serviceFactory.getActivityLogService().add(activityLog));
 
         AchievementService achievementService = new AchievementService();
         List<UserAchievement> achievements = new ArrayList<>();
-        assertEquals(1, achievementService.find(dbFactory, singleton(user.getId()), achievements::add));
+        assertEquals(1, achievementService.find(serviceFactory, singleton(user.getId()), achievements::add));
         assertEquals(1, achievements.size());
 
         UserAchievement userAchievement = achievements.iterator().next();

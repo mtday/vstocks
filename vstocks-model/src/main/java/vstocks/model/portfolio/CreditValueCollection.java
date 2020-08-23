@@ -48,7 +48,7 @@ public class CreditValueCollection {
 
     @Override
     public String toString() {
-        return "PortfolioCreditValueCollection{" +
+        return "CreditValueCollection{" +
                 "values=" + values +
                 ", deltas=" + deltas +
                 '}';

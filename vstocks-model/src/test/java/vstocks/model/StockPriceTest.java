@@ -10,9 +10,11 @@ import static org.junit.Assert.assertNotEquals;
 import static vstocks.model.Market.TWITTER;
 
 public class StockPriceTest {
+    private final Instant now = Instant.now().truncatedTo(SECONDS);
+    private final Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
+
     @Test
     public void testGettersAndSetters() {
-        Instant now = Instant.now().truncatedTo(SECONDS);
         StockPrice stockPrice = new StockPrice()
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
@@ -27,7 +29,6 @@ public class StockPriceTest {
 
     @Test
     public void testEquals() {
-        Instant now = Instant.now().truncatedTo(SECONDS);
         StockPrice stockPrice1 = new StockPrice()
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
@@ -43,11 +44,10 @@ public class StockPriceTest {
 
     @Test
     public void testHashCode() {
-        Instant now = Instant.parse("2007-12-03T10:15:30.00Z");
         StockPrice stockPrice = new StockPrice()
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setTimestamp(now)
+                .setTimestamp(timestamp)
                 .setPrice(20);
         assertEquals(923521, new StockPrice().hashCode());
         assertNotEquals(0, stockPrice.hashCode()); // enums make the value inconsistent
@@ -55,13 +55,12 @@ public class StockPriceTest {
 
     @Test
     public void testToString() {
-        Instant now = Instant.now().truncatedTo(SECONDS);
         StockPrice stockPrice = new StockPrice()
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setTimestamp(now)
                 .setPrice(20);
-        assertEquals("StockPrice{market=Twitter, symbol='symbol', "
-                + "timestamp=" + now.toString() + ", price=20}", stockPrice.toString());
+        assertEquals("StockPrice{market=Twitter, symbol='symbol', timestamp=" + now + ", price=20}",
+                stockPrice.toString());
     }
 }

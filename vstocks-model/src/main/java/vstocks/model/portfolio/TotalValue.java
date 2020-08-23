@@ -55,7 +55,7 @@ public class TotalValue {
 
     @Override
     public String toString() {
-        return "PortfolioTotalValue{" +
+        return "TotalValue{" +
                 "userId='" + userId + '\'' +
                 ", timestamp=" + timestamp +
                 ", value=" + value +

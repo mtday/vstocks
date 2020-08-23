@@ -17,7 +17,6 @@ import java.util.Set;
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Collections.singleton;
-import static java.util.concurrent.TimeUnit.DAYS;
 import static vstocks.model.DatabaseField.TIMESTAMP;
 import static vstocks.model.SortDirection.DESC;
 
@@ -38,10 +37,10 @@ class TotalUserCountDB extends BaseTable {
         return singleton(TIMESTAMP.toSort(DESC));
     }
 
-    public TotalUserCount generate(Connection connection) {
-        Instant oneDayAgo = Instant.now().truncatedTo(SECONDS).minusSeconds(DAYS.toSeconds(1));
-        String sql = "SELECT NOW() AS timestamp, COUNT(*) AS count FROM users";
-        return getOne(connection, ROW_MAPPER, sql, oneDayAgo).orElse(null); // there will always be a result
+    public int generate(Connection connection) {
+        String sql = "INSERT INTO total_user_counts (timestamp, count) "
+                + "(SELECT NOW() AS timestamp, COUNT(*) AS count FROM users)";
+        return update(connection, sql);
     }
 
     public TotalUserCountCollection getLatest(Connection connection) {

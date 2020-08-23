@@ -38,11 +38,12 @@ class ActiveUserCountDB extends BaseTable {
         return singleton(TIMESTAMP.toSort(DESC));
     }
 
-    public ActiveUserCount generate(Connection connection) {
+    public int generate(Connection connection) {
         Instant oneDayAgo = Instant.now().truncatedTo(SECONDS).minusSeconds(DAYS.toSeconds(1));
-        String sql = "SELECT NOW() AS timestamp, COUNT(*) AS value FROM ("
-                + "SELECT user_id FROM activity_logs WHERE timestamp >= ? GROUP BY user_id) AS data";
-        return getOne(connection, ROW_MAPPER, sql, oneDayAgo).orElse(null); // there will always be a result
+        String sql = "INSERT INTO active_user_counts (timestamp, count) "
+                + "(SELECT NOW() AS timestamp, COUNT(*) AS value FROM ("
+                + "SELECT user_id FROM activity_logs WHERE timestamp >= ? GROUP BY user_id) AS data)";
+        return update(connection, sql, oneDayAgo);
     }
 
     public ActiveUserCountCollection getLatest(Connection connection) {

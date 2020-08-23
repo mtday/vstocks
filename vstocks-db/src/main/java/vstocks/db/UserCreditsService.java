@@ -20,7 +20,7 @@ public interface UserCreditsService {
 
     int add(UserCredits userCredits);
 
-    int update(String userId, int delta);
+    int update(String userId, long delta);
 
     int delete(String userId);
 

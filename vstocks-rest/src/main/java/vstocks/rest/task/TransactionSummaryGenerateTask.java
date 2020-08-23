@@ -2,7 +2,6 @@ package vstocks.rest.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import vstocks.model.system.TransactionSummary;
 import vstocks.rest.Environment;
 
 import java.time.LocalDateTime;
@@ -40,8 +39,7 @@ public class TransactionSummaryGenerateTask implements Task {
     public void run() {
         LOGGER.info("Starting transaction summary generation");
 
-        TransactionSummary transactionSummary = environment.getDBFactory().getTransactionSummaryDB().generate();
-        environment.getDBFactory().getTransactionSummaryDB().add(transactionSummary);
+        // TODO
 
         LOGGER.info("Completed transaction summary generation");
     }

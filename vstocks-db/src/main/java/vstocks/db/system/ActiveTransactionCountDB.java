@@ -19,6 +19,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Collections.singleton;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static vstocks.model.DatabaseField.TIMESTAMP;
+import static vstocks.model.Delta.getDeltas;
 import static vstocks.model.SortDirection.DESC;
 
 class ActiveTransactionCountDB extends BaseTable {
@@ -38,23 +39,24 @@ class ActiveTransactionCountDB extends BaseTable {
         return singleton(TIMESTAMP.toSort(DESC));
     }
 
-    public ActiveTransactionCount generate(Connection connection) {
+    public int generate(Connection connection) {
         Instant oneDayAgo = Instant.now().truncatedTo(SECONDS).minusSeconds(DAYS.toSeconds(1));
-        String sql = "SELECT NOW() AS timestamp, COUNT(*) AS count FROM activity_logs "
-                + "WHERE market IS NOT NULL AND timestamp >= ?";
-        return getOne(connection, ROW_MAPPER, sql, oneDayAgo).orElse(null); // there will always be a result
+        String sql = "INSERT INTO active_transaction_counts (timestamp, count) "
+                + "(SELECT NOW() AS timestamp, COUNT(*) AS count FROM activity_logs "
+                + "WHERE market IS NOT NULL AND timestamp >= ?)";
+        return update(connection, sql, oneDayAgo);
     }
 
     public ActiveTransactionCountCollection getLatest(Connection connection) {
         Instant earliest = DeltaInterval.values()[DeltaInterval.values().length - 1].getEarliest();
 
-        List<ActiveTransactionCount> activeTransactionCounts = new ArrayList<>();
+        List<ActiveTransactionCount> counts = new ArrayList<>();
         String sql = "SELECT * FROM active_transaction_counts WHERE timestamp >= ? ORDER BY timestamp DESC";
-        consume(connection, ROW_MAPPER, activeTransactionCounts::add, sql, earliest);
+        consume(connection, ROW_MAPPER, counts::add, sql, earliest);
 
         return new ActiveTransactionCountCollection()
-                .setCounts(activeTransactionCounts)
-                .setDeltas(Delta.getDeltas(activeTransactionCounts, ActiveTransactionCount::getTimestamp, ActiveTransactionCount::getCount));
+                .setCounts(counts)
+                .setDeltas(getDeltas(counts, ActiveTransactionCount::getTimestamp, ActiveTransactionCount::getCount));
     }
 
     public Results<ActiveTransactionCount> getAll(Connection connection, Page page, Set<Sort> sort) {
@@ -65,7 +67,7 @@ class ActiveTransactionCountDB extends BaseTable {
 
     public int add(Connection connection, ActiveTransactionCount activeTransactionCount) {
         String sql = "INSERT INTO active_transaction_counts (timestamp, count) VALUES (?, ?) "
-                + "ON CONFLICT ON CONSTRAINT transaction_counts_pk DO UPDATE SET count = EXCLUDED.count "
+                + "ON CONFLICT ON CONSTRAINT active_transaction_counts_pk DO UPDATE SET count = EXCLUDED.count "
                 + "WHERE active_transaction_counts.count != EXCLUDED.count";
         return update(connection, INSERT_ROW_SETTER, sql, activeTransactionCount);
     }

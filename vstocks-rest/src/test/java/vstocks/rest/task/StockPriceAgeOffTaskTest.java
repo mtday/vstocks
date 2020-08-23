@@ -26,10 +26,10 @@ public class StockPriceAgeOffTaskTest {
         StockPriceService stockPriceDB = mock(StockPriceService.class);
 
         ServiceFactory dbFactory = mock(ServiceFactory.class);
-        when(dbFactory.getStockPriceDB()).thenReturn(stockPriceDB);
+        when(dbFactory.getStockPriceService()).thenReturn(stockPriceDB);
 
         Environment environment = mock(Environment.class);
-        when(environment.getDBFactory()).thenReturn(dbFactory);
+        when(environment.getServiceFactory()).thenReturn(dbFactory);
 
         new StockPriceAgeOffTask(environment).run();
 

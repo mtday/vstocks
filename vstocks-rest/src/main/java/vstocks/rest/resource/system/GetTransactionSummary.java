@@ -1,7 +1,6 @@
 package vstocks.rest.resource.system;
 
 import vstocks.db.ServiceFactory;
-import vstocks.model.system.TransactionSummaryCollection;
 import vstocks.rest.resource.BaseResource;
 
 import javax.inject.Inject;
@@ -15,16 +14,16 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/system/transaction-summary")
 @Singleton
 public class GetTransactionSummary extends BaseResource {
-    private final ServiceFactory dbFactory;
+    private final ServiceFactory serviceFactory;
 
     @Inject
-    public GetTransactionSummary(ServiceFactory dbFactory) {
-        this.dbFactory = dbFactory;
+    public GetTransactionSummary(ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
     }
 
     @GET
     @Produces(APPLICATION_JSON)
-    public TransactionSummaryCollection getTransactionSummary() {
-        return dbFactory.getTransactionSummaryDB().getLatest();
+    public String getTransactionSummary() {
+        return "TODO";
     }
 }

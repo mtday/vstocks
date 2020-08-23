@@ -38,8 +38,8 @@ public class LoginIT extends ResourceTest {
 
         ActivityLogService activityLogDB = mock(ActivityLogService.class);
 
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
-        when(getDBFactory().getActivityLogDB()).thenReturn(activityLogDB);
+        when(getDBFactory().getUserService()).thenReturn(userDB);
+        when(getDBFactory().getActivityLogService()).thenReturn(activityLogDB);
 
         when(getJwtSecurity().generateToken(eq(getUser().getId()))).thenReturn("token");
 
@@ -73,8 +73,8 @@ public class LoginIT extends ResourceTest {
 
         ActivityLogService activityLogDB = mock(ActivityLogService.class);
 
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
-        when(getDBFactory().getActivityLogDB()).thenReturn(activityLogDB);
+        when(getDBFactory().getUserService()).thenReturn(userDB);
+        when(getDBFactory().getActivityLogService()).thenReturn(activityLogDB);
 
         when(getJwtSecurity().generateToken(eq(getUser().getId()))).thenReturn("token");
 
@@ -109,8 +109,8 @@ public class LoginIT extends ResourceTest {
 
         ActivityLogService activityLogDB = mock(ActivityLogService.class);
 
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
-        when(getDBFactory().getActivityLogDB()).thenReturn(activityLogDB);
+        when(getDBFactory().getUserService()).thenReturn(userDB);
+        when(getDBFactory().getActivityLogService()).thenReturn(activityLogDB);
 
         when(getJwtSecurity().generateToken(eq(getUser().getId()))).thenReturn("token");
 

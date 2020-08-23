@@ -62,7 +62,7 @@ public class GetValueIT extends ResourceTest {
     public void testUserPortfolioValuesWithData() {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getDBFactory().getUserDB()).thenReturn(userDB);
+        when(getDBFactory().getUserService()).thenReturn(userDB);
 
         PortfolioValue portfolioValue1 = new PortfolioValue()
                 .setUserId(getUser().getId())

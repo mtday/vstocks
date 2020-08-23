@@ -94,13 +94,13 @@ public class StockUpdateTaskTest {
         });
 
         ServiceFactory dbFactory = mock(ServiceFactory.class);
-        when(dbFactory.getOwnedStockDB()).thenReturn(ownedStockDB);
-        when(dbFactory.getStockDB()).thenReturn(stockDB);
-        when(dbFactory.getStockPriceDB()).thenReturn(stockPriceDB);
+        when(dbFactory.getOwnedStockService()).thenReturn(ownedStockDB);
+        when(dbFactory.getStockService()).thenReturn(stockDB);
+        when(dbFactory.getStockPriceService()).thenReturn(stockPriceDB);
 
         Environment environment = mock(Environment.class);
         when(environment.getRemoteStockServiceFactory()).thenReturn(remoteStockServiceFactory);
-        when(environment.getDBFactory()).thenReturn(dbFactory);
+        when(environment.getServiceFactory()).thenReturn(dbFactory);
 
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         new StockUpdateTask(environment, executorService).run();

@@ -10,16 +10,16 @@ import vstocks.model.portfolio.CreditRankCollection;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
 import static vstocks.model.DatabaseField.RANK;
 import static vstocks.model.DatabaseField.USER_ID;
-import static vstocks.model.SortDirection.DESC;
 
 class CreditRankDB extends BaseTable {
     private static final RowMapper<CreditRank> ROW_MAPPER = rs ->
@@ -37,13 +37,14 @@ class CreditRankDB extends BaseTable {
 
     @Override
     protected Set<Sort> getDefaultSort() {
-        return new LinkedHashSet<>(asList(RANK.toSort(DESC), USER_ID.toSort()));
+        return new LinkedHashSet<>(asList(RANK.toSort(), USER_ID.toSort()));
     }
 
-    public int generate(Connection connection, Consumer<CreditRank> consumer) {
-        String sql = "SELECT user_id, NOW() AS timestamp, ROW_NUMBER() OVER (ORDER BY credits DESC) AS rank "
-                + "FROM user_credits ORDER BY credits DESC";
-        return consume(connection, ROW_MAPPER, consumer, sql);
+    public int generate(Connection connection) {
+        String sql = "INSERT INTO credit_ranks (user_id, timestamp, rank) "
+                + "(SELECT user_id, NOW(), RANK() OVER (ORDER BY credits DESC) "
+                + "FROM user_credits ORDER BY credits DESC)";
+        return update(connection, sql);
     }
 
     public CreditRankCollection getLatest(Connection connection, String userId) {
@@ -55,7 +56,7 @@ class CreditRankDB extends BaseTable {
 
         return new CreditRankCollection()
                 .setRanks(ranks)
-                .setDeltas(Delta.getDeltas(ranks, CreditRank::getTimestamp, r -> -r.getRank()));
+                .setDeltas(Delta.getDeltas(ranks, CreditRank::getTimestamp, CreditRank::getRank));
     }
 
     public Results<CreditRank> getAll(Connection connection, Page page, Set<Sort> sort) {
@@ -65,14 +66,10 @@ class CreditRankDB extends BaseTable {
     }
 
     public int add(Connection connection, CreditRank creditRank) {
-        return addAll(connection, singleton(creditRank));
-    }
-
-    public int addAll(Connection connection, Collection<CreditRank> creditRanks) {
         String sql = "INSERT INTO credit_ranks (user_id, timestamp, rank) VALUES (?, ?, ?) "
                 + "ON CONFLICT ON CONSTRAINT credit_ranks_pk "
                 + "DO UPDATE SET rank = EXCLUDED.rank WHERE credit_ranks.rank != EXCLUDED.rank";
-        return updateBatch(connection, INSERT_ROW_SETTER, sql, creditRanks);
+        return update(connection, INSERT_ROW_SETTER, sql, creditRank);
     }
 
     public int ageOff(Connection connection, Instant cutoff) {

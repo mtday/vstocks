@@ -32,7 +32,7 @@ public class PortfolioValueAgeOffTaskTest {
         when(dbFactory.getPortfolioValueRankDB()).thenReturn(portfolioValueRankDB);
 
         Environment environment = mock(Environment.class);
-        when(environment.getDBFactory()).thenReturn(dbFactory);
+        when(environment.getServiceFactory()).thenReturn(dbFactory);
 
         new PortfolioValueAgeOffTask(environment).run();
 

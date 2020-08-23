@@ -48,7 +48,7 @@ public class TransactionSummaryGenerateTaskTest {
         when(dbFactory.getTransactionSummaryDB()).thenReturn(transactionSummaryDB);
 
         Environment environment = mock(Environment.class);
-        when(environment.getDBFactory()).thenReturn(dbFactory);
+        when(environment.getServiceFactory()).thenReturn(dbFactory);
 
         new TransactionSummaryGenerateTask(environment).run();
 

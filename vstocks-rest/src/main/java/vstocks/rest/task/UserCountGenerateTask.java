@@ -2,7 +2,8 @@ package vstocks.rest.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import vstocks.model.system.UserCount;
+import vstocks.db.system.ActiveUserCountService;
+import vstocks.db.system.TotalUserCountService;
 import vstocks.rest.Environment;
 
 import java.time.LocalDateTime;
@@ -40,11 +41,11 @@ public class UserCountGenerateTask implements Task {
     public void run() {
         LOGGER.info("Starting user count generation");
 
-        UserCount userCountTotal = environment.getDBFactory().getUserCountDB().generateTotal();
-        environment.getDBFactory().getUserCountDB().addTotal(userCountTotal);
+        ActiveUserCountService activeUserCountService = environment.getServiceFactory().getActiveUserCountService();
+        activeUserCountService.add(activeUserCountService.generate());
 
-        UserCount userCountActive = environment.getDBFactory().getUserCountDB().generateActive();
-        environment.getDBFactory().getUserCountDB().addActive(userCountActive);
+        TotalUserCountService totalUserCountService = environment.getServiceFactory().getTotalUserCountService();
+        totalUserCountService.add(totalUserCountService.generate());
 
         LOGGER.info("Completed user count generation");
     }

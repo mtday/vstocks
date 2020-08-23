@@ -9,9 +9,7 @@ import vstocks.model.portfolio.MarketTotalRankCollection;
 
 import javax.sql.DataSource;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class MarketTotalRankServiceImpl extends BaseService implements MarketTotalRankService {
     private final MarketTotalRankDB marketTotalRankTable = new MarketTotalRankDB();
@@ -21,8 +19,8 @@ public class MarketTotalRankServiceImpl extends BaseService implements MarketTot
     }
 
     @Override
-    public int generate(Consumer<MarketTotalRank> consumer) {
-        return withConnection(conn -> marketTotalRankTable.generate(conn, consumer));
+    public int generate() {
+        return withConnection(marketTotalRankTable::generate);
     }
 
     @Override
@@ -38,11 +36,6 @@ public class MarketTotalRankServiceImpl extends BaseService implements MarketTot
     @Override
     public int add(MarketTotalRank marketTotalRank) {
         return withConnection(conn -> marketTotalRankTable.add(conn, marketTotalRank));
-    }
-
-    @Override
-    public int addAll(Collection<MarketTotalRank> marketTotalRanks) {
-        return withConnection(conn -> marketTotalRankTable.addAll(conn, marketTotalRanks));
     }
 
     @Override

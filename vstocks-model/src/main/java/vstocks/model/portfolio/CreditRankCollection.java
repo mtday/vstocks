@@ -48,7 +48,7 @@ public class CreditRankCollection {
 
     @Override
     public String toString() {
-        return "PortfolioCreditRankCollection{" +
+        return "CreditRankCollection{" +
                 "ranks=" + ranks +
                 ", deltas=" + deltas +
                 '}';

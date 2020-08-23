@@ -48,7 +48,7 @@ public class TotalRankCollection {
 
     @Override
     public String toString() {
-        return "PortfolioTotalRankCollection{" +
+        return "TotalRankCollection{" +
                 "ranks=" + ranks +
                 ", deltas=" + deltas +
                 '}';

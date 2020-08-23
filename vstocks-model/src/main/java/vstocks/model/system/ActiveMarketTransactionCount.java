@@ -6,20 +6,11 @@ import java.time.Instant;
 import java.util.Objects;
 
 public class ActiveMarketTransactionCount {
-    private Instant timestamp;
     private Market market;
+    private Instant timestamp;
     private long count;
 
     public ActiveMarketTransactionCount() {
-    }
-
-    public Instant getTimestamp() {
-        return timestamp;
-    }
-
-    public ActiveMarketTransactionCount setTimestamp(Instant timestamp) {
-        this.timestamp = timestamp;
-        return this;
     }
 
     public Market getMarket() {
@@ -28,6 +19,15 @@ public class ActiveMarketTransactionCount {
 
     public ActiveMarketTransactionCount setMarket(Market market) {
         this.market = market;
+        return this;
+    }
+
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+
+    public ActiveMarketTransactionCount setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
         return this;
     }
 
@@ -46,20 +46,20 @@ public class ActiveMarketTransactionCount {
         if (o == null || getClass() != o.getClass()) return false;
         ActiveMarketTransactionCount that = (ActiveMarketTransactionCount) o;
         return count == that.count &&
-                Objects.equals(timestamp, that.timestamp) &&
-                market == that.market;
+                market == that.market &&
+                Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(timestamp, market, count);
+        return Objects.hash(market, timestamp, count);
     }
 
     @Override
     public String toString() {
         return "ActiveMarketTransactionCount{" +
-                "timestamp=" + timestamp +
-                ", market=" + market +
+                "market=" + market +
+                ", timestamp=" + timestamp +
                 ", count=" + count +
                 '}';
     }

@@ -10,13 +10,14 @@ import vstocks.model.portfolio.TotalValueCollection;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
 import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.DatabaseField.VALUE;
 import static vstocks.model.SortDirection.DESC;
@@ -40,19 +41,20 @@ class TotalValueDB extends BaseTable {
         return new LinkedHashSet<>(asList(VALUE.toSort(DESC), USER_ID.toSort()));
     }
 
-    public int generate(Connection connection, Consumer<TotalValue> consumer) {
-        String sql = "SELECT user_id, NOW() AS timestamp, SUM(credits) + SUM(stocks) AS value FROM (" +
-                "  SELECT user_id, 0 AS credits, SUM(value) AS stocks FROM (" +
-                "    SELECT DISTINCT ON (us.user_id, us.market, us.symbol)" +
-                "      us.user_id, us.market, us.symbol, us.shares * sp.price AS value" +
-                "    FROM user_stocks us" +
-                "    JOIN stock_prices sp ON (us.market = sp.market AND us.symbol = sp.symbol)" +
-                "    ORDER BY us.user_id, us.market, us.symbol, sp.timestamp DESC" +
-                "  ) AS priced_stocks GROUP BY user_id" +
-                "  UNION" +
-                "  SELECT user_id, credits, 0 AS stocks FROM user_credits" +
-                ") AS portfolio_values GROUP BY user_id ORDER BY value DESC";
-        return consume(connection, ROW_MAPPER, consumer, sql);
+    public int generate(Connection connection) {
+        String sql = "INSERT INTO total_values (user_id, timestamp, value) "
+                + "(SELECT user_id, NOW() AS timestamp, SUM(credits) + SUM(stocks) AS value FROM ("
+                + "  SELECT user_id, 0 AS credits, SUM(value) AS stocks FROM ("
+                + "    SELECT DISTINCT ON (us.user_id, us.market, us.symbol)"
+                + "      us.user_id, us.market, us.symbol, us.shares * sp.price AS value"
+                + "    FROM user_stocks us"
+                + "    JOIN stock_prices sp ON (us.market = sp.market AND us.symbol = sp.symbol)"
+                + "    ORDER BY us.user_id, us.market, us.symbol, sp.timestamp DESC"
+                + "  ) AS priced_stocks GROUP BY user_id"
+                + "  UNION"
+                + "  SELECT user_id, credits, 0 AS stocks FROM user_credits"
+                + ") AS portfolio_values GROUP BY user_id ORDER BY value DESC)";
+        return update(connection, sql);
     }
 
     public TotalValueCollection getLatest(Connection connection, String userId) {
@@ -74,14 +76,10 @@ class TotalValueDB extends BaseTable {
     }
 
     public int add(Connection connection, TotalValue totalValue) {
-        return addAll(connection, singleton(totalValue));
-    }
-
-    public int addAll(Connection connection, Collection<TotalValue> totalValues) {
         String sql = "INSERT INTO total_values (user_id, timestamp, value) VALUES (?, ?, ?) "
                 + "ON CONFLICT ON CONSTRAINT total_values_pk "
                 + "DO UPDATE SET value = EXCLUDED.value WHERE total_values.value != EXCLUDED.value";
-        return updateBatch(connection, INSERT_ROW_SETTER, sql, totalValues);
+        return update(connection, INSERT_ROW_SETTER, sql, totalValue);
     }
 
     public int ageOff(Connection connection, Instant cutoff) {

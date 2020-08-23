@@ -11,15 +11,13 @@ import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Consumer;
 
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
+import static vstocks.model.DatabaseField.RANK;
 import static vstocks.model.DatabaseField.USER_ID;
-import static vstocks.model.DatabaseField.VALUE;
-import static vstocks.model.SortDirection.DESC;
 
 class TotalRankDB extends BaseTable {
     private static final RowMapper<TotalRank> ROW_MAPPER = rs ->
@@ -37,24 +35,25 @@ class TotalRankDB extends BaseTable {
 
     @Override
     protected Set<Sort> getDefaultSort() {
-        return new LinkedHashSet<>(asList(VALUE.toSort(DESC), USER_ID.toSort()));
+        return new LinkedHashSet<>(asList(RANK.toSort(), USER_ID.toSort()));
     }
 
-    public int generate(Connection connection, Consumer<TotalRank> consumer) {
-        String sql = "SELECT user_id, timestamp, ROW_NUMBER() OVER (ORDER BY value DESC) FROM (" +
-                "  SELECT user_id, NOW() AS timestamp, SUM(credits) + SUM(stocks) AS value FROM (" +
-                "    SELECT user_id, 0 AS credits, SUM(value) AS stocks FROM (" +
-                "      SELECT DISTINCT ON (us.user_id, us.market, us.symbol)" +
-                "        us.user_id, us.market, us.symbol, us.shares * sp.price AS value" +
-                "      FROM user_stocks us" +
-                "      JOIN stock_prices sp ON (us.market = sp.market AND us.symbol = sp.symbol)" +
-                "      ORDER BY us.user_id, us.market, us.symbol, sp.timestamp DESC" +
-                "    ) AS priced_stocks GROUP BY user_id" +
-                "    UNION" +
-                "    SELECT user_id, credits, 0 AS stocks FROM user_credits" +
-                "  ) AS portfolio_values GROUP BY user_id ORDER BY value DESC" +
-                ") AS ordered_values";
-        return consume(connection, ROW_MAPPER, consumer, sql);
+    public int generate(Connection connection) {
+        String sql = "INSERT INTO total_ranks (user_id, timestamp, rank)"
+                + "(SELECT user_id, timestamp, RANK() OVER (ORDER BY value DESC) AS rank FROM ("
+                + "  SELECT user_id, NOW() AS timestamp, SUM(credits) + SUM(stocks) AS value FROM ("
+                + "    SELECT user_id, 0 AS credits, SUM(value) AS stocks FROM ("
+                + "      SELECT DISTINCT ON (us.user_id, us.market, us.symbol)"
+                + "        us.user_id, us.market, us.symbol, us.shares * sp.price AS value"
+                + "      FROM user_stocks us"
+                + "      JOIN stock_prices sp ON (us.market = sp.market AND us.symbol = sp.symbol)"
+                + "      ORDER BY us.user_id, us.market, us.symbol, sp.timestamp DESC"
+                + "    ) AS priced_stocks GROUP BY user_id"
+                + "    UNION"
+                + "    SELECT user_id, credits, 0 AS stocks FROM user_credits"
+                + "  ) AS portfolio_values GROUP BY user_id ORDER BY value DESC"
+                + ") AS ordered_values)";
+        return update(connection, sql);
     }
 
     public TotalRankCollection getLatest(Connection connection, String userId) {
@@ -66,7 +65,7 @@ class TotalRankDB extends BaseTable {
 
         return new TotalRankCollection()
                 .setRanks(ranks)
-                .setDeltas(Delta.getDeltas(ranks, TotalRank::getTimestamp, r -> -r.getRank()));
+                .setDeltas(Delta.getDeltas(ranks, TotalRank::getTimestamp, TotalRank::getRank));
     }
 
     public Results<TotalRank> getAll(Connection connection, Page page, Set<Sort> sort) {

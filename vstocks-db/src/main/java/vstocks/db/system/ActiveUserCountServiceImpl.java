@@ -19,7 +19,7 @@ public class ActiveUserCountServiceImpl extends BaseService implements ActiveUse
     }
 
     @Override
-    public ActiveUserCount generate() {
+    public int generate() {
         return withConnection(activeUserCountTable::generate);
     }
 

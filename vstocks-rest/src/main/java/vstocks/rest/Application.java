@@ -128,7 +128,7 @@ public class Application extends ResourceConfig {
             @Override
             protected void configure() {
                 bind(getObjectMapper()).to(ObjectMapper.class);
-                ofNullable(environment.getDBFactory()).ifPresent(d -> bind(d).to(ServiceFactory.class));
+                ofNullable(environment.getServiceFactory()).ifPresent(d -> bind(d).to(ServiceFactory.class));
                 ofNullable(environment.getRemoteStockServiceFactory()).ifPresent(r -> bind(r).to(RemoteStockServiceFactory.class));
                 ofNullable(environment.getAchievementService()).ifPresent(a -> bind(a).to(AchievementService.class));
                 ofNullable(environment.getJwtSecurity()).ifPresent(j -> bind(j).to(JwtSecurity.class));
@@ -160,7 +160,7 @@ public class Application extends ResourceConfig {
 
     private static Environment getEnvironment() {
         return new Environment()
-                .setDBFactory(new ServiceFactoryImpl(getDataSource()))
+                .setServiceFactory(new ServiceFactoryImpl(getDataSource()))
                 .setRemoteStockServiceFactory(new DefaultRemoteStockServiceFactory())
                 .setAchievementService(new AchievementService())
                 .setJwtSecurity(new JwtSecurity())

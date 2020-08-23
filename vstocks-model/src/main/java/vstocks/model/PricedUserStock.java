@@ -1,7 +1,6 @@
 package vstocks.model;
 
 import java.time.Instant;
-import java.util.Map;
 import java.util.Objects;
 
 public class PricedUserStock {
@@ -11,7 +10,6 @@ public class PricedUserStock {
     private Instant timestamp;
     private int shares;
     private long price;
-    private Map<DeltaInterval, Delta> deltas;
 
     public PricedUserStock() {
     }
@@ -86,15 +84,6 @@ public class PricedUserStock {
         return this;
     }
 
-    public Map<DeltaInterval, Delta> getDeltas() {
-        return deltas;
-    }
-
-    public PricedUserStock setDeltas(Map<DeltaInterval, Delta> deltas) {
-        this.deltas = deltas;
-        return this;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -105,13 +94,12 @@ public class PricedUserStock {
                 Objects.equals(userId, that.userId) &&
                 market == that.market &&
                 Objects.equals(symbol, that.symbol) &&
-                Objects.equals(timestamp, that.timestamp) &&
-                Objects.equals(deltas, that.deltas);
+                Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, market, symbol, timestamp, shares, price, deltas);
+        return Objects.hash(userId, market, symbol, timestamp, shares, price);
     }
 
     @Override
@@ -123,7 +111,6 @@ public class PricedUserStock {
                 ", timestamp=" + timestamp +
                 ", shares=" + shares +
                 ", price=" + price +
-                ", deltas=" + deltas +
                 '}';
     }
 }

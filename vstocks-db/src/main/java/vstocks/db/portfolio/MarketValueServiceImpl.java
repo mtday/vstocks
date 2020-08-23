@@ -10,10 +10,8 @@ import vstocks.model.portfolio.MarketValueCollection;
 
 import javax.sql.DataSource;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class MarketValueServiceImpl extends BaseService implements MarketValueService {
     private final MarketValueDB marketValueTable = new MarketValueDB();
@@ -23,8 +21,8 @@ public class MarketValueServiceImpl extends BaseService implements MarketValueSe
     }
 
     @Override
-    public int generate(Market market, Consumer<MarketValue> consumer) {
-        return withConnection(conn -> marketValueTable.generate(conn, market, consumer));
+    public int generate(Market market) {
+        return withConnection(conn -> marketValueTable.generate(conn, market));
     }
 
     @Override
@@ -45,11 +43,6 @@ public class MarketValueServiceImpl extends BaseService implements MarketValueSe
     @Override
     public int add(MarketValue marketValue) {
         return withConnection(conn -> marketValueTable.add(conn, marketValue));
-    }
-
-    @Override
-    public int addAll(Collection<MarketValue> marketValues) {
-        return withConnection(conn -> marketValueTable.addAll(conn, marketValues));
     }
 
     @Override

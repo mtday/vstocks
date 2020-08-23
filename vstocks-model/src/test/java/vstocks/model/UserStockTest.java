@@ -5,11 +5,13 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static vstocks.model.Market.TWITTER;
+import static vstocks.model.User.generateId;
 
 public class UserStockTest {
+    private final String userId = generateId("user@domain.com");
+
     @Test
     public void testGettersAndSetters() {
-        String userId = User.generateId("user@domain.com");
         UserStock userStock = new UserStock()
                 .setUserId(userId)
                 .setMarket(TWITTER)
@@ -24,7 +26,6 @@ public class UserStockTest {
 
     @Test
     public void testEquals() {
-        String userId = User.generateId("user@domain.com");
         UserStock userStock1 = new UserStock()
                 .setUserId(userId)
                 .setMarket(TWITTER)
@@ -40,7 +41,6 @@ public class UserStockTest {
 
     @Test
     public void testHashCode() {
-        String userId = User.generateId("user@domain.com");
         UserStock userStock = new UserStock()
                 .setUserId(userId)
                 .setMarket(TWITTER)
@@ -52,7 +52,6 @@ public class UserStockTest {
 
     @Test
     public void testToString() {
-        String userId = User.generateId("user@domain.com");
         UserStock userStock = new UserStock()
                 .setUserId(userId)
                 .setMarket(TWITTER)

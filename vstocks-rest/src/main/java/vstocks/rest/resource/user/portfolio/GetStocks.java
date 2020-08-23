@@ -36,6 +36,6 @@ public class GetStocks extends BaseResource {
                                               @QueryParam("pageSize") Integer pageSize,
                                               @QueryParam("sort") String sort) {
         User user = getUser(securityContext);
-        return dbFactory.getPricedUserStockDB().getForUser(user.getId(), getPage(pageNum, pageSize), getSort(sort));
+        return dbFactory.getPricedUserStockService().getForUser(user.getId(), getPage(pageNum, pageSize), getSort(sort));
     }
 }

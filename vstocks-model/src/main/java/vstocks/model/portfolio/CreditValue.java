@@ -55,7 +55,7 @@ public class CreditValue {
 
     @Override
     public String toString() {
-        return "PortfolioCreditValue{" +
+        return "CreditValue{" +
                 "userId='" + userId + '\'' +
                 ", timestamp=" + timestamp +
                 ", value=" + value +

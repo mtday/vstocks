@@ -1,23 +1,34 @@
 package vstocks.db;
 
+import vstocks.db.portfolio.*;
+import vstocks.db.system.ActiveUserCountService;
+import vstocks.db.system.TotalUserCountService;
+
 public interface ServiceFactory {
-    ActivityLogService getActivityLogDB();
+    ActivityLogService getActivityLogService();
+    OwnedStockService getOwnedStockService();
+    PricedStockService getPricedStockService();
+    PricedUserStockService getPricedUserStockService();
+    StockService getStockService();
+    StockPriceService getStockPriceService();
+    UserAchievementService getUserAchievementService();
+    UserCreditsService getUserCreditsService();
+    UserService getUserService();
+    UserStockService getUserStockService();
 
-    OwnedStockService getOwnedStockDB();
+    // portfolio services
 
-    PricedStockService getPricedStockDB();
+    CreditRankService getCreditRankService();
+    CreditValueService getCreditValueService();
+    MarketRankService getMarketRankService();
+    MarketValueService getMarketValueService();
+    MarketTotalRankService getMarketTotalRankService();
+    MarketTotalValueService getMarketTotalValueService();
+    TotalRankService getTotalRankService();
+    TotalValueService getTotalValueService();
 
-    PricedUserStockService getPricedUserStockDB();
+    // system services
 
-    StockService getStockDB();
-
-    StockPriceService getStockPriceDB();
-
-    UserAchievementService getUserAchievementDB();
-
-    UserCreditsService getUserCreditsDB();
-
-    UserService getUserDB();
-
-    UserStockService getUserStockDB();
+    ActiveUserCountService getActiveUserCountService();
+    TotalUserCountService getTotalUserCountService();
 }

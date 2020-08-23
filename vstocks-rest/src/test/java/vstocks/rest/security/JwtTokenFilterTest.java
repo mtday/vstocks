@@ -76,7 +76,7 @@ public class JwtTokenFilterTest {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq("userId"))).thenReturn(empty());
         ServiceFactory dbFactory = mock(ServiceFactory.class);
-        when(dbFactory.getUserDB()).thenReturn(userDB);
+        when(dbFactory.getUserService()).thenReturn(userDB);
 
         JwtSecurity jwtSecurity = mock(JwtSecurity.class);
         when(jwtSecurity.validateToken(eq("token"))).thenReturn(Optional.of("userId"));
@@ -92,7 +92,7 @@ public class JwtTokenFilterTest {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq("userId"))).thenReturn(Optional.of(user));
         ServiceFactory dbFactory = mock(ServiceFactory.class);
-        when(dbFactory.getUserDB()).thenReturn(userDB);
+        when(dbFactory.getUserService()).thenReturn(userDB);
 
         JwtSecurity jwtSecurity = mock(JwtSecurity.class);
         when(jwtSecurity.validateToken(eq("token"))).thenReturn(Optional.of("userId"));

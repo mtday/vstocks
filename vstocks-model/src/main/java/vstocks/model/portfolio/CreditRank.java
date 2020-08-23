@@ -55,7 +55,7 @@ public class CreditRank {
 
     @Override
     public String toString() {
-        return "PortfolioCreditRank{" +
+        return "CreditRank{" +
                 "userId='" + userId + '\'' +
                 ", timestamp=" + timestamp +
                 ", rank=" + rank +
