@@ -1,466 +1,471 @@
 package vstocks.db;
 
-public class UserServiceImplIT extends BaseServiceImplIT {
-    /*
-    private UserDB userTable;
-    private UserCreditsDB userCreditsTable;
-    private StockDB stockTable;
-    private StockPriceDB stockPriceTable;
-    private UserStockDB userStockTable;
-    private ActivityLogTable activityLogTable;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import vstocks.model.*;
 
-    private UserServiceImpl userDB;
-    private UserCreditsServiceImpl userCreditsDB;
-    private UserStockServiceImpl userStockDB;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
+import static java.util.Locale.ENGLISH;
+import static org.junit.Assert.*;
+import static vstocks.model.DatabaseField.DISPLAY_NAME;
+import static vstocks.model.DatabaseField.USERNAME;
+import static vstocks.model.Market.TWITTER;
+import static vstocks.model.SortDirection.DESC;
+import static vstocks.model.User.generateId;
+
+public class UserServiceImplIT extends BaseServiceImplIT {
+    private ActivityLogService activityLogService;
+    private StockPriceService stockPriceService;
+    private StockService stockService;
+    private UserCreditsService userCreditsService;
+    private UserService userService;
+    private UserStockService userStockService;
+
+    private final User user1 = new User()
+            .setId(generateId("user1@domain.com"))
+            .setEmail("user1@domain.com")
+            .setUsername("username1")
+            .setDisplayName("Name1")
+            .setProfileImage("link1");
+    private final User user2 = new User()
+            .setId(generateId("user2@domain.com"))
+            .setEmail("user2@domain.com")
+            .setUsername("username2")
+            .setDisplayName("Name2")
+            .setProfileImage("link2");
+    private final User user3 = new User()
+            .setId(generateId("user3@domain.com"))
+            .setEmail("user3@domain.com")
+            .setUsername("username3")
+            .setDisplayName("Name3")
+            .setProfileImage("link3");
+    private final User user4 = new User()
+            .setId(generateId("user4@domain.com"))
+            .setEmail("user4@domain.com")
+            .setUsername("username4")
+            .setDisplayName("Name4")
+            .setProfileImage("link4");
+    private final User user5 = new User()
+            .setId(generateId("user5@domain.com"))
+            .setEmail("user5@domain.com")
+            .setUsername("username5")
+            .setDisplayName("Name5")
+            .setProfileImage("link5");
+
+    private final Stock stock1 = new Stock()
+            .setMarket(TWITTER)
+            .setSymbol("symbol1")
+            .setName("Name1")
+            .setProfileImage("link1");
+    private final Stock stock2 = new Stock()
+            .setMarket(TWITTER)
+            .setSymbol("symbol2")
+            .setName("Name2")
+            .setProfileImage("link2");
+
+    private final StockPrice stockPrice1 = new StockPrice()
+            .setMarket(stock1.getMarket())
+            .setSymbol(stock1.getSymbol())
+            .setPrice(2)
+            .setTimestamp(now);
+    private final StockPrice stockPrice2 = new StockPrice()
+            .setMarket(stock2.getMarket())
+            .setSymbol(stock2.getSymbol())
+            .setPrice(3)
+            .setTimestamp(now);
+
+    private final UserStock userStock1 = new UserStock()
+            .setUserId(user1.getId())
+            .setMarket(stock1.getMarket())
+            .setSymbol(stock1.getSymbol())
+            .setShares(3);
+    private final UserStock userStock2 = new UserStock()
+            .setUserId(user1.getId())
+            .setMarket(stock2.getMarket())
+            .setSymbol(stock2.getSymbol())
+            .setShares(4);
 
     @Before
     public void setup() {
-        userTable = new UserDB();
-        userCreditsTable = new UserCreditsDB();
-        stockTable = new StockDB();
-        stockPriceTable = new StockPriceDB();
-        userStockTable = new UserStockDB();
-        activityLogTable = new ActivityLogTable();
-
-        userDB = new UserServiceImpl(dataSourceExternalResource.get());
-        userCreditsDB = new UserCreditsServiceImpl(dataSourceExternalResource.get());
-        userStockDB = new UserStockServiceImpl(dataSourceExternalResource.get());
+        activityLogService = new ActivityLogServiceImpl(dataSourceExternalResource.get());
+        stockService = new StockServiceImpl(dataSourceExternalResource.get());
+        stockPriceService = new StockPriceServiceImpl(dataSourceExternalResource.get());
+        userCreditsService = new UserCreditsServiceImpl(dataSourceExternalResource.get());
+        userService = new UserServiceImpl(dataSourceExternalResource.get());
+        userStockService = new UserStockServiceImpl(dataSourceExternalResource.get());
     }
 
     @After
-    public void cleanup() throws SQLException {
-        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            activityLogTable.truncate(connection);
-            userStockTable.truncate(connection);
-            stockTable.truncate(connection);
-            stockPriceTable.truncate(connection);
-            userCreditsTable.truncate(connection);
-            userTable.truncate(connection);
-            connection.commit();
-        }
+    public void cleanup() {
+        activityLogService.truncate();
+        userStockService.truncate();
+        stockPriceService.truncate();
+        stockService.truncate();
+        userCreditsService.truncate();
+        userService.truncate();
     }
 
     @Test
     public void testUsernameExistsMissing() {
-        assertFalse(userDB.usernameExists("missing"));
+        assertFalse(userService.usernameExists("missing"));
     }
 
     @Test
     public void testUsernameExists() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
-        assertEquals(1, userDB.add(user));
-        assertTrue(userDB.usernameExists(user.getUsername()));
+        assertEquals(1, userService.add(user1));
+        assertTrue(userService.usernameExists(user1.getUsername()));
     }
 
     @Test
     public void testGetMissing() {
-        assertFalse(userDB.get("missing-id").isPresent());
+        assertFalse(userService.get("missing-id").isPresent());
     }
 
     @Test
     public void testGetExists() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(1, userDB.add(user));
+        assertEquals(1, userService.add(user1));
 
-        User fetched = userDB.get(user.getId()).orElse(null);
-        assertEquals(user, fetched);
-    }
-
-    @Test
-    public void testGetLowercaseEmail() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(1, userDB.add(user));
-
-        User fetched = userDB.get(user.getId()).orElse(null);
-        assertEquals(user, fetched);
-    }
-
-    @Test
-    public void testGetUppercaseEmail() {
-        User user = new User().setId(generateId("USER@DOMAIN.COM")).setEmail("USER@DOMAIN.COM").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(1, userDB.add(user));
-
-        user.setEmail("user@domain.com");
-        User fetched = userDB.get(user.getId()).orElse(null);
-        assertEquals(user, fetched);
+        User fetched = userService.get(user1.getId()).orElse(null);
+        assertEquals(user1, fetched);
     }
 
     @Test
     public void testGetNoProfileImage() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
-        assertEquals(1, userDB.add(user));
+        User user = new User()
+                .setId(generateId("user@domain.com"))
+                .setEmail("user@domain.com")
+                .setUsername("name")
+                .setDisplayName("Name");
+        assertEquals(1, userService.add(user));
 
-        Optional<User> fetched = userDB.get(user.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(user.getId(), fetched.get().getId());
-        assertEquals(user.getEmail().toLowerCase(ENGLISH), fetched.get().getEmail());
-        assertEquals(user.getUsername(), fetched.get().getUsername());
-        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
-        assertNull(fetched.get().getProfileImage());
+        User fetched = userService.get(user.getId()).orElse(null);
+        assertNotNull(fetched);
+        assertEquals(user.getId(), fetched.getId());
+        assertEquals(user.getEmail().toLowerCase(ENGLISH), fetched.getEmail());
+        assertEquals(user.getUsername(), fetched.getUsername());
+        assertEquals(user.getDisplayName(), fetched.getDisplayName());
+        assertNull(fetched.getProfileImage());
     }
 
     @Test
     public void testGetAllNone() {
-        Results<User> results =  userDB.getAll(new Page(), emptySet());
-        assertEquals(0, results.getTotal());
-        assertTrue(results.getResults().isEmpty());
+        Results<User> results =  userService.getAll(new Page(), emptySet());
+        validateResults(results);
     }
 
     @Test
     public void testGetAllSomeNoSort() {
-        User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1").setProfileImage("link");
-        User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2").setProfileImage("link");
-        assertEquals(1, userDB.add(user1));
-        assertEquals(1, userDB.add(user2));
+        assertEquals(1, userService.add(user1));
+        assertEquals(1, userService.add(user2));
 
-        Results<User> results = userDB.getAll(new Page(), emptySet());
-        assertEquals(2, results.getTotal());
-        assertEquals(2, results.getResults().size());
-        assertEquals(user1, results.getResults().get(0));
-        assertEquals(user2, results.getResults().get(1));
+        Results<User> results = userService.getAll(new Page(), emptySet());
+        validateResults(results, user1, user2);
     }
 
     @Test
     public void testGetAllSomeWithSort() {
-        User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1").setProfileImage("link");
-        User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2").setProfileImage("link");
-        assertEquals(1, userDB.add(user1));
-        assertEquals(1, userDB.add(user2));
+        assertEquals(1, userService.add(user1));
+        assertEquals(1, userService.add(user2));
 
         Set<Sort> sort = new LinkedHashSet<>(asList(USERNAME.toSort(DESC), DISPLAY_NAME.toSort()));
-        Results<User> results = userDB.getAll(new Page(), sort);
-        assertEquals(2, results.getTotal());
-        assertEquals(2, results.getResults().size());
-        assertEquals(user2, results.getResults().get(0));
-        assertEquals(user1, results.getResults().get(1));
+        Results<User> results = userService.getAll(new Page(), sort);
+        validateResults(results, user2, user1);
     }
 
     @Test
     public void testGetAllMultiplePagesNoSort() {
-        User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1").setProfileImage("link");
-        User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2").setProfileImage("link");
-        User user3 = new User().setId(generateId("user3@domain.com")).setEmail("user3@domain.com").setUsername("name3").setDisplayName("Name3").setProfileImage("link");
-        User user4 = new User().setId(generateId("user4@domain.com")).setEmail("user4@domain.com").setUsername("name4").setDisplayName("Name4").setProfileImage("link");
-        User user5 = new User().setId(generateId("user5@domain.com")).setEmail("user5@domain.com").setUsername("name5").setDisplayName("Name5").setProfileImage("link");
-        for (User user : asList(user1, user2, user3, user4, user5)) {
-            assertEquals(1, userDB.add(user));
-        }
+        asList(user1, user2, user3, user4, user5).forEach(user -> assertEquals(1, userService.add(user)));
 
         Page page = new Page().setSize(2);
-        Results<User> results = userDB.getAll(page, emptySet());
-        assertEquals(5, results.getTotal());
-        assertEquals(2, results.getResults().size());
-        assertEquals(user1, results.getResults().get(0));
-        assertEquals(user2, results.getResults().get(1));
+        Results<User> results = userService.getAll(page, emptySet());
+        validateResults(results, 5, 1, user1, user2);
 
         page = page.next();
-        results = userDB.getAll(page, emptySet());
-        assertEquals(5, results.getTotal());
-        assertEquals(2, results.getResults().size());
-        assertEquals(user3, results.getResults().get(0));
-        assertEquals(user4, results.getResults().get(1));
+        results = userService.getAll(page, emptySet());
+        validateResults(results, 5, 2, user3, user4);
 
         page = page.next();
-        results = userDB.getAll(page, emptySet());
-        assertEquals(5, results.getTotal());
-        assertEquals(1, results.getResults().size());
-        assertEquals(user5, results.getResults().get(0));
+        results = userService.getAll(page, emptySet());
+        validateResults(results, 5, 3, user5);
     }
 
     @Test
     public void testGetAllMultiplePagesWithSort() {
-        User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1").setProfileImage("link");
-        User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2").setProfileImage("link");
-        User user3 = new User().setId(generateId("user3@domain.com")).setEmail("user3@domain.com").setUsername("name3").setDisplayName("Name3").setProfileImage("link");
-        User user4 = new User().setId(generateId("user4@domain.com")).setEmail("user4@domain.com").setUsername("name4").setDisplayName("Name4").setProfileImage("link");
-        User user5 = new User().setId(generateId("user5@domain.com")).setEmail("user5@domain.com").setUsername("name5").setDisplayName("Name5").setProfileImage("link");
-        for (User user : asList(user1, user2, user3, user4, user5)) {
-            assertEquals(1, userDB.add(user));
-        }
+        asList(user1, user2, user3, user4, user5).forEach(user -> assertEquals(1, userService.add(user)));
 
         Page page = new Page().setSize(2);
         Set<Sort> sort = new LinkedHashSet<>(asList(USERNAME.toSort(DESC), DISPLAY_NAME.toSort()));
-        Results<User> results = userDB.getAll(page, sort);
-        assertEquals(5, results.getTotal());
-        assertEquals(2, results.getResults().size());
-        assertEquals(user5, results.getResults().get(0));
-        assertEquals(user4, results.getResults().get(1));
+        Results<User> results = userService.getAll(page, sort);
+        validateResults(results, 5, 1, user5, user4);
 
         page = page.next();
-        results = userDB.getAll(page, sort);
-        assertEquals(5, results.getTotal());
-        assertEquals(2, results.getResults().size());
-        assertEquals(user3, results.getResults().get(0));
-        assertEquals(user2, results.getResults().get(1));
+        results = userService.getAll(page, sort);
+        validateResults(results, 5, 2, user3, user2);
 
         page = page.next();
-        results = userDB.getAll(page, sort);
-        assertEquals(5, results.getTotal());
-        assertEquals(1, results.getResults().size());
-        assertEquals(user1, results.getResults().get(0));
+        results = userService.getAll(page, sort);
+        validateResults(results, 5, 3, user1);
     }
 
     @Test
     public void testConsumeNone() {
         List<User> results = new ArrayList<>();
-        assertEquals(0, userDB.consume(results::add, emptySet()));
-        assertTrue(results.isEmpty());
+        assertEquals(0, userService.consume(results::add, emptySet()));
+        validateResults(results);
     }
 
     @Test
     public void testConsumeSomeNoSort() {
-        User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1").setProfileImage("link");
-        User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2").setProfileImage("link");
-        assertEquals(1, userDB.add(user1));
-        assertEquals(1, userDB.add(user2));
+        assertEquals(1, userService.add(user1));
+        assertEquals(1, userService.add(user2));
 
         List<User> results = new ArrayList<>();
-        assertEquals(2, userDB.consume(results::add, emptySet()));
-        assertEquals(2, results.size());
-        assertEquals(user1, results.get(0));
-        assertEquals(user2, results.get(1));
+        assertEquals(2, userService.consume(results::add, emptySet()));
+        validateResults(results, user1, user2);
     }
 
     @Test
     public void testConsumeSomeWithSort() {
-        User user1 = new User().setId(generateId("user1@domain.com")).setEmail("user1@domain.com").setUsername("name1").setDisplayName("Name1").setProfileImage("link");
-        User user2 = new User().setId(generateId("user2@domain.com")).setEmail("user2@domain.com").setUsername("name2").setDisplayName("Name2").setProfileImage("link");
-        assertEquals(1, userDB.add(user1));
-        assertEquals(1, userDB.add(user2));
+        assertEquals(1, userService.add(user1));
+        assertEquals(1, userService.add(user2));
 
         List<User> results = new ArrayList<>();
         Set<Sort> sort = new LinkedHashSet<>(asList(USERNAME.toSort(DESC), DISPLAY_NAME.toSort()));
-        assertEquals(2, userDB.consume(results::add, sort));
-        assertEquals(2, results.size());
-        assertEquals(user2, results.get(0));
-        assertEquals(user1, results.get(1));
+        assertEquals(2, userService.consume(results::add, sort));
+        validateResults(results, user2, user1);
     }
 
     @Test
-    public void testReset() throws SQLException {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(1, userDB.add(user));
+    public void testReset() {
+        assertEquals(1, userService.add(user1));
 
-        try (Connection connection = dataSourceExternalResource.get().getConnection()) {
-            assertEquals(1, userCreditsTable.update(connection, user.getId(), 1234));
+        assertEquals(1, userCreditsService.update(user1.getId(), 1234));
+        assertEquals(1, stockService.add(stock1));
+        assertEquals(1, stockService.add(stock2));
+        assertEquals(1, stockPriceService.add(stockPrice1));
+        assertEquals(1, stockPriceService.add(stockPrice2));
+        assertEquals(1, userStockService.add(userStock1));
+        assertEquals(1, userStockService.add(userStock2));
 
-            Stock stock1 = new Stock().setMarket(TWITTER).setSymbol("sym1").setName("Name1");
-            Stock stock2 = new Stock().setMarket(TWITTER).setSymbol("sym2").setName("Name2");
-            assertEquals(1, stockTable.add(connection, stock1));
-            assertEquals(1, stockTable.add(connection, stock2));
+        UserCredits userCreditsBeforeReset = userCreditsService.get(user1.getId()).orElse(null);
+        assertNotNull(userCreditsBeforeReset);
+        assertEquals(11234, userCreditsBeforeReset.getCredits());
 
-            Instant now = Instant.now().truncatedTo(SECONDS);
-            StockPrice stockPrice1 = new StockPrice().setMarket(TWITTER).setSymbol("sym1").setPrice(2).setTimestamp(now);
-            StockPrice stockPrice2 = new StockPrice().setMarket(TWITTER).setSymbol("sym2").setPrice(3).setTimestamp(now);
-            assertEquals(1, stockPriceTable.add(connection, stockPrice1));
-            assertEquals(1, stockPriceTable.add(connection, stockPrice2));
+        Results<UserStock> userStocksBeforeReset = userStockService.getForUser(user1.getId(), new Page(), emptySet());
+        validateResults(userStocksBeforeReset, userStock1, userStock2);
 
-            UserStock userStock1 = new UserStock().setUserId(user.getId()).setMarket(TWITTER).setSymbol("sym1").setShares(3);
-            UserStock userStock2 = new UserStock().setUserId(user.getId()).setMarket(TWITTER).setSymbol("sym2").setShares(4);
-            assertEquals(1, userStockTable.add(connection, userStock1));
-            assertEquals(1, userStockTable.add(connection, userStock2));
+        userService.reset(user1.getId());
 
-            connection.commit();
-        }
+        UserCredits userCreditsAfterReset = userCreditsService.get(user1.getId()).orElse(null);
+        assertNotNull(userCreditsAfterReset);
+        assertEquals(10000, userCreditsAfterReset.getCredits());
 
-        Optional<UserCredits> userCreditsBeforeReset = userCreditsDB.get(user.getId());
-        assertTrue(userCreditsBeforeReset.isPresent());
-        assertEquals(11234, userCreditsBeforeReset.get().getCredits());
-
-        Results<UserStock> userStocksBeforeReset = userStockDB.getForUser(user.getId(), new Page(), emptySet());
-        assertEquals(2, userStocksBeforeReset.getTotal());
-        assertEquals(2, userStocksBeforeReset.getResults().size());
-
-        userDB.reset(user.getId());
-
-        Optional<UserCredits> userCreditsAfterReset = userCreditsDB.get(user.getId());
-        assertTrue(userCreditsAfterReset.isPresent());
-        assertEquals(10000, userCreditsAfterReset.get().getCredits());
-
-        Results<UserStock> userStocksAfterReset = userStockDB.getForUser(user.getId(), new Page(), emptySet());
-        assertEquals(0, userStocksAfterReset.getTotal());
-        assertEquals(0, userStocksAfterReset.getResults().size());
+        Results<UserStock> userStocksAfterReset = userStockService.getForUser(user1.getId(), new Page(), emptySet());
+        validateResults(userStocksAfterReset);
     }
 
     @Test
     public void testAdd() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(1, userDB.add(user));
+        assertEquals(1, userService.add(user1));
 
-        Optional<User> fetched = userDB.get(user.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(user.getId(), fetched.get().getId());
-        assertEquals(user.getEmail(), fetched.get().getEmail());
-        assertEquals(user.getUsername(), fetched.get().getUsername());
-        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
-        assertEquals(user.getProfileImage(), fetched.get().getProfileImage());
+        User fetched = userService.get(user1.getId()).orElse(null);
+        assertEquals(user1, fetched);
 
-        Optional<UserCredits> userCredits = userCreditsDB.get(user.getId());
-        assertTrue(userCredits.isPresent());
-        assertEquals(10000, userCredits.get().getCredits());
+        UserCredits userCredits = userCreditsService.get(user1.getId()).orElse(null);
+        assertNotNull(userCredits);
+        assertEquals(10000, userCredits.getCredits());
     }
 
     @Test(expected = Exception.class)
     public void testAddUsernameConflict() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(1, userDB.add(user));
+        User user = new User()
+                .setId(generateId("user@domain.com"))
+                .setEmail("user@domain.com")
+                .setUsername("name")
+                .setDisplayName("Name")
+                .setProfileImage("link");
+        assertEquals(1, userService.add(user));
         user.setId(generateId("different"));
         user.setEmail("different");
-        userDB.add(user); // fails on the unique username constraint
+        userService.add(user); // fails on the unique username constraint
     }
 
     @Test
-    public void testAddEmailConflictNoChange() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(1, userDB.add(user));
-        assertEquals(0, userDB.add(user));
+    public void testAddPrimaryKeyConflictNoChange() {
+        assertEquals(1, userService.add(user1));
+        assertEquals(0, userService.add(user1));
 
-        Optional<User> fetched = userDB.get(user.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(user.getId(), fetched.get().getId());
-        assertEquals(user.getEmail(), fetched.get().getEmail());
-        assertEquals(user.getUsername(), fetched.get().getUsername());
-        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
-        assertEquals(user.getProfileImage(), fetched.get().getProfileImage());
+        User fetched = userService.get(user1.getId()).orElse(null);
+        assertEquals(user1, fetched);
     }
 
     @Test
-    public void testAddEmailConflictUpdate() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(1, userDB.add(user));
+    public void testAddPrimaryKeyConflictUpdate() {
+        User user = new User()
+                .setId(generateId("user@domain.com"))
+                .setEmail("user@domain.com")
+                .setUsername("name")
+                .setDisplayName("Name")
+                .setProfileImage("link");
+        assertEquals(1, userService.add(user));
+
         user.setUsername("different");
         user.setDisplayName("different");
         user.setProfileImage("different");
-        assertEquals(1, userDB.add(user));
+        assertEquals(1, userService.add(user));
 
-        Optional<User> fetched = userDB.get(user.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(user.getId(), fetched.get().getId());
-        assertEquals(user.getEmail(), fetched.get().getEmail());
-        assertEquals(user.getUsername(), fetched.get().getUsername());
-        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
-        assertEquals(user.getProfileImage(), fetched.get().getProfileImage());
+        User fetched = userService.get(user.getId()).orElse(null);
+        assertEquals(user, fetched);
     }
 
     @Test
-    public void testAddEmailConflictUpdateLinkToNull() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(1, userDB.add(user));
+    public void testAddPrimaryKeyConflictUpdateLinkToNull() {
+        User user = new User()
+                .setId(generateId("user@domain.com"))
+                .setEmail("user@domain.com")
+                .setUsername("name")
+                .setDisplayName("Name")
+                .setProfileImage("link");
+        assertEquals(1, userService.add(user));
         user.setProfileImage(null);
-        assertEquals(1, userDB.add(user));
+        assertEquals(1, userService.add(user));
 
-        Optional<User> fetched = userDB.get(user.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(user.getId(), fetched.get().getId());
-        assertEquals(user.getEmail(), fetched.get().getEmail());
-        assertEquals(user.getUsername(), fetched.get().getUsername());
-        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
-        assertNull(fetched.get().getProfileImage());
+        User fetched = userService.get(user.getId()).orElse(null);
+        assertEquals(user, fetched);
     }
 
     @Test
-    public void testAddEmailConflictUpdateNullLink() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
-        assertEquals(1, userDB.add(user));
+    public void testAddPrimaryKeyConflictUpdateNullLink() {
+        User user = new User()
+                .setId(generateId("user@domain.com"))
+                .setEmail("user@domain.com")
+                .setUsername("name")
+                .setDisplayName("Name");
+        assertEquals(1, userService.add(user));
         user.setProfileImage("link");
-        assertEquals(1, userDB.add(user));
+        assertEquals(1, userService.add(user));
 
-        Optional<User> fetched = userDB.get(user.getId());
-        assertTrue(fetched.isPresent());
-        assertEquals(user.getId(), fetched.get().getId());
-        assertEquals(user.getEmail(), fetched.get().getEmail());
-        assertEquals(user.getUsername(), fetched.get().getUsername());
-        assertEquals(user.getDisplayName(), fetched.get().getDisplayName());
-        assertEquals(user.getProfileImage(), fetched.get().getProfileImage());
+        User fetched = userService.get(user.getId()).orElse(null);
+        assertEquals(user, fetched);
     }
 
     @Test
-    public void testAddEmailConflictDifferentCase() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(1, userDB.add(user));
+    public void testAddPrimaryKeyConflictDifferentCase() {
+        User user = new User()
+                .setId(generateId("user@domain.com"))
+                .setEmail("user@domain.com")
+                .setUsername("name")
+                .setDisplayName("Name")
+                .setProfileImage("link");
+        assertEquals(1, userService.add(user));
         user.setEmail("USER@DOMAIN.COM");
-        assertEquals(0, userDB.add(user));
+        assertEquals(0, userService.add(user));
+
+        user.setEmail("user@domain.com");
+        User fetched = userService.get(user.getId()).orElse(null);
+        assertEquals(user, fetched);
     }
 
     @Test
-    public void testAddEmailConflictDifferentCaseUpdate() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(1, userDB.add(user));
+    public void testAddPrimaryKeyConflictDifferentCaseUpdate() {
+        User user = new User()
+                .setId(generateId("user@domain.com"))
+                .setEmail("user@domain.com")
+                .setUsername("name")
+                .setDisplayName("Name")
+                .setProfileImage("link");
+        assertEquals(1, userService.add(user));
         user.setEmail("USER@DOMAIN.COM");
         user.setDisplayName("different");
-        assertEquals(1, userDB.add(user));
+        assertEquals(1, userService.add(user));
+
+        user.setEmail("user@domain.com");
+        User fetched = userService.get(user.getId()).orElse(null);
+        assertEquals(user, fetched);
     }
 
     @Test
     public void testUpdateMissing() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(0, userDB.update(user));
+        assertEquals(0, userService.update(user1));
     }
 
     @Test
     public void testUpdate() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(1, userDB.add(user));
+        User user = new User()
+                .setId(generateId("user@domain.com"))
+                .setEmail("user@domain.com")
+                .setUsername("name")
+                .setDisplayName("Name")
+                .setProfileImage("link");
+        assertEquals(1, userService.add(user));
 
         user.setUsername("updated");
         user.setDisplayName("updated");
         user.setProfileImage("updated");
-        assertEquals(1, userDB.update(user));
+        assertEquals(1, userService.update(user));
 
-        Optional<User> updated = userDB.get(user.getId());
-        assertTrue(updated.isPresent());
-        assertEquals(user.getId(), updated.get().getId());
-        assertEquals(user.getEmail(), updated.get().getEmail());
-        assertEquals(user.getUsername(), updated.get().getUsername());
-        assertEquals(user.getDisplayName(), updated.get().getDisplayName());
-        assertEquals(user.getProfileImage(), updated.get().getProfileImage());
+        User updated = userService.get(user.getId()).orElse(null);
+        assertEquals(user, updated);
     }
 
     @Test
     public void testUpdateLinkToNull() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(1, userDB.add(user));
+        User user = new User()
+                .setId(generateId("user@domain.com"))
+                .setEmail("user@domain.com")
+                .setUsername("name")
+                .setDisplayName("Name")
+                .setProfileImage("link");
+        assertEquals(1, userService.add(user));
 
         user.setProfileImage(null);
-        assertEquals(1, userDB.update(user));
+        assertEquals(1, userService.update(user));
 
-        Optional<User> updated = userDB.get(user.getId());
-        assertTrue(updated.isPresent());
-        assertEquals(user.getId(), updated.get().getId());
-        assertEquals(user.getEmail(), updated.get().getEmail());
-        assertEquals(user.getUsername(), updated.get().getUsername());
-        assertEquals(user.getDisplayName(), updated.get().getDisplayName());
-        assertNull(updated.get().getProfileImage());
+        User updated = userService.get(user.getId()).orElse(null);
+        assertEquals(user, updated);
     }
 
     @Test
     public void testUpdateNullLink() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name");
-        assertEquals(1, userDB.add(user));
+        User user = new User()
+                .setId(generateId("user@domain.com"))
+                .setEmail("user@domain.com")
+                .setUsername("name")
+                .setDisplayName("Name");
+        assertEquals(1, userService.add(user));
 
         user.setProfileImage("link");
-        assertEquals(1, userDB.update(user));
+        assertEquals(1, userService.update(user));
 
-        Optional<User> updated = userDB.get(user.getId());
-        assertTrue(updated.isPresent());
-        assertEquals(user.getId(), updated.get().getId());
-        assertEquals(user.getEmail(), updated.get().getEmail());
-        assertEquals(user.getUsername(), updated.get().getUsername());
-        assertEquals(user.getDisplayName(), updated.get().getDisplayName());
-        assertEquals(user.getProfileImage(), updated.get().getProfileImage());
+        User updated = userService.get(user.getId()).orElse(null);
+        assertEquals(user, updated);
     }
 
     @Test
     public void testDeleteMissing() {
-        assertEquals(0, userDB.delete("missing"));
+        assertEquals(0, userService.delete("missing"));
     }
 
     @Test
     public void testDelete() {
-        User user = new User().setId(generateId("user@domain.com")).setEmail("user@domain.com").setUsername("name").setDisplayName("Name").setProfileImage("link");
-        assertEquals(1, userDB.add(user));
-        assertEquals(1, userDB.delete(user.getId()));
-        assertFalse(userDB.get(user.getId()).isPresent());
+        assertEquals(1, userService.add(user1));
+        assertEquals(1, userService.delete(user1.getId()));
+        assertFalse(userService.get(user1.getId()).isPresent());
     }
-     */
+
+    @Test
+    public void testTruncate() {
+        asList(user1, user2, user3, user4, user5).forEach(user -> assertEquals(1, userService.add(user)));
+
+        assertEquals(5, userService.truncate());
+        Results<User> results = userService.getAll(new Page(), emptySet());
+        validateResults(results);
+    }
 }

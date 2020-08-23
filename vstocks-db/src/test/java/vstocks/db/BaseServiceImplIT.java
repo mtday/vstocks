@@ -19,6 +19,26 @@ public abstract class BaseServiceImplIT {
 
     @SuppressWarnings("all")
     @SafeVarargs
+    public final <T> void validateResults(Results<T> results, int total, int page, T... expected) {
+        List<T> expectedList = new ArrayList<>();
+        for (T t : expected) {
+            expectedList.add(t);
+        }
+
+        assertEquals(total, results.getTotal());
+        assertEquals(page, results.getPage().getPage());
+        assertEquals(expectedList.size(), results.getResults().size());
+
+        Iterator<T> expectedIter = expectedList.iterator();
+        Iterator<T> actualIter = results.getResults().iterator();
+        int index = 0;
+        while (expectedIter.hasNext() && actualIter.hasNext()) {
+            assertEquals("Failed on number " + ++index, expectedIter.next(), actualIter.next());
+        }
+    }
+
+    @SuppressWarnings("all")
+    @SafeVarargs
     public final <T> void validateResults(Results<T> results, T... expected) {
         List<T> expectedList = new ArrayList<>();
         for (T t : expected) {

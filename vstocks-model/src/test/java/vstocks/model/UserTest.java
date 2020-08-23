@@ -24,6 +24,12 @@ public class UserTest {
     }
 
     @Test
+    public void testGenerateId() {
+        assertEquals("cd2bfcff-e5fe-34a1-949d-101994d0987f", generateId("user@domain.com"));
+        assertEquals("cd2bfcff-e5fe-34a1-949d-101994d0987f", generateId("USER@DOMAIN.COM"));
+    }
+
+    @Test
     public void testEquals() {
         User user1 = new User()
                 .setId(generateId("user@domain.com"))
