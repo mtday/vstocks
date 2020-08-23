@@ -11,6 +11,7 @@ public class MarketRank {
     private Market market;
     private Instant timestamp;
     private long rank;
+    private long value;
 
     public MarketRank() {
     }
@@ -60,6 +61,15 @@ public class MarketRank {
         return this;
     }
 
+    public long getValue() {
+        return value;
+    }
+
+    public MarketRank setValue(long value) {
+        this.value = value;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -67,6 +77,7 @@ public class MarketRank {
         MarketRank that = (MarketRank) o;
         return batch == that.batch &&
                 rank == that.rank &&
+                value == that.value &&
                 Objects.equals(userId, that.userId) &&
                 market == that.market &&
                 Objects.equals(timestamp, that.timestamp);
@@ -74,7 +85,7 @@ public class MarketRank {
 
     @Override
     public int hashCode() {
-        return Objects.hash(batch, userId, market, timestamp, rank);
+        return Objects.hash(batch, userId, market, timestamp, rank, value);
     }
 
     @Override
@@ -85,6 +96,7 @@ public class MarketRank {
                 ", market=" + market +
                 ", timestamp=" + timestamp +
                 ", rank=" + rank +
+                ", value=" + value +
                 '}';
     }
 }

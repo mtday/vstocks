@@ -17,7 +17,8 @@ public class TotalRankTest {
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
 
         assertEquals(1, totalRank.getBatch());
         assertEquals("userId", totalRank.getUserId());
@@ -31,12 +32,14 @@ public class TotalRankTest {
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
         TotalRank totalRank2 = new TotalRank()
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
         assertEquals(totalRank1, totalRank2);
     }
 
@@ -46,9 +49,10 @@ public class TotalRankTest {
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(timestamp)
-                .setRank(20);
-        assertEquals(923521, new TotalRank().hashCode());
-        assertEquals(-1988764104, totalRank.hashCode());
+                .setRank(20)
+                .setValue(10);
+        assertEquals(28629151, new TotalRank().hashCode());
+        assertEquals(-1522145070, totalRank.hashCode());
     }
 
     @Test
@@ -57,8 +61,9 @@ public class TotalRankTest {
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
-                .setRank(20);
-        assertEquals("TotalRank{batch=1, userId='userId', timestamp=" + now + ", rank=20}",
+                .setRank(20)
+                .setValue(10);
+        assertEquals("TotalRank{batch=1, userId='userId', timestamp=" + now + ", rank=20, value=10}",
                 totalRank.toString());
     }
 }

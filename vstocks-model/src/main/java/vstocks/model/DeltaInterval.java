@@ -45,4 +45,8 @@ public enum DeltaInterval {
                 .filter(interval -> interval.name().equals(value) || interval.getDisplayName().equals(value))
                 .findFirst();
     }
+
+    public static DeltaInterval getLast() {
+        return DeltaInterval.values()[DeltaInterval.values().length - 1];
+    }
 }

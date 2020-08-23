@@ -8,6 +8,7 @@ public class TotalRank {
     private String userId;
     private Instant timestamp;
     private long rank;
+    private long value;
 
     public TotalRank() {
     }
@@ -48,6 +49,15 @@ public class TotalRank {
         return this;
     }
 
+    public long getValue() {
+        return value;
+    }
+
+    public TotalRank setValue(long value) {
+        this.value = value;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -55,13 +65,14 @@ public class TotalRank {
         TotalRank totalRank = (TotalRank) o;
         return batch == totalRank.batch &&
                 rank == totalRank.rank &&
+                value == totalRank.value &&
                 Objects.equals(userId, totalRank.userId) &&
                 Objects.equals(timestamp, totalRank.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(batch, userId, timestamp, rank);
+        return Objects.hash(batch, userId, timestamp, rank, value);
     }
 
     @Override
@@ -71,6 +82,7 @@ public class TotalRank {
                 ", userId='" + userId + '\'' +
                 ", timestamp=" + timestamp +
                 ", rank=" + rank +
+                ", value=" + value +
                 '}';
     }
 }

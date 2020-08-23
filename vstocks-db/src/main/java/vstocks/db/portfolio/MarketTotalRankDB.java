@@ -29,14 +29,16 @@ class MarketTotalRankDB extends BaseDB {
                     .setBatch(rs.getLong("batch"))
                     .setUserId(rs.getString("user_id"))
                     .setTimestamp(rs.getTimestamp("timestamp").toInstant().truncatedTo(SECONDS))
-                    .setRank(rs.getLong("rank"));
+                    .setRank(rs.getLong("rank"))
+                    .setValue(rs.getLong("value"));
 
     private static final RowMapper<RankedUser> USER_ROW_MAPPER = rs ->
             new RankedUser()
                     .setUser(UserDB.ROW_MAPPER.map(rs))
                     .setBatch(rs.getLong("batch"))
                     .setTimestamp(rs.getTimestamp("timestamp").toInstant())
-                    .setRank(rs.getLong("rank"));
+                    .setRank(rs.getLong("rank"))
+                    .setValue(rs.getLong("value"));
 
     private static final RowSetter<MarketTotalRank> INSERT_ROW_SETTER = (ps, marketTotalRank) -> {
         int index = 0;
@@ -44,6 +46,7 @@ class MarketTotalRankDB extends BaseDB {
         ps.setString(++index, marketTotalRank.getUserId());
         ps.setTimestamp(++index, Timestamp.from(marketTotalRank.getTimestamp()));
         ps.setLong(++index, marketTotalRank.getRank());
+        ps.setLong(++index, marketTotalRank.getValue());
     };
 
     @Override
@@ -57,8 +60,8 @@ class MarketTotalRankDB extends BaseDB {
 
     public int generate(Connection connection) {
         long batch = getNextSequenceValue(connection, BATCH_SEQUENCE);
-        String sql = "INSERT INTO market_total_ranks (batch, user_id, timestamp, rank)"
-                + "(SELECT ? AS batch, user_id, timestamp, RANK() OVER (ORDER BY value DESC) FROM ("
+        String sql = "INSERT INTO market_total_ranks (batch, user_id, timestamp, rank, value)"
+                + "(SELECT ? AS batch, user_id, timestamp, RANK() OVER (ORDER BY value DESC) AS rank, value FROM ("
                 + "  SELECT user_id, NOW() AS timestamp, SUM(value) AS value FROM ("
                 + "    (SELECT id AS user_id, NULL AS market, NULL AS symbol, 0 AS value FROM users)"
                 + "    UNION"
@@ -73,7 +76,7 @@ class MarketTotalRankDB extends BaseDB {
     }
 
     public MarketTotalRankCollection getLatest(Connection connection, String userId) {
-        Instant earliest = DeltaInterval.values()[DeltaInterval.values().length - 1].getEarliest();
+        Instant earliest = DeltaInterval.getLast().getEarliest();
 
         String sql = "SELECT * FROM market_total_ranks WHERE timestamp >= ? AND user_id = ? ORDER BY timestamp DESC";
         List<MarketTotalRank> ranks = new ArrayList<>();
@@ -99,9 +102,10 @@ class MarketTotalRankDB extends BaseDB {
     }
 
     public int add(Connection connection, MarketTotalRank marketTotalRank) {
-        String sql = "INSERT INTO market_total_ranks (batch, user_id, timestamp, rank) VALUES (?, ?, ?, ?) "
+        String sql = "INSERT INTO market_total_ranks (batch, user_id, timestamp, rank, value) VALUES (?, ?, ?, ?, ?) "
                 + "ON CONFLICT ON CONSTRAINT market_total_ranks_pk "
-                + "DO UPDATE SET rank = EXCLUDED.rank WHERE market_total_ranks.rank != EXCLUDED.rank";
+                + "DO UPDATE SET rank = EXCLUDED.rank, value = EXCLUDED.value "
+                + "WHERE market_total_ranks.rank != EXCLUDED.rank or market_total_ranks.value != EXCLUDED.value";
         return update(connection, INSERT_ROW_SETTER, sql, marketTotalRank);
     }
 

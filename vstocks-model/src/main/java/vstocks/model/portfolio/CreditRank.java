@@ -8,6 +8,7 @@ public class CreditRank {
     private String userId;
     private Instant timestamp;
     private long rank;
+    private long value;
 
     public CreditRank() {
     }
@@ -48,6 +49,15 @@ public class CreditRank {
         return this;
     }
 
+    public long getValue() {
+        return value;
+    }
+
+    public CreditRank setValue(long value) {
+        this.value = value;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -55,13 +65,14 @@ public class CreditRank {
         CreditRank that = (CreditRank) o;
         return batch == that.batch &&
                 rank == that.rank &&
+                value == that.value &&
                 Objects.equals(userId, that.userId) &&
                 Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(batch, userId, timestamp, rank);
+        return Objects.hash(batch, userId, timestamp, rank, value);
     }
 
     @Override
@@ -71,6 +82,7 @@ public class CreditRank {
                 ", userId='" + userId + '\'' +
                 ", timestamp=" + timestamp +
                 ", rank=" + rank +
+                ", value=" + value +
                 '}';
     }
 }

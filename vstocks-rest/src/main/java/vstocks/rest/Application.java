@@ -155,13 +155,9 @@ public class Application extends ResourceConfig {
 
             // Portfolio tasks
             new CreditRankUpdateTask(environment).schedule(scheduledExecutorService);
-            new CreditValueUpdateTask(environment).schedule(scheduledExecutorService);
             new MarketRankUpdateTask(environment).schedule(scheduledExecutorService);
-            new MarketValueUpdateTask(environment).schedule(scheduledExecutorService);
             new MarketTotalRankUpdateTask(environment).schedule(scheduledExecutorService);
-            new MarketTotalValueUpdateTask(environment).schedule(scheduledExecutorService);
             new TotalRankUpdateTask(environment).schedule(scheduledExecutorService);
-            new TotalValueUpdateTask(environment).schedule(scheduledExecutorService);
 
             // Stock tasks
             new StockPriceAgeOffTask(environment).schedule(scheduledExecutorService);

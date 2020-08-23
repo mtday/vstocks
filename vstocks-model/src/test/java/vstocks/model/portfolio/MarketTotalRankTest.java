@@ -17,12 +17,14 @@ public class MarketTotalRankTest {
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
 
         assertEquals(1, marketTotalRank.getBatch());
         assertEquals("userId", marketTotalRank.getUserId());
         assertEquals(now, marketTotalRank.getTimestamp());
         assertEquals(20, marketTotalRank.getRank());
+        assertEquals(10, marketTotalRank.getValue());
     }
 
     @Test
@@ -31,12 +33,14 @@ public class MarketTotalRankTest {
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
         MarketTotalRank marketTotalRank2 = new MarketTotalRank()
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
         assertEquals(marketTotalRank1, marketTotalRank2);
     }
 
@@ -46,9 +50,10 @@ public class MarketTotalRankTest {
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(timestamp)
-                .setRank(20);
-        assertEquals(923521, new MarketTotalRank().hashCode());
-        assertEquals(-1988764104, marketTotalRank.hashCode());
+                .setRank(20)
+                .setValue(10);
+        assertEquals(28629151, new MarketTotalRank().hashCode());
+        assertEquals(-1522145070, marketTotalRank.hashCode());
     }
 
     @Test
@@ -57,8 +62,9 @@ public class MarketTotalRankTest {
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
-                .setRank(20);
-        assertEquals("MarketTotalRank{batch=1, userId='userId', timestamp=" + now + ", rank=20}",
+                .setRank(20)
+                .setValue(10);
+        assertEquals("MarketTotalRank{batch=1, userId='userId', timestamp=" + now + ", rank=20, value=10}",
                 marketTotalRank.toString());
     }
 }

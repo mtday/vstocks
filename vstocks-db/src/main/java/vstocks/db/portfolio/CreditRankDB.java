@@ -29,14 +29,16 @@ class CreditRankDB extends BaseDB {
                     .setBatch(rs.getLong("batch"))
                     .setUserId(rs.getString("user_id"))
                     .setTimestamp(rs.getTimestamp("timestamp").toInstant().truncatedTo(SECONDS))
-                    .setRank(rs.getLong("rank"));
+                    .setRank(rs.getLong("rank"))
+                    .setValue(rs.getLong("value"));
 
     private static final RowMapper<RankedUser> USER_ROW_MAPPER = rs ->
             new RankedUser()
                     .setUser(UserDB.ROW_MAPPER.map(rs))
                     .setBatch(rs.getLong("batch"))
                     .setTimestamp(rs.getTimestamp("timestamp").toInstant())
-                    .setRank(rs.getLong("rank"));
+                    .setRank(rs.getLong("rank"))
+                    .setValue(rs.getLong("value"));
 
     private static final RowSetter<CreditRank> INSERT_ROW_SETTER = (ps, creditRank) -> {
         int index = 0;
@@ -44,6 +46,7 @@ class CreditRankDB extends BaseDB {
         ps.setString(++index, creditRank.getUserId());
         ps.setTimestamp(++index, Timestamp.from(creditRank.getTimestamp()));
         ps.setLong(++index, creditRank.getRank());
+        ps.setLong(++index, creditRank.getValue());
     };
 
     @Override
@@ -57,14 +60,14 @@ class CreditRankDB extends BaseDB {
 
     public int generate(Connection connection) {
         long batch = getNextSequenceValue(connection, BATCH_SEQUENCE);
-        String sql = "INSERT INTO credit_ranks (batch, user_id, timestamp, rank) "
-                + "(SELECT ? AS batch, user_id, NOW(), RANK() OVER (ORDER BY credits DESC) "
+        String sql = "INSERT INTO credit_ranks (batch, user_id, timestamp, rank, value) "
+                + "(SELECT ? AS batch, user_id, NOW(), RANK() OVER (ORDER BY credits DESC), credits AS value "
                 + "FROM user_credits ORDER BY credits DESC)";
         return update(connection, sql, batch);
     }
 
     public CreditRankCollection getLatest(Connection connection, String userId) {
-        Instant earliest = DeltaInterval.values()[DeltaInterval.values().length - 1].getEarliest();
+        Instant earliest = DeltaInterval.getLast().getEarliest();
 
         String sql = "SELECT * FROM credit_ranks WHERE timestamp >= ? AND user_id = ? ORDER BY timestamp DESC";
         List<CreditRank> ranks = new ArrayList<>();
@@ -90,9 +93,10 @@ class CreditRankDB extends BaseDB {
     }
 
     public int add(Connection connection, CreditRank creditRank) {
-        String sql = "INSERT INTO credit_ranks (batch, user_id, timestamp, rank) VALUES (?, ?, ?, ?) "
+        String sql = "INSERT INTO credit_ranks (batch, user_id, timestamp, rank, value) VALUES (?, ?, ?, ?, ?) "
                 + "ON CONFLICT ON CONSTRAINT credit_ranks_pk "
-                + "DO UPDATE SET rank = EXCLUDED.rank WHERE credit_ranks.rank != EXCLUDED.rank";
+                + "DO UPDATE SET rank = EXCLUDED.rank, value = EXCLUDED.value "
+                + "WHERE credit_ranks.rank != EXCLUDED.rank OR credit_ranks.value != EXCLUDED.value";
         return update(connection, INSERT_ROW_SETTER, sql, creditRank);
     }
 

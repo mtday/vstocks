@@ -21,13 +21,9 @@ public interface ServiceFactory {
     // portfolio services
 
     CreditRankService getCreditRankService();
-    CreditValueService getCreditValueService();
     MarketRankService getMarketRankService();
-    MarketValueService getMarketValueService();
     MarketTotalRankService getMarketTotalRankService();
-    MarketTotalValueService getMarketTotalValueService();
     TotalRankService getTotalRankService();
-    TotalValueService getTotalValueService();
 
     // system services
 

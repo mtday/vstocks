@@ -130,6 +130,7 @@ CREATE TABLE credit_ranks (
     user_id            TEXT         NOT NULL,
     timestamp          TIMESTAMP(0) NOT NULL,
     rank               BIGINT       NOT NULL,
+    value              BIGINT       NOT NULL,
 
     CONSTRAINT credit_ranks_pk PRIMARY KEY (batch, user_id),
     CONSTRAINT credit_ranks_fk_user_id FOREIGN KEY (user_id)
@@ -140,24 +141,7 @@ CREATE INDEX idx_credit_ranks_batch ON credit_ranks (batch);
 CREATE INDEX idx_credit_ranks_user_id ON credit_ranks (user_id);
 CREATE INDEX idx_credit_ranks_timestamp ON credit_ranks (timestamp);
 CREATE INDEX idx_credit_ranks_rank ON credit_ranks (rank);
-
-
-CREATE SEQUENCE credit_values_batch_sequence;
-CREATE TABLE credit_values (
-    batch              BIGINT       NOT NULL,
-    user_id            TEXT         NOT NULL,
-    timestamp          TIMESTAMP(0) NOT NULL,
-    value              BIGINT       NOT NULL,
-
-    CONSTRAINT credit_values_pk PRIMARY KEY (batch, user_id),
-    CONSTRAINT credit_values_fk_user_id FOREIGN KEY (user_id)
-        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE INDEX idx_credit_values_batch ON credit_values (batch);
-CREATE INDEX idx_credit_values_user_id ON credit_values (user_id);
-CREATE INDEX idx_credit_values_timestamp ON credit_values (timestamp);
-CREATE INDEX idx_credit_values_value ON credit_values (value);
+CREATE INDEX idx_credit_ranks_value ON credit_ranks (value);
 
 
 CREATE SEQUENCE market_ranks_batch_sequence;
@@ -167,6 +151,7 @@ CREATE TABLE market_ranks (
     market             TEXT         NOT NULL,
     timestamp          TIMESTAMP(0) NOT NULL,
     rank               BIGINT       NOT NULL,
+    value              BIGINT       NOT NULL,
 
     CONSTRAINT market_ranks_pk PRIMARY KEY (batch, user_id, market),
     CONSTRAINT market_ranks_fk_user_id FOREIGN KEY (user_id)
@@ -178,26 +163,7 @@ CREATE INDEX idx_market_ranks_user_id ON market_ranks (user_id);
 CREATE INDEX idx_market_ranks_market ON market_ranks (market);
 CREATE INDEX idx_market_ranks_timestamp ON market_ranks (timestamp);
 CREATE INDEX idx_market_ranks_rank ON market_ranks (rank);
-
-
-CREATE SEQUENCE market_values_batch_sequence;
-CREATE TABLE market_values (
-    batch              BIGINT       NOT NULL,
-    user_id            TEXT         NOT NULL,
-    market             TEXT         NOT NULL,
-    timestamp          TIMESTAMP(0) NOT NULL,
-    value              BIGINT       NOT NULL,
-
-    CONSTRAINT market_values_pk PRIMARY KEY (batch, user_id, market),
-    CONSTRAINT market_values_fk_user_id FOREIGN KEY (user_id)
-        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE INDEX idx_market_values_batch ON market_values (batch);
-CREATE INDEX idx_market_values_user_id ON market_values (user_id);
-CREATE INDEX idx_market_values_market ON market_values (market);
-CREATE INDEX idx_market_values_timestamp ON market_values (timestamp);
-CREATE INDEX idx_market_values_value ON market_values (value);
+CREATE INDEX idx_market_ranks_value ON market_ranks (value);
 
 
 CREATE SEQUENCE market_total_ranks_batch_sequence;
@@ -206,6 +172,7 @@ CREATE TABLE market_total_ranks (
     user_id            TEXT         NOT NULL,
     timestamp          TIMESTAMP(0) NOT NULL,
     rank               BIGINT       NOT NULL,
+    value              BIGINT       NOT NULL,
 
     CONSTRAINT market_total_ranks_pk PRIMARY KEY (batch, user_id),
     CONSTRAINT market_total_ranks_fk_user_id FOREIGN KEY (user_id)
@@ -216,24 +183,7 @@ CREATE INDEX idx_market_total_ranks_batch ON market_total_ranks (batch);
 CREATE INDEX idx_market_total_ranks_user_id ON market_total_ranks (user_id);
 CREATE INDEX idx_market_total_ranks_timestamp ON market_total_ranks (timestamp);
 CREATE INDEX idx_market_total_ranks_rank ON market_total_ranks (rank);
-
-
-CREATE SEQUENCE market_total_values_batch_sequence;
-CREATE TABLE market_total_values (
-    batch              BIGINT       NOT NULL,
-    user_id            TEXT         NOT NULL,
-    timestamp          TIMESTAMP(0) NOT NULL,
-    value              BIGINT       NOT NULL,
-
-    CONSTRAINT market_total_values_pk PRIMARY KEY (batch, user_id),
-    CONSTRAINT market_total_values_fk_user_id FOREIGN KEY (user_id)
-        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE INDEX idx_market_total_values_batch ON market_total_values (batch);
-CREATE INDEX idx_market_total_values_user_id ON market_total_values (user_id);
-CREATE INDEX idx_market_total_values_timestamp ON market_total_values (timestamp);
-CREATE INDEX idx_market_total_values_value ON market_total_values (value);
+CREATE INDEX idx_market_total_ranks_value ON market_total_ranks (value);
 
 
 CREATE SEQUENCE total_ranks_batch_sequence;
@@ -242,6 +192,7 @@ CREATE TABLE total_ranks (
     user_id            TEXT         NOT NULL,
     timestamp          TIMESTAMP(0) NOT NULL,
     rank               BIGINT       NOT NULL,
+    value              BIGINT       NOT NULL,
 
     CONSTRAINT total_ranks_pk PRIMARY KEY (batch, user_id),
     CONSTRAINT total_ranks_fk_user_id FOREIGN KEY (user_id)
@@ -252,24 +203,7 @@ CREATE INDEX idx_total_ranks_batch ON total_ranks (batch);
 CREATE INDEX idx_total_ranks_user_id ON total_ranks (user_id);
 CREATE INDEX idx_total_ranks_timestamp ON total_ranks (timestamp);
 CREATE INDEX idx_total_ranks_rank ON total_ranks (rank);
-
-
-CREATE SEQUENCE total_values_batch_sequence;
-CREATE TABLE total_values (
-    batch              BIGINT       NOT NULL,
-    user_id            TEXT         NOT NULL,
-    timestamp          TIMESTAMP(0) NOT NULL,
-    value              BIGINT       NOT NULL,
-
-    CONSTRAINT total_values_pk PRIMARY KEY (batch, user_id),
-    CONSTRAINT total_values_fk_user_id FOREIGN KEY (user_id)
-        REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE INDEX idx_total_values_batch ON total_values (batch);
-CREATE INDEX idx_total_values_user_id ON total_values (user_id);
-CREATE INDEX idx_total_values_timestamp ON total_values (timestamp);
-CREATE INDEX idx_total_values_value ON total_values (value);
+CREATE INDEX idx_total_ranks_value ON total_ranks (value);
 
 
 -- system metric tables

@@ -3,8 +3,6 @@ package vstocks.db;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import vstocks.db.DataSourceExternalResource;
-import vstocks.db.ServiceFactoryImpl;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -35,17 +33,15 @@ public class ServiceFactoryImplIT {
         // portfolio services
 
         assertNotNull(serviceFactory.getCreditRankService());
-        assertNotNull(serviceFactory.getCreditValueService());
         assertNotNull(serviceFactory.getMarketRankService());
-        assertNotNull(serviceFactory.getMarketValueService());
         assertNotNull(serviceFactory.getMarketTotalRankService());
-        assertNotNull(serviceFactory.getMarketTotalValueService());
         assertNotNull(serviceFactory.getTotalRankService());
-        assertNotNull(serviceFactory.getTotalValueService());
 
         // system services
 
         assertNotNull(serviceFactory.getActiveUserCountService());
         assertNotNull(serviceFactory.getTotalUserCountService());
+        assertNotNull(serviceFactory.getActiveTransactionCountService());
+        assertNotNull(serviceFactory.getTotalTransactionCountService());
     }
 }

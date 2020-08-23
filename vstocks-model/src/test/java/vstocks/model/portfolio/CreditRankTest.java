@@ -17,12 +17,14 @@ public class CreditRankTest {
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
 
         assertEquals(1, creditRank.getBatch());
         assertEquals("userId", creditRank.getUserId());
         assertEquals(now, creditRank.getTimestamp());
         assertEquals(20, creditRank.getRank());
+        assertEquals(10, creditRank.getValue());
     }
 
     @Test
@@ -31,12 +33,14 @@ public class CreditRankTest {
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
         CreditRank creditRank2 = new CreditRank()
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
         assertEquals(creditRank1, creditRank2);
     }
 
@@ -46,9 +50,10 @@ public class CreditRankTest {
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(timestamp)
-                .setRank(20);
-        assertEquals(923521, new CreditRank().hashCode());
-        assertEquals(-1988764104, creditRank.hashCode());
+                .setRank(20)
+                .setValue(10);
+        assertEquals(28629151, new CreditRank().hashCode());
+        assertEquals(-1522145070, creditRank.hashCode());
     }
 
     @Test
@@ -57,8 +62,9 @@ public class CreditRankTest {
                 .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
-                .setRank(20);
-        assertEquals("CreditRank{batch=1, userId='userId', timestamp=" + now + ", rank=20}",
+                .setRank(20)
+                .setValue(10);
+        assertEquals("CreditRank{batch=1, userId='userId', timestamp=" + now + ", rank=20, value=10}",
                 creditRank.toString());
     }
 }

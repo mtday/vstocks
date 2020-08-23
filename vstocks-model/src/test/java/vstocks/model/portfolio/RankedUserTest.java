@@ -24,12 +24,14 @@ public class RankedUserTest {
                 .setUser(user)
                 .setBatch(1)
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
 
         assertEquals(user, rankedUser.getUser());
         assertEquals(1, rankedUser.getBatch());
         assertEquals(now, rankedUser.getTimestamp());
         assertEquals(20, rankedUser.getRank());
+        assertEquals(10, rankedUser.getValue());
     }
 
     @Test
@@ -38,12 +40,14 @@ public class RankedUserTest {
                 .setUser(user)
                 .setBatch(1)
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
         RankedUser rankedUser2 = new RankedUser()
                 .setUser(user)
                 .setBatch(1)
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
         assertEquals(rankedUser1, rankedUser2);
     }
 
@@ -53,9 +57,10 @@ public class RankedUserTest {
                 .setUser(user)
                 .setBatch(1)
                 .setTimestamp(timestamp)
-                .setRank(20);
-        assertEquals(923521, new RankedUser().hashCode());
-        assertEquals(-55065663, rankedUser.hashCode());
+                .setRank(20)
+                .setValue(10);
+        assertEquals(28629151, new RankedUser().hashCode());
+        assertEquals(-1707035543, rankedUser.hashCode());
     }
 
     @Test
@@ -64,8 +69,9 @@ public class RankedUserTest {
                 .setUser(user)
                 .setBatch(1)
                 .setTimestamp(now)
-                .setRank(20);
-        assertEquals("RankedUser{user=" + user + ", batch=1, timestamp=" + now + ", rank=20}",
+                .setRank(20)
+                .setValue(10);
+        assertEquals("RankedUser{user=" + user + ", batch=1, timestamp=" + now + ", rank=20, value=10}",
                 rankedUser.toString());
     }
 }

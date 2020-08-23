@@ -13,6 +13,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.joining;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static vstocks.model.DatabaseField.RANK;
@@ -96,33 +97,39 @@ public class MarketTotalRankServiceImplIT extends BaseServiceImplIT {
             .setBatch(2)
             .setUserId(user1.getId())
             .setTimestamp(now)
-            .setRank(1);
+            .setRank(1)
+            .setValue(10);
     private final MarketTotalRank marketTotalRank12 = new MarketTotalRank()
             .setBatch(1)
             .setUserId(user1.getId())
             .setTimestamp(now.minusSeconds(10))
-            .setRank(2);
+            .setRank(2)
+            .setValue(9);
     private final MarketTotalRank marketTotalRank21 = new MarketTotalRank()
             .setBatch(2)
             .setUserId(user2.getId())
             .setTimestamp(now)
-            .setRank(2);
+            .setRank(2)
+            .setValue(10);
     private final MarketTotalRank marketTotalRank22 = new MarketTotalRank()
             .setBatch(1)
             .setUserId(user2.getId())
             .setTimestamp(now.minusSeconds(10))
-            .setRank(3);
+            .setRank(3)
+            .setValue(9);
 
     private final RankedUser rankedUser1 = new RankedUser()
             .setUser(user1)
             .setBatch(marketTotalRank11.getBatch())
             .setTimestamp(marketTotalRank11.getTimestamp())
-            .setRank(marketTotalRank11.getRank());
+            .setRank(marketTotalRank11.getRank())
+            .setValue(marketTotalRank11.getValue());
     private final RankedUser rankedUser2 = new RankedUser()
             .setUser(user2)
             .setBatch(marketTotalRank21.getBatch())
             .setTimestamp(marketTotalRank21.getTimestamp())
-            .setRank(marketTotalRank21.getRank());
+            .setRank(marketTotalRank21.getRank())
+            .setValue(marketTotalRank21.getValue());
 
     @Before
     public void setup() {
@@ -161,7 +168,8 @@ public class MarketTotalRankServiceImplIT extends BaseServiceImplIT {
         Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
-        assertTrue(results.getResults().stream().map(MarketTotalRank::getRank).allMatch(rank -> rank == 1));
+        assertEquals("1,1", results.getResults().stream().map(r -> "" + r.getRank()).collect(joining(",")));
+        assertEquals("110,110", results.getResults().stream().map(r -> "" + r.getValue()).collect(joining(",")));
     }
 
     @Test
@@ -174,7 +182,8 @@ public class MarketTotalRankServiceImplIT extends BaseServiceImplIT {
         Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
-        assertEquals(3, results.getResults().stream().mapToLong(MarketTotalRank::getRank).sum());
+        assertEquals("1,2", results.getResults().stream().map(r -> "" + r.getRank()).collect(joining(",")));
+        assertEquals("420,210", results.getResults().stream().map(r -> "" + r.getValue()).collect(joining(",")));
     }
 
     @Test

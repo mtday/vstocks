@@ -10,6 +10,7 @@ public class RankedUser {
     private long batch;
     private Instant timestamp;
     private long rank;
+    private long value;
 
     public RankedUser() {
     }
@@ -50,6 +51,15 @@ public class RankedUser {
         return this;
     }
 
+    public long getValue() {
+        return value;
+    }
+
+    public RankedUser setValue(long value) {
+        this.value = value;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -57,13 +67,14 @@ public class RankedUser {
         RankedUser that = (RankedUser) o;
         return batch == that.batch &&
                 rank == that.rank &&
+                value == that.value &&
                 Objects.equals(user, that.user) &&
                 Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, batch, timestamp, rank);
+        return Objects.hash(user, batch, timestamp, rank, value);
     }
 
     @Override
@@ -73,6 +84,7 @@ public class RankedUser {
                 ", batch=" + batch +
                 ", timestamp=" + timestamp +
                 ", rank=" + rank +
+                ", value=" + value +
                 '}';
     }
 }

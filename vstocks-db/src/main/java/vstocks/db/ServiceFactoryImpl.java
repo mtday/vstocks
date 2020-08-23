@@ -20,13 +20,9 @@ public class ServiceFactoryImpl implements ServiceFactory {
     // portfolio services
 
     private final CreditRankService creditRankService;
-    private final CreditValueService creditValueService;
     private final MarketRankService marketRankService;
-    private final MarketValueService marketValueService;
     private final MarketTotalRankService marketTotalRankService;
-    private final MarketTotalValueService marketTotalValueService;
     private final TotalRankService totalRankService;
-    private final TotalValueService totalValueService;
 
     // system services
 
@@ -48,13 +44,9 @@ public class ServiceFactoryImpl implements ServiceFactory {
         this.userStockService = new UserStockServiceImpl(dataSource);
 
         this.creditRankService = new CreditRankServiceImpl(dataSource);
-        this.creditValueService = new CreditValueServiceImpl(dataSource);
         this.marketRankService = new MarketRankServiceImpl(dataSource);
-        this.marketValueService = new MarketValueServiceImpl(dataSource);
         this.marketTotalRankService = new MarketTotalRankServiceImpl(dataSource);
-        this.marketTotalValueService = new MarketTotalValueServiceImpl(dataSource);
         this.totalRankService = new TotalRankServiceImpl(dataSource);
-        this.totalValueService = new TotalValueServiceImpl(dataSource);
 
         this.activeUserCountService = new ActiveUserCountServiceImpl(dataSource);
         this.totalUserCountService = new TotalUserCountServiceImpl(dataSource);
@@ -118,18 +110,8 @@ public class ServiceFactoryImpl implements ServiceFactory {
     }
 
     @Override
-    public CreditValueService getCreditValueService() {
-        return creditValueService;
-    }
-
-    @Override
     public MarketRankService getMarketRankService() {
         return marketRankService;
-    }
-
-    @Override
-    public MarketValueService getMarketValueService() {
-        return marketValueService;
     }
 
     @Override
@@ -138,18 +120,8 @@ public class ServiceFactoryImpl implements ServiceFactory {
     }
 
     @Override
-    public MarketTotalValueService getMarketTotalValueService() {
-        return marketTotalValueService;
-    }
-
-    @Override
     public TotalRankService getTotalRankService() {
         return totalRankService;
-    }
-
-    @Override
-    public TotalValueService getTotalValueService() {
-        return totalValueService;
     }
 
     @Override

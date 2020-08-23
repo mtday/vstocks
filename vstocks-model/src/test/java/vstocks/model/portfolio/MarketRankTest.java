@@ -20,13 +20,15 @@ public class MarketRankTest {
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
 
         assertEquals(1, marketRank.getBatch());
         assertEquals("userId", marketRank.getUserId());
         assertEquals(TWITTER, marketRank.getMarket());
         assertEquals(now, marketRank.getTimestamp());
         assertEquals(20, marketRank.getRank());
+        assertEquals(10, marketRank.getValue());
     }
 
     @Test
@@ -36,13 +38,15 @@ public class MarketRankTest {
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
         MarketRank marketRank2 = new MarketRank()
                 .setBatch(1)
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(now)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
         assertEquals(marketRank1, marketRank2);
     }
 
@@ -53,8 +57,9 @@ public class MarketRankTest {
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(timestamp)
-                .setRank(20);
-        assertEquals(28629151, new MarketRank().hashCode());
+                .setRank(20)
+                .setValue(10);
+        assertEquals(887503681, new MarketRank().hashCode());
         assertNotEquals(0, marketRank.hashCode()); // enums make the value inconsistent
     }
 
@@ -65,8 +70,9 @@ public class MarketRankTest {
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(now)
-                .setRank(20);
-        assertEquals("MarketRank{batch=1, userId='userId', market=Twitter, timestamp=" + now + ", rank=20}",
+                .setRank(20)
+                .setValue(10);
+        assertEquals("MarketRank{batch=1, userId='userId', market=Twitter, timestamp=" + now + ", rank=20, value=10}",
                 marketRank.toString());
     }
 }
