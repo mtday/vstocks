@@ -7,12 +7,12 @@ import vstocks.db.*;
 import vstocks.model.*;
 import vstocks.model.portfolio.MarketTotalValue;
 import vstocks.model.portfolio.MarketTotalValueCollection;
+import vstocks.model.portfolio.ValuedUser;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static vstocks.model.DatabaseField.USER_ID;
@@ -92,21 +92,36 @@ public class MarketTotalValueServiceImplIT extends BaseServiceImplIT {
             .setShares(20);
 
     private final MarketTotalValue marketTotalValue11 = new MarketTotalValue()
+            .setBatch(2)
             .setUserId(user1.getId())
             .setTimestamp(now)
             .setValue(11);
     private final MarketTotalValue marketTotalValue12 = new MarketTotalValue()
+            .setBatch(1)
             .setUserId(user1.getId())
             .setTimestamp(now.minusSeconds(10))
             .setValue(12);
     private final MarketTotalValue marketTotalValue21 = new MarketTotalValue()
+            .setBatch(2)
             .setUserId(user2.getId())
             .setTimestamp(now)
             .setValue(21);
     private final MarketTotalValue marketTotalValue22 = new MarketTotalValue()
+            .setBatch(1)
             .setUserId(user2.getId())
             .setTimestamp(now.minusSeconds(10))
             .setValue(22);
+
+    private final ValuedUser valuedUser1 = new ValuedUser()
+            .setUser(user1)
+            .setBatch(marketTotalValue11.getBatch())
+            .setTimestamp(marketTotalValue11.getTimestamp())
+            .setValue(marketTotalValue11.getValue());
+    private final ValuedUser valuedUser2 = new ValuedUser()
+            .setUser(user2)
+            .setBatch(marketTotalValue21.getBatch())
+            .setTimestamp(marketTotalValue21.getTimestamp())
+            .setValue(marketTotalValue21.getValue());
 
     @Before
     public void setup() {
@@ -142,7 +157,7 @@ public class MarketTotalValueServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(2, marketTotalValueService.generate());
 
-        Results<MarketTotalValue> results = marketTotalValueService.getAll(new Page(), emptySet());
+        Results<MarketTotalValue> results = marketTotalValueService.getAll(new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertEquals(220, results.getResults().stream().mapToLong(MarketTotalValue::getValue).sum());
@@ -155,7 +170,7 @@ public class MarketTotalValueServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(2, marketTotalValueService.generate());
 
-        Results<MarketTotalValue> results = marketTotalValueService.getAll(new Page(), emptySet());
+        Results<MarketTotalValue> results = marketTotalValueService.getAll(new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertEquals(630, results.getResults().stream().mapToLong(MarketTotalValue::getValue).sum());
@@ -180,7 +195,7 @@ public class MarketTotalValueServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<MarketTotalValue> results = marketTotalValueService.getAll(new Page(), emptySet());
+        Results<MarketTotalValue> results = marketTotalValueService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -189,8 +204,8 @@ public class MarketTotalValueServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, marketTotalValueService.add(marketTotalValue11));
         assertEquals(1, marketTotalValueService.add(marketTotalValue12));
 
-        Results<MarketTotalValue> results = marketTotalValueService.getAll(new Page(), emptySet());
-        validateResults(results, marketTotalValue12, marketTotalValue11);
+        Results<MarketTotalValue> results = marketTotalValueService.getAll(new Page(), emptyList());
+        validateResults(results, marketTotalValue11, marketTotalValue12);
     }
 
     @Test
@@ -200,9 +215,27 @@ public class MarketTotalValueServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, marketTotalValueService.add(marketTotalValue21));
         assertEquals(1, marketTotalValueService.add(marketTotalValue22));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(VALUE.toSort(), USER_ID.toSort()));
+        List<Sort> sort = asList(VALUE.toSort(), USER_ID.toSort());
         Results<MarketTotalValue> results = marketTotalValueService.getAll(new Page(), sort);
         validateResults(results, marketTotalValue11, marketTotalValue12, marketTotalValue21, marketTotalValue22);
+    }
+
+    @Test
+    public void testGetUsersNone() {
+        Results<ValuedUser> results = marketTotalValueService.getUsers(new Page());
+        validateResults(results);
+    }
+
+    @Test
+    public void testGetUsersSome() {
+        assertEquals(1, marketTotalValueService.add(marketTotalValue11));
+        assertEquals(1, marketTotalValueService.add(marketTotalValue12));
+        assertEquals(1, marketTotalValueService.add(marketTotalValue21));
+        assertEquals(1, marketTotalValueService.add(marketTotalValue22));
+
+        marketTotalValueService.setCurrentBatch(2);
+        Results<ValuedUser> results = marketTotalValueService.getUsers(new Page());
+        validateResults(results, valuedUser2, valuedUser1);
     }
 
     @Test
@@ -220,7 +253,7 @@ public class MarketTotalValueServiceImplIT extends BaseServiceImplIT {
 
         marketTotalValueService.ageOff(now.minusSeconds(5));
 
-        Results<MarketTotalValue> results = marketTotalValueService.getAll(new Page(), emptySet());
+        Results<MarketTotalValue> results = marketTotalValueService.getAll(new Page(), emptyList());
         validateResults(results, marketTotalValue21, marketTotalValue11);
     }
 
@@ -233,7 +266,7 @@ public class MarketTotalValueServiceImplIT extends BaseServiceImplIT {
 
         marketTotalValueService.truncate();
 
-        Results<MarketTotalValue> results = marketTotalValueService.getAll(new Page(), emptySet());
+        Results<MarketTotalValue> results = marketTotalValueService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 }

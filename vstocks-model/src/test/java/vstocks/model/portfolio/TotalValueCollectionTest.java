@@ -16,10 +16,12 @@ public class TotalValueCollectionTest {
     private final Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
 
     private final TotalValue totalValue1 = new TotalValue()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp)
             .setValue(20);
     private final TotalValue totalValue2 = new TotalValue()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp.minusSeconds(10))
             .setValue(18);

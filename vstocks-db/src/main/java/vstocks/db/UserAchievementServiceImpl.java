@@ -8,11 +8,10 @@ import vstocks.model.UserAchievement;
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public class UserAchievementServiceImpl extends BaseService implements UserAchievementService {
-    private final UserAchievementDB userAchievementTable = new UserAchievementDB();
+    private final UserAchievementDB userAchievementDB = new UserAchievementDB();
 
     public UserAchievementServiceImpl(DataSource dataSource) {
         super(dataSource);
@@ -20,46 +19,46 @@ public class UserAchievementServiceImpl extends BaseService implements UserAchie
 
     @Override
     public Optional<UserAchievement> get(String userId, String achievementId) {
-        return withConnection(conn -> userAchievementTable.get(conn, userId, achievementId));
+        return withConnection(conn -> userAchievementDB.get(conn, userId, achievementId));
     }
 
     @Override
     public List<UserAchievement> getForUser(String userId) {
-        return withConnection(conn -> userAchievementTable.getForUser(conn, userId));
+        return withConnection(conn -> userAchievementDB.getForUser(conn, userId));
     }
 
     @Override
-    public Results<UserAchievement> getForAchievement(String achievementId, Page page, Set<Sort> sort) {
-        return withConnection(conn -> userAchievementTable.getForAchievement(conn, achievementId, page, sort));
+    public Results<UserAchievement> getForAchievement(String achievementId, Page page, List<Sort> sort) {
+        return withConnection(conn -> userAchievementDB.getForAchievement(conn, achievementId, page, sort));
     }
 
     @Override
-    public Results<UserAchievement> getAll(Page page, Set<Sort> sort) {
-        return withConnection(conn -> userAchievementTable.getAll(conn, page, sort));
+    public Results<UserAchievement> getAll(Page page, List<Sort> sort) {
+        return withConnection(conn -> userAchievementDB.getAll(conn, page, sort));
     }
 
     @Override
-    public int consume(Consumer<UserAchievement> consumer, Set<Sort> sort) {
-        return withConnection(conn -> userAchievementTable.consume(conn, consumer, sort));
+    public int consume(Consumer<UserAchievement> consumer, List<Sort> sort) {
+        return withConnection(conn -> userAchievementDB.consume(conn, consumer, sort));
     }
 
     @Override
     public int add(UserAchievement userAchievement) {
-        return withConnection(conn -> userAchievementTable.add(conn, userAchievement));
+        return withConnection(conn -> userAchievementDB.add(conn, userAchievement));
     }
 
     @Override
     public int deleteForUser(String userId) {
-        return withConnection(conn -> userAchievementTable.deleteForUser(conn, userId));
+        return withConnection(conn -> userAchievementDB.deleteForUser(conn, userId));
     }
 
     @Override
     public int delete(String userId, String achievementId) {
-        return withConnection(conn -> userAchievementTable.delete(conn, userId, achievementId));
+        return withConnection(conn -> userAchievementDB.delete(conn, userId, achievementId));
     }
 
     @Override
     public int truncate() {
-        return withConnection(userAchievementTable::truncate);
+        return withConnection(userAchievementDB::truncate);
     }
 }

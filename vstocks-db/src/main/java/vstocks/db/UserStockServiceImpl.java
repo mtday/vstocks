@@ -4,8 +4,8 @@ import vstocks.model.*;
 
 import javax.sql.DataSource;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -13,10 +13,10 @@ import static vstocks.model.ActivityType.STOCK_BUY;
 import static vstocks.model.ActivityType.STOCK_SELL;
 
 public class UserStockServiceImpl extends BaseService implements UserStockService {
-    private final UserStockDB userStockTable = new UserStockDB();
-    private final UserCreditsDB userCreditsTable = new UserCreditsDB();
-    private final StockPriceDB stockPriceTable = new StockPriceDB();
-    private final ActivityLogDB activityLogTable = new ActivityLogDB();
+    private final UserStockDB userStockDB = new UserStockDB();
+    private final UserCreditsDB userCreditsDB = new UserCreditsDB();
+    private final StockPriceDB stockPriceDB = new StockPriceDB();
+    private final ActivityLogDB activityLogDB = new ActivityLogDB();
 
     public UserStockServiceImpl(DataSource dataSource) {
         super(dataSource);
@@ -24,27 +24,27 @@ public class UserStockServiceImpl extends BaseService implements UserStockServic
 
     @Override
     public Optional<UserStock> get(String userId, Market market, String symbol) {
-        return withConnection(conn -> userStockTable.get(conn, userId, market, symbol));
+        return withConnection(conn -> userStockDB.get(conn, userId, market, symbol));
     }
 
     @Override
-    public Results<UserStock> getForUser(String userId, Page page, Set<Sort> sort) {
-        return withConnection(conn -> userStockTable.getForUser(conn, userId, page, sort));
+    public Results<UserStock> getForUser(String userId, Page page, List<Sort> sort) {
+        return withConnection(conn -> userStockDB.getForUser(conn, userId, page, sort));
     }
 
     @Override
-    public Results<UserStock> getForStock(Market market, String symbol, Page page, Set<Sort> sort) {
-        return withConnection(conn -> userStockTable.getForStock(conn, market, symbol, page, sort));
+    public Results<UserStock> getForStock(Market market, String symbol, Page page, List<Sort> sort) {
+        return withConnection(conn -> userStockDB.getForStock(conn, market, symbol, page, sort));
     }
 
     @Override
-    public Results<UserStock> getAll(Page page, Set<Sort> sort) {
-        return withConnection(conn -> userStockTable.getAll(conn, page, sort));
+    public Results<UserStock> getAll(Page page, List<Sort> sort) {
+        return withConnection(conn -> userStockDB.getAll(conn, page, sort));
     }
 
     @Override
-    public int consume(Consumer<UserStock> consumer, Set<Sort> sort) {
-        return withConnection(conn -> userStockTable.consume(conn, consumer, sort));
+    public int consume(Consumer<UserStock> consumer, List<Sort> sort) {
+        return withConnection(conn -> userStockDB.consume(conn, consumer, sort));
     }
 
     @Override
@@ -53,12 +53,12 @@ public class UserStockServiceImpl extends BaseService implements UserStockServic
             return 0;
         }
         return withConnection(conn -> {
-            Optional<StockPrice> stockPrice = stockPriceTable.getLatest(conn, market, symbol);
+            Optional<StockPrice> stockPrice = stockPriceDB.getLatest(conn, market, symbol);
             if (stockPrice.isPresent()) {
                 long price = stockPrice.get().getPrice();
                 long cost = price * shares;
-                if (userCreditsTable.update(conn, userId, -cost) > 0
-                        && userStockTable.update(conn, userId, market, symbol, shares) > 0) {
+                if (userCreditsDB.update(conn, userId, -cost) > 0
+                        && userStockDB.update(conn, userId, market, symbol, shares) > 0) {
                     ActivityLog activityLog = new ActivityLog()
                             .setId(UUID.randomUUID().toString())
                             .setUserId(userId)
@@ -68,7 +68,7 @@ public class UserStockServiceImpl extends BaseService implements UserStockServic
                             .setSymbol(symbol)
                             .setPrice(price)
                             .setShares(shares);
-                    if (activityLogTable.add(conn, activityLog) > 0) {
+                    if (activityLogDB.add(conn, activityLog) > 0) {
                         // everything successful
                         return 1;
                     }
@@ -85,12 +85,12 @@ public class UserStockServiceImpl extends BaseService implements UserStockServic
             return 0;
         }
         return withConnection(conn -> {
-            Optional<StockPrice> stockPrice = stockPriceTable.getLatest(conn, market, symbol);
+            Optional<StockPrice> stockPrice = stockPriceDB.getLatest(conn, market, symbol);
             if (stockPrice.isPresent()) {
                 long price = stockPrice.get().getPrice();
                 long cost = price * shares;
-                if (userCreditsTable.update(conn, userId, cost) > 0
-                        && userStockTable.update(conn, userId, market, symbol, -shares) > 0) {
+                if (userCreditsDB.update(conn, userId, cost) > 0
+                        && userStockDB.update(conn, userId, market, symbol, -shares) > 0) {
                     ActivityLog activityLog = new ActivityLog()
                             .setId(UUID.randomUUID().toString())
                             .setUserId(userId)
@@ -100,7 +100,7 @@ public class UserStockServiceImpl extends BaseService implements UserStockServic
                             .setSymbol(symbol)
                             .setPrice(price)
                             .setShares(-shares);
-                    if (activityLogTable.add(conn, activityLog) > 0) {
+                    if (activityLogDB.add(conn, activityLog) > 0) {
                         // everything successful
                         return 1;
                     }
@@ -113,26 +113,26 @@ public class UserStockServiceImpl extends BaseService implements UserStockServic
 
     @Override
     public int add(UserStock userStock) {
-        return withConnection(conn -> userStockTable.add(conn, userStock));
+        return withConnection(conn -> userStockDB.add(conn, userStock));
     }
 
     @Override
     public int update(String userId, Market market, String symbol, int delta) {
-        return withConnection(conn -> userStockTable.update(conn, userId, market, symbol, delta));
+        return withConnection(conn -> userStockDB.update(conn, userId, market, symbol, delta));
     }
 
     @Override
     public int deleteForUser(String userId) {
-        return withConnection(conn -> userStockTable.deleteForUser(conn, userId));
+        return withConnection(conn -> userStockDB.deleteForUser(conn, userId));
     }
 
     @Override
     public int delete(String userId, Market market, String symbol) {
-        return withConnection(conn -> userStockTable.delete(conn, userId, market, symbol));
+        return withConnection(conn -> userStockDB.delete(conn, userId, market, symbol));
     }
 
     @Override
     public int truncate() {
-        return withConnection(userStockTable::truncate);
+        return withConnection(userStockDB::truncate);
     }
 }

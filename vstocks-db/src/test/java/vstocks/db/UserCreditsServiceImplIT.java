@@ -6,12 +6,10 @@ import org.junit.Test;
 import vstocks.model.*;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.CREDITS;
 import static vstocks.model.DatabaseField.USER_ID;
@@ -72,7 +70,7 @@ public class UserCreditsServiceImplIT extends BaseServiceImplIT {
     public void testGetAllNone() {
         assertEquals(2, userCreditsService.truncate());
 
-        Results<UserCredits> results = userCreditsService.getAll(new Page(), emptySet());
+        Results<UserCredits> results = userCreditsService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -83,7 +81,7 @@ public class UserCreditsServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userCreditsService.add(userCredits1));
         assertEquals(1, userCreditsService.add(userCredits2));
 
-        Results<UserCredits> results = userCreditsService.getAll(new Page(), emptySet());
+        Results<UserCredits> results = userCreditsService.getAll(new Page(), emptyList());
         validateResults(results, userCredits2, userCredits1);
     }
 
@@ -94,7 +92,7 @@ public class UserCreditsServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userCreditsService.add(userCredits1));
         assertEquals(1, userCreditsService.add(userCredits2));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), CREDITS.toSort()));
+        List<Sort> sort = asList(USER_ID.toSort(DESC), CREDITS.toSort());
         Results<UserCredits> results = userCreditsService.getAll(new Page(), sort);
         validateResults(results, userCredits2, userCredits1);
     }
@@ -104,7 +102,7 @@ public class UserCreditsServiceImplIT extends BaseServiceImplIT {
         assertEquals(2, userCreditsService.truncate());
 
         List<UserCredits> results = new ArrayList<>();
-        assertEquals(0, userCreditsService.consume(results::add, emptySet()));
+        assertEquals(0, userCreditsService.consume(results::add, emptyList()));
         validateResults(results);
     }
 
@@ -116,7 +114,7 @@ public class UserCreditsServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userCreditsService.add(userCredits2));
 
         List<UserCredits> results = new ArrayList<>();
-        assertEquals(2, userCreditsService.consume(results::add, emptySet()));
+        assertEquals(2, userCreditsService.consume(results::add, emptyList()));
         validateResults(results, userCredits2, userCredits1);
     }
 
@@ -128,7 +126,7 @@ public class UserCreditsServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userCreditsService.add(userCredits2));
 
         List<UserCredits> results = new ArrayList<>();
-        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), CREDITS.toSort()));
+        List<Sort> sort = asList(USER_ID.toSort(DESC), CREDITS.toSort());
         assertEquals(2, userCreditsService.consume(results::add, sort));
         validateResults(results, userCredits2, userCredits1);
     }

@@ -9,10 +9,10 @@ import vstocks.model.system.TotalUserCountCollection;
 
 import javax.sql.DataSource;
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 
 public class TotalUserCountServiceImpl extends BaseService implements TotalUserCountService {
-    private final TotalUserCountDB totalUserCountTable = new TotalUserCountDB();
+    private final TotalUserCountDB totalUserCountDB = new TotalUserCountDB();
 
     public TotalUserCountServiceImpl(DataSource dataSource) {
         super(dataSource);
@@ -20,31 +20,31 @@ public class TotalUserCountServiceImpl extends BaseService implements TotalUserC
 
     @Override
     public int generate() {
-        return withConnection(totalUserCountTable::generate);
+        return withConnection(totalUserCountDB::generate);
     }
 
     @Override
     public TotalUserCountCollection getLatest() {
-        return withConnection(totalUserCountTable::getLatest);
+        return withConnection(totalUserCountDB::getLatest);
     }
 
     @Override
-    public Results<TotalUserCount> getAll(Page page, Set<Sort> sort) {
-        return withConnection(conn -> totalUserCountTable.getAll(conn, page, sort));
+    public Results<TotalUserCount> getAll(Page page, List<Sort> sort) {
+        return withConnection(conn -> totalUserCountDB.getAll(conn, page, sort));
     }
 
     @Override
     public int add(TotalUserCount totalUserCount) {
-        return withConnection(conn -> totalUserCountTable.add(conn, totalUserCount));
+        return withConnection(conn -> totalUserCountDB.add(conn, totalUserCount));
     }
 
     @Override
     public int ageOff(Instant cutoff) {
-        return withConnection(conn -> totalUserCountTable.ageOff(conn, cutoff));
+        return withConnection(conn -> totalUserCountDB.ageOff(conn, cutoff));
     }
 
     @Override
     public int truncate() {
-        return withConnection(totalUserCountTable::truncate);
+        return withConnection(totalUserCountDB::truncate);
     }
 }

@@ -6,13 +6,12 @@ import org.junit.Test;
 import vstocks.model.*;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
-import static org.junit.Assert.*;
+import static java.util.Collections.emptyList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static vstocks.model.ActivityType.*;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
@@ -117,7 +116,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetForUserNone() {
-        Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
         validateResults(results);
     }
 
@@ -126,7 +125,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog12));
 
-        Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
         validateResults(results, activityLog11, activityLog12);
     }
 
@@ -135,14 +134,14 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog12));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), ID.toSort()));
+        List<Sort> sort = asList(SYMBOL.toSort(DESC), ID.toSort());
         Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), new Page(), sort);
         validateResults(results, activityLog12, activityLog11);
     }
 
     @Test
     public void testGetForUserAndTypeNone() {
-        Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), USER_LOGIN, new Page(), emptySet());
+        Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), USER_LOGIN, new Page(), emptyList());
         validateResults(results);
     }
 
@@ -151,7 +150,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog12));
 
-        Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), STOCK_SELL, new Page(), emptySet());
+        Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), STOCK_SELL, new Page(), emptyList());
         validateResults(results, activityLog11, activityLog12);
     }
 
@@ -160,14 +159,14 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog12));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), ID.toSort()));
+        List<Sort> sort = asList(SYMBOL.toSort(DESC), ID.toSort());
         Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), STOCK_SELL, new Page(), sort);
         validateResults(results, activityLog12, activityLog11);
     }
 
     @Test
     public void testGetForStockNone() {
-        Results<ActivityLog> results = activityLogService.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptySet());
+        Results<ActivityLog> results = activityLogService.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptyList());
         validateResults(results);
     }
 
@@ -176,7 +175,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog21));
 
-        Results<ActivityLog> results = activityLogService.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptySet());
+        Results<ActivityLog> results = activityLogService.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptyList());
         validateResults(results, activityLog11, activityLog21);
     }
 
@@ -185,14 +184,14 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog21));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), ID.toSort()));
+        List<Sort> sort = asList(USER_ID.toSort(DESC), ID.toSort());
         Results<ActivityLog> results = activityLogService.getForStock(TWITTER, stock1.getSymbol(), new Page(), sort);
         validateResults(results, activityLog21, activityLog11);
     }
 
     @Test
     public void testGetForTypeNone() {
-        Results<ActivityLog> results = activityLogService.getForType(STOCK_SELL, new Page(), emptySet());
+        Results<ActivityLog> results = activityLogService.getForType(STOCK_SELL, new Page(), emptyList());
         validateResults(results);
     }
 
@@ -201,7 +200,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog21));
 
-        Results<ActivityLog> results = activityLogService.getForType(STOCK_SELL, new Page(), emptySet());
+        Results<ActivityLog> results = activityLogService.getForType(STOCK_SELL, new Page(), emptyList());
         validateResults(results, activityLog11, activityLog21);
     }
 
@@ -210,14 +209,14 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog21));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), ID.toSort()));
+        List<Sort> sort = asList(USER_ID.toSort(DESC), ID.toSort());
         Results<ActivityLog> results = activityLogService.getForType(STOCK_SELL, new Page(), sort);
         validateResults(results, activityLog21, activityLog11);
     }
 
     @Test
     public void testGetAllNone() {
-        Results<ActivityLog> results = activityLogService.getAll(new Page(), emptySet());
+        Results<ActivityLog> results = activityLogService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -226,7 +225,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog21));
 
-        Results<ActivityLog> results = activityLogService.getAll(new Page(), emptySet());
+        Results<ActivityLog> results = activityLogService.getAll(new Page(), emptyList());
         validateResults(results, activityLog11, activityLog21);
     }
 
@@ -235,7 +234,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog21));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), ID.toSort()));
+        List<Sort> sort = asList(USER_ID.toSort(DESC), ID.toSort());
         Results<ActivityLog> results = activityLogService.getAll(new Page(), sort);
         validateResults(results, activityLog21, activityLog11);
     }
@@ -243,7 +242,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
     @Test
     public void testConsumeNone() {
         List<ActivityLog> results = new ArrayList<>();
-        assertEquals(0, activityLogService.consume(results::add, emptySet()));
+        assertEquals(0, activityLogService.consume(results::add, emptyList()));
         validateResults(results);
     }
 
@@ -253,7 +252,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activityLogService.add(activityLog21));
 
         List<ActivityLog> results = new ArrayList<>();
-        assertEquals(2, activityLogService.consume(results::add, emptySet()));
+        assertEquals(2, activityLogService.consume(results::add, emptyList()));
         validateResults(results, activityLog11, activityLog21);
     }
 
@@ -263,7 +262,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activityLogService.add(activityLog21));
 
         List<ActivityLog> results = new ArrayList<>();
-        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), ID.toSort()));
+        List<Sort> sort = asList(USER_ID.toSort(DESC), ID.toSort());
         assertEquals(2, activityLogService.consume(results::add, sort));
         validateResults(results, activityLog21, activityLog11);
     }
@@ -362,7 +361,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(2, activityLogService.deleteForUser(user1.getId()));
 
-        Results<ActivityLog> results = activityLogService.getAll(new Page(), emptySet());
+        Results<ActivityLog> results = activityLogService.getAll(new Page(), emptyList());
         validateResults(results, activityLog21, activityLog22);
     }
 

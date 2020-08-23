@@ -8,7 +8,8 @@ import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
@@ -27,7 +28,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static vstocks.model.DatabaseField.PRICE;
 import static vstocks.model.DatabaseField.USER_ID;
-import static vstocks.model.DeltaInterval.*;
 import static vstocks.model.Market.TWITTER;
 import static vstocks.model.SortDirection.DESC;
 import static vstocks.rest.security.JwtTokenFilter.INVALID_JWT_MESSAGE;
@@ -63,15 +63,15 @@ public class GetStocksIT extends ResourceTest {
     public void testUserPortfolioStocksPageAndSort() {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getDBFactory().getUserService()).thenReturn(userDB);
+        when(getServiceFactory().getUserService()).thenReturn(userDB);
 
         Page page = new Page().setPage(2).setSize(15);
-        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(), PRICE.toSort(DESC)));
+        List<Sort> sort = asList(USER_ID.toSort(), PRICE.toSort(DESC));
         Results<PricedUserStock> results =
                 new Results<PricedUserStock>().setTotal(0).setPage(page).setResults(emptyList());
         PricedUserStockService pricedUserStockDB = mock(PricedUserStockService.class);
         when(pricedUserStockDB.getForUser(eq(getUser().getId()), eq(page), eq(sort))).thenReturn(results);
-        when(getDBFactory().getPricedUserStockService()).thenReturn(pricedUserStockDB);
+        when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockDB);
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
@@ -93,7 +93,7 @@ public class GetStocksIT extends ResourceTest {
     public void testUserPortfolioStocksWithData() {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getDBFactory().getUserService()).thenReturn(userDB);
+        when(getServiceFactory().getUserService()).thenReturn(userDB);
 
         PricedUserStock pricedUserStock = new PricedUserStock()
                 .setUserId(getUser().getId())
@@ -101,19 +101,14 @@ public class GetStocksIT extends ResourceTest {
                 .setSymbol("symbol")
                 .setTimestamp(Instant.now().truncatedTo(SECONDS))
                 .setShares(10)
-                .setPrice(20)
-                .setDeltas(new TreeMap<>(Map.of(
-                        HOUR6, new Delta().setInterval(HOUR6).setChange(5).setPercent(5.25f),
-                        HOUR12, new Delta().setInterval(HOUR12).setChange(5).setPercent(5.25f),
-                        DAY1, new Delta().setInterval(DAY1).setChange(10).setPercent(10.25f)
-                )));
+                .setPrice(20);
         Results<PricedUserStock> results = new Results<PricedUserStock>()
                 .setTotal(1)
                 .setPage(new Page())
                 .setResults(singletonList(pricedUserStock));
         PricedUserStockService pricedUserStockDB = mock(PricedUserStockService.class);
         when(pricedUserStockDB.getForUser(eq(getUser().getId()), any(), any())).thenReturn(results);
-        when(getDBFactory().getPricedUserStockService()).thenReturn(pricedUserStockDB);
+        when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockDB);
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 

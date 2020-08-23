@@ -56,7 +56,7 @@ public class UsernameExistsIT extends ResourceTest {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.usernameExists(eq("username"))).thenReturn(true);
-        when(getDBFactory().getUserService()).thenReturn(userDB);
+        when(getServiceFactory().getUserService()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         Response response = target("/user/exists")
@@ -78,7 +78,7 @@ public class UsernameExistsIT extends ResourceTest {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.usernameExists(eq("username"))).thenReturn(false);
-        when(getDBFactory().getUserService()).thenReturn(userDB);
+        when(getServiceFactory().getUserService()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         Response response = target("/user/exists")
@@ -100,7 +100,7 @@ public class UsernameExistsIT extends ResourceTest {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.usernameExists(eq("username"))).thenReturn(false);
-        when(getDBFactory().getUserService()).thenReturn(userDB);
+        when(getServiceFactory().getUserService()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         Response response = target("/user/exists")
@@ -121,7 +121,7 @@ public class UsernameExistsIT extends ResourceTest {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.usernameExists(eq("username"))).thenReturn(false);
-        when(getDBFactory().getUserService()).thenReturn(userDB);
+        when(getServiceFactory().getUserService()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         Response response = target("/user/exists")
@@ -143,7 +143,7 @@ public class UsernameExistsIT extends ResourceTest {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(userDB.usernameExists(eq("username"))).thenReturn(false);
-        when(getDBFactory().getUserService()).thenReturn(userDB);
+        when(getServiceFactory().getUserService()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         Response response = target("/user/exists")

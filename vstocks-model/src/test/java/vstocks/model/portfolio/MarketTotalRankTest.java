@@ -14,10 +14,12 @@ public class MarketTotalRankTest {
     @Test
     public void testGettersAndSetters() {
         MarketTotalRank marketTotalRank = new MarketTotalRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setRank(20);
 
+        assertEquals(1, marketTotalRank.getBatch());
         assertEquals("userId", marketTotalRank.getUserId());
         assertEquals(now, marketTotalRank.getTimestamp());
         assertEquals(20, marketTotalRank.getRank());
@@ -26,10 +28,12 @@ public class MarketTotalRankTest {
     @Test
     public void testEquals() {
         MarketTotalRank marketTotalRank1 = new MarketTotalRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setRank(20);
         MarketTotalRank marketTotalRank2 = new MarketTotalRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setRank(20);
@@ -39,20 +43,22 @@ public class MarketTotalRankTest {
     @Test
     public void testHashCode() {
         MarketTotalRank marketTotalRank = new MarketTotalRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(timestamp)
                 .setRank(20);
-        assertEquals(29791, new MarketTotalRank().hashCode());
-        assertEquals(-1989687625, marketTotalRank.hashCode());
+        assertEquals(923521, new MarketTotalRank().hashCode());
+        assertEquals(-1988764104, marketTotalRank.hashCode());
     }
 
     @Test
     public void testToString() {
         MarketTotalRank marketTotalRank = new MarketTotalRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setRank(20);
-        assertEquals("MarketTotalRank{userId='userId', timestamp=" + now + ", rank=20}",
+        assertEquals("MarketTotalRank{batch=1, userId='userId', timestamp=" + now + ", rank=20}",
                 marketTotalRank.toString());
     }
 }

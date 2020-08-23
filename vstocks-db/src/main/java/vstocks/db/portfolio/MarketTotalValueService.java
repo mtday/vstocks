@@ -5,16 +5,21 @@ import vstocks.model.Results;
 import vstocks.model.Sort;
 import vstocks.model.portfolio.MarketTotalValue;
 import vstocks.model.portfolio.MarketTotalValueCollection;
+import vstocks.model.portfolio.ValuedUser;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 
 public interface MarketTotalValueService {
+    long setCurrentBatch(long batch);
+
     int generate();
 
     MarketTotalValueCollection getLatest(String userId);
 
-    Results<MarketTotalValue> getAll(Page page, Set<Sort> sort);
+    Results<MarketTotalValue> getAll(Page page, List<Sort> sort);
+
+    Results<ValuedUser> getUsers(Page page);
 
     int add(MarketTotalValue marketTotalValue);
 

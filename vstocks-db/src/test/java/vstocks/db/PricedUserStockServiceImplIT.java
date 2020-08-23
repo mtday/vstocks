@@ -6,11 +6,10 @@ import org.junit.Before;
 import org.junit.Test;
 import vstocks.model.*;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
@@ -184,7 +183,7 @@ public class PricedUserStockServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetForUserNone() {
-        Results<PricedUserStock> results = pricedUserStockService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<PricedUserStock> results = pricedUserStockService.getForUser(user1.getId(), new Page(), emptyList());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
@@ -198,7 +197,7 @@ public class PricedUserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice21));
         assertEquals(1, stockPriceService.add(stockPrice22));
 
-        Results<PricedUserStock> results = pricedUserStockService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<PricedUserStock> results = pricedUserStockService.getForUser(user1.getId(), new Page(), emptyList());
         validateResults(results, pricedUserStock11, pricedUserStock12);
     }
 
@@ -211,7 +210,7 @@ public class PricedUserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice21));
         assertEquals(1, stockPriceService.add(stockPrice22));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), PRICE.toSort()));
+        List<Sort> sort = asList(SYMBOL.toSort(DESC), PRICE.toSort());
         Results<PricedUserStock> results = pricedUserStockService.getForUser(user1.getId(), new Page(), sort);
         validateResults(results, pricedUserStock12, pricedUserStock11);
     }
@@ -219,7 +218,7 @@ public class PricedUserStockServiceImplIT extends BaseServiceImplIT {
     @Test
     public void testGetForStockNone() {
         Results<PricedUserStock> results =
-                pricedUserStockService.getForStock(stock1.getMarket(), stock1.getSymbol(), new Page(), emptySet());
+                pricedUserStockService.getForStock(stock1.getMarket(), stock1.getSymbol(), new Page(), emptyList());
         validateResults(results);
     }
 
@@ -231,7 +230,7 @@ public class PricedUserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice12));
 
         Results<PricedUserStock> results =
-                pricedUserStockService.getForStock(stock1.getMarket(), stock1.getSymbol(), new Page(), emptySet());
+                pricedUserStockService.getForStock(stock1.getMarket(), stock1.getSymbol(), new Page(), emptyList());
         validateResults(results, pricedUserStock11, pricedUserStock21);
     }
 
@@ -242,7 +241,7 @@ public class PricedUserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice11));
         assertEquals(1, stockPriceService.add(stockPrice12));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), SYMBOL.toSort()));
+        List<Sort> sort = asList(USER_ID.toSort(DESC), SYMBOL.toSort());
         Results<PricedUserStock> results =
                 pricedUserStockService.getForStock(stock1.getMarket(), stock1.getSymbol(), new Page(), sort);
         validateResults(results, pricedUserStock21, pricedUserStock11);
@@ -250,7 +249,7 @@ public class PricedUserStockServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<PricedUserStock> results = pricedUserStockService.getAll(new Page(), emptySet());
+        Results<PricedUserStock> results = pricedUserStockService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -265,7 +264,7 @@ public class PricedUserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice21));
         assertEquals(1, stockPriceService.add(stockPrice22));
 
-        Results<PricedUserStock> results = pricedUserStockService.getAll(new Page(), emptySet());
+        Results<PricedUserStock> results = pricedUserStockService.getAll(new Page(), emptyList());
         validateResults(results, pricedUserStock11, pricedUserStock12, pricedUserStock21, pricedUserStock22);
     }
 
@@ -280,7 +279,7 @@ public class PricedUserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice21));
         assertEquals(1, stockPriceService.add(stockPrice22));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), SYMBOL.toSort()));
+        List<Sort> sort = asList(USER_ID.toSort(DESC), SYMBOL.toSort());
         Results<PricedUserStock> results = pricedUserStockService.getAll(new Page(), sort);
         validateResults(results, pricedUserStock21, pricedUserStock22, pricedUserStock11, pricedUserStock12);
     }

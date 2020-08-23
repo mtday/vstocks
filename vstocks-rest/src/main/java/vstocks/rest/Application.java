@@ -25,24 +25,22 @@ import vstocks.rest.resource.market.stock.*;
 import vstocks.rest.resource.security.Callback;
 import vstocks.rest.resource.security.Login;
 import vstocks.rest.resource.security.Logout;
-import vstocks.rest.resource.standings.GetRanks;
-import vstocks.rest.resource.system.GetTransactionSummary;
 import vstocks.rest.resource.system.GetUserCountActive;
 import vstocks.rest.resource.system.GetUserCountTotal;
-import vstocks.rest.resource.system.GetValueSummary;
 import vstocks.rest.resource.user.GetUser;
 import vstocks.rest.resource.user.PutUser;
 import vstocks.rest.resource.user.ResetUser;
 import vstocks.rest.resource.user.UsernameExists;
 import vstocks.rest.resource.user.achievement.GetUserAchievements;
-import vstocks.rest.resource.user.portfolio.GetRank;
 import vstocks.rest.resource.user.portfolio.GetStocks;
-import vstocks.rest.resource.user.portfolio.GetValue;
 import vstocks.rest.security.AccessLogFilter;
 import vstocks.rest.security.JwtSecurity;
 import vstocks.rest.security.JwtTokenFilter;
 import vstocks.rest.security.SecurityConfig;
-import vstocks.rest.task.*;
+import vstocks.rest.task.portfolio.*;
+import vstocks.rest.task.stock.StockPriceAgeOffTask;
+import vstocks.rest.task.stock.StockUpdateTask;
+import vstocks.rest.task.system.*;
 import vstocks.service.remote.DefaultRemoteStockServiceFactory;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
@@ -65,7 +63,6 @@ import static vstocks.config.Config.*;
 
 @ApplicationPath("/")
 public class Application extends ResourceConfig {
-    @SuppressWarnings("unused")
     public Application() {
         this(getEnvironment());
     }
@@ -94,13 +91,10 @@ public class Application extends ResourceConfig {
         register(Logout.class);
 
         // standings
-        register(GetRanks.class);
 
         // system
-        register(GetTransactionSummary.class);
         register(GetUserCountActive.class);
         register(GetUserCountTotal.class);
-        register(GetValueSummary.class);
 
         // user
         register(GetUser.class);
@@ -112,9 +106,7 @@ public class Application extends ResourceConfig {
         register(GetUserAchievements.class);
 
         // user/portfolio
-        register(GetRank.class);
         register(GetStocks.class);
-        register(GetValue.class);
 
         register(BadRequestExceptionMapper.class);
         register(NotFoundExceptionMapper.class);
@@ -148,13 +140,26 @@ public class Application extends ResourceConfig {
             // This executor is used to run stock price lookup tasks.
             ExecutorService stockPriceLookupExecutorService = Executors.newFixedThreadPool(8);
 
-            new MemoryUsageLoggingTask().schedule(scheduledExecutorService);
-            new PortfolioValueAgeOffTask(environment).schedule(scheduledExecutorService);
-            new PortfolioValueGenerateTask(environment).schedule(scheduledExecutorService);
+            // Portfolio tasks
+            new CreditRankUpdateTask(environment).schedule(scheduledExecutorService);
+            new CreditValueUpdateTask(environment).schedule(scheduledExecutorService);
+            new MarketRankUpdateTask(environment).schedule(scheduledExecutorService);
+            new MarketValueUpdateTask(environment).schedule(scheduledExecutorService);
+            new MarketTotalRankUpdateTask(environment).schedule(scheduledExecutorService);
+            new MarketTotalValueUpdateTask(environment).schedule(scheduledExecutorService);
+            new TotalRankUpdateTask(environment).schedule(scheduledExecutorService);
+            new TotalValueUpdateTask(environment).schedule(scheduledExecutorService);
+
+            // Stock tasks
             new StockPriceAgeOffTask(environment).schedule(scheduledExecutorService);
             new StockUpdateTask(environment, stockPriceLookupExecutorService).schedule(scheduledExecutorService);
-            new TransactionSummaryGenerateTask(environment).schedule(scheduledExecutorService);
-            new UserCountGenerateTask(environment).schedule(scheduledExecutorService);
+
+            // System tasks
+            new MemoryUsageLoggingTask().schedule(scheduledExecutorService);
+            new ActiveUserCountUpdateTask(environment).schedule(scheduledExecutorService);
+            new TotalUserCountUpdateTask(environment).schedule(scheduledExecutorService);
+            new ActiveTransactionCountUpdateTask(environment).schedule(scheduledExecutorService);
+            new TotalTransactionCountUpdateTask(environment).schedule(scheduledExecutorService);
         }
     }
 

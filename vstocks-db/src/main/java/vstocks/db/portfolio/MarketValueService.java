@@ -6,19 +6,24 @@ import vstocks.model.Results;
 import vstocks.model.Sort;
 import vstocks.model.portfolio.MarketValue;
 import vstocks.model.portfolio.MarketValueCollection;
+import vstocks.model.portfolio.ValuedUser;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public interface MarketValueService {
-    int generate(Market market);
+    long setCurrentBatch(long batch);
+
+    int generate();
 
     MarketValueCollection getLatest(String userId, Market market);
 
     Map<Market, MarketValueCollection> getLatest(String userId);
 
-    Results<MarketValue> getAll(Market market, Page page, Set<Sort> sort);
+    Results<MarketValue> getAll(Market market, Page page, List<Sort> sort);
+
+    Results<ValuedUser> getUsers(Market market, Page page);
 
     int add(MarketValue marketValue);
 

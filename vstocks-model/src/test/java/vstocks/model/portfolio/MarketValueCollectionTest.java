@@ -17,11 +17,13 @@ public class MarketValueCollectionTest {
     private final Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
 
     private final MarketValue marketValue1 = new MarketValue()
+            .setBatch(1)
             .setUserId("userId")
             .setMarket(TWITTER)
             .setTimestamp(timestamp)
             .setValue(20);
     private final MarketValue marketValue2 = new MarketValue()
+            .setBatch(1)
             .setUserId("userId")
             .setMarket(TWITTER)
             .setTimestamp(timestamp.minusSeconds(10))

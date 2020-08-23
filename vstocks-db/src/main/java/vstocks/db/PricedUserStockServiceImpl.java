@@ -3,8 +3,8 @@ package vstocks.db;
 import vstocks.model.*;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public class PricedUserStockServiceImpl extends BaseService implements PricedUserStockService {
     private final PricedUserStockDB pricedUserStockJoin = new PricedUserStockDB();
@@ -19,17 +19,17 @@ public class PricedUserStockServiceImpl extends BaseService implements PricedUse
     }
 
     @Override
-    public Results<PricedUserStock> getForUser(String userId, Page page, Set<Sort> sort) {
+    public Results<PricedUserStock> getForUser(String userId, Page page, List<Sort> sort) {
         return withConnection(conn -> pricedUserStockJoin.getForUser(conn, userId, page, sort));
     }
 
     @Override
-    public Results<PricedUserStock> getForStock(Market market, String symbol, Page page, Set<Sort> sort) {
+    public Results<PricedUserStock> getForStock(Market market, String symbol, Page page, List<Sort> sort) {
         return withConnection(conn -> pricedUserStockJoin.getForStock(conn, market, symbol, page, sort));
     }
 
     @Override
-    public Results<PricedUserStock> getAll(Page page, Set<Sort> sort) {
+    public Results<PricedUserStock> getAll(Page page, List<Sort> sort) {
         return withConnection(conn -> pricedUserStockJoin.getAll(conn, page, sort));
     }
 }

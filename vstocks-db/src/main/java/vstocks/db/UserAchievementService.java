@@ -7,7 +7,6 @@ import vstocks.model.UserAchievement;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public interface UserAchievementService {
@@ -15,11 +14,11 @@ public interface UserAchievementService {
 
     List<UserAchievement> getForUser(String userId);
 
-    Results<UserAchievement> getForAchievement(String achievementId, Page page, Set<Sort> sort);
+    Results<UserAchievement> getForAchievement(String achievementId, Page page, List<Sort> sort);
 
-    Results<UserAchievement> getAll(Page page, Set<Sort> sort);
+    Results<UserAchievement> getAll(Page page, List<Sort> sort);
 
-    int consume(Consumer<UserAchievement> consumer, Set<Sort> sort);
+    int consume(Consumer<UserAchievement> consumer, List<Sort> sort);
 
     int add(UserAchievement userAchievement);
 

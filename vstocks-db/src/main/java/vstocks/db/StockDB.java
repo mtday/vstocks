@@ -3,9 +3,8 @@ package vstocks.db;
 import vstocks.model.*;
 
 import java.sql.Connection;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
@@ -13,7 +12,7 @@ import static java.util.Arrays.asList;
 import static vstocks.model.DatabaseField.MARKET;
 import static vstocks.model.DatabaseField.SYMBOL;
 
-class StockDB extends BaseTable {
+class StockDB extends BaseDB {
     private static final RowMapper<Stock> ROW_MAPPER = rs ->
             new Stock()
                     .setMarket(Market.valueOf(rs.getString("market")))
@@ -40,8 +39,8 @@ class StockDB extends BaseTable {
     };
 
     @Override
-    protected Set<Sort> getDefaultSort() {
-        return new LinkedHashSet<>(asList(MARKET.toSort(), SYMBOL.toSort()));
+    protected List<Sort> getDefaultSort() {
+        return asList(MARKET.toSort(), SYMBOL.toSort());
     }
 
     public Optional<Stock> get(Connection connection, Market market, String symbol) {
@@ -49,24 +48,24 @@ class StockDB extends BaseTable {
         return getOne(connection, ROW_MAPPER, sql, market, symbol);
     }
 
-    public Results<Stock> getForMarket(Connection connection, Market market, Page page, Set<Sort> sort) {
+    public Results<Stock> getForMarket(Connection connection, Market market, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM stocks WHERE market = ? %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM stocks WHERE market = ?";
         return results(connection, ROW_MAPPER, page, sql, count, market);
     }
 
-    public int consumeForMarket(Connection connection, Market market, Consumer<Stock> consumer, Set<Sort> sort) {
+    public int consumeForMarket(Connection connection, Market market, Consumer<Stock> consumer, List<Sort> sort) {
         String sql = format("SELECT * FROM stocks WHERE market = ? %s", getSort(sort));
         return consume(connection, ROW_MAPPER, consumer, sql, market);
     }
 
-    public Results<Stock> getAll(Connection connection, Page page, Set<Sort> sort) {
+    public Results<Stock> getAll(Connection connection, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM stocks %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM stocks";
         return results(connection, ROW_MAPPER, page, sql, count);
     }
 
-    public int consume(Connection connection, Consumer<Stock> consumer, Set<Sort> sort) {
+    public int consume(Connection connection, Consumer<Stock> consumer, List<Sort> sort) {
         String sql = format("SELECT * FROM stocks %s", getSort(sort));
         return consume(connection, ROW_MAPPER, consumer, sql);
     }

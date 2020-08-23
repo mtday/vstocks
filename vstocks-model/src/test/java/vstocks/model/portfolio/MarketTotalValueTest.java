@@ -14,10 +14,12 @@ public class MarketTotalValueTest {
     @Test
     public void testGettersAndSetters() {
         MarketTotalValue marketTotalValue = new MarketTotalValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setValue(20);
 
+        assertEquals(1, marketTotalValue.getBatch());
         assertEquals("userId", marketTotalValue.getUserId());
         assertEquals(now, marketTotalValue.getTimestamp());
         assertEquals(20, marketTotalValue.getValue());
@@ -26,10 +28,12 @@ public class MarketTotalValueTest {
     @Test
     public void testEquals() {
         MarketTotalValue marketTotalValue1 = new MarketTotalValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setValue(20);
         MarketTotalValue marketTotalValue2 = new MarketTotalValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setValue(20);
@@ -39,20 +43,22 @@ public class MarketTotalValueTest {
     @Test
     public void testHashCode() {
         MarketTotalValue marketTotalValue = new MarketTotalValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(timestamp)
                 .setValue(20);
-        assertEquals(29791, new MarketTotalValue().hashCode());
-        assertEquals(-1989687625, marketTotalValue.hashCode());
+        assertEquals(923521, new MarketTotalValue().hashCode());
+        assertEquals(-1988764104, marketTotalValue.hashCode());
     }
 
     @Test
     public void testToString() {
         MarketTotalValue marketTotalValue = new MarketTotalValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setValue(20);
-        assertEquals("MarketTotalValue{userId='userId', timestamp=" + now + ", value=20}",
+        assertEquals("MarketTotalValue{batch=1, userId='userId', timestamp=" + now + ", value=20}",
                 marketTotalValue.toString());
     }
 }

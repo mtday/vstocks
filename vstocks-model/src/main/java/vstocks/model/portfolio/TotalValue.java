@@ -4,11 +4,21 @@ import java.time.Instant;
 import java.util.Objects;
 
 public class TotalValue {
+    private long batch;
     private String userId;
     private Instant timestamp;
     private long value;
 
     public TotalValue() {
+    }
+
+    public long getBatch() {
+        return batch;
+    }
+
+    public TotalValue setBatch(long batch) {
+        this.batch = batch;
+        return this;
     }
 
     public String getUserId() {
@@ -43,20 +53,22 @@ public class TotalValue {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TotalValue that = (TotalValue) o;
-        return value == that.value &&
+        return batch == that.batch &&
+                value == that.value &&
                 Objects.equals(userId, that.userId) &&
                 Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, timestamp, value);
+        return Objects.hash(batch, userId, timestamp, value);
     }
 
     @Override
     public String toString() {
         return "TotalValue{" +
-                "userId='" + userId + '\'' +
+                "batch=" + batch +
+                ", userId='" + userId + '\'' +
                 ", timestamp=" + timestamp +
                 ", value=" + value +
                 '}';

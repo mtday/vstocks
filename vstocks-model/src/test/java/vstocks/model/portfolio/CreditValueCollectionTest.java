@@ -16,10 +16,12 @@ public class CreditValueCollectionTest {
     private final Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
 
     private final CreditValue creditValue1 = new CreditValue()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp)
             .setValue(20);
     private final CreditValue creditValue2 = new CreditValue()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp.minusSeconds(10))
             .setValue(18);

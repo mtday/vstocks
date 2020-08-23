@@ -15,17 +15,17 @@ import javax.ws.rs.core.SecurityContext;
 @Path("/user/reset")
 @Singleton
 public class ResetUser extends BaseResource {
-    private final ServiceFactory dbFactory;
+    private final ServiceFactory serviceFactory;
 
     @Inject
-    public ResetUser(ServiceFactory dbFactory) {
-        this.dbFactory = dbFactory;
+    public ResetUser(ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
     }
 
     @PUT
     @JwtTokenRequired
     public Response reset(@Context SecurityContext securityContext) {
-        dbFactory.getUserService().reset(getUser(securityContext).getId());
+        serviceFactory.getUserService().reset(getUser(securityContext).getId());
         return Response.ok().build();
     }
 }

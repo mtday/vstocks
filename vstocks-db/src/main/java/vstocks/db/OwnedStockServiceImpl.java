@@ -5,7 +5,7 @@ import vstocks.model.Sort;
 import vstocks.model.Stock;
 
 import javax.sql.DataSource;
-import java.util.Set;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class OwnedStockServiceImpl extends BaseService implements OwnedStockService {
@@ -16,12 +16,12 @@ public class OwnedStockServiceImpl extends BaseService implements OwnedStockServ
     }
 
     @Override
-    public int consumeForMarket(Market market, Consumer<Stock> consumer, Set<Sort> sort) {
+    public int consumeForMarket(Market market, Consumer<Stock> consumer, List<Sort> sort) {
         return withConnection(conn -> ownedStockJoin.consumeForMarket(conn, market, consumer, sort));
     }
 
     @Override
-    public int consume(Consumer<Stock> consumer, Set<Sort> sort) {
+    public int consume(Consumer<Stock> consumer, List<Sort> sort) {
         return withConnection(conn -> ownedStockJoin.consume(conn, consumer, sort));
     }
 }

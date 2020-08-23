@@ -6,9 +6,8 @@ import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
@@ -17,7 +16,7 @@ import static java.util.Collections.singleton;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.SortDirection.DESC;
 
-class StockPriceDB extends BaseTable {
+class StockPriceDB extends BaseDB {
     static final RowMapper<StockPrice> ROW_MAPPER = rs ->
             new StockPrice()
                     .setMarket(Market.valueOf(rs.getString("market")))
@@ -34,8 +33,8 @@ class StockPriceDB extends BaseTable {
     };
 
     @Override
-    protected Set<Sort> getDefaultSort() {
-        return new LinkedHashSet<>(asList(MARKET.toSort(), SYMBOL.toSort(), TIMESTAMP.toSort(DESC)));
+    protected List<Sort> getDefaultSort() {
+        return asList(MARKET.toSort(), SYMBOL.toSort(), TIMESTAMP.toSort(DESC));
     }
 
     public Optional<StockPrice> getLatest(Connection connection, Market market, String symbol) {
@@ -43,7 +42,11 @@ class StockPriceDB extends BaseTable {
         return getOne(connection, ROW_MAPPER, sql, market, symbol);
     }
 
-    public Results<StockPrice> getLatest(Connection connection, Market market, Collection<String> symbols, Page page, Set<Sort> sort) {
+    public Results<StockPrice> getLatest(Connection connection,
+                                         Market market,
+                                         Collection<String> symbols,
+                                         Page page,
+                                         List<Sort> sort) {
         String sql = format("SELECT * FROM ("
                 + "SELECT DISTINCT ON (symbol) * FROM stock_prices WHERE market = ? AND symbol = ANY(?) "
                 + "ORDER BY symbol, timestamp DESC LIMIT ? OFFSET ?"
@@ -53,19 +56,19 @@ class StockPriceDB extends BaseTable {
         return results(connection, ROW_MAPPER, page, sql, count, market, symbols);
     }
 
-    public Results<StockPrice> getForStock(Connection connection, Market market, String symbol, Page page, Set<Sort> sort) {
+    public Results<StockPrice> getForStock(Connection connection, Market market, String symbol, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM stock_prices WHERE market = ? AND symbol = ? %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM stock_prices WHERE market = ? AND symbol = ?";
         return results(connection, ROW_MAPPER, page, sql, count, market, symbol);
     }
 
-    public Results<StockPrice> getAll(Connection connection, Page page, Set<Sort> sort) {
+    public Results<StockPrice> getAll(Connection connection, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM stock_prices %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM stock_prices";
         return results(connection, ROW_MAPPER, page, sql, count);
     }
 
-    public int consume(Connection connection, Consumer<StockPrice> consumer, Set<Sort> sort) {
+    public int consume(Connection connection, Consumer<StockPrice> consumer, List<Sort> sort) {
         String sql = format("SELECT * FROM stock_prices %s", getSort(sort));
         return consume(connection, ROW_MAPPER, consumer, sql);
     }

@@ -16,11 +16,13 @@ public class MarketValueTest {
     @Test
     public void testGettersAndSetters() {
         MarketValue marketValue = new MarketValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(now)
                 .setValue(20);
 
+        assertEquals(1, marketValue.getBatch());
         assertEquals("userId", marketValue.getUserId());
         assertEquals(TWITTER, marketValue.getMarket());
         assertEquals(now, marketValue.getTimestamp());
@@ -30,11 +32,13 @@ public class MarketValueTest {
     @Test
     public void testEquals() {
         MarketValue marketValue1 = new MarketValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(now)
                 .setValue(20);
         MarketValue marketValue2 = new MarketValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(now)
@@ -45,22 +49,24 @@ public class MarketValueTest {
     @Test
     public void testHashCode() {
         MarketValue marketValue = new MarketValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(timestamp)
                 .setValue(20);
-        assertEquals(923521, new MarketValue().hashCode());
+        assertEquals(28629151, new MarketValue().hashCode());
         assertNotEquals(0, marketValue.hashCode()); // enums make the value inconsistent
     }
 
     @Test
     public void testToString() {
         MarketValue marketValue = new MarketValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(now)
                 .setValue(20);
-        assertEquals("MarketValue{userId='userId', market=Twitter, timestamp=" + now + ", value=20}",
+        assertEquals("MarketValue{batch=1, userId='userId', market=Twitter, timestamp=" + now + ", value=20}",
                 marketValue.toString());
     }
 }

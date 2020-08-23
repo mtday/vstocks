@@ -4,15 +4,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import vstocks.db.*;
-import vstocks.model.*;
+import vstocks.model.Page;
+import vstocks.model.Results;
+import vstocks.model.Sort;
+import vstocks.model.User;
 import vstocks.model.portfolio.CreditRank;
 import vstocks.model.portfolio.CreditRankCollection;
+import vstocks.model.portfolio.RankedUser;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static vstocks.model.DatabaseField.RANK;
@@ -37,21 +40,36 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
             .setDisplayName("Name2");
 
     private final CreditRank creditRank11 = new CreditRank()
+            .setBatch(2)
             .setUserId(user1.getId())
             .setTimestamp(now)
             .setRank(1);
     private final CreditRank creditRank12 = new CreditRank()
+            .setBatch(1)
             .setUserId(user1.getId())
             .setTimestamp(now.minusSeconds(10))
             .setRank(2);
     private final CreditRank creditRank21 = new CreditRank()
+            .setBatch(2)
             .setUserId(user2.getId())
             .setTimestamp(now)
             .setRank(2);
     private final CreditRank creditRank22 = new CreditRank()
+            .setBatch(1)
             .setUserId(user2.getId())
             .setTimestamp(now.minusSeconds(10))
             .setRank(3);
+
+    private final RankedUser rankedUser1 = new RankedUser()
+            .setUser(user1)
+            .setBatch(creditRank11.getBatch())
+            .setTimestamp(creditRank11.getTimestamp())
+            .setRank(creditRank11.getRank());
+    private final RankedUser rankedUser2 = new RankedUser()
+            .setUser(user2)
+            .setBatch(creditRank21.getBatch())
+            .setTimestamp(creditRank21.getTimestamp())
+            .setRank(creditRank21.getRank());
 
     @Before
     public void setup() {
@@ -74,7 +92,7 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
     public void testGenerateTie() {
         assertEquals(2, creditRankService.generate());
 
-        Results<CreditRank> results = creditRankService.getAll(new Page(), emptySet());
+        Results<CreditRank> results = creditRankService.getAll(new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertTrue(results.getResults().stream().map(CreditRank::getRank).allMatch(rank -> rank == 1));
@@ -86,7 +104,7 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(2, creditRankService.generate());
 
-        Results<CreditRank> results = creditRankService.getAll(new Page(), emptySet());
+        Results<CreditRank> results = creditRankService.getAll(new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertEquals(3, results.getResults().stream().mapToLong(CreditRank::getRank).sum());
@@ -111,7 +129,7 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<CreditRank> results = creditRankService.getAll(new Page(), emptySet());
+        Results<CreditRank> results = creditRankService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -120,7 +138,7 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, creditRankService.add(creditRank11));
         assertEquals(1, creditRankService.add(creditRank12));
 
-        Results<CreditRank> results = creditRankService.getAll(new Page(), emptySet());
+        Results<CreditRank> results = creditRankService.getAll(new Page(), emptyList());
         validateResults(results, creditRank11, creditRank12);
     }
 
@@ -131,9 +149,27 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, creditRankService.add(creditRank21));
         assertEquals(1, creditRankService.add(creditRank22));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(RANK.toSort(DESC), USER_ID.toSort()));
+        List<Sort> sort = asList(RANK.toSort(DESC), USER_ID.toSort());
         Results<CreditRank> results = creditRankService.getAll(new Page(), sort);
         validateResults(results, creditRank22, creditRank12, creditRank21, creditRank11);
+    }
+
+    @Test
+    public void testGetUsersNone() {
+        Results<RankedUser> results = creditRankService.getUsers(new Page());
+        validateResults(results);
+    }
+
+    @Test
+    public void testGetUsersSome() {
+        assertEquals(1, creditRankService.add(creditRank11));
+        assertEquals(1, creditRankService.add(creditRank12));
+        assertEquals(1, creditRankService.add(creditRank21));
+        assertEquals(1, creditRankService.add(creditRank22));
+
+        creditRankService.setCurrentBatch(2);
+        Results<RankedUser> results = creditRankService.getUsers(new Page());
+        validateResults(results, rankedUser1, rankedUser2);
     }
 
     @Test
@@ -151,7 +187,7 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
 
         creditRankService.ageOff(now.minusSeconds(5));
 
-        Results<CreditRank> results = creditRankService.getAll(new Page(), emptySet());
+        Results<CreditRank> results = creditRankService.getAll(new Page(), emptyList());
         validateResults(results, creditRank11, creditRank21);
     }
 
@@ -164,7 +200,7 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
 
         creditRankService.truncate();
 
-        Results<CreditRank> results = creditRankService.getAll(new Page(), emptySet());
+        Results<CreditRank> results = creditRankService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 }

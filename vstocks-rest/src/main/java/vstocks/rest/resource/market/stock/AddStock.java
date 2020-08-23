@@ -16,12 +16,12 @@ import static javax.ws.rs.core.MediaType.WILDCARD;
 @Path("/market/{market}/stock/{symbol}")
 @Singleton
 public class AddStock extends BaseResource {
-    private final ServiceFactory dbFactory;
+    private final ServiceFactory serviceFactory;
     private final RemoteStockServiceFactory remoteStockServiceFactory;
 
     @Inject
-    public AddStock(ServiceFactory dbFactory, RemoteStockServiceFactory remoteStockServiceFactory) {
-        this.dbFactory = dbFactory;
+    public AddStock(ServiceFactory serviceFactory, RemoteStockServiceFactory remoteStockServiceFactory) {
+        this.serviceFactory = serviceFactory;
         this.remoteStockServiceFactory = remoteStockServiceFactory;
     }
 
@@ -40,7 +40,7 @@ public class AddStock extends BaseResource {
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + symbol + " not found"));
 
-        dbFactory.getPricedStockService().add(pricedStock);
+        serviceFactory.getPricedStockService().add(pricedStock);
         return pricedStock;
     }
 }

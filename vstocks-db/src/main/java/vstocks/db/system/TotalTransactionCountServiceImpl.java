@@ -9,10 +9,10 @@ import vstocks.model.system.TotalTransactionCountCollection;
 
 import javax.sql.DataSource;
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 
 public class TotalTransactionCountServiceImpl extends BaseService implements TotalTransactionCountService {
-    private final TotalTransactionCountDB totalTransactionCountTable = new TotalTransactionCountDB();
+    private final TotalTransactionCountDB totalTransactionCountDB = new TotalTransactionCountDB();
 
     public TotalTransactionCountServiceImpl(DataSource dataSource) {
         super(dataSource);
@@ -20,31 +20,31 @@ public class TotalTransactionCountServiceImpl extends BaseService implements Tot
 
     @Override
     public int generate() {
-        return withConnection(totalTransactionCountTable::generate);
+        return withConnection(totalTransactionCountDB::generate);
     }
 
     @Override
     public TotalTransactionCountCollection getLatest() {
-        return withConnection(totalTransactionCountTable::getLatest);
+        return withConnection(totalTransactionCountDB::getLatest);
     }
 
     @Override
-    public Results<TotalTransactionCount> getAll(Page page, Set<Sort> sort) {
-        return withConnection(conn -> totalTransactionCountTable.getAll(conn, page, sort));
+    public Results<TotalTransactionCount> getAll(Page page, List<Sort> sort) {
+        return withConnection(conn -> totalTransactionCountDB.getAll(conn, page, sort));
     }
 
     @Override
     public int add(TotalTransactionCount totalTransactionCount) {
-        return withConnection(conn -> totalTransactionCountTable.add(conn, totalTransactionCount));
+        return withConnection(conn -> totalTransactionCountDB.add(conn, totalTransactionCount));
     }
 
     @Override
     public int ageOff(Instant cutoff) {
-        return withConnection(conn -> totalTransactionCountTable.ageOff(conn, cutoff));
+        return withConnection(conn -> totalTransactionCountDB.ageOff(conn, cutoff));
     }
 
     @Override
     public int truncate() {
-        return withConnection(totalTransactionCountTable::truncate);
+        return withConnection(totalTransactionCountDB::truncate);
     }
 }

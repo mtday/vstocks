@@ -8,15 +8,15 @@ import vstocks.model.*;
 import vstocks.model.system.ActiveTransactionCount;
 import vstocks.model.system.ActiveTransactionCountCollection;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static vstocks.model.ActivityType.STOCK_SELL;
-import static vstocks.model.DatabaseField.*;
+import static vstocks.model.DatabaseField.COUNT;
+import static vstocks.model.DatabaseField.TIMESTAMP;
 import static vstocks.model.Market.TWITTER;
 import static vstocks.model.SortDirection.DESC;
 import static vstocks.model.User.generateId;
@@ -118,7 +118,7 @@ public class ActiveTransactionCountServiceImplIT extends BaseServiceImplIT {
     public void testGenerateEmpty() {
         assertEquals(1, activeTransactionCountService.generate());
 
-        Results<ActiveTransactionCount> results = activeTransactionCountService.getAll(new Page(), emptySet());
+        Results<ActiveTransactionCount> results = activeTransactionCountService.getAll(new Page(), emptyList());
         assertEquals(1, results.getTotal());
         assertEquals(1, results.getResults().size());
         assertEquals(0, results.getResults().iterator().next().getCount());
@@ -133,7 +133,7 @@ public class ActiveTransactionCountServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(1, activeTransactionCountService.generate());
 
-        Results<ActiveTransactionCount> results = activeTransactionCountService.getAll(new Page(), emptySet());
+        Results<ActiveTransactionCount> results = activeTransactionCountService.getAll(new Page(), emptyList());
         assertEquals(1, results.getTotal());
         assertEquals(1, results.getResults().size());
         assertEquals(4, results.getResults().iterator().next().getCount());
@@ -158,7 +158,7 @@ public class ActiveTransactionCountServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<ActiveTransactionCount> results = activeTransactionCountService.getAll(new Page(), emptySet());
+        Results<ActiveTransactionCount> results = activeTransactionCountService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -167,7 +167,7 @@ public class ActiveTransactionCountServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activeTransactionCountService.add(activeTransactionCount1));
         assertEquals(1, activeTransactionCountService.add(activeTransactionCount2));
 
-        Results<ActiveTransactionCount> results = activeTransactionCountService.getAll(new Page(), emptySet());
+        Results<ActiveTransactionCount> results = activeTransactionCountService.getAll(new Page(), emptyList());
         validateResults(results, activeTransactionCount1, activeTransactionCount2);
     }
 
@@ -176,7 +176,7 @@ public class ActiveTransactionCountServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activeTransactionCountService.add(activeTransactionCount1));
         assertEquals(1, activeTransactionCountService.add(activeTransactionCount2));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(COUNT.toSort(DESC), TIMESTAMP.toSort(DESC)));
+        List<Sort> sort = asList(COUNT.toSort(DESC), TIMESTAMP.toSort(DESC));
         Results<ActiveTransactionCount> results = activeTransactionCountService.getAll(new Page(), sort);
         validateResults(results, activeTransactionCount2, activeTransactionCount1);
     }
@@ -194,7 +194,7 @@ public class ActiveTransactionCountServiceImplIT extends BaseServiceImplIT {
 
         activeTransactionCountService.ageOff(now.minusSeconds(5));
 
-        Results<ActiveTransactionCount> results = activeTransactionCountService.getAll(new Page(), emptySet());
+        Results<ActiveTransactionCount> results = activeTransactionCountService.getAll(new Page(), emptyList());
         validateResults(results, activeTransactionCount1);
     }
 
@@ -205,7 +205,7 @@ public class ActiveTransactionCountServiceImplIT extends BaseServiceImplIT {
 
         activeTransactionCountService.truncate();
 
-        Results<ActiveTransactionCount> results = activeTransactionCountService.getAll(new Page(), emptySet());
+        Results<ActiveTransactionCount> results = activeTransactionCountService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 }

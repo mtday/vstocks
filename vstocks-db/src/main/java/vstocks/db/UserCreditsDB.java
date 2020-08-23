@@ -6,9 +6,8 @@ import vstocks.model.Sort;
 import vstocks.model.UserCredits;
 
 import java.sql.Connection;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
@@ -17,7 +16,7 @@ import static vstocks.model.DatabaseField.CREDITS;
 import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.SortDirection.DESC;
 
-class UserCreditsDB extends BaseTable {
+class UserCreditsDB extends BaseDB {
     private static final RowMapper<UserCredits> ROW_MAPPER = rs ->
             new UserCredits()
                     .setUserId(rs.getString("user_id"))
@@ -30,21 +29,21 @@ class UserCreditsDB extends BaseTable {
     };
 
     @Override
-    protected Set<Sort> getDefaultSort() {
-        return new LinkedHashSet<>(asList(CREDITS.toSort(DESC), USER_ID.toSort()));
+    protected List<Sort> getDefaultSort() {
+        return asList(CREDITS.toSort(DESC), USER_ID.toSort());
     }
 
     public Optional<UserCredits> get(Connection connection, String userId) {
         return getOne(connection, ROW_MAPPER, "SELECT * FROM user_credits WHERE user_id = ?", userId);
     }
 
-    public Results<UserCredits> getAll(Connection connection, Page page, Set<Sort> sort) {
+    public Results<UserCredits> getAll(Connection connection, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM user_credits %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM user_credits";
         return results(connection, ROW_MAPPER, page, sql, count);
     }
 
-    public int consume(Connection connection, Consumer<UserCredits> consumer, Set<Sort> sort) {
+    public int consume(Connection connection, Consumer<UserCredits> consumer, List<Sort> sort) {
         String sql = format("SELECT * FROM user_credits %s", getSort(sort));
         return consume(connection, ROW_MAPPER, consumer, sql);
     }

@@ -6,12 +6,10 @@ import org.junit.Test;
 import vstocks.model.*;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static java.util.Locale.ENGLISH;
 import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.DISPLAY_NAME;
@@ -156,7 +154,7 @@ public class UserServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<User> results =  userService.getAll(new Page(), emptySet());
+        Results<User> results =  userService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -165,7 +163,7 @@ public class UserServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userService.add(user1));
         assertEquals(1, userService.add(user2));
 
-        Results<User> results = userService.getAll(new Page(), emptySet());
+        Results<User> results = userService.getAll(new Page(), emptyList());
         validateResults(results, user1, user2);
     }
 
@@ -174,7 +172,7 @@ public class UserServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userService.add(user1));
         assertEquals(1, userService.add(user2));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(USERNAME.toSort(DESC), DISPLAY_NAME.toSort()));
+        List<Sort> sort = asList(USERNAME.toSort(DESC), DISPLAY_NAME.toSort());
         Results<User> results = userService.getAll(new Page(), sort);
         validateResults(results, user2, user1);
     }
@@ -184,15 +182,15 @@ public class UserServiceImplIT extends BaseServiceImplIT {
         asList(user1, user2, user3, user4, user5).forEach(user -> assertEquals(1, userService.add(user)));
 
         Page page = new Page().setSize(2);
-        Results<User> results = userService.getAll(page, emptySet());
+        Results<User> results = userService.getAll(page, emptyList());
         validateResults(results, 5, 1, user1, user2);
 
         page = page.next();
-        results = userService.getAll(page, emptySet());
+        results = userService.getAll(page, emptyList());
         validateResults(results, 5, 2, user3, user4);
 
         page = page.next();
-        results = userService.getAll(page, emptySet());
+        results = userService.getAll(page, emptyList());
         validateResults(results, 5, 3, user5);
     }
 
@@ -201,7 +199,7 @@ public class UserServiceImplIT extends BaseServiceImplIT {
         asList(user1, user2, user3, user4, user5).forEach(user -> assertEquals(1, userService.add(user)));
 
         Page page = new Page().setSize(2);
-        Set<Sort> sort = new LinkedHashSet<>(asList(USERNAME.toSort(DESC), DISPLAY_NAME.toSort()));
+        List<Sort> sort = asList(USERNAME.toSort(DESC), DISPLAY_NAME.toSort());
         Results<User> results = userService.getAll(page, sort);
         validateResults(results, 5, 1, user5, user4);
 
@@ -217,7 +215,7 @@ public class UserServiceImplIT extends BaseServiceImplIT {
     @Test
     public void testConsumeNone() {
         List<User> results = new ArrayList<>();
-        assertEquals(0, userService.consume(results::add, emptySet()));
+        assertEquals(0, userService.consume(results::add, emptyList()));
         validateResults(results);
     }
 
@@ -227,7 +225,7 @@ public class UserServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userService.add(user2));
 
         List<User> results = new ArrayList<>();
-        assertEquals(2, userService.consume(results::add, emptySet()));
+        assertEquals(2, userService.consume(results::add, emptyList()));
         validateResults(results, user1, user2);
     }
 
@@ -237,7 +235,7 @@ public class UserServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userService.add(user2));
 
         List<User> results = new ArrayList<>();
-        Set<Sort> sort = new LinkedHashSet<>(asList(USERNAME.toSort(DESC), DISPLAY_NAME.toSort()));
+        List<Sort> sort = asList(USERNAME.toSort(DESC), DISPLAY_NAME.toSort());
         assertEquals(2, userService.consume(results::add, sort));
         validateResults(results, user2, user1);
     }
@@ -258,7 +256,7 @@ public class UserServiceImplIT extends BaseServiceImplIT {
         assertNotNull(userCreditsBeforeReset);
         assertEquals(11234, userCreditsBeforeReset.getCredits());
 
-        Results<UserStock> userStocksBeforeReset = userStockService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<UserStock> userStocksBeforeReset = userStockService.getForUser(user1.getId(), new Page(), emptyList());
         validateResults(userStocksBeforeReset, userStock1, userStock2);
 
         userService.reset(user1.getId());
@@ -267,7 +265,7 @@ public class UserServiceImplIT extends BaseServiceImplIT {
         assertNotNull(userCreditsAfterReset);
         assertEquals(10000, userCreditsAfterReset.getCredits());
 
-        Results<UserStock> userStocksAfterReset = userStockService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<UserStock> userStocksAfterReset = userStockService.getForUser(user1.getId(), new Page(), emptyList());
         validateResults(userStocksAfterReset);
     }
 
@@ -465,7 +463,7 @@ public class UserServiceImplIT extends BaseServiceImplIT {
         asList(user1, user2, user3, user4, user5).forEach(user -> assertEquals(1, userService.add(user)));
 
         assertEquals(5, userService.truncate());
-        Results<User> results = userService.getAll(new Page(), emptySet());
+        Results<User> results = userService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 }

@@ -5,18 +5,17 @@ import vstocks.model.*;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.SortDirection.DESC;
 
-class PricedStockDB extends BaseTable {
-    private final StockDB stockTable = new StockDB();
-    private final StockPriceDB stockPriceTable = new StockPriceDB();
+class PricedStockDB extends BaseDB {
+    private final StockDB stockDB = new StockDB();
+    private final StockPriceDB stockPriceDB = new StockPriceDB();
 
     private static final RowMapper<PricedStock> ROW_MAPPER = rs -> {
         Timestamp timestamp = rs.getTimestamp("timestamp");
@@ -33,8 +32,8 @@ class PricedStockDB extends BaseTable {
     };
 
     @Override
-    protected Set<Sort> getDefaultSort() {
-        return new LinkedHashSet<>(asList(MARKET.toSort(), SYMBOL.toSort(), TIMESTAMP.toSort(DESC)));
+    protected List<Sort> getDefaultSort() {
+        return asList(MARKET.toSort(), SYMBOL.toSort(), TIMESTAMP.toSort(DESC));
     }
 
     public Optional<PricedStock> get(Connection connection, Market market, String symbol) {
@@ -44,7 +43,7 @@ class PricedStockDB extends BaseTable {
         return getOne(connection, ROW_MAPPER, sql, market, symbol);
     }
 
-    public Results<PricedStock> getForMarket(Connection connection, Market market, Page page, Set<Sort> sort) {
+    public Results<PricedStock> getForMarket(Connection connection, Market market, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM ("
                 + "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
                 + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
@@ -58,7 +57,7 @@ class PricedStockDB extends BaseTable {
         return results(connection, ROW_MAPPER, page, sql, count, market);
     }
 
-    public Results<PricedStock> getAll(Connection connection, Page page, Set<Sort> sort) {
+    public Results<PricedStock> getAll(Connection connection, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM ("
                 + "SELECT DISTINCT ON (s.market, s.symbol) s.*, p.timestamp, p.price FROM stocks s "
                 + "LEFT JOIN stock_prices p ON (s.market = p.market AND s.symbol = p.symbol) "
@@ -74,8 +73,8 @@ class PricedStockDB extends BaseTable {
 
     public int add(Connection connection, PricedStock pricedStock) {
         int added = 0;
-        added += stockTable.add(connection, pricedStock.asStock());
-        added += stockPriceTable.add(connection, pricedStock.asStockPrice());
+        added += stockDB.add(connection, pricedStock.asStock());
+        added += stockPriceDB.add(connection, pricedStock.asStockPrice());
         return added > 0 ? 1 : 0;
     }
 }

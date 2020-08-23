@@ -7,14 +7,14 @@ import vstocks.model.system.TotalUserCount;
 import vstocks.model.system.TotalUserCountCollection;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 
 public interface TotalUserCountService {
     int generate();
 
     TotalUserCountCollection getLatest();
 
-    Results<TotalUserCount> getAll(Page page, Set<Sort> sort);
+    Results<TotalUserCount> getAll(Page page, List<Sort> sort);
 
     int add(TotalUserCount totalUserCount);
 

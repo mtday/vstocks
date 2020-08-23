@@ -4,9 +4,8 @@ import vstocks.model.*;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
@@ -17,7 +16,7 @@ import static java.util.Optional.ofNullable;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.SortDirection.DESC;
 
-class ActivityLogDB extends BaseTable {
+class ActivityLogDB extends BaseDB {
     private static final RowMapper<ActivityLog> ROW_MAPPER = rs -> {
         ActivityLog activityLog = new ActivityLog()
                 .setId(rs.getString("id"))
@@ -62,45 +61,45 @@ class ActivityLogDB extends BaseTable {
     };
 
     @Override
-    protected Set<Sort> getDefaultSort() {
-        return new LinkedHashSet<>(asList(TIMESTAMP.toSort(DESC), USER_ID.toSort(), MARKET.toSort(), SYMBOL.toSort()));
+    protected List<Sort> getDefaultSort() {
+        return asList(TIMESTAMP.toSort(DESC), USER_ID.toSort(), MARKET.toSort(), SYMBOL.toSort());
     }
 
     public Optional<ActivityLog> get(Connection connection, String id) {
         return getOne(connection, ROW_MAPPER, "SELECT * FROM activity_logs WHERE id = ?", id);
     }
 
-    public Results<ActivityLog> getForUser(Connection connection, String userId, Page page, Set<Sort> sort) {
+    public Results<ActivityLog> getForUser(Connection connection, String userId, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM activity_logs WHERE user_id = ? %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM activity_logs WHERE user_id = ?";
         return results(connection, ROW_MAPPER, page, sql, count, userId);
     }
 
-    public Results<ActivityLog> getForUser(Connection connection, String userId, ActivityType type, Page page, Set<Sort> sort) {
+    public Results<ActivityLog> getForUser(Connection connection, String userId, ActivityType type, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM activity_logs WHERE user_id = ? AND type = ? %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM activity_logs WHERE user_id = ? AND type = ?";
         return results(connection, ROW_MAPPER, page, sql, count, userId, type);
     }
 
-    public Results<ActivityLog> getForStock(Connection connection, Market market, String symbol, Page page, Set<Sort> sort) {
+    public Results<ActivityLog> getForStock(Connection connection, Market market, String symbol, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM activity_logs WHERE market = ? AND symbol = ? %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM activity_logs WHERE market = ? AND symbol = ?";
         return results(connection, ROW_MAPPER, page, sql, count, market, symbol);
     }
 
-    public Results<ActivityLog> getForType(Connection connection, ActivityType type, Page page, Set<Sort> sort) {
+    public Results<ActivityLog> getForType(Connection connection, ActivityType type, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM activity_logs WHERE type = ? %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM activity_logs WHERE type = ?";
         return results(connection, ROW_MAPPER, page, sql, count, type);
     }
 
-    public Results<ActivityLog> getAll(Connection connection, Page page, Set<Sort> sort) {
+    public Results<ActivityLog> getAll(Connection connection, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM activity_logs %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM activity_logs";
         return results(connection, ROW_MAPPER, page, sql, count);
     }
 
-    public int consume(Connection connection, Consumer<ActivityLog> consumer, Set<Sort> sort) {
+    public int consume(Connection connection, Consumer<ActivityLog> consumer, List<Sort> sort) {
         String sql = format("SELECT * FROM activity_logs %s", getSort(sort));
         return consume(connection, ROW_MAPPER, consumer, sql);
     }

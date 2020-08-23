@@ -14,11 +14,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/market/{market}/stock/{symbol}")
 @Singleton
 public class GetStock extends BaseResource {
-    private final ServiceFactory dbFactory;
+    private final ServiceFactory serviceFactory;
 
     @Inject
-    public GetStock(ServiceFactory dbFactory) {
-        this.dbFactory = dbFactory;
+    public GetStock(ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
     }
 
     @GET
@@ -26,7 +26,7 @@ public class GetStock extends BaseResource {
     public PricedStock getStock(@PathParam("market") String marketId, @PathParam("symbol") String symbol) {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
-        return dbFactory.getPricedStockService().get(market, symbol)
+        return serviceFactory.getPricedStockService().get(market, symbol)
                 .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + symbol + " not found"));
     }
 }

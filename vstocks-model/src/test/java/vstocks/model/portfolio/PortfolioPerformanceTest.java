@@ -9,21 +9,21 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
-import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.*;
 import static vstocks.model.Market.TWITTER;
 
 public class PortfolioPerformanceTest {
-    private final Instant now = Instant.now().truncatedTo(SECONDS);
     private final Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
 
     private final TotalRank totalRank1 = new TotalRank()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp)
             .setRank(20);
     private final TotalRank totalRank2 = new TotalRank()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp.minusSeconds(10))
             .setRank(18);
@@ -35,10 +35,12 @@ public class PortfolioPerformanceTest {
             .setDeltas(totalRankDeltas);
 
     private final TotalValue totalValue1 = new TotalValue()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp)
             .setValue(20);
     private final TotalValue totalValue2 = new TotalValue()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp.minusSeconds(10))
             .setValue(18);
@@ -50,10 +52,12 @@ public class PortfolioPerformanceTest {
             .setDeltas(totalValueDeltas);
 
     private final CreditRank creditRank1 = new CreditRank()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp)
             .setRank(20);
     private final CreditRank creditRank2 = new CreditRank()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp.minusSeconds(10))
             .setRank(18);
@@ -65,10 +69,12 @@ public class PortfolioPerformanceTest {
             .setDeltas(creditRankDeltas);
 
     private final CreditValue creditValue1 = new CreditValue()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp)
             .setValue(20);
     private final CreditValue creditValue2 = new CreditValue()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp.minusSeconds(10))
             .setValue(18);
@@ -80,10 +86,12 @@ public class PortfolioPerformanceTest {
             .setDeltas(creditValueDeltas);
 
     private final MarketTotalRank marketTotalRank1 = new MarketTotalRank()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp)
             .setRank(20);
     private final MarketTotalRank marketTotalRank2 = new MarketTotalRank()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp.minusSeconds(10))
             .setRank(18);
@@ -95,10 +103,12 @@ public class PortfolioPerformanceTest {
             .setDeltas(marketTotalRankDeltas);
 
     private final MarketTotalValue marketTotalValue1 = new MarketTotalValue()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp)
             .setValue(20);
     private final MarketTotalValue marketTotalValue2 = new MarketTotalValue()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp.minusSeconds(10))
             .setValue(18);
@@ -110,11 +120,13 @@ public class PortfolioPerformanceTest {
             .setDeltas(marketTotalValueDeltas);
 
     private final MarketRank marketRank1 = new MarketRank()
+            .setBatch(1)
             .setUserId("userId")
             .setMarket(TWITTER)
             .setTimestamp(timestamp)
             .setRank(20);
     private final MarketRank marketRank2 = new MarketRank()
+            .setBatch(1)
             .setUserId("userId")
             .setMarket(TWITTER)
             .setTimestamp(timestamp.minusSeconds(10))
@@ -128,11 +140,13 @@ public class PortfolioPerformanceTest {
     private final Map<Market, MarketRankCollection> marketRankMap = singletonMap(TWITTER, marketRankCollection);
 
     private final MarketValue marketValue1 = new MarketValue()
+            .setBatch(1)
             .setUserId("userId")
             .setMarket(TWITTER)
             .setTimestamp(timestamp)
             .setValue(20);
     private final MarketValue marketValue2 = new MarketValue()
+            .setBatch(1)
             .setUserId("userId")
             .setMarket(TWITTER)
             .setTimestamp(timestamp.minusSeconds(10))

@@ -5,10 +5,11 @@ import org.junit.Before;
 import org.junit.Test;
 import vstocks.model.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.*;
 import static vstocks.model.ActivityType.STOCK_BUY;
 import static vstocks.model.ActivityType.STOCK_SELL;
@@ -124,7 +125,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetForUserNone() {
-        Results<UserStock> results = userStockService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<UserStock> results = userStockService.getForUser(user1.getId(), new Page(), emptyList());
         validateResults(results);
     }
 
@@ -133,7 +134,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userStockService.add(userStock11));
         assertEquals(1, userStockService.add(userStock12));
 
-        Results<UserStock> results = userStockService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<UserStock> results = userStockService.getForUser(user1.getId(), new Page(), emptyList());
         validateResults(results, userStock11, userStock12);
     }
 
@@ -142,14 +143,14 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userStockService.add(userStock11));
         assertEquals(1, userStockService.add(userStock12));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), USER_ID.toSort()));
+        List<Sort> sort = asList(SYMBOL.toSort(DESC), USER_ID.toSort());
         Results<UserStock> results = userStockService.getForUser(user1.getId(), new Page(), sort);
         validateResults(results, userStock12, userStock11);
     }
 
     @Test
     public void testGetForStockNone() {
-        Results<UserStock> results = userStockService.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptySet());
+        Results<UserStock> results = userStockService.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptyList());
         validateResults(results);
     }
 
@@ -158,7 +159,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userStockService.add(userStock11));
         assertEquals(1, userStockService.add(userStock21));
 
-        Results<UserStock> results = userStockService.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptySet());
+        Results<UserStock> results = userStockService.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptyList());
         validateResults(results, userStock11, userStock21);
     }
 
@@ -167,14 +168,14 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userStockService.add(userStock11));
         assertEquals(1, userStockService.add(userStock21));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), SYMBOL.toSort()));
+        List<Sort> sort = asList(USER_ID.toSort(DESC), SYMBOL.toSort());
         Results<UserStock> results = userStockService.getForStock(TWITTER, stock1.getSymbol(), new Page(), sort);
         validateResults(results, userStock21, userStock11);
     }
 
     @Test
     public void testGetAllNone() {
-        Results<UserStock> results = userStockService.getAll(new Page(), emptySet());
+        Results<UserStock> results = userStockService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -185,7 +186,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userStockService.add(userStock21));
         assertEquals(1, userStockService.add(userStock22));
 
-        Results<UserStock> results = userStockService.getAll(new Page(), emptySet());
+        Results<UserStock> results = userStockService.getAll(new Page(), emptyList());
         validateResults(results, userStock11, userStock12, userStock21, userStock22);
     }
 
@@ -196,7 +197,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userStockService.add(userStock21));
         assertEquals(1, userStockService.add(userStock22));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), USER_ID.toSort()));
+        List<Sort> sort = asList(SYMBOL.toSort(DESC), USER_ID.toSort());
         Results<UserStock> results = userStockService.getAll(new Page(), sort);
         validateResults(results, userStock12, userStock22, userStock11, userStock21);
     }
@@ -204,7 +205,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
     @Test
     public void testConsumeNone() {
         List<UserStock> results = new ArrayList<>();
-        assertEquals(0, userStockService.consume(results::add, emptySet()));
+        assertEquals(0, userStockService.consume(results::add, emptyList()));
         validateResults(results);
     }
 
@@ -216,7 +217,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userStockService.add(userStock22));
 
         List<UserStock> results = new ArrayList<>();
-        assertEquals(4, userStockService.consume(results::add, emptySet()));
+        assertEquals(4, userStockService.consume(results::add, emptyList()));
         validateResults(results, userStock11, userStock12, userStock21, userStock22);
     }
 
@@ -228,7 +229,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userStockService.add(userStock22));
 
         List<UserStock> results = new ArrayList<>();
-        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), USER_ID.toSort()));
+        List<Sort> sort = asList(SYMBOL.toSort(DESC), USER_ID.toSort());
         assertEquals(4, userStockService.consume(results::add, sort));
         validateResults(results, userStock12, userStock22, userStock11, userStock21);
     }
@@ -259,7 +260,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userStock.getShares());
 
         // Make sure activity log was added
-        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
         assertEquals(1, activityLogs.getTotal());
         assertEquals(1, activityLogs.getResults().size());
 
@@ -292,7 +293,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(userStock11.getShares() + 1, userStock.getShares());
 
         // Make sure activity log was added
-        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
         assertEquals(1, activityLogs.getTotal());
         assertEquals(1, activityLogs.getResults().size());
 
@@ -320,7 +321,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertFalse(userStockService.get(user1.getId(), stock1.getMarket(), stock1.getSymbol()).isPresent());
 
         // Make sure no activity log was added
-        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
         validateResults(activityLogs);
     }
 
@@ -339,7 +340,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertFalse(userStockService.get(user1.getId(), stock1.getMarket(), stock1.getSymbol()).isPresent());
 
         // Make sure no activity log was added
-        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
         validateResults(activityLogs);
     }
 
@@ -366,7 +367,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertFalse(userStockService.get(user1.getId(), stock1.getMarket(), stock1.getSymbol()).isPresent());
 
         // Make sure no activity log was added
-        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
         validateResults(activityLogs);
     }
 
@@ -387,7 +388,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(userStock11.getShares() - 1, userStock.getShares());
 
         // Make sure activity log was added
-        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
         assertEquals(1, activityLogs.getTotal());
         assertEquals(1, activityLogs.getResults().size());
 
@@ -418,7 +419,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertFalse(userStockService.get(user1.getId(), stock1.getMarket(), stock1.getSymbol()).isPresent());
 
         // Make sure activity log was added
-        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
         assertEquals(1, activityLogs.getTotal());
         assertEquals(1, activityLogs.getResults().size());
 
@@ -451,7 +452,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(userStock11, userStock);
 
         // Make sure no activity log was added
-        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptySet());
+        Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
         validateResults(activityLogs);
     }
 
@@ -543,7 +544,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(2, userStockService.deleteForUser(user1.getId()));
 
-        Results<UserStock> results = userStockService.getAll(new Page(), emptySet());
+        Results<UserStock> results = userStockService.getAll(new Page(), emptyList());
         validateResults(results, userStock21, userStock22);
     }
 
@@ -571,7 +572,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(4, userStockService.truncate());
 
-        Results<UserStock> results = userStockService.getAll(new Page(), emptySet());
+        Results<UserStock> results = userStockService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 }

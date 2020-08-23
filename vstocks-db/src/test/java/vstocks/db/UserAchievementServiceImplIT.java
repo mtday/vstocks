@@ -6,12 +6,10 @@ import org.junit.Test;
 import vstocks.model.*;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.*;
 import static vstocks.model.ActivityType.USER_LOGIN;
 import static vstocks.model.DatabaseField.ACHIEVEMENT_ID;
@@ -122,7 +120,7 @@ public class UserAchievementServiceImplIT extends BaseServiceImplIT {
     @Test
     public void testGetForAchievementNone() {
         Results<UserAchievement> results =
-                userAchievementService.getForAchievement(achievement1.getId(), new Page(), emptySet());
+                userAchievementService.getForAchievement(achievement1.getId(), new Page(), emptyList());
         validateResults(results);
     }
 
@@ -132,7 +130,7 @@ public class UserAchievementServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userAchievementService.add(userAchievement21));
 
         Results<UserAchievement> results =
-                userAchievementService.getForAchievement(achievement1.getId(), new Page(), emptySet());
+                userAchievementService.getForAchievement(achievement1.getId(), new Page(), emptyList());
         validateResults(results, userAchievement11, userAchievement21);
     }
 
@@ -141,7 +139,7 @@ public class UserAchievementServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userAchievementService.add(userAchievement11));
         assertEquals(1, userAchievementService.add(userAchievement21));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), ACHIEVEMENT_ID.toSort()));
+        List<Sort> sort = asList(USER_ID.toSort(DESC), ACHIEVEMENT_ID.toSort());
         Results<UserAchievement> results =
                 userAchievementService.getForAchievement(achievement1.getId(), new Page(), sort);
         validateResults(results, userAchievement21, userAchievement11);
@@ -149,7 +147,7 @@ public class UserAchievementServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<UserAchievement> results = userAchievementService.getAll(new Page(), emptySet());
+        Results<UserAchievement> results = userAchievementService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -158,7 +156,7 @@ public class UserAchievementServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userAchievementService.add(userAchievement11));
         assertEquals(1, userAchievementService.add(userAchievement21));
 
-        Results<UserAchievement> results = userAchievementService.getAll(new Page(), emptySet());
+        Results<UserAchievement> results = userAchievementService.getAll(new Page(), emptyList());
         validateResults(results, userAchievement11, userAchievement21);
     }
 
@@ -167,7 +165,7 @@ public class UserAchievementServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userAchievementService.add(userAchievement11));
         assertEquals(1, userAchievementService.add(userAchievement21));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(USER_ID.toSort(DESC), ACHIEVEMENT_ID.toSort()));
+        List<Sort> sort = asList(USER_ID.toSort(DESC), ACHIEVEMENT_ID.toSort());
         Results<UserAchievement> results = userAchievementService.getAll(new Page(), sort);
         validateResults(results, userAchievement21, userAchievement11);
     }
@@ -175,7 +173,7 @@ public class UserAchievementServiceImplIT extends BaseServiceImplIT {
     @Test
     public void testConsumeNone() {
         List<UserAchievement> results = new ArrayList<>();
-        assertEquals(0, userAchievementService.consume(results::add, emptySet()));
+        assertEquals(0, userAchievementService.consume(results::add, emptyList()));
         validateResults(results);
     }
 
@@ -185,7 +183,7 @@ public class UserAchievementServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userAchievementService.add(userAchievement22));
 
         List<UserAchievement> results = new ArrayList<>();
-        assertEquals(2, userAchievementService.consume(results::add, emptySet()));
+        assertEquals(2, userAchievementService.consume(results::add, emptyList()));
         validateResults(results, userAchievement11, userAchievement22);
     }
 
@@ -195,7 +193,7 @@ public class UserAchievementServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userAchievementService.add(userAchievement22));
 
         List<UserAchievement> results = new ArrayList<>();
-        Set<Sort> sort = new LinkedHashSet<>(asList(ACHIEVEMENT_ID.toSort(DESC), USER_ID.toSort()));
+        List<Sort> sort = asList(ACHIEVEMENT_ID.toSort(DESC), USER_ID.toSort());
         assertEquals(2, userAchievementService.consume(results::add, sort));
         validateResults(results, userAchievement22, userAchievement11);
     }
@@ -236,7 +234,7 @@ public class UserAchievementServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(4, userAchievementService.truncate());
 
-        Results<UserAchievement> results = userAchievementService.getAll(new Page(), emptySet());
+        Results<UserAchievement> results = userAchievementService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 }

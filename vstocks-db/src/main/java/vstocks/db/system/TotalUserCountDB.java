@@ -1,6 +1,6 @@
 package vstocks.db.system;
 
-import vstocks.db.BaseTable;
+import vstocks.db.BaseDB;
 import vstocks.db.RowMapper;
 import vstocks.db.RowSetter;
 import vstocks.model.*;
@@ -12,15 +12,14 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static vstocks.model.DatabaseField.TIMESTAMP;
 import static vstocks.model.SortDirection.DESC;
 
-class TotalUserCountDB extends BaseTable {
+class TotalUserCountDB extends BaseDB {
     private static final RowMapper<TotalUserCount> ROW_MAPPER = rs ->
             new TotalUserCount()
                     .setTimestamp(rs.getTimestamp("timestamp").toInstant().truncatedTo(SECONDS))
@@ -33,8 +32,8 @@ class TotalUserCountDB extends BaseTable {
     };
 
     @Override
-    protected Set<Sort> getDefaultSort() {
-        return singleton(TIMESTAMP.toSort(DESC));
+    protected List<Sort> getDefaultSort() {
+        return singletonList(TIMESTAMP.toSort(DESC));
     }
 
     public int generate(Connection connection) {
@@ -55,7 +54,7 @@ class TotalUserCountDB extends BaseTable {
                 .setDeltas(Delta.getDeltas(totalUserCounts, TotalUserCount::getTimestamp, TotalUserCount::getCount));
     }
 
-    public Results<TotalUserCount> getAll(Connection connection, Page page, Set<Sort> sort) {
+    public Results<TotalUserCount> getAll(Connection connection, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM total_user_counts %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM total_user_counts";
         return results(connection, ROW_MAPPER, page, sql, count);

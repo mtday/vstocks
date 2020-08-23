@@ -16,11 +16,13 @@ public class MarketRankTest {
     @Test
     public void testGettersAndSetters() {
         MarketRank marketRank = new MarketRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(now)
                 .setRank(20);
 
+        assertEquals(1, marketRank.getBatch());
         assertEquals("userId", marketRank.getUserId());
         assertEquals(TWITTER, marketRank.getMarket());
         assertEquals(now, marketRank.getTimestamp());
@@ -30,11 +32,13 @@ public class MarketRankTest {
     @Test
     public void testEquals() {
         MarketRank marketRank1 = new MarketRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(now)
                 .setRank(20);
         MarketRank marketRank2 = new MarketRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(now)
@@ -45,22 +49,24 @@ public class MarketRankTest {
     @Test
     public void testHashCode() {
         MarketRank marketRank = new MarketRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(timestamp)
                 .setRank(20);
-        assertEquals(923521, new MarketRank().hashCode());
+        assertEquals(28629151, new MarketRank().hashCode());
         assertNotEquals(0, marketRank.hashCode()); // enums make the value inconsistent
     }
 
     @Test
     public void testToString() {
         MarketRank marketRank = new MarketRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setMarket(TWITTER)
                 .setTimestamp(now)
                 .setRank(20);
-        assertEquals("MarketRank{userId='userId', market=Twitter, timestamp=" + now + ", rank=20}",
+        assertEquals("MarketRank{batch=1, userId='userId', market=Twitter, timestamp=" + now + ", rank=20}",
                 marketRank.toString());
     }
 }

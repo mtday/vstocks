@@ -1,10 +1,7 @@
 package vstocks.db;
 
 import vstocks.db.portfolio.*;
-import vstocks.db.system.ActiveUserCountService;
-import vstocks.db.system.ActiveUserCountServiceImpl;
-import vstocks.db.system.TotalUserCountService;
-import vstocks.db.system.TotalUserCountServiceImpl;
+import vstocks.db.system.*;
 
 import javax.sql.DataSource;
 
@@ -35,6 +32,8 @@ public class ServiceFactoryImpl implements ServiceFactory {
 
     private final ActiveUserCountService activeUserCountService;
     private final TotalUserCountService totalUserCountService;
+    private final ActiveTransactionCountService activeTransactionCountService;
+    private final TotalTransactionCountService totalTransactionCountService;
 
     public ServiceFactoryImpl(DataSource dataSource) {
         this.activityLogService = new ActivityLogServiceImpl(dataSource);
@@ -59,6 +58,8 @@ public class ServiceFactoryImpl implements ServiceFactory {
 
         this.activeUserCountService = new ActiveUserCountServiceImpl(dataSource);
         this.totalUserCountService = new TotalUserCountServiceImpl(dataSource);
+        this.activeTransactionCountService = new ActiveTransactionCountServiceImpl(dataSource);
+        this.totalTransactionCountService = new TotalTransactionCountServiceImpl(dataSource);
     }
 
     @Override
@@ -159,5 +160,15 @@ public class ServiceFactoryImpl implements ServiceFactory {
     @Override
     public TotalUserCountService getTotalUserCountService() {
         return totalUserCountService;
+    }
+
+    @Override
+    public ActiveTransactionCountService getActiveTransactionCountService() {
+        return activeTransactionCountService;
+    }
+
+    @Override
+    public TotalTransactionCountService getTotalTransactionCountService() {
+        return totalTransactionCountService;
     }
 }

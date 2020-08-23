@@ -14,10 +14,12 @@ public class CreditRankTest {
     @Test
     public void testGettersAndSetters() {
         CreditRank creditRank = new CreditRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setRank(20);
 
+        assertEquals(1, creditRank.getBatch());
         assertEquals("userId", creditRank.getUserId());
         assertEquals(now, creditRank.getTimestamp());
         assertEquals(20, creditRank.getRank());
@@ -26,10 +28,12 @@ public class CreditRankTest {
     @Test
     public void testEquals() {
         CreditRank creditRank1 = new CreditRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setRank(20);
         CreditRank creditRank2 = new CreditRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setRank(20);
@@ -39,20 +43,22 @@ public class CreditRankTest {
     @Test
     public void testHashCode() {
         CreditRank creditRank = new CreditRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(timestamp)
                 .setRank(20);
-        assertEquals(29791, new CreditRank().hashCode());
-        assertEquals(-1989687625, creditRank.hashCode());
+        assertEquals(923521, new CreditRank().hashCode());
+        assertEquals(-1988764104, creditRank.hashCode());
     }
 
     @Test
     public void testToString() {
         CreditRank creditRank = new CreditRank()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setRank(20);
-        assertEquals("CreditRank{userId='userId', timestamp=" + now + ", rank=20}",
+        assertEquals("CreditRank{batch=1, userId='userId', timestamp=" + now + ", rank=20}",
                 creditRank.toString());
     }
 }

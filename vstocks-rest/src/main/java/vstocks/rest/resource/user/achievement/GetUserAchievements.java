@@ -19,17 +19,17 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/user/achievements")
 @Singleton
 public class GetUserAchievements extends BaseResource {
-    private final ServiceFactory dbFactory;
+    private final ServiceFactory serviceFactory;
 
     @Inject
-    public GetUserAchievements(ServiceFactory dbFactory) {
-        this.dbFactory = dbFactory;
+    public GetUserAchievements(ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
     }
 
     @GET
     @Produces(APPLICATION_JSON)
     @JwtTokenRequired
     public List<UserAchievement> getUserAchievements(@Context SecurityContext securityContext) {
-        return dbFactory.getUserAchievementService().getForUser(getUser(securityContext).getId());
+        return serviceFactory.getUserAchievementService().getForUser(getUser(securityContext).getId());
     }
 }

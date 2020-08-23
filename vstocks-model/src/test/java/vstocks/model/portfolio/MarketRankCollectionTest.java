@@ -17,11 +17,13 @@ public class MarketRankCollectionTest {
     private final Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
 
     private final MarketRank marketRank1 = new MarketRank()
+            .setBatch(1)
             .setUserId("userId")
             .setMarket(TWITTER)
             .setTimestamp(timestamp)
             .setRank(20);
     private final MarketRank marketRank2 = new MarketRank()
+            .setBatch(1)
             .setUserId("userId")
             .setMarket(TWITTER)
             .setTimestamp(timestamp.minusSeconds(10))

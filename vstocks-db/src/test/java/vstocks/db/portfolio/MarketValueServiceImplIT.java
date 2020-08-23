@@ -7,13 +7,13 @@ import vstocks.db.*;
 import vstocks.model.*;
 import vstocks.model.portfolio.MarketValue;
 import vstocks.model.portfolio.MarketValueCollection;
+import vstocks.model.portfolio.ValuedUser;
 
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static vstocks.model.DatabaseField.USER_ID;
@@ -93,25 +93,40 @@ public class MarketValueServiceImplIT extends BaseServiceImplIT {
             .setShares(20);
 
     private final MarketValue marketValue11 = new MarketValue()
+            .setBatch(2)
             .setUserId(user1.getId())
             .setMarket(TWITTER)
             .setTimestamp(now)
             .setValue(11);
     private final MarketValue marketValue12 = new MarketValue()
+            .setBatch(1)
             .setUserId(user1.getId())
             .setMarket(TWITTER)
             .setTimestamp(now.minusSeconds(10))
             .setValue(12);
     private final MarketValue marketValue21 = new MarketValue()
+            .setBatch(2)
             .setUserId(user2.getId())
             .setMarket(TWITTER)
             .setTimestamp(now)
             .setValue(21);
     private final MarketValue marketValue22 = new MarketValue()
+            .setBatch(1)
             .setUserId(user2.getId())
             .setMarket(TWITTER)
             .setTimestamp(now.minusSeconds(10))
             .setValue(22);
+
+    private final ValuedUser valuedUser1 = new ValuedUser()
+            .setUser(user1)
+            .setBatch(marketValue11.getBatch())
+            .setTimestamp(marketValue11.getTimestamp())
+            .setValue(marketValue11.getValue());
+    private final ValuedUser valuedUser2 = new ValuedUser()
+            .setUser(user2)
+            .setBatch(marketValue21.getBatch())
+            .setTimestamp(marketValue21.getTimestamp())
+            .setValue(marketValue21.getValue());
 
     @Before
     public void setup() {
@@ -145,9 +160,9 @@ public class MarketValueServiceImplIT extends BaseServiceImplIT {
         userStockService.add(userStock11);
         userStockService.add(userStock21);
 
-        assertEquals(2, marketValueService.generate(TWITTER));
+        assertEquals(2 * Market.values().length, marketValueService.generate());
 
-        Results<MarketValue> results = marketValueService.getAll(TWITTER, new Page(), emptySet());
+        Results<MarketValue> results = marketValueService.getAll(TWITTER, new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertEquals(220, results.getResults().stream().mapToLong(MarketValue::getValue).sum());
@@ -158,9 +173,9 @@ public class MarketValueServiceImplIT extends BaseServiceImplIT {
         userStockService.add(userStock12);
         userStockService.add(userStock22);
 
-        assertEquals(2, marketValueService.generate(TWITTER));
+        assertEquals(2 * Market.values().length, marketValueService.generate());
 
-        Results<MarketValue> results = marketValueService.getAll(TWITTER, new Page(), emptySet());
+        Results<MarketValue> results = marketValueService.getAll(TWITTER, new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertEquals(630, results.getResults().stream().mapToLong(MarketValue::getValue).sum());
@@ -215,7 +230,7 @@ public class MarketValueServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<MarketValue> results = marketValueService.getAll(TWITTER, new Page(), emptySet());
+        Results<MarketValue> results = marketValueService.getAll(TWITTER, new Page(), emptyList());
         validateResults(results);
     }
 
@@ -224,8 +239,8 @@ public class MarketValueServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, marketValueService.add(marketValue11));
         assertEquals(1, marketValueService.add(marketValue12));
 
-        Results<MarketValue> results = marketValueService.getAll(TWITTER, new Page(), emptySet());
-        validateResults(results, marketValue12, marketValue11);
+        Results<MarketValue> results = marketValueService.getAll(TWITTER, new Page(), emptyList());
+        validateResults(results, marketValue11, marketValue12);
     }
 
     @Test
@@ -235,9 +250,27 @@ public class MarketValueServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, marketValueService.add(marketValue21));
         assertEquals(1, marketValueService.add(marketValue22));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(VALUE.toSort(), USER_ID.toSort()));
+        List<Sort> sort = asList(VALUE.toSort(), USER_ID.toSort());
         Results<MarketValue> results = marketValueService.getAll(TWITTER, new Page(), sort);
         validateResults(results, marketValue11, marketValue12, marketValue21, marketValue22);
+    }
+
+    @Test
+    public void testGetUsersNone() {
+        Results<ValuedUser> results = marketValueService.getUsers(TWITTER, new Page());
+        validateResults(results);
+    }
+
+    @Test
+    public void testGetUsersSome() {
+        assertEquals(1, marketValueService.add(marketValue11));
+        assertEquals(1, marketValueService.add(marketValue12));
+        assertEquals(1, marketValueService.add(marketValue21));
+        assertEquals(1, marketValueService.add(marketValue22));
+
+        marketValueService.setCurrentBatch(2);
+        Results<ValuedUser> results = marketValueService.getUsers(TWITTER, new Page());
+        validateResults(results, valuedUser2, valuedUser1);
     }
 
     @Test
@@ -255,7 +288,7 @@ public class MarketValueServiceImplIT extends BaseServiceImplIT {
 
         marketValueService.ageOff(now.minusSeconds(5));
 
-        Results<MarketValue> results = marketValueService.getAll(TWITTER, new Page(), emptySet());
+        Results<MarketValue> results = marketValueService.getAll(TWITTER, new Page(), emptyList());
         validateResults(results, marketValue21, marketValue11);
     }
 
@@ -268,7 +301,7 @@ public class MarketValueServiceImplIT extends BaseServiceImplIT {
 
         marketValueService.truncate();
 
-        Results<MarketValue> results = marketValueService.getAll(TWITTER, new Page(), emptySet());
+        Results<MarketValue> results = marketValueService.getAll(TWITTER, new Page(), emptyList());
         validateResults(results);
     }
 }

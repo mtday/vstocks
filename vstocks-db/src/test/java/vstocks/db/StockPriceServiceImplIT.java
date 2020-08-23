@@ -6,12 +6,10 @@ import org.junit.Test;
 import vstocks.model.*;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.PRICE;
@@ -87,7 +85,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
     @Test
     public void testGetLatestNone() {
         Results<StockPrice> results =
-                stockPriceService.getLatest(stock1.getMarket(), singleton(stock1.getSymbol()), new Page(), emptySet());
+                stockPriceService.getLatest(stock1.getMarket(), singleton(stock1.getSymbol()), new Page(), emptyList());
         validateResults(results);
     }
 
@@ -99,7 +97,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice22));
 
         Results<StockPrice> results = stockPriceService.getLatest(
-                stock1.getMarket(), asList(stock1.getSymbol(), stock2.getSymbol()), new Page(), emptySet());
+                stock1.getMarket(), asList(stock1.getSymbol(), stock2.getSymbol()), new Page(), emptyList());
         validateResults(results, stockPrice11, stockPrice21);
     }
 
@@ -110,7 +108,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice21));
         assertEquals(1, stockPriceService.add(stockPrice22));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), PRICE.toSort()));
+        List<Sort> sort = asList(SYMBOL.toSort(DESC), PRICE.toSort());
         Results<StockPrice> results = stockPriceService.getLatest(
                 stock1.getMarket(), asList(stock1.getSymbol(), stock2.getSymbol()), new Page(), sort);
         validateResults(results, stockPrice21, stockPrice11);
@@ -119,7 +117,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
     @Test
     public void testGetForStockNone() {
         Results<StockPrice> results = stockPriceService.getForStock(
-                stock1.getMarket(), stock1.getSymbol(), new Page(), emptySet());
+                stock1.getMarket(), stock1.getSymbol(), new Page(), emptyList());
         validateResults(results);
     }
 
@@ -129,7 +127,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice12));
 
         Results<StockPrice> results =
-                stockPriceService.getForStock(stock1.getMarket(), stock1.getSymbol(), new Page(), emptySet());
+                stockPriceService.getForStock(stock1.getMarket(), stock1.getSymbol(), new Page(), emptyList());
         validateResults(results, stockPrice11, stockPrice12);
     }
 
@@ -138,7 +136,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice11));
         assertEquals(1, stockPriceService.add(stockPrice12));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(PRICE.toSort(), SYMBOL.toSort(DESC)));
+        List<Sort> sort = asList(PRICE.toSort(), SYMBOL.toSort(DESC));
         Results<StockPrice> results =
                 stockPriceService.getForStock(stock1.getMarket(), stock1.getSymbol(), new Page(), sort);
         validateResults(results, stockPrice12, stockPrice11);
@@ -146,7 +144,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<StockPrice> results = stockPriceService.getAll(new Page(), emptySet());
+        Results<StockPrice> results = stockPriceService.getAll(new Page(), emptyList());
         assertEquals(0, results.getTotal());
         assertTrue(results.getResults().isEmpty());
     }
@@ -156,7 +154,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice11));
         assertEquals(1, stockPriceService.add(stockPrice12));
 
-        Results<StockPrice> results = stockPriceService.getAll(new Page(), emptySet());
+        Results<StockPrice> results = stockPriceService.getAll(new Page(), emptyList());
         validateResults(results, stockPrice11, stockPrice12);
     }
 
@@ -165,7 +163,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice11));
         assertEquals(1, stockPriceService.add(stockPrice12));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(PRICE.toSort(), SYMBOL.toSort()));
+        List<Sort> sort = asList(PRICE.toSort(), SYMBOL.toSort());
         Results<StockPrice> results = stockPriceService.getAll(new Page(), sort);
         validateResults(results, stockPrice12, stockPrice11);
     }
@@ -173,7 +171,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
     @Test
     public void testConsumeNone() {
         List<StockPrice> results = new ArrayList<>();
-        assertEquals(0, stockPriceService.consume(results::add, emptySet()));
+        assertEquals(0, stockPriceService.consume(results::add, emptyList()));
         validateResults(results);
     }
 
@@ -183,7 +181,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice12));
 
         List<StockPrice> results = new ArrayList<>();
-        assertEquals(2, stockPriceService.consume(results::add, emptySet()));
+        assertEquals(2, stockPriceService.consume(results::add, emptyList()));
         validateResults(results, stockPrice11, stockPrice12);
     }
 
@@ -193,7 +191,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice12));
 
         List<StockPrice> results = new ArrayList<>();
-        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(), PRICE.toSort(DESC)));
+        List<Sort> sort = asList(SYMBOL.toSort(), PRICE.toSort(DESC));
         assertEquals(2, stockPriceService.consume(results::add, sort));
         validateResults(results, stockPrice11, stockPrice12);
     }
@@ -233,7 +231,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
         assertEquals(2, stockPriceService.addAll(asList(stockPrice11, stockPrice21)));
 
         Results<StockPrice> results = stockPriceService.getLatest(
-                stock1.getMarket(), asList(stock1.getSymbol(), stock2.getSymbol()), new Page(), emptySet());
+                stock1.getMarket(), asList(stock1.getSymbol(), stock2.getSymbol()), new Page(), emptyList());
         validateResults(results, stockPrice11, stockPrice21);
     }
 
@@ -246,7 +244,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(2, stockPriceService.ageOff(now.minusSeconds(5)));
 
-        Results<StockPrice> results = stockPriceService.getAll(new Page(), emptySet());
+        Results<StockPrice> results = stockPriceService.getAll(new Page(), emptyList());
         validateResults(results, stockPrice11, stockPrice21);
     }
 
@@ -259,7 +257,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(4, stockPriceService.truncate());
 
-        Results<StockPrice> results = stockPriceService.getAll(new Page(), emptySet());
+        Results<StockPrice> results = stockPriceService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 }

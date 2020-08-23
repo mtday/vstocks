@@ -16,10 +16,12 @@ public class TotalRankCollectionTest {
     private final Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
 
     private final TotalRank totalRank1 = new TotalRank()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp)
             .setRank(20);
     private final TotalRank totalRank2 = new TotalRank()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp.minusSeconds(10))
             .setRank(18);

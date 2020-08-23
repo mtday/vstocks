@@ -20,11 +20,11 @@ import static javax.ws.rs.core.MediaType.WILDCARD;
 @Path("/market/{market}/stock/{symbol}/sell/{shares:[0-9]+}")
 @Singleton
 public class SellStock extends BaseResource {
-    private final ServiceFactory dbFactory;
+    private final ServiceFactory serviceFactory;
 
     @Inject
-    public SellStock(ServiceFactory dbFactory) {
-        this.dbFactory = dbFactory;
+    public SellStock(ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
     }
 
     @POST
@@ -38,10 +38,10 @@ public class SellStock extends BaseResource {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
         String userId = getUser(profile).getId();
-        if (dbFactory.getUserStockService().sellStock(userId, market, symbol, shares) == 0) {
+        if (serviceFactory.getUserStockService().sellStock(userId, market, symbol, shares) == 0) {
             throw new BadRequestException("Failed to sell " + shares + " shares of " + market + "/" + symbol + " stock");
         }
-        return dbFactory.getPricedUserStockService().get(userId, market, symbol).orElseGet(() -> {
+        return serviceFactory.getPricedUserStockService().get(userId, market, symbol).orElseGet(() -> {
             // Not found likely means the user sold all their shares of stock.
             Instant instant = Instant.now().truncatedTo(SECONDS);
             return new PricedUserStock().setUserId(userId).setMarket(market).setSymbol(symbol).setShares(0).setTimestamp(instant).setPrice(1);

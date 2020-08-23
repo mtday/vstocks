@@ -7,12 +7,12 @@ import vstocks.db.*;
 import vstocks.model.*;
 import vstocks.model.portfolio.MarketTotalRank;
 import vstocks.model.portfolio.MarketTotalRankCollection;
+import vstocks.model.portfolio.RankedUser;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static vstocks.model.DatabaseField.RANK;
@@ -93,21 +93,36 @@ public class MarketTotalRankServiceImplIT extends BaseServiceImplIT {
             .setShares(20);
 
     private final MarketTotalRank marketTotalRank11 = new MarketTotalRank()
+            .setBatch(2)
             .setUserId(user1.getId())
             .setTimestamp(now)
             .setRank(1);
     private final MarketTotalRank marketTotalRank12 = new MarketTotalRank()
+            .setBatch(1)
             .setUserId(user1.getId())
             .setTimestamp(now.minusSeconds(10))
             .setRank(2);
     private final MarketTotalRank marketTotalRank21 = new MarketTotalRank()
+            .setBatch(2)
             .setUserId(user2.getId())
             .setTimestamp(now)
             .setRank(2);
     private final MarketTotalRank marketTotalRank22 = new MarketTotalRank()
+            .setBatch(1)
             .setUserId(user2.getId())
             .setTimestamp(now.minusSeconds(10))
             .setRank(3);
+
+    private final RankedUser rankedUser1 = new RankedUser()
+            .setUser(user1)
+            .setBatch(marketTotalRank11.getBatch())
+            .setTimestamp(marketTotalRank11.getTimestamp())
+            .setRank(marketTotalRank11.getRank());
+    private final RankedUser rankedUser2 = new RankedUser()
+            .setUser(user2)
+            .setBatch(marketTotalRank21.getBatch())
+            .setTimestamp(marketTotalRank21.getTimestamp())
+            .setRank(marketTotalRank21.getRank());
 
     @Before
     public void setup() {
@@ -143,7 +158,7 @@ public class MarketTotalRankServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(2, marketTotalRankService.generate());
 
-        Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), emptySet());
+        Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertTrue(results.getResults().stream().map(MarketTotalRank::getRank).allMatch(rank -> rank == 1));
@@ -156,7 +171,7 @@ public class MarketTotalRankServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(2, marketTotalRankService.generate());
 
-        Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), emptySet());
+        Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertEquals(3, results.getResults().stream().mapToLong(MarketTotalRank::getRank).sum());
@@ -181,7 +196,7 @@ public class MarketTotalRankServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), emptySet());
+        Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -190,7 +205,7 @@ public class MarketTotalRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, marketTotalRankService.add(marketTotalRank11));
         assertEquals(1, marketTotalRankService.add(marketTotalRank12));
 
-        Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), emptySet());
+        Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), emptyList());
         validateResults(results, marketTotalRank11, marketTotalRank12);
     }
 
@@ -201,9 +216,27 @@ public class MarketTotalRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, marketTotalRankService.add(marketTotalRank21));
         assertEquals(1, marketTotalRankService.add(marketTotalRank22));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(RANK.toSort(DESC), USER_ID.toSort()));
+        List<Sort> sort = asList(RANK.toSort(DESC), USER_ID.toSort());
         Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), sort);
         validateResults(results, marketTotalRank22, marketTotalRank12, marketTotalRank21, marketTotalRank11);
+    }
+
+    @Test
+    public void testGetUsersNone() {
+        Results<RankedUser> results = marketTotalRankService.getUsers(new Page());
+        validateResults(results);
+    }
+
+    @Test
+    public void testGetUsersSome() {
+        assertEquals(1, marketTotalRankService.add(marketTotalRank11));
+        assertEquals(1, marketTotalRankService.add(marketTotalRank12));
+        assertEquals(1, marketTotalRankService.add(marketTotalRank21));
+        assertEquals(1, marketTotalRankService.add(marketTotalRank22));
+
+        marketTotalRankService.setCurrentBatch(2);
+        Results<RankedUser> results = marketTotalRankService.getUsers(new Page());
+        validateResults(results, rankedUser1, rankedUser2);
     }
 
     @Test
@@ -221,7 +254,7 @@ public class MarketTotalRankServiceImplIT extends BaseServiceImplIT {
 
         marketTotalRankService.ageOff(now.minusSeconds(5));
 
-        Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), emptySet());
+        Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), emptyList());
         validateResults(results, marketTotalRank11, marketTotalRank21);
     }
 
@@ -234,7 +267,7 @@ public class MarketTotalRankServiceImplIT extends BaseServiceImplIT {
 
         marketTotalRankService.truncate();
 
-        Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), emptySet());
+        Results<MarketTotalRank> results = marketTotalRankService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 }

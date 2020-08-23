@@ -1,18 +1,15 @@
 package vstocks.rest.resource.system;
 
 import org.junit.Test;
-import vstocks.db.UserCountDB;
+import vstocks.db.system.TotalUserCountService;
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
-import vstocks.model.system.UserCount;
-import vstocks.model.system.UserCountCollection;
+import vstocks.model.system.TotalUserCount;
+import vstocks.model.system.TotalUserCountCollection;
 import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
@@ -22,33 +19,28 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static vstocks.model.DeltaInterval.*;
 
 public class GetUserCountTotalIT extends ResourceTest {
     @Test
-    public void testUserCountWithData() {
+    public void testTotalUserCountWithData() {
         Instant now = Instant.now().truncatedTo(SECONDS);
-        UserCount userCount1 = new UserCount().setTimestamp(now.minusSeconds(10)).setUsers(1234L);
-        UserCount userCount2 = new UserCount().setTimestamp(now.minusSeconds(20)).setUsers(1230L);
-        List<UserCount> userCounts = asList(userCount1, userCount2);
+        TotalUserCount userCount1 = new TotalUserCount().setTimestamp(now.minusSeconds(10)).setCount(1234L);
+        TotalUserCount userCount2 = new TotalUserCount().setTimestamp(now.minusSeconds(20)).setCount(1230L);
+        List<TotalUserCount> totalUserCounts = asList(userCount1, userCount2);
 
-        Map<DeltaInterval, Delta> deltas = new TreeMap<>(Map.of(
-                HOUR6, new Delta().setInterval(HOUR6).setChange(5).setPercent(5.25f),
-                HOUR12, new Delta().setInterval(HOUR12).setChange(5).setPercent(5.25f),
-                DAY1, new Delta().setInterval(DAY1).setChange(10).setPercent(10.25f)
-        ));
+        TotalUserCountCollection totalUserCountCollection = new TotalUserCountCollection()
+                .setCounts(totalUserCounts)
+                .setDeltas(Delta.getDeltas(totalUserCounts, TotalUserCount::getTimestamp, TotalUserCount::getCount));
 
-        UserCountCollection userCountCollection = new UserCountCollection().setUserCounts(userCounts).setDeltas(deltas);
-
-        UserCountDB userCountDB = mock(UserCountDB.class);
-        when(userCountDB.getLatestTotal()).thenReturn(userCountCollection);
-        when(getDBFactory().getUserCountDB()).thenReturn(userCountDB);
+        TotalUserCountService totalUserCountService = mock(TotalUserCountService.class);
+        when(totalUserCountService.getLatest()).thenReturn(totalUserCountCollection);
+        when(getServiceFactory().getTotalUserCountService()).thenReturn(totalUserCountService);
 
         Response response = target("/system/user-count/total").request().get();
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        assertEquals(userCountCollection, response.readEntity(UserCountCollection.class));
+        assertEquals(totalUserCountCollection, response.readEntity(TotalUserCountCollection.class));
     }
 }

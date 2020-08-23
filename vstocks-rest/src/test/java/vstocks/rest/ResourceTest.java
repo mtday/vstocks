@@ -23,20 +23,20 @@ public abstract class ResourceTest extends JerseyTest {
         LogManager.getLogManager().reset();
     }
 
-    private ServiceFactory dbFactory;
+    private ServiceFactory serviceFactory;
     private RemoteStockServiceFactory remoteStockServiceFactory;
     private AchievementService achievementService;
     private JwtSecurity jwtSecurity;
 
     @Override
     protected ResourceConfig configure() {
-        dbFactory = mock(ServiceFactory.class);
+        serviceFactory = mock(ServiceFactory.class);
         remoteStockServiceFactory = mock(RemoteStockServiceFactory.class);
         achievementService = mock(AchievementService.class);
         jwtSecurity = mock(JwtSecurity.class);
 
         Environment environment = new Environment()
-                .setServiceFactory(dbFactory)
+                .setServiceFactory(serviceFactory)
                 .setRemoteStockServiceFactory(remoteStockServiceFactory)
                 .setAchievementService(achievementService)
                 .setJwtSecurity(jwtSecurity)
@@ -69,8 +69,8 @@ public abstract class ResourceTest extends JerseyTest {
         return commonProfile;
     }
 
-    public ServiceFactory getDBFactory() {
-        return dbFactory;
+    public ServiceFactory getServiceFactory() {
+        return serviceFactory;
     }
 
     public RemoteStockServiceFactory getRemoteStockServiceFactory() {
@@ -87,7 +87,6 @@ public abstract class ResourceTest extends JerseyTest {
 
     public static class AchievementListGenericType extends GenericType<List<Achievement>> {}
     public static class MarketListGenericType extends GenericType<List<Market>> {}
-    public static class PortfolioValueRankResultsGenericType extends GenericType<Results<PortfolioValueRank>> {}
     public static class PricedStockResultsGenericType extends GenericType<Results<PricedStock>> {}
     public static class PricedStockListGenericType extends GenericType<List<PricedStock>> {}
     public static class PricedUserStockResultsGenericType extends GenericType<Results<PricedUserStock>> {}

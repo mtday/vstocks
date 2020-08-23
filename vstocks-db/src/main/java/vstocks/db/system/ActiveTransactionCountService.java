@@ -7,14 +7,14 @@ import vstocks.model.system.ActiveTransactionCount;
 import vstocks.model.system.ActiveTransactionCountCollection;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 
 public interface ActiveTransactionCountService {
     int generate();
 
     ActiveTransactionCountCollection getLatest();
 
-    Results<ActiveTransactionCount> getAll(Page page, Set<Sort> sort);
+    Results<ActiveTransactionCount> getAll(Page page, List<Sort> sort);
 
     int add(ActiveTransactionCount activeTransactionCount);
 

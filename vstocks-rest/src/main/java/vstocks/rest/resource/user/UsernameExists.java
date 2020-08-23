@@ -14,11 +14,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/user/exists")
 @Singleton
 public class UsernameExists extends BaseResource {
-    private final ServiceFactory dbFactory;
+    private final ServiceFactory serviceFactory;
 
     @Inject
-    public UsernameExists(ServiceFactory dbFactory) {
-        this.dbFactory = dbFactory;
+    public UsernameExists(ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
     }
 
     @GET
@@ -31,6 +31,6 @@ public class UsernameExists extends BaseResource {
                 .orElseThrow(() -> new BadRequestException("Missing or invalid username parameter"));
         return new vstocks.model.UsernameExists()
                 .setUsername(trimmed)
-                .setExists(dbFactory.getUserService().usernameExists(trimmed));
+                .setExists(serviceFactory.getUserService().usernameExists(trimmed));
     }
 }

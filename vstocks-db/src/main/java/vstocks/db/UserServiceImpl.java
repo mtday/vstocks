@@ -3,18 +3,18 @@ package vstocks.db;
 import vstocks.model.*;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import static vstocks.config.Config.USER_INITIAL_CREDITS;
 
 public class UserServiceImpl extends BaseService implements UserService {
-    private final UserDB userTable = new UserDB();
-    private final UserCreditsDB userCreditsTable = new UserCreditsDB();
-    private final UserStockDB userStockTable = new UserStockDB();
-    private final UserAchievementDB userAchievementTable = new UserAchievementDB();
-    private final ActivityLogDB activityLogTable = new ActivityLogDB();
+    private final UserDB userDB = new UserDB();
+    private final UserCreditsDB userCreditsDB = new UserCreditsDB();
+    private final UserStockDB userStockDB = new UserStockDB();
+    private final UserAchievementDB userAchievementDB = new UserAchievementDB();
+    private final ActivityLogDB activityLogDB = new ActivityLogDB();
 
     public UserServiceImpl(DataSource dataSource) {
         super(dataSource);
@@ -22,33 +22,33 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Override
     public boolean usernameExists(String username) {
-        return withConnection(conn -> userTable.usernameExists(conn, username));
+        return withConnection(conn -> userDB.usernameExists(conn, username));
     }
 
     @Override
     public Optional<User> get(String id) {
-        return withConnection(conn -> userTable.get(conn, id));
+        return withConnection(conn -> userDB.get(conn, id));
     }
 
     @Override
-    public Results<User> getAll(Page page, Set<Sort> sort) {
-        return withConnection(conn -> userTable.getAll(conn, page, sort));
+    public Results<User> getAll(Page page, List<Sort> sort) {
+        return withConnection(conn -> userDB.getAll(conn, page, sort));
     }
 
     @Override
-    public int consume(Consumer<User> consumer, Set<Sort> sort) {
-        return withConnection(conn -> userTable.consume(conn, consumer, sort));
+    public int consume(Consumer<User> consumer, List<Sort> sort) {
+        return withConnection(conn -> userDB.consume(conn, consumer, sort));
     }
 
     @Override
     public int reset(String id) {
         return withConnection(conn -> {
-            userCreditsTable.delete(conn, id);
+            userCreditsDB.delete(conn, id);
             UserCredits initialCredits = new UserCredits().setUserId(id).setCredits(USER_INITIAL_CREDITS.getInt());
-            userCreditsTable.setInitialCredits(conn, initialCredits);
-            userStockTable.deleteForUser(conn, id);
-            userAchievementTable.deleteForUser(conn, id);
-            activityLogTable.deleteForUser(conn, id);
+            userCreditsDB.setInitialCredits(conn, initialCredits);
+            userStockDB.deleteForUser(conn, id);
+            userAchievementDB.deleteForUser(conn, id);
+            activityLogDB.deleteForUser(conn, id);
             return 1;
         });
     }
@@ -56,10 +56,10 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Override
     public int add(User user) {
         return withConnection(conn -> {
-            if (userTable.add(conn, user) > 0) {
+            if (userDB.add(conn, user) > 0) {
                 // Initial user creation, give the user some initial credits.
                 UserCredits initialCredits = new UserCredits().setUserId(user.getId()).setCredits(USER_INITIAL_CREDITS.getInt());
-                userCreditsTable.setInitialCredits(conn, initialCredits);
+                userCreditsDB.setInitialCredits(conn, initialCredits);
                 return 1;
             }
             return 0;
@@ -68,16 +68,16 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Override
     public int update(User user) {
-        return withConnection(conn -> userTable.update(conn, user));
+        return withConnection(conn -> userDB.update(conn, user));
     }
 
     @Override
     public int delete(String id) {
-        return withConnection(conn -> userTable.delete(conn, id));
+        return withConnection(conn -> userDB.delete(conn, id));
     }
 
     @Override
     public int truncate() {
-        return withConnection(userTable::truncate);
+        return withConnection(userDB::truncate);
     }
 }

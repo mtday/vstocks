@@ -9,10 +9,10 @@ import vstocks.model.system.ActiveTransactionCountCollection;
 
 import javax.sql.DataSource;
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 
 public class ActiveTransactionCountServiceImpl extends BaseService implements ActiveTransactionCountService {
-    private final ActiveTransactionCountDB activeTransactionCountTable = new ActiveTransactionCountDB();
+    private final ActiveTransactionCountDB activeTransactionCountDB = new ActiveTransactionCountDB();
 
     public ActiveTransactionCountServiceImpl(DataSource dataSource) {
         super(dataSource);
@@ -20,31 +20,31 @@ public class ActiveTransactionCountServiceImpl extends BaseService implements Ac
 
     @Override
     public int generate() {
-        return withConnection(activeTransactionCountTable::generate);
+        return withConnection(activeTransactionCountDB::generate);
     }
 
     @Override
     public ActiveTransactionCountCollection getLatest() {
-        return withConnection(activeTransactionCountTable::getLatest);
+        return withConnection(activeTransactionCountDB::getLatest);
     }
 
     @Override
-    public Results<ActiveTransactionCount> getAll(Page page, Set<Sort> sort) {
-        return withConnection(conn -> activeTransactionCountTable.getAll(conn, page, sort));
+    public Results<ActiveTransactionCount> getAll(Page page, List<Sort> sort) {
+        return withConnection(conn -> activeTransactionCountDB.getAll(conn, page, sort));
     }
 
     @Override
     public int add(ActiveTransactionCount activeTransactionCount) {
-        return withConnection(conn -> activeTransactionCountTable.add(conn, activeTransactionCount));
+        return withConnection(conn -> activeTransactionCountDB.add(conn, activeTransactionCount));
     }
 
     @Override
     public int ageOff(Instant cutoff) {
-        return withConnection(conn -> activeTransactionCountTable.ageOff(conn, cutoff));
+        return withConnection(conn -> activeTransactionCountDB.ageOff(conn, cutoff));
     }
 
     @Override
     public int truncate() {
-        return withConnection(activeTransactionCountTable::truncate);
+        return withConnection(activeTransactionCountDB::truncate);
     }
 }

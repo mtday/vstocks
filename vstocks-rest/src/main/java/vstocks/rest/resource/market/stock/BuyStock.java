@@ -18,11 +18,11 @@ import static javax.ws.rs.core.MediaType.WILDCARD;
 @Path("/market/{market}/stock/{symbol}/buy/{shares:[0-9]+}")
 @Singleton
 public class BuyStock extends BaseResource {
-    private final ServiceFactory dbFactory;
+    private final ServiceFactory serviceFactory;
 
     @Inject
-    public BuyStock(ServiceFactory dbFactory) {
-        this.dbFactory = dbFactory;
+    public BuyStock(ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
     }
 
     @POST
@@ -36,10 +36,10 @@ public class BuyStock extends BaseResource {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
         String userId = getUser(profile).getId();
-        if (dbFactory.getUserStockService().buyStock(userId, market, symbol, shares) == 0) {
+        if (serviceFactory.getUserStockService().buyStock(userId, market, symbol, shares) == 0) {
             throw new BadRequestException("Failed to buy " + shares + " shares of " + market + "/" + symbol + " stock");
         }
-        return dbFactory.getPricedUserStockService().get(userId, market, symbol)
+        return serviceFactory.getPricedUserStockService().get(userId, market, symbol)
                 .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + symbol + " not found"));
     }
 }

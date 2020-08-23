@@ -16,10 +16,12 @@ public class MarketTotalValueCollectionTest {
     private final Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
 
     private final MarketTotalValue marketTotalValue1 = new MarketTotalValue()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp)
             .setValue(20);
     private final MarketTotalValue marketTotalValue2 = new MarketTotalValue()
+            .setBatch(1)
             .setUserId("userId")
             .setTimestamp(timestamp.minusSeconds(10))
             .setValue(18);

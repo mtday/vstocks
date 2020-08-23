@@ -7,10 +7,8 @@ import vstocks.model.UserAchievement;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
@@ -18,7 +16,7 @@ import static java.util.Arrays.asList;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.SortDirection.DESC;
 
-class UserAchievementDB extends BaseTable {
+class UserAchievementDB extends BaseDB {
     private static final RowMapper<UserAchievement> ROW_MAPPER = rs ->
             new UserAchievement()
                     .setUserId(rs.getString("user_id"))
@@ -35,8 +33,8 @@ class UserAchievementDB extends BaseTable {
     };
 
     @Override
-    protected Set<Sort> getDefaultSort() {
-        return new LinkedHashSet<>(asList(TIMESTAMP.toSort(DESC), USER_ID.toSort(), ACHIEVEMENT_ID.toSort()));
+    protected List<Sort> getDefaultSort() {
+        return asList(TIMESTAMP.toSort(DESC), USER_ID.toSort(), ACHIEVEMENT_ID.toSort());
     }
 
     public Optional<UserAchievement> get(Connection connection, String userId, String achievementId) {
@@ -49,19 +47,22 @@ class UserAchievementDB extends BaseTable {
         return getList(connection, ROW_MAPPER, sql, userId);
     }
 
-    public Results<UserAchievement> getForAchievement(Connection connection, String achievementId, Page page, Set<Sort> sort) {
+    public Results<UserAchievement> getForAchievement(Connection connection,
+                                                      String achievementId,
+                                                      Page page,
+                                                      List<Sort> sort) {
         String sql = format("SELECT * FROM user_achievements WHERE achievement_id = ? %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM user_achievements WHERE achievement_id = ?";
         return results(connection, ROW_MAPPER, page, sql, count, achievementId);
     }
 
-    public Results<UserAchievement> getAll(Connection connection, Page page, Set<Sort> sort) {
+    public Results<UserAchievement> getAll(Connection connection, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM user_achievements %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM user_achievements";
         return results(connection, ROW_MAPPER, page, sql, count);
     }
 
-    public int consume(Connection connection, Consumer<UserAchievement> consumer, Set<Sort> sort) {
+    public int consume(Connection connection, Consumer<UserAchievement> consumer, List<Sort> sort) {
         String sql = format("SELECT * FROM user_achievements %s", getSort(sort));
         return consume(connection, ROW_MAPPER, consumer, sql);
     }

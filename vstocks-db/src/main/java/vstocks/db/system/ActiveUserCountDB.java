@@ -1,6 +1,6 @@
 package vstocks.db.system;
 
-import vstocks.db.BaseTable;
+import vstocks.db.BaseDB;
 import vstocks.db.RowMapper;
 import vstocks.db.RowSetter;
 import vstocks.model.*;
@@ -12,16 +12,15 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static vstocks.model.DatabaseField.TIMESTAMP;
 import static vstocks.model.SortDirection.DESC;
 
-class ActiveUserCountDB extends BaseTable {
+class ActiveUserCountDB extends BaseDB {
     private static final RowMapper<ActiveUserCount> ROW_MAPPER = rs ->
             new ActiveUserCount()
                     .setTimestamp(rs.getTimestamp("timestamp").toInstant().truncatedTo(SECONDS))
@@ -34,8 +33,8 @@ class ActiveUserCountDB extends BaseTable {
     };
 
     @Override
-    protected Set<Sort> getDefaultSort() {
-        return singleton(TIMESTAMP.toSort(DESC));
+    protected List<Sort> getDefaultSort() {
+        return singletonList(TIMESTAMP.toSort(DESC));
     }
 
     public int generate(Connection connection) {
@@ -58,7 +57,7 @@ class ActiveUserCountDB extends BaseTable {
                 .setDeltas(Delta.getDeltas(activeUserCounts, ActiveUserCount::getTimestamp, ActiveUserCount::getCount));
     }
 
-    public Results<ActiveUserCount> getAll(Connection connection, Page page, Set<Sort> sort) {
+    public Results<ActiveUserCount> getAll(Connection connection, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM active_user_counts %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM active_user_counts";
         return results(connection, ROW_MAPPER, page, sql, count);

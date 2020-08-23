@@ -3,12 +3,12 @@ package vstocks.db;
 import vstocks.model.*;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public class ActivityLogServiceImpl extends BaseService implements ActivityLogService {
-    private final ActivityLogDB activityLogTable = new ActivityLogDB();
+    private final ActivityLogDB activityLogDB = new ActivityLogDB();
 
     public ActivityLogServiceImpl(DataSource dataSource) {
         super(dataSource);
@@ -16,61 +16,61 @@ public class ActivityLogServiceImpl extends BaseService implements ActivityLogSe
 
     @Override
     public Optional<ActivityLog> get(String id) {
-        return withConnection(conn -> activityLogTable.get(conn, id));
+        return withConnection(conn -> activityLogDB.get(conn, id));
     }
 
     @Override
-    public Results<ActivityLog> getForUser(String userId, Page page, Set<Sort> sort) {
-        return withConnection(conn -> activityLogTable.getForUser(conn, userId, page, sort));
+    public Results<ActivityLog> getForUser(String userId, Page page, List<Sort> sort) {
+        return withConnection(conn -> activityLogDB.getForUser(conn, userId, page, sort));
     }
 
     @Override
-    public Results<ActivityLog> getForUser(String userId, ActivityType type, Page page, Set<Sort> sort) {
-        return withConnection(conn -> activityLogTable.getForUser(conn, userId, type, page, sort));
+    public Results<ActivityLog> getForUser(String userId, ActivityType type, Page page, List<Sort> sort) {
+        return withConnection(conn -> activityLogDB.getForUser(conn, userId, type, page, sort));
     }
 
     @Override
-    public Results<ActivityLog> getForStock(Market market, String symbol, Page page, Set<Sort> sort) {
-        return withConnection(conn -> activityLogTable.getForStock(conn, market, symbol, page, sort));
+    public Results<ActivityLog> getForStock(Market market, String symbol, Page page, List<Sort> sort) {
+        return withConnection(conn -> activityLogDB.getForStock(conn, market, symbol, page, sort));
     }
 
     @Override
-    public Results<ActivityLog> getForType(ActivityType type, Page page, Set<Sort> sort) {
-        return withConnection(conn -> activityLogTable.getForType(conn, type, page, sort));
+    public Results<ActivityLog> getForType(ActivityType type, Page page, List<Sort> sort) {
+        return withConnection(conn -> activityLogDB.getForType(conn, type, page, sort));
     }
 
     @Override
-    public Results<ActivityLog> getAll(Page page, Set<Sort> sort) {
-        return withConnection(conn -> activityLogTable.getAll(conn, page, sort));
+    public Results<ActivityLog> getAll(Page page, List<Sort> sort) {
+        return withConnection(conn -> activityLogDB.getAll(conn, page, sort));
     }
 
     @Override
-    public int consume(Consumer<ActivityLog> consumer, Set<Sort> sort) {
-        return withConnection(conn -> activityLogTable.consume(conn, consumer, sort));
+    public int consume(Consumer<ActivityLog> consumer, List<Sort> sort) {
+        return withConnection(conn -> activityLogDB.consume(conn, consumer, sort));
     }
 
     @Override
     public <T> int consume(PreparedStatementCreator psc, RowMapper<T> rowMapper, Consumer<T> consumer) {
-        return withConnection(conn -> activityLogTable.consume(conn, psc, rowMapper, consumer));
+        return withConnection(conn -> activityLogDB.consume(conn, psc, rowMapper, consumer));
     }
 
     @Override
     public int add(ActivityLog activityLog) {
-        return withConnection(conn -> activityLogTable.add(conn, activityLog));
+        return withConnection(conn -> activityLogDB.add(conn, activityLog));
     }
 
     @Override
     public int deleteForUser(String userId) {
-        return withConnection(conn -> activityLogTable.deleteForUser(conn, userId));
+        return withConnection(conn -> activityLogDB.deleteForUser(conn, userId));
     }
 
     @Override
     public int delete(String id) {
-        return withConnection(conn -> activityLogTable.delete(conn, id));
+        return withConnection(conn -> activityLogDB.delete(conn, id));
     }
 
     @Override
     public int truncate() {
-        return withConnection(activityLogTable::truncate);
+        return withConnection(activityLogDB::truncate);
     }
 }

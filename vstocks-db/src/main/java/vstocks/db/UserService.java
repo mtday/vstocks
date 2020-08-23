@@ -5,8 +5,8 @@ import vstocks.model.Results;
 import vstocks.model.Sort;
 import vstocks.model.User;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public interface UserService {
@@ -14,9 +14,9 @@ public interface UserService {
 
     Optional<User> get(String id);
 
-    Results<User> getAll(Page page, Set<Sort> sort);
+    Results<User> getAll(Page page, List<Sort> sort);
 
-    int consume(Consumer<User> consumer, Set<Sort> sort);
+    int consume(Consumer<User> consumer, List<Sort> sort);
 
     int reset(String id);
 

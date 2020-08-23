@@ -6,16 +6,16 @@ import vstocks.model.Sort;
 import vstocks.model.User;
 
 import java.sql.Connection;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
-import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static vstocks.model.DatabaseField.USERNAME;
 
-class UserDB extends BaseTable {
-    private static final RowMapper<User> ROW_MAPPER = rs ->
+public class UserDB extends BaseDB {
+    public static final RowMapper<User> ROW_MAPPER = rs ->
             new User()
                     .setId(rs.getString("id"))
                     .setEmail(rs.getString("email"))
@@ -45,8 +45,8 @@ class UserDB extends BaseTable {
     };
 
     @Override
-    protected Set<Sort> getDefaultSort() {
-        return singleton(USERNAME.toSort());
+    protected List<Sort> getDefaultSort() {
+        return singletonList(USERNAME.toSort());
     }
 
     public boolean usernameExists(Connection connection, String username) {
@@ -57,13 +57,13 @@ class UserDB extends BaseTable {
         return getOne(connection, ROW_MAPPER, "SELECT * FROM users WHERE id = ?", id);
     }
 
-    public Results<User> getAll(Connection connection, Page page, Set<Sort> sort) {
+    public Results<User> getAll(Connection connection, Page page, List<Sort> sort) {
         return results(connection, ROW_MAPPER, page,
                 format("SELECT * FROM users %s LIMIT ? OFFSET ?", getSort(sort)),
                 "SELECT COUNT(*) FROM users");
     }
 
-    public int consume(Connection connection, Consumer<User> consumer, Set<Sort> sort) {
+    public int consume(Connection connection, Consumer<User> consumer, List<Sort> sort) {
         String sql = format("SELECT * FROM users %s", getSort(sort));
         return consume(connection, ROW_MAPPER, consumer, sql);
     }

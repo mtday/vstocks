@@ -40,31 +40,31 @@ public class Login extends BaseResource {
     private static final Random RANDOM = new Random();
     private static final String REDIRECT = "/";
 
-    private final ServiceFactory dbFactory;
+    private final ServiceFactory serviceFactory;
     private final JwtSecurity jwtSecurity;
 
     @Inject
-    public Login(ServiceFactory dbFactory, JwtSecurity jwtSecurity) {
-        this.dbFactory = dbFactory;
+    public Login(ServiceFactory serviceFactory, JwtSecurity jwtSecurity) {
+        this.serviceFactory = serviceFactory;
         this.jwtSecurity = jwtSecurity;
     }
 
     private String doLogin(CommonProfile profile) {
         Optional<User> existingUser = ofNullable(profile.getEmail())
                 .map(User::generateId)
-                .flatMap(id -> dbFactory.getUserService().get(id));
+                .flatMap(id -> serviceFactory.getUserService().get(id));
 
         // Create the user if they don't exist
         if (existingUser.isEmpty()) {
             User profileUser = getUser(profile);
             // If the profile username already exists, update it randomly to prevent insert conflicts. The user can
             // change their username on the user profile page so this username is somewhat temporary.
-            while (dbFactory.getUserService().usernameExists(profileUser.getUsername())) {
+            while (serviceFactory.getUserService().usernameExists(profileUser.getUsername())) {
                 profileUser.setUsername(profileUser.getUsername() + (10000 + RANDOM.nextInt(89999)));
             }
 
             // Create the user
-            dbFactory.getUserService().add(profileUser);
+            serviceFactory.getUserService().add(profileUser);
             existingUser = Optional.of(profileUser);
         }
 
@@ -75,7 +75,7 @@ public class Login extends BaseResource {
         User profileUser = getUser(profile);
         if (!Objects.equals(profileUser.getProfileImage(), user.getProfileImage())) {
             user.setProfileImage(profileUser.getProfileImage());
-            dbFactory.getUserService().update(user);
+            serviceFactory.getUserService().update(user);
         }
 
         ActivityLog activityLog = new ActivityLog()
@@ -83,7 +83,7 @@ public class Login extends BaseResource {
                 .setUserId(user.getId())
                 .setType(USER_LOGIN)
                 .setTimestamp(Instant.now().truncatedTo(SECONDS));
-        dbFactory.getActivityLogService().add(activityLog);
+        serviceFactory.getActivityLogService().add(activityLog);
 
         return jwtSecurity.generateToken(user.getId());
     }

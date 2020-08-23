@@ -7,51 +7,62 @@ import vstocks.model.Results;
 import vstocks.model.Sort;
 import vstocks.model.portfolio.MarketValue;
 import vstocks.model.portfolio.MarketValueCollection;
+import vstocks.model.portfolio.ValuedUser;
 
 import javax.sql.DataSource;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class MarketValueServiceImpl extends BaseService implements MarketValueService {
-    private final MarketValueDB marketValueTable = new MarketValueDB();
+    private final MarketValueDB marketValueDB = new MarketValueDB();
 
     public MarketValueServiceImpl(DataSource dataSource) {
         super(dataSource);
     }
 
     @Override
-    public int generate(Market market) {
-        return withConnection(conn -> marketValueTable.generate(conn, market));
+    public long setCurrentBatch(long batch) {
+        return withConnection(conn -> marketValueDB.setCurrentBatch(conn, batch));
+    }
+
+    @Override
+    public int generate() {
+        return withConnection(marketValueDB::generate);
     }
 
     @Override
     public MarketValueCollection getLatest(String userId, Market market) {
-        return withConnection(conn -> marketValueTable.getLatest(conn, userId, market));
+        return withConnection(conn -> marketValueDB.getLatest(conn, userId, market));
     }
 
     @Override
     public Map<Market, MarketValueCollection> getLatest(String userId) {
-        return withConnection(conn -> marketValueTable.getLatest(conn, userId));
+        return withConnection(conn -> marketValueDB.getLatest(conn, userId));
     }
 
     @Override
-    public Results<MarketValue> getAll(Market market, Page page, Set<Sort> sort) {
-        return withConnection(conn -> marketValueTable.getAll(conn, market, page, sort));
+    public Results<MarketValue> getAll(Market market, Page page, List<Sort> sort) {
+        return withConnection(conn -> marketValueDB.getAll(conn, market, page, sort));
+    }
+
+    @Override
+    public Results<ValuedUser> getUsers(Market market, Page page) {
+        return withConnection(conn -> marketValueDB.getUsers(conn, market, page));
     }
 
     @Override
     public int add(MarketValue marketValue) {
-        return withConnection(conn -> marketValueTable.add(conn, marketValue));
+        return withConnection(conn -> marketValueDB.add(conn, marketValue));
     }
 
     @Override
     public int ageOff(Instant cutoff) {
-        return withConnection(conn -> marketValueTable.ageOff(conn, cutoff));
+        return withConnection(conn -> marketValueDB.ageOff(conn, cutoff));
     }
 
     @Override
     public int truncate() {
-        return withConnection(marketValueTable::truncate);
+        return withConnection(marketValueDB::truncate);
     }
 }

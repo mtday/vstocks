@@ -14,10 +14,12 @@ public class CreditValueTest {
     @Test
     public void testGettersAndSetters() {
         CreditValue creditValue = new CreditValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setValue(20);
 
+        assertEquals(1, creditValue.getBatch());
         assertEquals("userId", creditValue.getUserId());
         assertEquals(now, creditValue.getTimestamp());
         assertEquals(20, creditValue.getValue());
@@ -26,10 +28,12 @@ public class CreditValueTest {
     @Test
     public void testEquals() {
         CreditValue creditValue1 = new CreditValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setValue(20);
         CreditValue creditValue2 = new CreditValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setValue(20);
@@ -39,20 +43,22 @@ public class CreditValueTest {
     @Test
     public void testHashCode() {
         CreditValue creditValue = new CreditValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(timestamp)
                 .setValue(20);
-        assertEquals(29791, new CreditValue().hashCode());
-        assertEquals(-1989687625, creditValue.hashCode());
+        assertEquals(923521, new CreditValue().hashCode());
+        assertEquals(-1988764104, creditValue.hashCode());
     }
 
     @Test
     public void testToString() {
         CreditValue creditValue = new CreditValue()
+                .setBatch(1)
                 .setUserId("userId")
                 .setTimestamp(now)
                 .setValue(20);
-        assertEquals("CreditValue{userId='userId', timestamp=" + now + ", value=20}",
+        assertEquals("CreditValue{batch=1, userId='userId', timestamp=" + now + ", value=20}",
                 creditValue.toString());
     }
 }

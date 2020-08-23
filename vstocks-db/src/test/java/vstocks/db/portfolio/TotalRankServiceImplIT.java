@@ -4,15 +4,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import vstocks.db.*;
-import vstocks.model.*;
+import vstocks.model.Page;
+import vstocks.model.Results;
+import vstocks.model.Sort;
+import vstocks.model.User;
+import vstocks.model.portfolio.RankedUser;
 import vstocks.model.portfolio.TotalRank;
 import vstocks.model.portfolio.TotalRankCollection;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static vstocks.model.DatabaseField.RANK;
@@ -37,21 +40,36 @@ public class TotalRankServiceImplIT extends BaseServiceImplIT {
             .setDisplayName("Name2");
 
     private final TotalRank totalRank11 = new TotalRank()
+            .setBatch(2)
             .setUserId(user1.getId())
             .setTimestamp(now)
             .setRank(1);
     private final TotalRank totalRank12 = new TotalRank()
+            .setBatch(1)
             .setUserId(user1.getId())
             .setTimestamp(now.minusSeconds(10))
             .setRank(2);
     private final TotalRank totalRank21 = new TotalRank()
+            .setBatch(2)
             .setUserId(user2.getId())
             .setTimestamp(now)
             .setRank(2);
     private final TotalRank totalRank22 = new TotalRank()
+            .setBatch(1)
             .setUserId(user2.getId())
             .setTimestamp(now.minusSeconds(10))
             .setRank(3);
+
+    private final RankedUser rankedUser1 = new RankedUser()
+            .setUser(user1)
+            .setBatch(totalRank11.getBatch())
+            .setTimestamp(totalRank11.getTimestamp())
+            .setRank(totalRank11.getRank());
+    private final RankedUser rankedUser2 = new RankedUser()
+            .setUser(user2)
+            .setBatch(totalRank21.getBatch())
+            .setTimestamp(totalRank21.getTimestamp())
+            .setRank(totalRank21.getRank());
 
     @Before
     public void setup() {
@@ -74,7 +92,7 @@ public class TotalRankServiceImplIT extends BaseServiceImplIT {
     public void testGenerateTie() {
         assertEquals(2, totalRankService.generate());
 
-        Results<TotalRank> results = totalRankService.getAll(new Page(), emptySet());
+        Results<TotalRank> results = totalRankService.getAll(new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertTrue(results.getResults().stream().map(TotalRank::getRank).allMatch(rank -> rank == 1));
@@ -86,7 +104,7 @@ public class TotalRankServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(2, totalRankService.generate());
 
-        Results<TotalRank> results = totalRankService.getAll(new Page(), emptySet());
+        Results<TotalRank> results = totalRankService.getAll(new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertEquals(3, results.getResults().stream().mapToLong(TotalRank::getRank).sum());
@@ -111,7 +129,7 @@ public class TotalRankServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<TotalRank> results = totalRankService.getAll(new Page(), emptySet());
+        Results<TotalRank> results = totalRankService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -120,7 +138,7 @@ public class TotalRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, totalRankService.add(totalRank11));
         assertEquals(1, totalRankService.add(totalRank12));
 
-        Results<TotalRank> results = totalRankService.getAll(new Page(), emptySet());
+        Results<TotalRank> results = totalRankService.getAll(new Page(), emptyList());
         validateResults(results, totalRank11, totalRank12);
     }
 
@@ -131,9 +149,27 @@ public class TotalRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, totalRankService.add(totalRank21));
         assertEquals(1, totalRankService.add(totalRank22));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(RANK.toSort(DESC), USER_ID.toSort()));
+        List<Sort> sort = asList(RANK.toSort(DESC), USER_ID.toSort());
         Results<TotalRank> results = totalRankService.getAll(new Page(), sort);
         validateResults(results, totalRank22, totalRank12, totalRank21, totalRank11);
+    }
+
+    @Test
+    public void testGetUsersNone() {
+        Results<RankedUser> results = totalRankService.getUsers(new Page());
+        validateResults(results);
+    }
+
+    @Test
+    public void testGetUsersSome() {
+        assertEquals(1, totalRankService.add(totalRank11));
+        assertEquals(1, totalRankService.add(totalRank12));
+        assertEquals(1, totalRankService.add(totalRank21));
+        assertEquals(1, totalRankService.add(totalRank22));
+
+        totalRankService.setCurrentBatch(2);
+        Results<RankedUser> results = totalRankService.getUsers(new Page());
+        validateResults(results, rankedUser1, rankedUser2);
     }
 
     @Test
@@ -151,7 +187,7 @@ public class TotalRankServiceImplIT extends BaseServiceImplIT {
 
         totalRankService.ageOff(now.minusSeconds(5));
 
-        Results<TotalRank> results = totalRankService.getAll(new Page(), emptySet());
+        Results<TotalRank> results = totalRankService.getAll(new Page(), emptyList());
         validateResults(results, totalRank11, totalRank21);
     }
 
@@ -164,7 +200,7 @@ public class TotalRankServiceImplIT extends BaseServiceImplIT {
 
         totalRankService.truncate();
 
-        Results<TotalRank> results = totalRankService.getAll(new Page(), emptySet());
+        Results<TotalRank> results = totalRankService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 }

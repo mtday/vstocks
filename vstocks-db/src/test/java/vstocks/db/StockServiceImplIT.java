@@ -8,11 +8,13 @@ import vstocks.model.Results;
 import vstocks.model.Sort;
 import vstocks.model.Stock;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
-import static org.junit.Assert.*;
+import static java.util.Collections.emptyList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static vstocks.model.DatabaseField.NAME;
 import static vstocks.model.DatabaseField.SYMBOL;
 import static vstocks.model.Market.TWITTER;
@@ -66,7 +68,7 @@ public class StockServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetForMarketNone() {
-        Results<Stock> results = stockService.getForMarket(TWITTER, new Page(), emptySet());
+        Results<Stock> results = stockService.getForMarket(TWITTER, new Page(), emptyList());
         validateResults(results);
     }
 
@@ -75,7 +77,7 @@ public class StockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockService.add(stock1));
         assertEquals(1, stockService.add(stock2));
 
-        Results<Stock> results = stockService.getForMarket(TWITTER, new Page(), emptySet());
+        Results<Stock> results = stockService.getForMarket(TWITTER, new Page(), emptyList());
         validateResults(results, stock1, stock2);
     }
 
@@ -84,7 +86,7 @@ public class StockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockService.add(stock1));
         assertEquals(1, stockService.add(stock2));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), NAME.toSort()));
+        List<Sort> sort = asList(SYMBOL.toSort(DESC), NAME.toSort());
         Results<Stock> results = stockService.getForMarket(TWITTER, new Page(), sort);
         validateResults(results, stock2, stock1);
     }
@@ -92,7 +94,7 @@ public class StockServiceImplIT extends BaseServiceImplIT {
     @Test
     public void testConsumeForMarketNone() {
         List<Stock> results = new ArrayList<>();
-        assertEquals(0, stockService.consumeForMarket(TWITTER, results::add, emptySet()));
+        assertEquals(0, stockService.consumeForMarket(TWITTER, results::add, emptyList()));
         validateResults(results);
     }
 
@@ -102,7 +104,7 @@ public class StockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockService.add(stock2));
 
         List<Stock> results = new ArrayList<>();
-        assertEquals(2, stockService.consumeForMarket(TWITTER, results::add, emptySet()));
+        assertEquals(2, stockService.consumeForMarket(TWITTER, results::add, emptyList()));
         validateResults(results, stock1, stock2);
     }
 
@@ -111,7 +113,7 @@ public class StockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockService.add(stock1));
         assertEquals(1, stockService.add(stock2));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), NAME.toSort()));
+        List<Sort> sort = asList(SYMBOL.toSort(DESC), NAME.toSort());
         List<Stock> results = new ArrayList<>();
         assertEquals(2, stockService.consumeForMarket(TWITTER, results::add, sort));
         validateResults(results, stock2, stock1);
@@ -119,7 +121,7 @@ public class StockServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<Stock> results = stockService.getAll(new Page(), emptySet());
+        Results<Stock> results = stockService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -129,7 +131,7 @@ public class StockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockService.add(stock2));
         assertEquals(1, stockService.add(stock3));
 
-        Results<Stock> results = stockService.getAll(new Page(), emptySet());
+        Results<Stock> results = stockService.getAll(new Page(), emptyList());
         validateResults(results, stock1, stock2, stock3);
     }
 
@@ -139,7 +141,7 @@ public class StockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockService.add(stock2));
         assertEquals(1, stockService.add(stock3));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), NAME.toSort()));
+        List<Sort> sort = asList(SYMBOL.toSort(DESC), NAME.toSort());
         Results<Stock> results = stockService.getAll(new Page(), sort);
         validateResults(results, stock3, stock2, stock1);
     }
@@ -147,7 +149,7 @@ public class StockServiceImplIT extends BaseServiceImplIT {
     @Test
     public void testConsumeNone() {
         List<Stock> results = new ArrayList<>();
-        assertEquals(0, stockService.consume(results::add, emptySet()));
+        assertEquals(0, stockService.consume(results::add, emptyList()));
         validateResults(results);
     }
 
@@ -157,7 +159,7 @@ public class StockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockService.add(stock2));
 
         List<Stock> results = new ArrayList<>();
-        assertEquals(2, stockService.consume(results::add, emptySet()));
+        assertEquals(2, stockService.consume(results::add, emptyList()));
         validateResults(results, stock1, stock2);
     }
 
@@ -166,7 +168,7 @@ public class StockServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockService.add(stock1));
         assertEquals(1, stockService.add(stock2));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(SYMBOL.toSort(DESC), NAME.toSort()));
+        List<Sort> sort = asList(SYMBOL.toSort(DESC), NAME.toSort());
         List<Stock> results = new ArrayList<>();
         assertEquals(2, stockService.consume(results::add, sort));
         validateResults(results, stock2, stock1);

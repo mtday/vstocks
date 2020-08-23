@@ -5,16 +5,16 @@ import vstocks.model.Results;
 import vstocks.model.Sort;
 import vstocks.model.UserCredits;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
 public interface UserCreditsService {
     Optional<UserCredits> get(String userId);
 
-    Results<UserCredits> getAll(Page page, Set<Sort> sort);
+    Results<UserCredits> getAll(Page page, List<Sort> sort);
 
-    int consume(Consumer<UserCredits> consumer, Set<Sort> sort);
+    int consume(Consumer<UserCredits> consumer, List<Sort> sort);
 
     int setInitialCredits(UserCredits initialCredits);
 

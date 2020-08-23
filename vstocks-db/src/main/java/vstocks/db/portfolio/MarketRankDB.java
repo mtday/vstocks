@@ -1,11 +1,13 @@
 package vstocks.db.portfolio;
 
-import vstocks.db.BaseTable;
+import vstocks.db.BaseDB;
 import vstocks.db.RowMapper;
 import vstocks.db.RowSetter;
+import vstocks.db.UserDB;
 import vstocks.model.*;
 import vstocks.model.portfolio.MarketRank;
 import vstocks.model.portfolio.MarketRankCollection;
+import vstocks.model.portfolio.RankedUser;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
@@ -15,19 +17,30 @@ import java.util.*;
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
-import static vstocks.model.DatabaseField.RANK;
-import static vstocks.model.DatabaseField.USER_ID;
+import static vstocks.model.DatabaseField.*;
+import static vstocks.model.SortDirection.DESC;
 
-class MarketRankDB extends BaseTable {
+class MarketRankDB extends BaseDB {
+    private static final String BATCH_SEQUENCE = "market_ranks_batch_sequence";
+
     private static final RowMapper<MarketRank> ROW_MAPPER = rs ->
             new MarketRank()
+                    .setBatch(rs.getLong("batch"))
                     .setUserId(rs.getString("user_id"))
                     .setMarket(Market.valueOf(rs.getString("market")))
                     .setTimestamp(rs.getTimestamp("timestamp").toInstant().truncatedTo(SECONDS))
                     .setRank(rs.getLong("rank"));
 
+    private static final RowMapper<RankedUser> USER_ROW_MAPPER = rs ->
+            new RankedUser()
+                    .setUser(UserDB.ROW_MAPPER.map(rs))
+                    .setBatch(rs.getLong("batch"))
+                    .setTimestamp(rs.getTimestamp("timestamp").toInstant())
+                    .setRank(rs.getLong("rank"));
+
     private static final RowSetter<MarketRank> INSERT_ROW_SETTER = (ps, marketRank) -> {
         int index = 0;
+        ps.setLong(++index, marketRank.getBatch());
         ps.setString(++index, marketRank.getUserId());
         ps.setString(++index, marketRank.getMarket().name());
         ps.setTimestamp(++index, Timestamp.from(marketRank.getTimestamp()));
@@ -35,13 +48,17 @@ class MarketRankDB extends BaseTable {
     };
 
     @Override
-    protected Set<Sort> getDefaultSort() {
-        return new LinkedHashSet<>(asList(RANK.toSort(), USER_ID.toSort()));
+    protected List<Sort> getDefaultSort() {
+        return asList(BATCH.toSort(DESC), RANK.toSort(), USER_ID.toSort());
     }
 
-    public int generate(Connection connection, Market market) {
-        String sql = "INSERT INTO market_ranks (user_id, market, timestamp, rank)"
-                + "(SELECT user_id, market, timestamp, RANK() OVER (ORDER BY value DESC) AS rank FROM ("
+    public long setCurrentBatch(Connection connection, long batch) {
+        return setSequenceValue(connection, BATCH_SEQUENCE, batch);
+    }
+
+    private int generate(Connection connection, long batch, Market market) {
+        String sql = "INSERT INTO market_ranks (batch, user_id, market, timestamp, rank)"
+                + "(SELECT ? AS batch, user_id, market, timestamp, RANK() OVER (ORDER BY value DESC) AS rank FROM ("
                 + "  SELECT user_id, market, NOW() AS timestamp, SUM(value) AS value FROM ("
                 + "    (SELECT id AS user_id, ? AS market, NULL AS symbol, 0 AS value FROM users)"
                 + "    UNION"
@@ -53,7 +70,16 @@ class MarketRankDB extends BaseTable {
                 + "    ORDER BY us.user_id, us.market, us.symbol, sp.timestamp DESC)"
                 + "  ) AS priced_stocks GROUP BY user_id, market ORDER BY value DESC"
                 + ") AS ordered_values)";
-        return update(connection, sql, market, market);
+        return update(connection, sql, batch, market, market);
+    }
+
+    public int generate(Connection connection) {
+        long batch = getNextSequenceValue(connection, BATCH_SEQUENCE);
+        int sum = 0;
+        for (Market market : Market.values()) {
+            sum += generate(connection, batch, market);
+        }
+        return sum;
     }
 
     public MarketRankCollection getLatest(Connection connection, String userId, Market market) {
@@ -77,14 +103,22 @@ class MarketRankDB extends BaseTable {
         return results;
     }
 
-    public Results<MarketRank> getAll(Connection connection, Market market, Page page, Set<Sort> sort) {
+    public Results<MarketRank> getAll(Connection connection, Market market, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM market_ranks WHERE market = ? %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM market_ranks WHERE market = ?";
         return results(connection, ROW_MAPPER, page, sql, count, market);
     }
 
+    public Results<RankedUser> getUsers(Connection connection, Market market, Page page) {
+        long batch = getCurrentSequenceValue(connection, BATCH_SEQUENCE);
+        String sql = "SELECT * FROM market_ranks r JOIN users u ON (u.id = r.user_id) WHERE batch = ? AND market = ? "
+                + "ORDER BY r.rank, u.username LIMIT ? OFFSET ?";
+        String count = "SELECT COUNT(*) FROM market_ranks WHERE batch = ? AND market = ?";
+        return results(connection, USER_ROW_MAPPER, page, sql, count, batch, market);
+    }
+
     public int add(Connection connection, MarketRank marketRank) {
-        String sql = "INSERT INTO market_ranks (user_id, market, timestamp, rank) VALUES (?, ?, ?, ?) "
+        String sql = "INSERT INTO market_ranks (batch, user_id, market, timestamp, rank) VALUES (?, ?, ?, ?, ?) "
                 + "ON CONFLICT ON CONSTRAINT market_ranks_pk "
                 + "DO UPDATE SET rank = EXCLUDED.rank WHERE market_ranks.rank != EXCLUDED.rank";
         return update(connection, INSERT_ROW_SETTER, sql, marketRank);

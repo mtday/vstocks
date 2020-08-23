@@ -10,12 +10,12 @@ import vstocks.model.Sort;
 import vstocks.model.User;
 import vstocks.model.portfolio.TotalValue;
 import vstocks.model.portfolio.TotalValueCollection;
+import vstocks.model.portfolio.ValuedUser;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static vstocks.model.DatabaseField.USER_ID;
@@ -39,21 +39,36 @@ public class TotalValueServiceImplIT extends BaseServiceImplIT {
             .setDisplayName("Name2");
 
     private final TotalValue totalValue11 = new TotalValue()
+            .setBatch(2)
             .setUserId(user1.getId())
             .setTimestamp(now)
             .setValue(11);
     private final TotalValue totalValue12 = new TotalValue()
+            .setBatch(1)
             .setUserId(user1.getId())
             .setTimestamp(now.minusSeconds(10))
             .setValue(12);
     private final TotalValue totalValue21 = new TotalValue()
+            .setBatch(2)
             .setUserId(user2.getId())
             .setTimestamp(now)
             .setValue(21);
     private final TotalValue totalValue22 = new TotalValue()
+            .setBatch(1)
             .setUserId(user2.getId())
             .setTimestamp(now.minusSeconds(10))
             .setValue(22);
+
+    private final ValuedUser valuedUser1 = new ValuedUser()
+            .setUser(user1)
+            .setBatch(totalValue11.getBatch())
+            .setTimestamp(totalValue11.getTimestamp())
+            .setValue(totalValue11.getValue());
+    private final ValuedUser valuedUser2 = new ValuedUser()
+            .setUser(user2)
+            .setBatch(totalValue21.getBatch())
+            .setTimestamp(totalValue21.getTimestamp())
+            .setValue(totalValue21.getValue());
 
     @Before
     public void setup() {
@@ -76,7 +91,7 @@ public class TotalValueServiceImplIT extends BaseServiceImplIT {
     public void testGenerateTie() {
         assertEquals(2, totalValueService.generate());
 
-        Results<TotalValue> results = totalValueService.getAll(new Page(), emptySet());
+        Results<TotalValue> results = totalValueService.getAll(new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertTrue(results.getResults().stream().map(TotalValue::getValue).allMatch(value -> value == 10000));
@@ -88,7 +103,7 @@ public class TotalValueServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(2, totalValueService.generate());
 
-        Results<TotalValue> results = totalValueService.getAll(new Page(), emptySet());
+        Results<TotalValue> results = totalValueService.getAll(new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertEquals(20010, results.getResults().stream().mapToLong(TotalValue::getValue).sum());
@@ -113,7 +128,7 @@ public class TotalValueServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<TotalValue> results = totalValueService.getAll(new Page(), emptySet());
+        Results<TotalValue> results = totalValueService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -122,8 +137,8 @@ public class TotalValueServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, totalValueService.add(totalValue11));
         assertEquals(1, totalValueService.add(totalValue12));
 
-        Results<TotalValue> results = totalValueService.getAll(new Page(), emptySet());
-        validateResults(results, totalValue12, totalValue11);
+        Results<TotalValue> results = totalValueService.getAll(new Page(), emptyList());
+        validateResults(results, totalValue11, totalValue12);
     }
 
     @Test
@@ -133,9 +148,27 @@ public class TotalValueServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, totalValueService.add(totalValue21));
         assertEquals(1, totalValueService.add(totalValue22));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(VALUE.toSort(), USER_ID.toSort()));
+        List<Sort> sort = asList(VALUE.toSort(), USER_ID.toSort());
         Results<TotalValue> results = totalValueService.getAll(new Page(), sort);
         validateResults(results, totalValue11, totalValue12, totalValue21, totalValue22);
+    }
+
+    @Test
+    public void testGetUsersNone() {
+        Results<ValuedUser> results = totalValueService.getUsers(new Page());
+        validateResults(results);
+    }
+
+    @Test
+    public void testGetUsersSome() {
+        assertEquals(1, totalValueService.add(totalValue11));
+        assertEquals(1, totalValueService.add(totalValue12));
+        assertEquals(1, totalValueService.add(totalValue21));
+        assertEquals(1, totalValueService.add(totalValue22));
+
+        totalValueService.setCurrentBatch(2);
+        Results<ValuedUser> results = totalValueService.getUsers(new Page());
+        validateResults(results, valuedUser2, valuedUser1);
     }
 
     @Test
@@ -153,7 +186,7 @@ public class TotalValueServiceImplIT extends BaseServiceImplIT {
 
         totalValueService.ageOff(now.minusSeconds(5));
 
-        Results<TotalValue> results = totalValueService.getAll(new Page(), emptySet());
+        Results<TotalValue> results = totalValueService.getAll(new Page(), emptyList());
         validateResults(results, totalValue21, totalValue11);
     }
 
@@ -166,7 +199,7 @@ public class TotalValueServiceImplIT extends BaseServiceImplIT {
 
         totalValueService.truncate();
 
-        Results<TotalValue> results = totalValueService.getAll(new Page(), emptySet());
+        Results<TotalValue> results = totalValueService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 }

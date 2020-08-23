@@ -9,10 +9,10 @@ import vstocks.model.system.ActiveUserCountCollection;
 
 import javax.sql.DataSource;
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 
 public class ActiveUserCountServiceImpl extends BaseService implements ActiveUserCountService {
-    private final ActiveUserCountDB activeUserCountTable = new ActiveUserCountDB();
+    private final ActiveUserCountDB activeUserCountDB = new ActiveUserCountDB();
 
     public ActiveUserCountServiceImpl(DataSource dataSource) {
         super(dataSource);
@@ -20,31 +20,31 @@ public class ActiveUserCountServiceImpl extends BaseService implements ActiveUse
 
     @Override
     public int generate() {
-        return withConnection(activeUserCountTable::generate);
+        return withConnection(activeUserCountDB::generate);
     }
 
     @Override
     public ActiveUserCountCollection getLatest() {
-        return withConnection(activeUserCountTable::getLatest);
+        return withConnection(activeUserCountDB::getLatest);
     }
 
     @Override
-    public Results<ActiveUserCount> getAll(Page page, Set<Sort> sort) {
-        return withConnection(conn -> activeUserCountTable.getAll(conn, page, sort));
+    public Results<ActiveUserCount> getAll(Page page, List<Sort> sort) {
+        return withConnection(conn -> activeUserCountDB.getAll(conn, page, sort));
     }
 
     @Override
     public int add(ActiveUserCount activeUserCount) {
-        return withConnection(conn -> activeUserCountTable.add(conn, activeUserCount));
+        return withConnection(conn -> activeUserCountDB.add(conn, activeUserCount));
     }
 
     @Override
     public int ageOff(Instant cutoff) {
-        return withConnection(conn -> activeUserCountTable.ageOff(conn, cutoff));
+        return withConnection(conn -> activeUserCountDB.ageOff(conn, cutoff));
     }
 
     @Override
     public int truncate() {
-        return withConnection(activeUserCountTable::truncate);
+        return withConnection(activeUserCountDB::truncate);
     }
 }

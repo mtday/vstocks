@@ -8,11 +8,10 @@ import vstocks.model.*;
 import vstocks.model.system.TotalTransactionCount;
 import vstocks.model.system.TotalTransactionCountCollection;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static vstocks.model.ActivityType.STOCK_SELL;
@@ -119,7 +118,7 @@ public class TotalTransactionCountServiceImplIT extends BaseServiceImplIT {
     public void testGenerateEmpty() {
         assertEquals(1, totalTransactionCountService.generate());
 
-        Results<TotalTransactionCount> results = totalTransactionCountService.getAll(new Page(), emptySet());
+        Results<TotalTransactionCount> results = totalTransactionCountService.getAll(new Page(), emptyList());
         assertEquals(1, results.getTotal());
         assertEquals(1, results.getResults().size());
         assertEquals(0, results.getResults().iterator().next().getCount());
@@ -134,7 +133,7 @@ public class TotalTransactionCountServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(1, totalTransactionCountService.generate());
 
-        Results<TotalTransactionCount> results = totalTransactionCountService.getAll(new Page(), emptySet());
+        Results<TotalTransactionCount> results = totalTransactionCountService.getAll(new Page(), emptyList());
         assertEquals(1, results.getTotal());
         assertEquals(1, results.getResults().size());
         assertEquals(4, results.getResults().iterator().next().getCount());
@@ -159,7 +158,7 @@ public class TotalTransactionCountServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<TotalTransactionCount> results = totalTransactionCountService.getAll(new Page(), emptySet());
+        Results<TotalTransactionCount> results = totalTransactionCountService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -168,7 +167,7 @@ public class TotalTransactionCountServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, totalTransactionCountService.add(totalTransactionCount1));
         assertEquals(1, totalTransactionCountService.add(totalTransactionCount2));
 
-        Results<TotalTransactionCount> results = totalTransactionCountService.getAll(new Page(), emptySet());
+        Results<TotalTransactionCount> results = totalTransactionCountService.getAll(new Page(), emptyList());
         validateResults(results, totalTransactionCount1, totalTransactionCount2);
     }
 
@@ -177,7 +176,7 @@ public class TotalTransactionCountServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, totalTransactionCountService.add(totalTransactionCount1));
         assertEquals(1, totalTransactionCountService.add(totalTransactionCount2));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(COUNT.toSort(DESC), TIMESTAMP.toSort(DESC)));
+        List<Sort> sort = asList(COUNT.toSort(DESC), TIMESTAMP.toSort(DESC));
         Results<TotalTransactionCount> results = totalTransactionCountService.getAll(new Page(), sort);
         validateResults(results, totalTransactionCount2, totalTransactionCount1);
     }
@@ -195,7 +194,7 @@ public class TotalTransactionCountServiceImplIT extends BaseServiceImplIT {
 
         totalTransactionCountService.ageOff(now.minusSeconds(5));
 
-        Results<TotalTransactionCount> results = totalTransactionCountService.getAll(new Page(), emptySet());
+        Results<TotalTransactionCount> results = totalTransactionCountService.getAll(new Page(), emptyList());
         validateResults(results, totalTransactionCount1);
     }
 
@@ -206,7 +205,7 @@ public class TotalTransactionCountServiceImplIT extends BaseServiceImplIT {
 
         totalTransactionCountService.truncate();
 
-        Results<TotalTransactionCount> results = totalTransactionCountService.getAll(new Page(), emptySet());
+        Results<TotalTransactionCount> results = totalTransactionCountService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 }

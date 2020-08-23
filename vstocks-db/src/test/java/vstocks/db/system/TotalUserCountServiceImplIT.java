@@ -13,11 +13,10 @@ import vstocks.model.User;
 import vstocks.model.system.TotalUserCount;
 import vstocks.model.system.TotalUserCountCollection;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static vstocks.model.DatabaseField.COUNT;
@@ -63,7 +62,7 @@ public class TotalUserCountServiceImplIT extends BaseServiceImplIT {
     public void testGenerateEmpty() {
         assertEquals(1, totalUserCountService.generate());
 
-        Results<TotalUserCount> results = totalUserCountService.getAll(new Page(), emptySet());
+        Results<TotalUserCount> results = totalUserCountService.getAll(new Page(), emptyList());
         assertEquals(1, results.getTotal());
         assertEquals(1, results.getResults().size());
         assertEquals(0, results.getResults().iterator().next().getCount());
@@ -76,7 +75,7 @@ public class TotalUserCountServiceImplIT extends BaseServiceImplIT {
 
         assertEquals(1, totalUserCountService.generate());
 
-        Results<TotalUserCount> results = totalUserCountService.getAll(new Page(), emptySet());
+        Results<TotalUserCount> results = totalUserCountService.getAll(new Page(), emptyList());
         assertEquals(1, results.getTotal());
         assertEquals(1, results.getResults().size());
         assertEquals(2, results.getResults().iterator().next().getCount());
@@ -101,7 +100,7 @@ public class TotalUserCountServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<TotalUserCount> results = totalUserCountService.getAll(new Page(), emptySet());
+        Results<TotalUserCount> results = totalUserCountService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 
@@ -110,7 +109,7 @@ public class TotalUserCountServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, totalUserCountService.add(totalUserCount1));
         assertEquals(1, totalUserCountService.add(totalUserCount2));
 
-        Results<TotalUserCount> results = totalUserCountService.getAll(new Page(), emptySet());
+        Results<TotalUserCount> results = totalUserCountService.getAll(new Page(), emptyList());
         validateResults(results, totalUserCount1, totalUserCount2);
     }
 
@@ -119,7 +118,7 @@ public class TotalUserCountServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, totalUserCountService.add(totalUserCount1));
         assertEquals(1, totalUserCountService.add(totalUserCount2));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(COUNT.toSort(DESC), TIMESTAMP.toSort(DESC)));
+        List<Sort> sort = asList(COUNT.toSort(DESC), TIMESTAMP.toSort(DESC));
         Results<TotalUserCount> results = totalUserCountService.getAll(new Page(), sort);
         validateResults(results, totalUserCount2, totalUserCount1);
     }
@@ -137,7 +136,7 @@ public class TotalUserCountServiceImplIT extends BaseServiceImplIT {
 
         totalUserCountService.ageOff(now.minusSeconds(5));
 
-        Results<TotalUserCount> results = totalUserCountService.getAll(new Page(), emptySet());
+        Results<TotalUserCount> results = totalUserCountService.getAll(new Page(), emptyList());
         validateResults(results, totalUserCount1);
     }
 
@@ -148,7 +147,7 @@ public class TotalUserCountServiceImplIT extends BaseServiceImplIT {
 
         totalUserCountService.truncate();
 
-        Results<TotalUserCount> results = totalUserCountService.getAll(new Page(), emptySet());
+        Results<TotalUserCount> results = totalUserCountService.getAll(new Page(), emptyList());
         validateResults(results);
     }
 }

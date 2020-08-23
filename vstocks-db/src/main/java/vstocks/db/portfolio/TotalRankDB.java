@@ -1,46 +1,64 @@
 package vstocks.db.portfolio;
 
-import vstocks.db.BaseTable;
+import vstocks.db.BaseDB;
 import vstocks.db.RowMapper;
 import vstocks.db.RowSetter;
+import vstocks.db.UserDB;
 import vstocks.model.*;
+import vstocks.model.portfolio.RankedUser;
 import vstocks.model.portfolio.TotalRank;
 import vstocks.model.portfolio.TotalRankCollection;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
-import static vstocks.model.DatabaseField.RANK;
-import static vstocks.model.DatabaseField.USER_ID;
+import static vstocks.model.DatabaseField.*;
+import static vstocks.model.SortDirection.DESC;
 
-class TotalRankDB extends BaseTable {
+class TotalRankDB extends BaseDB {
+    private static final String BATCH_SEQUENCE = "total_ranks_batch_sequence";
+
     private static final RowMapper<TotalRank> ROW_MAPPER = rs ->
             new TotalRank()
+                    .setBatch(rs.getLong("batch"))
                     .setUserId(rs.getString("user_id"))
                     .setTimestamp(rs.getTimestamp("timestamp").toInstant().truncatedTo(SECONDS))
                     .setRank(rs.getLong("rank"));
 
-    private static final RowSetter<TotalRank> INSERT_ROW_SETTER = (ps, marketRank) -> {
+    private static final RowMapper<RankedUser> USER_ROW_MAPPER = rs ->
+            new RankedUser()
+                    .setUser(UserDB.ROW_MAPPER.map(rs))
+                    .setBatch(rs.getLong("batch"))
+                    .setTimestamp(rs.getTimestamp("timestamp").toInstant())
+                    .setRank(rs.getLong("rank"));
+
+    private static final RowSetter<TotalRank> INSERT_ROW_SETTER = (ps, totalRank) -> {
         int index = 0;
-        ps.setString(++index, marketRank.getUserId());
-        ps.setTimestamp(++index, Timestamp.from(marketRank.getTimestamp()));
-        ps.setLong(++index, marketRank.getRank());
+        ps.setLong(++index, totalRank.getBatch());
+        ps.setString(++index, totalRank.getUserId());
+        ps.setTimestamp(++index, Timestamp.from(totalRank.getTimestamp()));
+        ps.setLong(++index, totalRank.getRank());
     };
 
     @Override
-    protected Set<Sort> getDefaultSort() {
-        return new LinkedHashSet<>(asList(RANK.toSort(), USER_ID.toSort()));
+    protected List<Sort> getDefaultSort() {
+        return asList(BATCH.toSort(DESC), RANK.toSort(), USER_ID.toSort());
+    }
+
+    public long setCurrentBatch(Connection connection, long batch) {
+        return setSequenceValue(connection, BATCH_SEQUENCE, batch);
     }
 
     public int generate(Connection connection) {
-        String sql = "INSERT INTO total_ranks (user_id, timestamp, rank)"
-                + "(SELECT user_id, timestamp, RANK() OVER (ORDER BY value DESC) AS rank FROM ("
+        long batch = getNextSequenceValue(connection, BATCH_SEQUENCE);
+        String sql = "INSERT INTO total_ranks (batch, user_id, timestamp, rank)"
+                + "(SELECT ? AS batch, user_id, timestamp, RANK() OVER (ORDER BY value DESC) AS rank FROM ("
                 + "  SELECT user_id, NOW() AS timestamp, SUM(credits) + SUM(stocks) AS value FROM ("
                 + "    SELECT user_id, 0 AS credits, SUM(value) AS stocks FROM ("
                 + "      SELECT DISTINCT ON (us.user_id, us.market, us.symbol)"
@@ -53,7 +71,7 @@ class TotalRankDB extends BaseTable {
                 + "    SELECT user_id, credits, 0 AS stocks FROM user_credits"
                 + "  ) AS portfolio_values GROUP BY user_id ORDER BY value DESC"
                 + ") AS ordered_values)";
-        return update(connection, sql);
+        return update(connection, sql, batch);
     }
 
     public TotalRankCollection getLatest(Connection connection, String userId) {
@@ -68,21 +86,25 @@ class TotalRankDB extends BaseTable {
                 .setDeltas(Delta.getDeltas(ranks, TotalRank::getTimestamp, TotalRank::getRank));
     }
 
-    public Results<TotalRank> getAll(Connection connection, Page page, Set<Sort> sort) {
+    public Results<TotalRank> getAll(Connection connection, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM total_ranks %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM total_ranks";
         return results(connection, ROW_MAPPER, page, sql, count);
     }
 
-    public int add(Connection connection, TotalRank totalRank) {
-        return addAll(connection, singleton(totalRank));
+    public Results<RankedUser> getUsers(Connection connection, Page page) {
+        long batch = getCurrentSequenceValue(connection, BATCH_SEQUENCE);
+        String sql = "SELECT * FROM total_ranks r JOIN users u ON (u.id = r.user_id) WHERE batch = ? "
+                + "ORDER BY r.rank, u.username LIMIT ? OFFSET ?";
+        String count = "SELECT COUNT(*) FROM total_ranks WHERE batch = ?";
+        return results(connection, USER_ROW_MAPPER, page, sql, count, batch);
     }
 
-    public int addAll(Connection connection, Collection<TotalRank> totalRanks) {
-        String sql = "INSERT INTO total_ranks (user_id, timestamp, rank) VALUES (?, ?, ?) "
+    public int add(Connection connection, TotalRank totalRank) {
+        String sql = "INSERT INTO total_ranks (batch, user_id, timestamp, rank) VALUES (?, ?, ?, ?) "
                 + "ON CONFLICT ON CONSTRAINT total_ranks_pk "
                 + "DO UPDATE SET rank = EXCLUDED.rank WHERE total_ranks.rank != EXCLUDED.rank";
-        return updateBatch(connection, INSERT_ROW_SETTER, sql, totalRanks);
+        return update(connection, INSERT_ROW_SETTER, sql, totalRank);
     }
 
     public int ageOff(Connection connection, Instant cutoff) {

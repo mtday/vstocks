@@ -7,13 +7,13 @@ import vstocks.db.*;
 import vstocks.model.*;
 import vstocks.model.portfolio.MarketRank;
 import vstocks.model.portfolio.MarketRankCollection;
+import vstocks.model.portfolio.RankedUser;
 
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static vstocks.model.DatabaseField.RANK;
@@ -94,25 +94,40 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
             .setShares(20);
 
     private final MarketRank marketRank11 = new MarketRank()
+            .setBatch(2)
             .setUserId(user1.getId())
             .setMarket(TWITTER)
             .setTimestamp(now)
             .setRank(1);
     private final MarketRank marketRank12 = new MarketRank()
+            .setBatch(1)
             .setUserId(user1.getId())
             .setMarket(TWITTER)
             .setTimestamp(now.minusSeconds(10))
             .setRank(2);
     private final MarketRank marketRank21 = new MarketRank()
+            .setBatch(2)
             .setUserId(user2.getId())
             .setMarket(TWITTER)
             .setTimestamp(now)
             .setRank(2);
     private final MarketRank marketRank22 = new MarketRank()
+            .setBatch(1)
             .setUserId(user2.getId())
             .setMarket(TWITTER)
             .setTimestamp(now.minusSeconds(10))
             .setRank(3);
+
+    private final RankedUser rankedUser1 = new RankedUser()
+            .setUser(user1)
+            .setBatch(marketRank11.getBatch())
+            .setTimestamp(marketRank11.getTimestamp())
+            .setRank(marketRank11.getRank());
+    private final RankedUser rankedUser2 = new RankedUser()
+            .setUser(user2)
+            .setBatch(marketRank21.getBatch())
+            .setTimestamp(marketRank21.getTimestamp())
+            .setRank(marketRank21.getRank());
 
     @Before
     public void setup() {
@@ -146,9 +161,9 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
         userStockService.add(userStock11);
         userStockService.add(userStock21);
 
-        assertEquals(2, marketRankService.generate(TWITTER));
+        assertEquals(2 * Market.values().length, marketRankService.generate());
 
-        Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptySet());
+        Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertTrue(results.getResults().stream().map(MarketRank::getRank).allMatch(rank -> rank == 1));
@@ -159,9 +174,9 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
         userStockService.add(userStock12);
         userStockService.add(userStock22);
 
-        assertEquals(2, marketRankService.generate(TWITTER));
+        assertEquals(2 * Market.values().length, marketRankService.generate());
 
-        Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptySet());
+        Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
         assertEquals(3, results.getResults().stream().mapToLong(MarketRank::getRank).sum());
@@ -216,7 +231,7 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetAllNone() {
-        Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptySet());
+        Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptyList());
         validateResults(results);
     }
 
@@ -225,7 +240,7 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, marketRankService.add(marketRank11));
         assertEquals(1, marketRankService.add(marketRank12));
 
-        Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptySet());
+        Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptyList());
         validateResults(results, marketRank11, marketRank12);
     }
 
@@ -236,9 +251,27 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, marketRankService.add(marketRank21));
         assertEquals(1, marketRankService.add(marketRank22));
 
-        Set<Sort> sort = new LinkedHashSet<>(asList(RANK.toSort(DESC), USER_ID.toSort()));
+        List<Sort> sort = asList(RANK.toSort(DESC), USER_ID.toSort());
         Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), sort);
         validateResults(results, marketRank22, marketRank12, marketRank21, marketRank11);
+    }
+
+    @Test
+    public void testGetUsersNone() {
+        Results<RankedUser> results = marketRankService.getUsers(TWITTER, new Page());
+        validateResults(results);
+    }
+
+    @Test
+    public void testGetUsersSome() {
+        assertEquals(1, marketRankService.add(marketRank11));
+        assertEquals(1, marketRankService.add(marketRank12));
+        assertEquals(1, marketRankService.add(marketRank21));
+        assertEquals(1, marketRankService.add(marketRank22));
+
+        marketRankService.setCurrentBatch(2);
+        Results<RankedUser> results = marketRankService.getUsers(TWITTER, new Page());
+        validateResults(results, rankedUser1, rankedUser2);
     }
 
     @Test
@@ -256,7 +289,7 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
 
         marketRankService.ageOff(now.minusSeconds(5));
 
-        Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptySet());
+        Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptyList());
         validateResults(results, marketRank11, marketRank21);
     }
 
@@ -269,7 +302,7 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
 
         marketRankService.truncate();
 
-        Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptySet());
+        Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptyList());
         validateResults(results);
     }
 }

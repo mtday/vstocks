@@ -6,12 +6,22 @@ import java.time.Instant;
 import java.util.Objects;
 
 public class MarketValue {
+    private long batch;
     private String userId;
     private Market market;
     private Instant timestamp;
     private long value;
 
     public MarketValue() {
+    }
+
+    public long getBatch() {
+        return batch;
+    }
+
+    public MarketValue setBatch(long batch) {
+        this.batch = batch;
+        return this;
     }
 
     public String getUserId() {
@@ -55,7 +65,8 @@ public class MarketValue {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MarketValue that = (MarketValue) o;
-        return value == that.value &&
+        return batch == that.batch &&
+                value == that.value &&
                 Objects.equals(userId, that.userId) &&
                 market == that.market &&
                 Objects.equals(timestamp, that.timestamp);
@@ -63,13 +74,14 @@ public class MarketValue {
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, market, timestamp, value);
+        return Objects.hash(batch, userId, market, timestamp, value);
     }
 
     @Override
     public String toString() {
         return "MarketValue{" +
-                "userId='" + userId + '\'' +
+                "batch=" + batch +
+                ", userId='" + userId + '\'' +
                 ", market=" + market +
                 ", timestamp=" + timestamp +
                 ", value=" + value +

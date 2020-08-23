@@ -58,12 +58,12 @@ public class GetUserAchievementsIT extends ResourceTest {
     public void testGetUserAchievementsNone() {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getDBFactory().getUserService()).thenReturn(userDB);
+        when(getServiceFactory().getUserService()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         UserAchievementService userAchievementDB = mock(UserAchievementService.class);
         when(userAchievementDB.getForUser(eq(getUser().getId()))).thenReturn(emptyList());
-        when(getDBFactory().getUserAchievementService()).thenReturn(userAchievementDB);
+        when(getServiceFactory().getUserAchievementService()).thenReturn(userAchievementDB);
 
         Response response = target("/user/achievements").request().header(AUTHORIZATION, "Bearer token").get();
 
@@ -79,7 +79,7 @@ public class GetUserAchievementsIT extends ResourceTest {
     public void testGetUserAchievementsSomeAvailable() {
         UserService userDB = mock(UserService.class);
         when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getDBFactory().getUserService()).thenReturn(userDB);
+        when(getServiceFactory().getUserService()).thenReturn(userDB);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         UserAchievement userAchievement = new UserAchievement()
@@ -90,7 +90,7 @@ public class GetUserAchievementsIT extends ResourceTest {
 
         UserAchievementService userAchievementDB = mock(UserAchievementService.class);
         when(userAchievementDB.getForUser(eq(getUser().getId()))).thenReturn(singletonList(userAchievement));
-        when(getDBFactory().getUserAchievementService()).thenReturn(userAchievementDB);
+        when(getServiceFactory().getUserAchievementService()).thenReturn(userAchievementDB);
 
         Response response = target("/user/achievements").request().header(AUTHORIZATION, "Bearer token").get();
 

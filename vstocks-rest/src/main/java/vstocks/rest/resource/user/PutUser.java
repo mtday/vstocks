@@ -31,11 +31,11 @@ public class PutUser extends BaseResource {
             "The specified username contains invalid characters. Only alphanumeric characters, along with " +
                     "underscores and dashes are allowed.";
 
-    private final ServiceFactory dbFactory;
+    private final ServiceFactory serviceFactory;
 
     @Inject
-    public PutUser(ServiceFactory dbFactory) {
-        this.dbFactory = dbFactory;
+    public PutUser(ServiceFactory serviceFactory) {
+        this.serviceFactory = serviceFactory;
     }
 
     @PUT
@@ -64,8 +64,8 @@ public class PutUser extends BaseResource {
             }
         });
 
-        return dbFactory.getUserService().update(existingUser) == 1
+        return serviceFactory.getUserService().update(existingUser) == 1
                 ? existingUser
-                : dbFactory.getUserService().get(existingUser.getId()).orElse(null); // not expecting a missing user here
+                : serviceFactory.getUserService().get(existingUser.getId()).orElse(null); // not expecting a missing user here
     }
 }

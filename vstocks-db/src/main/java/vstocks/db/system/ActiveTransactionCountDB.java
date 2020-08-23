@@ -1,9 +1,12 @@
 package vstocks.db.system;
 
-import vstocks.db.BaseTable;
+import vstocks.db.BaseDB;
 import vstocks.db.RowMapper;
 import vstocks.db.RowSetter;
-import vstocks.model.*;
+import vstocks.model.DeltaInterval;
+import vstocks.model.Page;
+import vstocks.model.Results;
+import vstocks.model.Sort;
 import vstocks.model.system.ActiveTransactionCount;
 import vstocks.model.system.ActiveTransactionCountCollection;
 
@@ -12,17 +15,16 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static vstocks.model.DatabaseField.TIMESTAMP;
 import static vstocks.model.Delta.getDeltas;
 import static vstocks.model.SortDirection.DESC;
 
-class ActiveTransactionCountDB extends BaseTable {
+class ActiveTransactionCountDB extends BaseDB {
     private static final RowMapper<ActiveTransactionCount> ROW_MAPPER = rs ->
             new ActiveTransactionCount()
                     .setTimestamp(rs.getTimestamp("timestamp").toInstant().truncatedTo(SECONDS))
@@ -35,8 +37,8 @@ class ActiveTransactionCountDB extends BaseTable {
     };
 
     @Override
-    protected Set<Sort> getDefaultSort() {
-        return singleton(TIMESTAMP.toSort(DESC));
+    protected List<Sort> getDefaultSort() {
+        return singletonList(TIMESTAMP.toSort(DESC));
     }
 
     public int generate(Connection connection) {
@@ -59,7 +61,7 @@ class ActiveTransactionCountDB extends BaseTable {
                 .setDeltas(getDeltas(counts, ActiveTransactionCount::getTimestamp, ActiveTransactionCount::getCount));
     }
 
-    public Results<ActiveTransactionCount> getAll(Connection connection, Page page, Set<Sort> sort) {
+    public Results<ActiveTransactionCount> getAll(Connection connection, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM active_transaction_counts %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM active_transaction_counts";
         return results(connection, ROW_MAPPER, page, sql, count);

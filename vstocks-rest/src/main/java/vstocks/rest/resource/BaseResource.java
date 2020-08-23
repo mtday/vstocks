@@ -7,13 +7,12 @@ import vstocks.model.User;
 
 import javax.ws.rs.core.SecurityContext;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toCollection;
+import static java.util.stream.Collectors.toList;
 import static vstocks.model.User.generateId;
 
 public abstract class BaseResource {
@@ -26,7 +25,7 @@ public abstract class BaseResource {
                 .setSize(ofNullable(pageSize).map(size -> Math.min(MAX_PAGE_SIZE, size)).orElse(DEFAULT_PAGE_SIZE));
     }
 
-    protected Set<Sort> getSort(String sortConfig) {
+    protected List<Sort> getSort(String sortConfig) {
         return Stream.of(sortConfig)
                 .filter(Objects::nonNull)
                 .map(sort -> sort.split(","))
@@ -34,7 +33,7 @@ public abstract class BaseResource {
                 .map(String::trim)
                 .filter(sort -> !sort.isEmpty())
                 .map(Sort::parse)
-                .collect(toCollection(LinkedHashSet::new));
+                .collect(toList());
     }
 
     protected User getUser(SecurityContext securityContext) {
