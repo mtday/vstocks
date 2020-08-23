@@ -14,11 +14,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/system/user-count/total")
 @Singleton
-public class GetUserCountTotal extends BaseResource {
+public class GetTotalUserCount extends BaseResource {
     private final ServiceFactory serviceFactory;
 
     @Inject
-    public GetUserCountTotal(ServiceFactory serviceFactory) {
+    public GetTotalUserCount(ServiceFactory serviceFactory) {
         this.serviceFactory = serviceFactory;
     }
 

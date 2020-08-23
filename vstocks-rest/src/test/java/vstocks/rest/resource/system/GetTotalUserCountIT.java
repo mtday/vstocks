@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class GetUserCountTotalIT extends ResourceTest {
+public class GetTotalUserCountIT extends ResourceTest {
     @Test
     public void testTotalUserCountWithData() {
         Instant now = Instant.now().truncatedTo(SECONDS);

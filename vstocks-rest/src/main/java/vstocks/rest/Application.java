@@ -25,14 +25,21 @@ import vstocks.rest.resource.market.stock.*;
 import vstocks.rest.resource.security.Callback;
 import vstocks.rest.resource.security.Login;
 import vstocks.rest.resource.security.Logout;
-import vstocks.rest.resource.system.GetUserCountActive;
-import vstocks.rest.resource.system.GetUserCountTotal;
+import vstocks.rest.resource.system.GetActiveTransactionCount;
+import vstocks.rest.resource.system.GetActiveUserCount;
+import vstocks.rest.resource.system.GetTotalTransactionCount;
+import vstocks.rest.resource.system.GetTotalUserCount;
 import vstocks.rest.resource.user.GetUser;
 import vstocks.rest.resource.user.PutUser;
 import vstocks.rest.resource.user.ResetUser;
 import vstocks.rest.resource.user.UsernameExists;
 import vstocks.rest.resource.user.achievement.GetUserAchievements;
+import vstocks.rest.resource.user.portfolio.GetCreditBalance;
 import vstocks.rest.resource.user.portfolio.GetStocks;
+import vstocks.rest.resource.user.portfolio.rank.GetCreditRank;
+import vstocks.rest.resource.user.portfolio.rank.GetMarketRank;
+import vstocks.rest.resource.user.portfolio.rank.GetMarketTotalRank;
+import vstocks.rest.resource.user.portfolio.rank.GetTotalRank;
 import vstocks.rest.security.AccessLogFilter;
 import vstocks.rest.security.JwtSecurity;
 import vstocks.rest.security.JwtTokenFilter;
@@ -78,7 +85,6 @@ public class Application extends ResourceConfig {
         register(GetMarket.class);
 
         // market/stock
-        register(AddStock.class);
         register(BuyStock.class);
         register(GetStock.class);
         register(GetStocksForMarket.class);
@@ -93,8 +99,10 @@ public class Application extends ResourceConfig {
         // standings
 
         // system
-        register(GetUserCountActive.class);
-        register(GetUserCountTotal.class);
+        register(GetActiveUserCount.class);
+        register(GetTotalUserCount.class);
+        register(GetActiveTransactionCount.class);
+        register(GetTotalTransactionCount.class);
 
         // user
         register(GetUser.class);
@@ -106,6 +114,11 @@ public class Application extends ResourceConfig {
         register(GetUserAchievements.class);
 
         // user/portfolio
+        register(GetCreditRank.class);
+        register(GetMarketRank.class);
+        register(GetMarketTotalRank.class);
+        register(GetTotalRank.class);
+        register(GetCreditBalance.class);
         register(GetStocks.class);
 
         register(BadRequestExceptionMapper.class);
