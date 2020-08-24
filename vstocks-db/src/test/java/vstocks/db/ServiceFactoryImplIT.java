@@ -43,5 +43,9 @@ public class ServiceFactoryImplIT {
         assertNotNull(serviceFactory.getTotalUserCountService());
         assertNotNull(serviceFactory.getActiveTransactionCountService());
         assertNotNull(serviceFactory.getTotalTransactionCountService());
+        assertNotNull(serviceFactory.getOverallCreditValueService());
+        assertNotNull(serviceFactory.getOverallMarketValueService());
+        assertNotNull(serviceFactory.getOverallMarketTotalValueService());
+        assertNotNull(serviceFactory.getOverallTotalValueService());
     }
 }

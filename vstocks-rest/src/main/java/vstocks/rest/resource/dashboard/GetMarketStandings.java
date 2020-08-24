@@ -1,4 +1,4 @@
-package vstocks.rest.resource.standings;
+package vstocks.rest.resource.dashboard;
 
 import vstocks.db.ServiceFactory;
 import vstocks.model.Market;
@@ -15,7 +15,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-@Path("/standings/market/{market}")
+@Path("/dashboard/standings/market/{market}")
 @Singleton
 public class GetMarketStandings extends BaseResource {
     private final ServiceFactory serviceFactory;

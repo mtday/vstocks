@@ -1,10 +1,7 @@
 package vstocks.db;
 
 import vstocks.db.portfolio.*;
-import vstocks.db.system.ActiveTransactionCountService;
-import vstocks.db.system.ActiveUserCountService;
-import vstocks.db.system.TotalTransactionCountService;
-import vstocks.db.system.TotalUserCountService;
+import vstocks.db.system.*;
 
 public interface ServiceFactory {
     ActivityLogService getActivityLogService();
@@ -31,4 +28,8 @@ public interface ServiceFactory {
     TotalUserCountService getTotalUserCountService();
     ActiveTransactionCountService getActiveTransactionCountService();
     TotalTransactionCountService getTotalTransactionCountService();
+    OverallCreditValueService getOverallCreditValueService();
+    OverallMarketValueService getOverallMarketValueService();
+    OverallMarketTotalValueService getOverallMarketTotalValueService();
+    OverallTotalValueService getOverallTotalValueService();
 }

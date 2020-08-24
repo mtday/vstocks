@@ -30,6 +30,10 @@ public class ServiceFactoryImpl implements ServiceFactory {
     private final TotalUserCountService totalUserCountService;
     private final ActiveTransactionCountService activeTransactionCountService;
     private final TotalTransactionCountService totalTransactionCountService;
+    private final OverallCreditValueService overallCreditValueService;
+    private final OverallMarketValueService overallMarketValueService;
+    private final OverallMarketTotalValueService overallMarketTotalValueService;
+    private final OverallTotalValueService overallTotalValueService;
 
     public ServiceFactoryImpl(DataSource dataSource) {
         this.activityLogService = new ActivityLogServiceImpl(dataSource);
@@ -52,6 +56,10 @@ public class ServiceFactoryImpl implements ServiceFactory {
         this.totalUserCountService = new TotalUserCountServiceImpl(dataSource);
         this.activeTransactionCountService = new ActiveTransactionCountServiceImpl(dataSource);
         this.totalTransactionCountService = new TotalTransactionCountServiceImpl(dataSource);
+        this.overallCreditValueService = new OverallCreditValueServiceImpl(dataSource);
+        this.overallMarketValueService = new OverallMarketValueServiceImpl(dataSource);
+        this.overallMarketTotalValueService = new OverallMarketTotalValueServiceImpl(dataSource);
+        this.overallTotalValueService = new OverallTotalValueServiceImpl(dataSource);
     }
 
     @Override
@@ -142,5 +150,25 @@ public class ServiceFactoryImpl implements ServiceFactory {
     @Override
     public TotalTransactionCountService getTotalTransactionCountService() {
         return totalTransactionCountService;
+    }
+
+    @Override
+    public OverallCreditValueService getOverallCreditValueService() {
+        return overallCreditValueService;
+    }
+
+    @Override
+    public OverallMarketValueService getOverallMarketValueService() {
+        return overallMarketValueService;
+    }
+
+    @Override
+    public OverallMarketTotalValueService getOverallMarketTotalValueService() {
+        return overallMarketTotalValueService;
+    }
+
+    @Override
+    public OverallTotalValueService getOverallTotalValueService() {
+        return overallTotalValueService;
     }
 }

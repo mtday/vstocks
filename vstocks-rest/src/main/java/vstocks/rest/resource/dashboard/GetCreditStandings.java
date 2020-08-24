@@ -1,4 +1,4 @@
-package vstocks.rest.resource.standings;
+package vstocks.rest.resource.dashboard;
 
 import vstocks.db.ServiceFactory;
 import vstocks.model.Results;
@@ -17,22 +17,22 @@ import javax.ws.rs.core.SecurityContext;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-@Path("/standings/total")
+@Path("/dashboard/standings/credits")
 @Singleton
-public class GetTotalStandings extends BaseResource {
+public class GetCreditStandings extends BaseResource {
     private final ServiceFactory serviceFactory;
 
     @Inject
-    public GetTotalStandings(ServiceFactory serviceFactory) {
+    public GetCreditStandings(ServiceFactory serviceFactory) {
         this.serviceFactory = serviceFactory;
     }
 
     @GET
     @Produces(APPLICATION_JSON)
     @JwtTokenRequired
-    public Results<RankedUser> getTotalStandings(@Context SecurityContext securityContext,
-                                                 @QueryParam("pageNum") Integer pageNum,
-                                                 @QueryParam("pageSize") Integer pageSize) {
-        return serviceFactory.getTotalRankService().getUsers(getPage(pageNum, pageSize));
+    public Results<RankedUser> getCreditsStandings(@Context SecurityContext securityContext,
+                                                   @QueryParam("pageNum") Integer pageNum,
+                                                   @QueryParam("pageSize") Integer pageSize) {
+        return serviceFactory.getCreditRankService().getUsers(getPage(pageNum, pageSize));
     }
 }

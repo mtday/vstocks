@@ -8,19 +8,19 @@ import java.time.Instant;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static vstocks.config.Config.DATA_HISTORY_DAYS;
 
-public class TotalUserCountUpdateTask extends HourlyTask {
+public class OverallMarketValueUpdateTask extends HourlyTask {
     private final Environment environment;
 
-    public TotalUserCountUpdateTask(Environment environment) {
+    public OverallMarketValueUpdateTask(Environment environment) {
         this.environment = environment;
     }
 
     @Override
     public void run() {
-        environment.getServiceFactory().getTotalUserCountService().generate();
+        environment.getServiceFactory().getOverallMarketValueService().generate();
 
         int days = DATA_HISTORY_DAYS.getInt();
         Instant cutoff = Instant.now().truncatedTo(DAYS).minus(days, DAYS);
-        environment.getServiceFactory().getTotalUserCountService().ageOff(cutoff);
+        environment.getServiceFactory().getOverallMarketValueService().ageOff(cutoff);
     }
 }

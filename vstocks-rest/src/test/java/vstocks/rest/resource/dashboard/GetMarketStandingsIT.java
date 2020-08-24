@@ -1,8 +1,8 @@
-package vstocks.rest.resource.standings;
+package vstocks.rest.resource.dashboard;
 
 import org.junit.Test;
 import vstocks.db.UserService;
-import vstocks.db.portfolio.MarketTotalRankService;
+import vstocks.db.portfolio.MarketRankService;
 import vstocks.model.ErrorResponse;
 import vstocks.model.Page;
 import vstocks.model.Results;
@@ -28,12 +28,13 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static vstocks.model.Market.TWITTER;
 import static vstocks.rest.security.JwtTokenFilter.INVALID_JWT_MESSAGE;
 
-public class GetMarketTotalStandingsIT extends ResourceTest {
+public class GetMarketStandingsIT extends ResourceTest {
     @Test
     public void testGetStandingsNoAuthorizationHeader() {
-        Response response = target("/standings/market-total").request().get();
+        Response response = target("/dashboard/standings/market/TWITTER").request().get();
 
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
@@ -47,7 +48,7 @@ public class GetMarketTotalStandingsIT extends ResourceTest {
     public void testGetStandingsNoValidToken() {
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(empty());
 
-        Response response = target("/standings/market-total").request().header(AUTHORIZATION, "Bearer token").get();
+        Response response = target("/dashboard/standings/market/TWITTER").request().header(AUTHORIZATION, "Bearer token").get();
 
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
@@ -68,11 +69,11 @@ public class GetMarketTotalStandingsIT extends ResourceTest {
         Page page = new Page().setPage(2).setSize(15);
 
         Results<RankedUser> results = new Results<RankedUser>().setTotal(0).setPage(page).setResults(emptyList());
-        MarketTotalRankService marketTotalRankService = mock(MarketTotalRankService.class);
-        when(marketTotalRankService.getUsers(eq(page))).thenReturn(results);
-        when(getServiceFactory().getMarketTotalRankService()).thenReturn(marketTotalRankService);
+        MarketRankService marketRankService = mock(MarketRankService.class);
+        when(marketRankService.getUsers(eq(TWITTER), eq(page))).thenReturn(results);
+        when(getServiceFactory().getMarketRankService()).thenReturn(marketRankService);
 
-        Response response = target("/standings/market-total")
+        Response response = target("/dashboard/standings/market/TWITTER")
                 .queryParam("pageNum", page.getPage())
                 .queryParam("pageSize", page.getSize())
                 .queryParam("sort", "USER_ID,RANK:DESC")
@@ -111,11 +112,11 @@ public class GetMarketTotalStandingsIT extends ResourceTest {
         List<RankedUser> rankedUsers = asList(rankedUser1, rankedUser2);
         Results<RankedUser> results = new Results<RankedUser>().setTotal(2).setPage(new Page()).setResults(rankedUsers);
 
-        MarketTotalRankService marketTotalRankService = mock(MarketTotalRankService.class);
-        when(marketTotalRankService.getUsers(eq(new Page()))).thenReturn(results);
-        when(getServiceFactory().getMarketTotalRankService()).thenReturn(marketTotalRankService);
+        MarketRankService marketRankService = mock(MarketRankService.class);
+        when(marketRankService.getUsers(eq(TWITTER), eq(new Page()))).thenReturn(results);
+        when(getServiceFactory().getMarketRankService()).thenReturn(marketRankService);
 
-        Response response = target("/standings/market-total").request().header(AUTHORIZATION, "Bearer token").get();
+        Response response = target("/dashboard/standings/market/TWITTER").request().header(AUTHORIZATION, "Bearer token").get();
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));

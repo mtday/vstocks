@@ -1,4 +1,4 @@
-package vstocks.rest.resource.standings;
+package vstocks.rest.resource.dashboard;
 
 import org.junit.Test;
 import vstocks.db.UserService;
@@ -33,7 +33,7 @@ import static vstocks.rest.security.JwtTokenFilter.INVALID_JWT_MESSAGE;
 public class GetCreditStandingsIT extends ResourceTest {
     @Test
     public void testGetStandingsNoAuthorizationHeader() {
-        Response response = target("/standings/credits").request().get();
+        Response response = target("/dashboard/standings/credits").request().get();
 
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
@@ -47,7 +47,7 @@ public class GetCreditStandingsIT extends ResourceTest {
     public void testGetStandingsNoValidToken() {
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(empty());
 
-        Response response = target("/standings/credits").request().header(AUTHORIZATION, "Bearer token").get();
+        Response response = target("/dashboard/standings/credits").request().header(AUTHORIZATION, "Bearer token").get();
 
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
@@ -72,7 +72,7 @@ public class GetCreditStandingsIT extends ResourceTest {
         when(creditRankService.getUsers(eq(page))).thenReturn(results);
         when(getServiceFactory().getCreditRankService()).thenReturn(creditRankService);
 
-        Response response = target("/standings/credits")
+        Response response = target("/dashboard/standings/credits")
                 .queryParam("pageNum", page.getPage())
                 .queryParam("pageSize", page.getSize())
                 .queryParam("sort", "USER_ID,RANK:DESC")
@@ -115,7 +115,7 @@ public class GetCreditStandingsIT extends ResourceTest {
         when(creditRankService.getUsers(eq(new Page()))).thenReturn(results);
         when(getServiceFactory().getCreditRankService()).thenReturn(creditRankService);
 
-        Response response = target("/standings/credits").request().header(AUTHORIZATION, "Bearer token").get();
+        Response response = target("/dashboard/standings/credits").request().header(AUTHORIZATION, "Bearer token").get();
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));

@@ -19,16 +19,13 @@ import vstocks.db.ServiceFactoryImpl;
 import vstocks.rest.exception.BadRequestExceptionMapper;
 import vstocks.rest.exception.NotFoundExceptionMapper;
 import vstocks.rest.resource.achievement.GetAchievements;
+import vstocks.rest.resource.dashboard.*;
 import vstocks.rest.resource.market.GetAllMarkets;
 import vstocks.rest.resource.market.GetMarket;
 import vstocks.rest.resource.market.stock.*;
 import vstocks.rest.resource.security.Callback;
 import vstocks.rest.resource.security.Login;
 import vstocks.rest.resource.security.Logout;
-import vstocks.rest.resource.standings.GetCreditStandings;
-import vstocks.rest.resource.standings.GetMarketStandings;
-import vstocks.rest.resource.standings.GetMarketTotalStandings;
-import vstocks.rest.resource.standings.GetTotalStandings;
 import vstocks.rest.resource.system.GetActiveTransactionCount;
 import vstocks.rest.resource.system.GetActiveUserCount;
 import vstocks.rest.resource.system.GetTotalTransactionCount;
@@ -103,11 +100,17 @@ public class Application extends ResourceConfig {
         register(Login.class);
         register(Logout.class);
 
-        // standings
+        // dashboard/standings
         register(GetCreditStandings.class);
         register(GetMarketStandings.class);
         register(GetMarketTotalStandings.class);
         register(GetTotalStandings.class);
+
+        // dashboard/overall
+        register(GetOverallCreditValue.class);
+        register(GetOverallMarketValue.class);
+        register(GetOverallMarketTotalValue.class);
+        register(GetOverallTotalValue.class);
 
         // system
         register(GetActiveUserCount.class);
@@ -160,9 +163,13 @@ public class Application extends ResourceConfig {
 
         if (environment.isIncludeBackgroundTasks()) {
             // This executor is used to run the scheduled background tasks.
-            ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(3);
+            ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(8);
             // This executor is used to run stock price lookup tasks.
             ExecutorService stockPriceLookupExecutorService = Executors.newFixedThreadPool(8);
+
+            // Stock tasks
+            new StockPriceAgeOffTask(environment).schedule(scheduledExecutorService);
+            new StockUpdateTask(environment, stockPriceLookupExecutorService).schedule(scheduledExecutorService);
 
             // Portfolio tasks
             new CreditRankUpdateTask(environment).schedule(scheduledExecutorService);
@@ -170,16 +177,16 @@ public class Application extends ResourceConfig {
             new MarketTotalRankUpdateTask(environment).schedule(scheduledExecutorService);
             new TotalRankUpdateTask(environment).schedule(scheduledExecutorService);
 
-            // Stock tasks
-            new StockPriceAgeOffTask(environment).schedule(scheduledExecutorService);
-            new StockUpdateTask(environment, stockPriceLookupExecutorService).schedule(scheduledExecutorService);
-
             // System tasks
             new MemoryUsageLoggingTask().schedule(scheduledExecutorService);
             new ActiveUserCountUpdateTask(environment).schedule(scheduledExecutorService);
             new TotalUserCountUpdateTask(environment).schedule(scheduledExecutorService);
             new ActiveTransactionCountUpdateTask(environment).schedule(scheduledExecutorService);
             new TotalTransactionCountUpdateTask(environment).schedule(scheduledExecutorService);
+            new OverallCreditValueUpdateTask(environment).schedule(scheduledExecutorService);
+            new OverallMarketValueUpdateTask(environment).schedule(scheduledExecutorService);
+            new OverallMarketTotalValueUpdateTask(environment).schedule(scheduledExecutorService);
+            new OverallTotalValueUpdateTask(environment).schedule(scheduledExecutorService);
         }
     }
 
