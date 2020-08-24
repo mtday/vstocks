@@ -70,22 +70,22 @@ public class StockUpdateTaskTest {
         RemoteStockServiceFactory remoteStockServiceFactory = mock(RemoteStockServiceFactory.class);
         when(remoteStockServiceFactory.getForMarket(any())).thenReturn(remoteStockService);
 
-        StockService stockDB = mock(StockService.class);
+        StockService stockService = mock(StockService.class);
         List<Stock> updatedStocks = new ArrayList<>();
-        when(stockDB.update(any())).thenAnswer((Answer<Integer>) invocation -> {
+        when(stockService.update(any())).thenAnswer((Answer<Integer>) invocation -> {
             updatedStocks.add(invocation.getArgument(0));
             return 1;
         });
 
-        StockPriceService stockPriceDB = mock(StockPriceService.class);
+        StockPriceService stockPriceService = mock(StockPriceService.class);
         List<StockPrice> addedStockPrices = new ArrayList<>();
-        when(stockPriceDB.add(any())).thenAnswer((Answer<Integer>) invocation -> {
+        when(stockPriceService.add(any())).thenAnswer((Answer<Integer>) invocation -> {
             addedStockPrices.add(invocation.getArgument(0));
             return 1;
         });
 
-        OwnedStockService ownedStockDB = mock(OwnedStockService.class);
-        when(ownedStockDB.consumeForMarket(any(), any(), any())).thenAnswer((Answer<Integer>) invocation -> {
+        OwnedStockService ownedStockService = mock(OwnedStockService.class);
+        when(ownedStockService.consumeForMarket(any(), any(), any())).thenAnswer((Answer<Integer>) invocation -> {
             Market market = invocation.getArgument(0);
             Consumer<Stock> consumer = invocation.getArgument(1);
             consumer.accept(new Stock().setMarket(market).setSymbol("s1").setName("s1").setProfileImage("link"));
@@ -94,9 +94,9 @@ public class StockUpdateTaskTest {
         });
 
         ServiceFactory serviceFactory = mock(ServiceFactory.class);
-        when(serviceFactory.getOwnedStockService()).thenReturn(ownedStockDB);
-        when(serviceFactory.getStockService()).thenReturn(stockDB);
-        when(serviceFactory.getStockPriceService()).thenReturn(stockPriceDB);
+        when(serviceFactory.getOwnedStockService()).thenReturn(ownedStockService);
+        when(serviceFactory.getStockService()).thenReturn(stockService);
+        when(serviceFactory.getStockPriceService()).thenReturn(stockPriceService);
 
         Environment environment = mock(Environment.class);
         when(environment.getRemoteStockServiceFactory()).thenReturn(remoteStockServiceFactory);

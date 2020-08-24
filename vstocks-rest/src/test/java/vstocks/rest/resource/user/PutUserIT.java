@@ -56,10 +56,10 @@ public class PutUserIT extends ResourceTest {
 
     @Test
     public void testPutUserNoChange() {
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(getUser().getId()))).thenAnswer((Answer<Optional<User>>) invocation -> Optional.of(getUser()));
-        when(userDB.update(any())).thenReturn(0); // 0 means db was not updated
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenAnswer((Answer<Optional<User>>) invocation -> Optional.of(getUser()));
+        when(userService.update(any())).thenReturn(0); // 0 means db was not updated
+        when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         User updateUser = new User()
@@ -82,7 +82,7 @@ public class PutUserIT extends ResourceTest {
         assertEquals(user.getDisplayName(), fetched.getDisplayName());
         assertEquals(user.getProfileImage(), fetched.getProfileImage());
 
-        verify(userDB, times(1)).update(argThat(update -> {
+        verify(userService, times(1)).update(argThat(update -> {
             return Objects.equals(user.getId(), update.getId()) // not updated
                     && Objects.equals(user.getEmail(), update.getEmail()) // not updated
                     && Objects.equals(updateUser.getUsername(), update.getUsername()) // updated
@@ -93,10 +93,10 @@ public class PutUserIT extends ResourceTest {
 
     @Test
     public void testPutUserChanged() {
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(userDB.update(any())).thenReturn(1); // 1 means db was updated
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(userService.update(any())).thenReturn(1); // 1 means db was updated
+        when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         User updateUser = new User()
@@ -119,7 +119,7 @@ public class PutUserIT extends ResourceTest {
         assertEquals(updateUser.getDisplayName(), fetched.getDisplayName()); // updated value
         assertEquals(user.getProfileImage(), fetched.getProfileImage()); // still original value
 
-        verify(userDB, times(1)).update(argThat(update -> {
+        verify(userService, times(1)).update(argThat(update -> {
             return Objects.equals(user.getId(), update.getId()) // not updated
                     && Objects.equals(user.getEmail(), update.getEmail()) // not updated
                     && Objects.equals(updateUser.getUsername(), update.getUsername()) // updated
@@ -130,10 +130,10 @@ public class PutUserIT extends ResourceTest {
 
     @Test
     public void testPutUserInvalidDisplayName() {
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(userDB.update(any())).thenReturn(1); // 1 means db was updated
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(userService.update(any())).thenReturn(1); // 1 means db was updated
+        when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         User updateUser = new User()
@@ -157,10 +157,10 @@ public class PutUserIT extends ResourceTest {
         User user = getUser();
         user.setDisplayName("Invalid<>");
 
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(user.getId()))).thenReturn(Optional.of(user));
-        when(userDB.update(any())).thenReturn(1); // 1 means db was updated
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(user.getId()))).thenReturn(Optional.of(user));
+        when(userService.update(any())).thenReturn(1); // 1 means db was updated
+        when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(user.getId()));
 
         User updateUser = new User()
@@ -182,7 +182,7 @@ public class PutUserIT extends ResourceTest {
         assertEquals(updateUser.getDisplayName(), fetched.getDisplayName()); // still the original invalid value
         assertEquals(user.getProfileImage(), fetched.getProfileImage()); // still original value
 
-        verify(userDB, times(1)).update(argThat(update -> {
+        verify(userService, times(1)).update(argThat(update -> {
             return Objects.equals(user.getId(), update.getId()) // not updated
                     && Objects.equals(user.getEmail(), update.getEmail()) // not updated
                     && Objects.equals(updateUser.getUsername(), update.getUsername()) // updated
@@ -193,10 +193,10 @@ public class PutUserIT extends ResourceTest {
 
     @Test
     public void testPutUserInvalidUsername() {
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(userDB.update(any())).thenReturn(1); // 1 means db was updated
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(userService.update(any())).thenReturn(1); // 1 means db was updated
+        when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         User updateUser = new User()
@@ -220,10 +220,10 @@ public class PutUserIT extends ResourceTest {
         User user = getUser();
         user.setUsername("Invalid<>");
 
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(user.getId()))).thenReturn(Optional.of(user));
-        when(userDB.update(any())).thenReturn(1); // 1 means db was updated
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(user.getId()))).thenReturn(Optional.of(user));
+        when(userService.update(any())).thenReturn(1); // 1 means db was updated
+        when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(user.getId()));
 
         User updateUser = new User()
@@ -245,7 +245,7 @@ public class PutUserIT extends ResourceTest {
         assertEquals(updateUser.getDisplayName(), fetched.getDisplayName()); // updated value
         assertEquals(user.getProfileImage(), fetched.getProfileImage()); // still original value
 
-        verify(userDB, times(1)).update(argThat(update -> {
+        verify(userService, times(1)).update(argThat(update -> {
             return Objects.equals(user.getId(), update.getId()) // not updated
                     && Objects.equals(user.getEmail(), update.getEmail()) // not updated
                     && Objects.equals(user.getUsername(), update.getUsername()) // still the original invalid value

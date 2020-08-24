@@ -56,14 +56,14 @@ public class GetUserAchievementsIT extends ResourceTest {
 
     @Test
     public void testGetUserAchievementsNone() {
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
-        UserAchievementService userAchievementDB = mock(UserAchievementService.class);
-        when(userAchievementDB.getForUser(eq(getUser().getId()))).thenReturn(emptyList());
-        when(getServiceFactory().getUserAchievementService()).thenReturn(userAchievementDB);
+        UserAchievementService userAchievementService = mock(UserAchievementService.class);
+        when(userAchievementService.getForUser(eq(getUser().getId()))).thenReturn(emptyList());
+        when(getServiceFactory().getUserAchievementService()).thenReturn(userAchievementService);
 
         Response response = target("/user/achievements").request().header(AUTHORIZATION, "Bearer token").get();
 
@@ -72,14 +72,14 @@ public class GetUserAchievementsIT extends ResourceTest {
 
         assertTrue(response.readEntity(new UserAchievementListGenericType()).isEmpty());
 
-        verify(userAchievementDB, times(1)).getForUser(eq(getUser().getId()));
+        verify(userAchievementService, times(1)).getForUser(eq(getUser().getId()));
     }
 
     @Test
     public void testGetUserAchievementsSomeAvailable() {
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         UserAchievement userAchievement = new UserAchievement()
@@ -88,9 +88,9 @@ public class GetUserAchievementsIT extends ResourceTest {
                 .setTimestamp(Instant.now().truncatedTo(SECONDS))
                 .setDescription("description");
 
-        UserAchievementService userAchievementDB = mock(UserAchievementService.class);
-        when(userAchievementDB.getForUser(eq(getUser().getId()))).thenReturn(singletonList(userAchievement));
-        when(getServiceFactory().getUserAchievementService()).thenReturn(userAchievementDB);
+        UserAchievementService userAchievementService = mock(UserAchievementService.class);
+        when(userAchievementService.getForUser(eq(getUser().getId()))).thenReturn(singletonList(userAchievement));
+        when(getServiceFactory().getUserAchievementService()).thenReturn(userAchievementService);
 
         Response response = target("/user/achievements").request().header(AUTHORIZATION, "Bearer token").get();
 
@@ -104,6 +104,6 @@ public class GetUserAchievementsIT extends ResourceTest {
         assertEquals(userAchievement.getTimestamp(), userAchievements.get(0).getTimestamp());
         assertEquals(userAchievement.getDescription(), userAchievements.get(0).getDescription());
 
-        verify(userAchievementDB, times(1)).getForUser(eq(getUser().getId()));
+        verify(userAchievementService, times(1)).getForUser(eq(getUser().getId()));
     }
 }

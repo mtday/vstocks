@@ -32,14 +32,14 @@ public class LoginIT extends ResourceTest {
     }
 
     private void testLoginNoExistingUserNoExistingUsername(String type) {
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(getUser().getId()))).thenReturn(empty());
-        when(userDB.usernameExists(eq(getUser().getUsername()))).thenReturn(false);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(empty());
+        when(userService.usernameExists(eq(getUser().getUsername()))).thenReturn(false);
 
-        ActivityLogService activityLogDB = mock(ActivityLogService.class);
+        ActivityLogService activityLogService = mock(ActivityLogService.class);
 
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
-        when(getServiceFactory().getActivityLogService()).thenReturn(activityLogDB);
+        when(getServiceFactory().getUserService()).thenReturn(userService);
+        when(getServiceFactory().getActivityLogService()).thenReturn(activityLogService);
 
         when(getJwtSecurity().generateToken(eq(getUser().getId()))).thenReturn("token");
 
@@ -55,8 +55,8 @@ public class LoginIT extends ResourceTest {
                 .setUserId(getUser().getId())
                 .setType(USER_LOGIN);
 
-        verify(userDB, times(1)).add(argThat(new UserArgumentMatcher(getUser())));
-        verify(activityLogDB, times(1)).add(argThat(new ActivityLogArgumentMatcher(activityLog)));
+        verify(userService, times(1)).add(argThat(new UserArgumentMatcher(getUser())));
+        verify(activityLogService, times(1)).add(argThat(new ActivityLogArgumentMatcher(activityLog)));
     }
 
     @Test
@@ -67,14 +67,14 @@ public class LoginIT extends ResourceTest {
     }
 
     private void testLoginNoExistingUserExistingUsernameConflict(String type) {
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(getUser().getId()))).thenReturn(empty());
-        when(userDB.usernameExists(eq(getUser().getUsername()))).thenReturn(true, false);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(empty());
+        when(userService.usernameExists(eq(getUser().getUsername()))).thenReturn(true, false);
 
-        ActivityLogService activityLogDB = mock(ActivityLogService.class);
+        ActivityLogService activityLogService = mock(ActivityLogService.class);
 
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
-        when(getServiceFactory().getActivityLogService()).thenReturn(activityLogDB);
+        when(getServiceFactory().getUserService()).thenReturn(userService);
+        when(getServiceFactory().getActivityLogService()).thenReturn(activityLogService);
 
         when(getJwtSecurity().generateToken(eq(getUser().getId()))).thenReturn("token");
 
@@ -90,9 +90,9 @@ public class LoginIT extends ResourceTest {
                 .setUserId(getUser().getId())
                 .setType(USER_LOGIN);
 
-        verify(userDB, times(1)).add(argThat(user ->
+        verify(userService, times(1)).add(argThat(user ->
                 getUser().getId().equals(user.getId()) && !getUser().getUsername().equals(user.getUsername())));
-        verify(activityLogDB, times(1)).add(argThat(new ActivityLogArgumentMatcher(activityLog)));
+        verify(activityLogService, times(1)).add(argThat(new ActivityLogArgumentMatcher(activityLog)));
     }
 
     @Test
@@ -103,14 +103,14 @@ public class LoginIT extends ResourceTest {
     }
 
     private void testLoginExistingUserDifferentProfileImage(String type) {
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(getUser().getId())))
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId())))
                 .thenReturn(Optional.of(getUser().setProfileImage("https://different/image.png")));
 
-        ActivityLogService activityLogDB = mock(ActivityLogService.class);
+        ActivityLogService activityLogService = mock(ActivityLogService.class);
 
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
-        when(getServiceFactory().getActivityLogService()).thenReturn(activityLogDB);
+        when(getServiceFactory().getUserService()).thenReturn(userService);
+        when(getServiceFactory().getActivityLogService()).thenReturn(activityLogService);
 
         when(getJwtSecurity().generateToken(eq(getUser().getId()))).thenReturn("token");
 
@@ -126,10 +126,10 @@ public class LoginIT extends ResourceTest {
                 .setUserId(getUser().getId())
                 .setType(USER_LOGIN);
 
-        verify(userDB, times(1)).update(argThat(user ->
+        verify(userService, times(1)).update(argThat(user ->
                 // image reset back to the one from the profile
                 getUser().equals(user) && getUser().getProfileImage().equals(user.getProfileImage())));
-        verify(activityLogDB, times(1)).add(argThat(new ActivityLogArgumentMatcher(activityLog)));
+        verify(activityLogService, times(1)).add(argThat(new ActivityLogArgumentMatcher(activityLog)));
     }
 
     private static class UserArgumentMatcher implements org.mockito.ArgumentMatcher<User> {

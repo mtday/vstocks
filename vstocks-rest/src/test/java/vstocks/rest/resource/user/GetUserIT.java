@@ -50,9 +50,9 @@ public class GetUserIT extends ResourceTest {
 
     @Test
     public void testGetUser() {
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         Response response = target("/user").request().header(AUTHORIZATION, "Bearer token").get();

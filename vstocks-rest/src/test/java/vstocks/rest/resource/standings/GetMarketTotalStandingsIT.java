@@ -28,7 +28,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static vstocks.model.Market.TWITTER;
 import static vstocks.rest.security.JwtTokenFilter.INVALID_JWT_MESSAGE;
 
 public class GetMarketTotalStandingsIT extends ResourceTest {
@@ -60,9 +59,9 @@ public class GetMarketTotalStandingsIT extends ResourceTest {
 
     @Test
     public void testGetStandingsPage() {
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(getServiceFactory().getUserService()).thenReturn(userService);
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
@@ -89,9 +88,9 @@ public class GetMarketTotalStandingsIT extends ResourceTest {
 
     @Test
     public void testGetStandings() {
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(getServiceFactory().getUserService()).thenReturn(userService);
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 

@@ -61,17 +61,17 @@ public class GetStocksIT extends ResourceTest {
 
     @Test
     public void testUserPortfolioStocksPageAndSort() {
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(getServiceFactory().getUserService()).thenReturn(userService);
 
         Page page = new Page().setPage(2).setSize(15);
         List<Sort> sort = asList(USER_ID.toSort(), PRICE.toSort(DESC));
         Results<PricedUserStock> results =
                 new Results<PricedUserStock>().setTotal(0).setPage(page).setResults(emptyList());
-        PricedUserStockService pricedUserStockDB = mock(PricedUserStockService.class);
-        when(pricedUserStockDB.getForUser(eq(getUser().getId()), eq(page), eq(sort))).thenReturn(results);
-        when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockDB);
+        PricedUserStockService pricedUserStockService = mock(PricedUserStockService.class);
+        when(pricedUserStockService.getForUser(eq(getUser().getId()), eq(page), eq(sort))).thenReturn(results);
+        when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockService);
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
@@ -91,9 +91,9 @@ public class GetStocksIT extends ResourceTest {
 
     @Test
     public void testUserPortfolioStocksWithData() {
-        UserService userDB = mock(UserService.class);
-        when(userDB.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getServiceFactory().getUserService()).thenReturn(userDB);
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(getServiceFactory().getUserService()).thenReturn(userService);
 
         PricedUserStock pricedUserStock = new PricedUserStock()
                 .setUserId(getUser().getId())
@@ -106,9 +106,9 @@ public class GetStocksIT extends ResourceTest {
                 .setTotal(1)
                 .setPage(new Page())
                 .setResults(singletonList(pricedUserStock));
-        PricedUserStockService pricedUserStockDB = mock(PricedUserStockService.class);
-        when(pricedUserStockDB.getForUser(eq(getUser().getId()), any(), any())).thenReturn(results);
-        when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockDB);
+        PricedUserStockService pricedUserStockService = mock(PricedUserStockService.class);
+        when(pricedUserStockService.getForUser(eq(getUser().getId()), any(), any())).thenReturn(results);
+        when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockService);
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
