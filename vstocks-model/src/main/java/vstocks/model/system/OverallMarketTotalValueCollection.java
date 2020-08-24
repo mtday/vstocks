@@ -1,4 +1,4 @@
-package vstocks.model.portfolio;
+package vstocks.model.system;
 
 import vstocks.model.Delta;
 import vstocks.model.DeltaInterval;
@@ -7,18 +7,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class MarketTotalValueCollection {
-    private List<MarketTotalValue> values;
+public class OverallMarketTotalValueCollection {
+    private List<OverallMarketTotalValue> values;
     private Map<DeltaInterval, Delta> deltas;
 
-    public MarketTotalValueCollection() {
+    public OverallMarketTotalValueCollection() {
     }
 
-    public List<MarketTotalValue> getValues() {
+    public List<OverallMarketTotalValue> getValues() {
         return values;
     }
 
-    public MarketTotalValueCollection setValues(List<MarketTotalValue> values) {
+    public OverallMarketTotalValueCollection setValues(List<OverallMarketTotalValue> values) {
         this.values = values;
         return this;
     }
@@ -27,7 +27,7 @@ public class MarketTotalValueCollection {
         return deltas;
     }
 
-    public MarketTotalValueCollection setDeltas(Map<DeltaInterval, Delta> deltas) {
+    public OverallMarketTotalValueCollection setDeltas(Map<DeltaInterval, Delta> deltas) {
         this.deltas = deltas;
         return this;
     }
@@ -36,7 +36,7 @@ public class MarketTotalValueCollection {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MarketTotalValueCollection that = (MarketTotalValueCollection) o;
+        OverallMarketTotalValueCollection that = (OverallMarketTotalValueCollection) o;
         return Objects.equals(values, that.values) &&
                 Objects.equals(deltas, that.deltas);
     }
@@ -48,7 +48,7 @@ public class MarketTotalValueCollection {
 
     @Override
     public String toString() {
-        return "MarketTotalValueCollection{" +
+        return "OverallMarketTotalValueCollection{" +
                 "values=" + values +
                 ", deltas=" + deltas +
                 '}';

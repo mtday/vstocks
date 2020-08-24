@@ -1,4 +1,4 @@
-package vstocks.model.portfolio;
+package vstocks.model.system;
 
 import vstocks.model.Delta;
 import vstocks.model.DeltaInterval;
@@ -7,18 +7,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class TotalValueCollection {
-    private List<TotalValue> values;
+public class OverallMarketValueCollection {
+    private List<OverallMarketValue> values;
     private Map<DeltaInterval, Delta> deltas;
 
-    public TotalValueCollection() {
+    public OverallMarketValueCollection() {
     }
 
-    public List<TotalValue> getValues() {
+    public List<OverallMarketValue> getValues() {
         return values;
     }
 
-    public TotalValueCollection setValues(List<TotalValue> values) {
+    public OverallMarketValueCollection setValues(List<OverallMarketValue> values) {
         this.values = values;
         return this;
     }
@@ -27,7 +27,7 @@ public class TotalValueCollection {
         return deltas;
     }
 
-    public TotalValueCollection setDeltas(Map<DeltaInterval, Delta> deltas) {
+    public OverallMarketValueCollection setDeltas(Map<DeltaInterval, Delta> deltas) {
         this.deltas = deltas;
         return this;
     }
@@ -36,7 +36,7 @@ public class TotalValueCollection {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TotalValueCollection that = (TotalValueCollection) o;
+        OverallMarketValueCollection that = (OverallMarketValueCollection) o;
         return Objects.equals(values, that.values) &&
                 Objects.equals(deltas, that.deltas);
     }
@@ -48,7 +48,7 @@ public class TotalValueCollection {
 
     @Override
     public String toString() {
-        return "TotalValueCollection{" +
+        return "OverallMarketValueCollection{" +
                 "values=" + values +
                 ", deltas=" + deltas +
                 '}';

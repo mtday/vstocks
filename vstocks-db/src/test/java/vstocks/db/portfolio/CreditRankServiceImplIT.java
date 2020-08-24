@@ -102,8 +102,6 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
         Results<CreditRank> results = creditRankService.getAll(new Page(), emptyList());
         assertEquals(2, results.getTotal());
         assertEquals(2, results.getResults().size());
-        assertTrue(results.getResults().stream().map(CreditRank::getRank).allMatch(rank -> rank == 1));
-        assertTrue(results.getResults().stream().map(CreditRank::getValue).allMatch(value -> value == 10000));
         assertEquals("1,1", results.getResults().stream().map(r -> "" + r.getRank()).collect(joining(",")));
         assertEquals("10000,10000", results.getResults().stream().map(r -> "" + r.getValue()).collect(joining(",")));
     }
@@ -196,7 +194,7 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, creditRankService.add(creditRank21));
         assertEquals(1, creditRankService.add(creditRank22));
 
-        creditRankService.ageOff(now.minusSeconds(5));
+        assertEquals(2, creditRankService.ageOff(now.minusSeconds(5)));
 
         Results<CreditRank> results = creditRankService.getAll(new Page(), emptyList());
         validateResults(results, creditRank11, creditRank21);
@@ -209,7 +207,7 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, creditRankService.add(creditRank21));
         assertEquals(1, creditRankService.add(creditRank22));
 
-        creditRankService.truncate();
+        assertEquals(4, creditRankService.truncate());
 
         Results<CreditRank> results = creditRankService.getAll(new Page(), emptyList());
         validateResults(results);

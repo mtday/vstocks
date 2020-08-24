@@ -1,4 +1,4 @@
-package vstocks.model.portfolio;
+package vstocks.model.system;
 
 import vstocks.model.Delta;
 import vstocks.model.DeltaInterval;
@@ -7,18 +7,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class CreditValueCollection {
-    private List<CreditValue> values;
+public class OverallCreditValueCollection {
+    private List<OverallCreditValue> values;
     private Map<DeltaInterval, Delta> deltas;
 
-    public CreditValueCollection() {
+    public OverallCreditValueCollection() {
     }
 
-    public List<CreditValue> getValues() {
+    public List<OverallCreditValue> getValues() {
         return values;
     }
 
-    public CreditValueCollection setValues(List<CreditValue> values) {
+    public OverallCreditValueCollection setValues(List<OverallCreditValue> values) {
         this.values = values;
         return this;
     }
@@ -27,7 +27,7 @@ public class CreditValueCollection {
         return deltas;
     }
 
-    public CreditValueCollection setDeltas(Map<DeltaInterval, Delta> deltas) {
+    public OverallCreditValueCollection setDeltas(Map<DeltaInterval, Delta> deltas) {
         this.deltas = deltas;
         return this;
     }
@@ -36,7 +36,7 @@ public class CreditValueCollection {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CreditValueCollection that = (CreditValueCollection) o;
+        OverallCreditValueCollection that = (OverallCreditValueCollection) o;
         return Objects.equals(values, that.values) &&
                 Objects.equals(deltas, that.deltas);
     }
@@ -48,7 +48,7 @@ public class CreditValueCollection {
 
     @Override
     public String toString() {
-        return "CreditValueCollection{" +
+        return "OverallCreditValueCollection{" +
                 "values=" + values +
                 ", deltas=" + deltas +
                 '}';

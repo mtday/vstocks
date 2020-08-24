@@ -296,7 +296,7 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, marketRankService.add(marketRank21));
         assertEquals(1, marketRankService.add(marketRank22));
 
-        marketRankService.ageOff(now.minusSeconds(5));
+        assertEquals(2, marketRankService.ageOff(now.minusSeconds(5)));
 
         Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptyList());
         validateResults(results, marketRank11, marketRank21);
@@ -309,7 +309,7 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, marketRankService.add(marketRank21));
         assertEquals(1, marketRankService.add(marketRank22));
 
-        marketRankService.truncate();
+        assertEquals(4, marketRankService.truncate());
 
         Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptyList());
         validateResults(results);

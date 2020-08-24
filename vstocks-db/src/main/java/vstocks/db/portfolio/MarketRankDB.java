@@ -79,11 +79,7 @@ class MarketRankDB extends BaseDB {
 
     public int generate(Connection connection) {
         long batch = getNextSequenceValue(connection, BATCH_SEQUENCE);
-        int sum = 0;
-        for (Market market : Market.values()) {
-            sum += generate(connection, batch, market);
-        }
-        return sum;
+        return Arrays.stream(Market.values()).mapToInt(market -> generate(connection, batch, market)).sum();
     }
 
     public MarketRankCollection getLatest(Connection connection, String userId, Market market) {

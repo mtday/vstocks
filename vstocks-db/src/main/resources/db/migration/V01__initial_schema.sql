@@ -208,6 +208,48 @@ CREATE INDEX idx_total_ranks_value ON total_ranks (value);
 
 -- system metric tables
 
+CREATE TABLE overall_credit_values (
+    timestamp          TIMESTAMP(0) NOT NULL,
+    value              BIGINT       NOT NULL,
+
+    CONSTRAINT overall_credit_values_pk PRIMARY KEY (timestamp)
+);
+
+CREATE INDEX idx_overall_credit_values_timestamp ON overall_credit_values (timestamp);
+CREATE INDEX idx_overall_credit_values_value ON overall_credit_values (value);
+
+CREATE TABLE overall_market_values (
+    market             TEXT         NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
+    value              BIGINT       NOT NULL,
+
+    CONSTRAINT overall_market_values_pk PRIMARY KEY (market, timestamp)
+);
+
+CREATE INDEX idx_overall_market_values_market ON overall_market_values (market);
+CREATE INDEX idx_overall_market_values_timestamp ON overall_market_values (timestamp);
+CREATE INDEX idx_overall_market_values_value ON overall_market_values (value);
+
+CREATE TABLE overall_market_total_values (
+    timestamp          TIMESTAMP(0) NOT NULL,
+    value              BIGINT       NOT NULL,
+
+    CONSTRAINT overall_market_total_values_pk PRIMARY KEY (timestamp)
+);
+
+CREATE INDEX idx_overall_market_total_values_timestamp ON overall_market_total_values (timestamp);
+CREATE INDEX idx_overall_market_total_values_value ON overall_market_total_values (value);
+
+CREATE TABLE overall_total_values (
+    timestamp          TIMESTAMP(0) NOT NULL,
+    value              BIGINT       NOT NULL,
+
+    CONSTRAINT overall_total_values_pk PRIMARY KEY (timestamp)
+);
+
+CREATE INDEX idx_overall_total_values_timestamp ON overall_total_values (timestamp);
+CREATE INDEX idx_overall_total_values_value ON overall_total_values (value);
+
 CREATE TABLE active_user_counts (
     timestamp          TIMESTAMP(0) NOT NULL,
     count              BIGINT       NOT NULL,

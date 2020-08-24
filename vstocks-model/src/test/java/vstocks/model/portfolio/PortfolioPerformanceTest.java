@@ -34,23 +34,6 @@ public class PortfolioPerformanceTest {
             .setRanks(totalRanks)
             .setDeltas(totalRankDeltas);
 
-    private final TotalValue totalValue1 = new TotalValue()
-            .setBatch(1)
-            .setUserId("userId")
-            .setTimestamp(timestamp)
-            .setValue(20);
-    private final TotalValue totalValue2 = new TotalValue()
-            .setBatch(1)
-            .setUserId("userId")
-            .setTimestamp(timestamp.minusSeconds(10))
-            .setValue(18);
-    private final List<TotalValue> totalValues = asList(totalValue1, totalValue2);
-    private final Map<DeltaInterval, Delta> totalValueDeltas =
-            Delta.getDeltas(totalValues, TotalValue::getTimestamp, TotalValue::getValue);
-    private final TotalValueCollection totalValueCollection = new TotalValueCollection()
-            .setValues(totalValues)
-            .setDeltas(totalValueDeltas);
-
     private final CreditRank creditRank1 = new CreditRank()
             .setBatch(1)
             .setUserId("userId")
@@ -68,23 +51,6 @@ public class PortfolioPerformanceTest {
             .setRanks(creditRanks)
             .setDeltas(creditRankDeltas);
 
-    private final CreditValue creditValue1 = new CreditValue()
-            .setBatch(1)
-            .setUserId("userId")
-            .setTimestamp(timestamp)
-            .setValue(20);
-    private final CreditValue creditValue2 = new CreditValue()
-            .setBatch(1)
-            .setUserId("userId")
-            .setTimestamp(timestamp.minusSeconds(10))
-            .setValue(18);
-    private final List<CreditValue> creditValues = asList(creditValue1, creditValue2);
-    private final Map<DeltaInterval, Delta> creditValueDeltas =
-            Delta.getDeltas(creditValues, CreditValue::getTimestamp, CreditValue::getValue);
-    private final CreditValueCollection creditValueCollection = new CreditValueCollection()
-            .setValues(creditValues)
-            .setDeltas(creditValueDeltas);
-
     private final MarketTotalRank marketTotalRank1 = new MarketTotalRank()
             .setBatch(1)
             .setUserId("userId")
@@ -101,23 +67,6 @@ public class PortfolioPerformanceTest {
     private final MarketTotalRankCollection marketTotalRankCollection = new MarketTotalRankCollection()
             .setRanks(marketTotalRanks)
             .setDeltas(marketTotalRankDeltas);
-
-    private final MarketTotalValue marketTotalValue1 = new MarketTotalValue()
-            .setBatch(1)
-            .setUserId("userId")
-            .setTimestamp(timestamp)
-            .setValue(20);
-    private final MarketTotalValue marketTotalValue2 = new MarketTotalValue()
-            .setBatch(1)
-            .setUserId("userId")
-            .setTimestamp(timestamp.minusSeconds(10))
-            .setValue(18);
-    private final List<MarketTotalValue> marketTotalValues = asList(marketTotalValue1, marketTotalValue2);
-    private final Map<DeltaInterval, Delta> marketTotalValueDeltas =
-            Delta.getDeltas(marketTotalValues, MarketTotalValue::getTimestamp, MarketTotalValue::getValue);
-    private final MarketTotalValueCollection marketTotalValueCollection = new MarketTotalValueCollection()
-            .setValues(marketTotalValues)
-            .setDeltas(marketTotalValueDeltas);
 
     private final MarketRank marketRank1 = new MarketRank()
             .setBatch(1)
@@ -139,68 +88,32 @@ public class PortfolioPerformanceTest {
             .setDeltas(marketRankDeltas);
     private final Map<Market, MarketRankCollection> marketRankMap = singletonMap(TWITTER, marketRankCollection);
 
-    private final MarketValue marketValue1 = new MarketValue()
-            .setBatch(1)
-            .setUserId("userId")
-            .setMarket(TWITTER)
-            .setTimestamp(timestamp)
-            .setValue(20);
-    private final MarketValue marketValue2 = new MarketValue()
-            .setBatch(1)
-            .setUserId("userId")
-            .setMarket(TWITTER)
-            .setTimestamp(timestamp.minusSeconds(10))
-            .setValue(18);
-    private final List<MarketValue> marketValues = asList(marketValue1, marketValue2);
-    private final Map<DeltaInterval, Delta> marketValueDeltas =
-            Delta.getDeltas(marketValues, MarketValue::getTimestamp, MarketValue::getValue);
-    private final MarketValueCollection marketValueCollection = new MarketValueCollection()
-            .setValues(marketValues)
-            .setDeltas(marketValueDeltas);
-    private final Map<Market, MarketValueCollection> marketValueMap = singletonMap(TWITTER, marketValueCollection);
-
     @Test
     public void testGettersAndSetters() {
         PortfolioPerformance portfolioPerformance = new PortfolioPerformance()
                 .setTotalRanks(totalRankCollection)
-                .setTotalValues(totalValueCollection)
                 .setCreditRanks(creditRankCollection)
-                .setCreditValues(creditValueCollection)
                 .setMarketTotalRanks(marketTotalRankCollection)
-                .setMarketTotalValues(marketTotalValueCollection)
-                .setMarketRanks(marketRankMap)
-                .setMarketValues(marketValueMap);
+                .setMarketRanks(marketRankMap);
 
         assertEquals(totalRankCollection, portfolioPerformance.getTotalRanks());
-        assertEquals(totalValueCollection, portfolioPerformance.getTotalValues());
         assertEquals(creditRankCollection, portfolioPerformance.getCreditRanks());
-        assertEquals(creditValueCollection, portfolioPerformance.getCreditValues());
         assertEquals(marketTotalRankCollection, portfolioPerformance.getMarketTotalRanks());
-        assertEquals(marketTotalValueCollection, portfolioPerformance.getMarketTotalValues());
         assertEquals(marketRankMap, portfolioPerformance.getMarketRanks());
-        assertEquals(marketValueMap, portfolioPerformance.getMarketValues());
     }
 
     @Test
     public void testEquals() {
         PortfolioPerformance portfolioPerformance1 = new PortfolioPerformance()
                 .setTotalRanks(totalRankCollection)
-                .setTotalValues(totalValueCollection)
                 .setCreditRanks(creditRankCollection)
-                .setCreditValues(creditValueCollection)
                 .setMarketTotalRanks(marketTotalRankCollection)
-                .setMarketTotalValues(marketTotalValueCollection)
-                .setMarketRanks(marketRankMap)
-                .setMarketValues(marketValueMap);
+                .setMarketRanks(marketRankMap);
         PortfolioPerformance portfolioPerformance2 = new PortfolioPerformance()
                 .setTotalRanks(totalRankCollection)
-                .setTotalValues(totalValueCollection)
                 .setCreditRanks(creditRankCollection)
-                .setCreditValues(creditValueCollection)
                 .setMarketTotalRanks(marketTotalRankCollection)
-                .setMarketTotalValues(marketTotalValueCollection)
-                .setMarketRanks(marketRankMap)
-                .setMarketValues(marketValueMap);
+                .setMarketRanks(marketRankMap);
         assertEquals(portfolioPerformance1, portfolioPerformance2);
     }
 
@@ -208,14 +121,10 @@ public class PortfolioPerformanceTest {
     public void testHashCode() {
         PortfolioPerformance portfolioPerformance = new PortfolioPerformance()
                 .setTotalRanks(totalRankCollection)
-                .setTotalValues(totalValueCollection)
                 .setCreditRanks(creditRankCollection)
-                .setCreditValues(creditValueCollection)
                 .setMarketTotalRanks(marketTotalRankCollection)
-                .setMarketTotalValues(marketTotalValueCollection)
-                .setMarketRanks(marketRankMap)
-                .setMarketValues(marketValueMap);
-        assertEquals(-1807454463, new PortfolioPerformance().hashCode());
+                .setMarketRanks(marketRankMap);
+        assertEquals(923521, new PortfolioPerformance().hashCode());
         assertNotEquals(0, portfolioPerformance.hashCode()); // enums cause inconsistent values
     }
 
@@ -223,13 +132,9 @@ public class PortfolioPerformanceTest {
     public void testToString() {
         PortfolioPerformance portfolioPerformance = new PortfolioPerformance()
                 .setTotalRanks(totalRankCollection)
-                .setTotalValues(totalValueCollection)
                 .setCreditRanks(creditRankCollection)
-                .setCreditValues(creditValueCollection)
                 .setMarketTotalRanks(marketTotalRankCollection)
-                .setMarketTotalValues(marketTotalValueCollection)
-                .setMarketRanks(marketRankMap)
-                .setMarketValues(marketValueMap);
+                .setMarketRanks(marketRankMap);
         assertNotNull(portfolioPerformance.toString()); // skipping real check
     }
 }
