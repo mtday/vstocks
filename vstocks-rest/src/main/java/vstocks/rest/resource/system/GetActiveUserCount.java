@@ -3,6 +3,7 @@ package vstocks.rest.resource.system;
 import vstocks.db.ServiceFactory;
 import vstocks.model.system.ActiveUserCountCollection;
 import vstocks.rest.resource.BaseResource;
+import vstocks.rest.security.JwtTokenRequired;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -24,6 +25,7 @@ public class GetActiveUserCount extends BaseResource {
 
     @GET
     @Produces(APPLICATION_JSON)
+    @JwtTokenRequired
     public ActiveUserCountCollection getActive() {
         return serviceFactory.getActiveUserCountService().getLatest();
     }

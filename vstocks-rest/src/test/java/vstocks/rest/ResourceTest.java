@@ -6,6 +6,7 @@ import org.pac4j.core.profile.CommonProfile;
 import vstocks.achievement.AchievementService;
 import vstocks.db.ServiceFactory;
 import vstocks.model.*;
+import vstocks.model.portfolio.RankedUser;
 import vstocks.rest.security.JwtSecurity;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
@@ -90,5 +91,6 @@ public abstract class ResourceTest extends JerseyTest {
     public static class PricedStockResultsGenericType extends GenericType<Results<PricedStock>> {}
     public static class PricedStockListGenericType extends GenericType<List<PricedStock>> {}
     public static class PricedUserStockResultsGenericType extends GenericType<Results<PricedUserStock>> {}
+    public static class RankedUserResultsGenericType extends GenericType<Results<RankedUser>> {}
     public static class UserAchievementListGenericType extends GenericType<List<UserAchievement>> {}
 }

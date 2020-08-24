@@ -25,6 +25,10 @@ import vstocks.rest.resource.market.stock.*;
 import vstocks.rest.resource.security.Callback;
 import vstocks.rest.resource.security.Login;
 import vstocks.rest.resource.security.Logout;
+import vstocks.rest.resource.standings.GetCreditStandings;
+import vstocks.rest.resource.standings.GetMarketStandings;
+import vstocks.rest.resource.standings.GetMarketTotalStandings;
+import vstocks.rest.resource.standings.GetTotalStandings;
 import vstocks.rest.resource.system.GetActiveTransactionCount;
 import vstocks.rest.resource.system.GetActiveUserCount;
 import vstocks.rest.resource.system.GetTotalTransactionCount;
@@ -44,7 +48,10 @@ import vstocks.rest.security.AccessLogFilter;
 import vstocks.rest.security.JwtSecurity;
 import vstocks.rest.security.JwtTokenFilter;
 import vstocks.rest.security.SecurityConfig;
-import vstocks.rest.task.portfolio.*;
+import vstocks.rest.task.portfolio.CreditRankUpdateTask;
+import vstocks.rest.task.portfolio.MarketRankUpdateTask;
+import vstocks.rest.task.portfolio.MarketTotalRankUpdateTask;
+import vstocks.rest.task.portfolio.TotalRankUpdateTask;
 import vstocks.rest.task.stock.StockPriceAgeOffTask;
 import vstocks.rest.task.stock.StockUpdateTask;
 import vstocks.rest.task.system.*;
@@ -97,6 +104,10 @@ public class Application extends ResourceConfig {
         register(Logout.class);
 
         // standings
+        register(GetCreditStandings.class);
+        register(GetMarketStandings.class);
+        register(GetMarketTotalStandings.class);
+        register(GetTotalStandings.class);
 
         // system
         register(GetActiveUserCount.class);
