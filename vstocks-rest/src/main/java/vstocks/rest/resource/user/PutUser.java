@@ -13,7 +13,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
-import java.util.regex.Pattern;
 
 import static java.util.Optional.ofNullable;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -21,16 +20,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/user")
 @Singleton
 public class PutUser extends BaseResource {
-    private static final Pattern VALID_DISPLAY_NAME_PATTERN = Pattern.compile("[a-zA-Z0-9 _'-]+");
-    static final String INVALID_DISPLAY_NAME_MESSAGE =
-            "The specified name contains invalid characters. Only alphanumeric characters, along with underscores, " +
-                    "dashes, and single quote characters are allowed.";
-
-    private static final Pattern VALID_USERNAME_PATTERN = Pattern.compile("[a-zA-Z0-9_-]+");
-    static final String INVALID_USERNAME_MESSAGE =
-            "The specified username contains invalid characters. Only alphanumeric characters, along with " +
-                    "underscores and dashes are allowed.";
-
     private final ServiceFactory serviceFactory;
 
     @Inject

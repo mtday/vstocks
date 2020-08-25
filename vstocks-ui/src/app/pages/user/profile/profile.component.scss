@@ -43,6 +43,12 @@
                     border: 0;
                     width: 100%;
 
+                    td.error-message {
+                        color: $fontColorError;
+                        padding: 0px 15px 10px 0px;
+                        font-style: italic
+                    }
+
                     td.field-label {
                         color: $fontColorBright;
                         padding: 5px 15px 5px 0px;

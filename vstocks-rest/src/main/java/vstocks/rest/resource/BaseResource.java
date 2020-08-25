@@ -9,6 +9,7 @@ import javax.ws.rs.core.SecurityContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -16,6 +17,18 @@ import static java.util.stream.Collectors.toList;
 import static vstocks.model.User.generateId;
 
 public abstract class BaseResource {
+    public static final Pattern VALID_DISPLAY_NAME_PATTERN = Pattern.compile("[a-zA-Z0-9 _'-]+");
+    public static final String INVALID_DISPLAY_NAME_MESSAGE =
+            "The specified name contains invalid characters. Only alphanumeric characters, along with underscores, " +
+                    "dashes, and single quote characters are allowed.";
+
+    public static final Pattern VALID_USERNAME_PATTERN = Pattern.compile("[a-zA-Z0-9_-]+");
+    public static final String INVALID_USERNAME_MESSAGE =
+            "The specified username contains invalid characters. Only alphanumeric characters, along with " +
+                    "underscores and dashes are allowed.";
+
+    public static final String USERNAME_EXISTS_MESSAGE = "The specified username is already taken.";
+
     private static final int DEFAULT_PAGE_SIZE = 25;
     private static final int MAX_PAGE_SIZE = 50;
 

@@ -13,39 +13,47 @@
             </div>
 
             <div class="user-info">
-                <table class="user-info-table">
-                    <tr>
-                        <td class="field-label">
-                            Email:
-                        </td>
-                        <td class="field-value">
-                            {{user.email}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-label">
-                            <label for="username">Username:</label>
-                        </td>
-                        <td class="field-value">
-                            <input name="username" type="text" value="{{user.username}}">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="field-label">
-                            <label for="displayName">Name:</label>
-                        </td>
-                        <td class="field-value">
-                            <input name="displayName" type="text" value="{{user.displayName}}">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="actions" colspan="2">
-                            <div class="save-button">
-                                <a href="#" (click)="profileSave()">Save</a>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
+                <form [formGroup]="profileSaveForm" (ngSubmit)="profileSave()">
+                    <table class="user-info-table">
+                        <tr *ngIf="errorMessage">
+                            <td class="error-message" colspan="2">
+                                {{errorMessage}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="field-label">
+                                Email:
+                            </td>
+                            <td class="field-value">
+                                {{user.email}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="field-label">
+                                <label for="username">Username:</label>
+                            </td>
+                            <td class="field-value">
+                                <input formControlName="username" type="text" placeholder="Username"
+                                       (keyup)="checkUsername()">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="field-label">
+                                <label for="displayName">Name:</label>
+                            </td>
+                            <td class="field-value">
+                                <input formControlName="displayName" type="text" placeholder="Name">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="actions" colspan="2">
+                                <div class="save-button">
+                                    <a href="#" (click)="profileSave(saveForm)">Save</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
             </div>
         </div>
     </div>

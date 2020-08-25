@@ -33,7 +33,7 @@ import vstocks.rest.resource.system.GetTotalUserCount;
 import vstocks.rest.resource.user.GetUser;
 import vstocks.rest.resource.user.PutUser;
 import vstocks.rest.resource.user.ResetUser;
-import vstocks.rest.resource.user.UsernameExists;
+import vstocks.rest.resource.user.CheckUsername;
 import vstocks.rest.resource.user.achievement.GetUserAchievements;
 import vstocks.rest.resource.user.portfolio.GetCreditBalance;
 import vstocks.rest.resource.user.portfolio.GetStocks;
@@ -126,7 +126,7 @@ public class Application extends ResourceConfig {
         register(GetUser.class);
         register(PutUser.class);
         register(ResetUser.class);
-        register(UsernameExists.class);
+        register(CheckUsername.class);
 
         // user/achievement
         register(GetUserAchievements.class);

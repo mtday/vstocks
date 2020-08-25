@@ -11,11 +11,13 @@ server.truststore.type = PKCS12
 server.truststore.password = changeit
 
 
+# CREATE DATABASE vstocks;
 # CREATE DATABASE vstockstest;
 # CREATE USER vstocks WITH PASSWORD 'vstocks';
+# GRANT ALL PRIVILEGES ON DATABASE vstocks TO vstocks;
 # GRANT ALL PRIVILEGES ON DATABASE vstockstest TO vstocks;
 
-db.url = jdbc:postgresql://localhost:5432/vstockstest
+db.url = jdbc:postgresql://localhost:5432/vstocks
 db.driver = org.postgresql.Driver
 db.user = vstocks
 db.pass = vstocks

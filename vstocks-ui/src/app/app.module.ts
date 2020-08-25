@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -58,6 +59,7 @@ import { UserStandingsComponent    } from './pages/user/standings/standings.comp
   imports: [
     AppRoutingModule,
     BrowserModule,
+    ReactiveFormsModule,
     HttpClientModule,
   ],
   providers: [

@@ -3,7 +3,7 @@ package vstocks.rest.resource.user;
 import org.junit.Test;
 import vstocks.db.UserService;
 import vstocks.model.ErrorResponse;
-import vstocks.model.UsernameExists;
+import vstocks.model.UsernameCheck;
 import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;
@@ -18,12 +18,14 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static vstocks.rest.resource.BaseResource.INVALID_USERNAME_MESSAGE;
+import static vstocks.rest.resource.BaseResource.USERNAME_EXISTS_MESSAGE;
 import static vstocks.rest.security.JwtTokenFilter.INVALID_JWT_MESSAGE;
 
-public class UsernameExistsIT extends ResourceTest {
+public class CheckUsernameIT extends ResourceTest {
     @Test
     public void testUsernameExistsNoAuthorizationHeader() {
-        Response response = target("/user/exists").queryParam("username", "username").request().get();
+        Response response = target("/user/check").queryParam("username", "username").request().get();
 
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
@@ -37,7 +39,7 @@ public class UsernameExistsIT extends ResourceTest {
     public void testUsernameExistsNoValidToken() {
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(empty());
 
-        Response response = target("/user/exists")
+        Response response = target("/user/check")
                 .queryParam("username", "username")
                 .request()
                 .header(AUTHORIZATION, "Bearer token")
@@ -59,7 +61,7 @@ public class UsernameExistsIT extends ResourceTest {
         when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
-        Response response = target("/user/exists")
+        Response response = target("/user/check")
                 .queryParam("username", "username")
                 .request()
                 .header(AUTHORIZATION, "Bearer token")
@@ -68,9 +70,11 @@ public class UsernameExistsIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        UsernameExists usernameExists = response.readEntity(UsernameExists.class);
-        assertEquals("username", usernameExists.getUsername());
-        assertTrue(usernameExists.isExists());
+        UsernameCheck usernameCheck = response.readEntity(UsernameCheck.class);
+        assertEquals("username", usernameCheck.getUsername());
+        assertTrue(usernameCheck.isExists());
+        assertTrue(usernameCheck.isValid());
+        assertEquals(USERNAME_EXISTS_MESSAGE, usernameCheck.getMessage());
     }
 
     @Test
@@ -81,7 +85,7 @@ public class UsernameExistsIT extends ResourceTest {
         when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
-        Response response = target("/user/exists")
+        Response response = target("/user/check")
                 .queryParam("username", "username")
                 .request()
                 .header(AUTHORIZATION, "Bearer token")
@@ -90,9 +94,35 @@ public class UsernameExistsIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        UsernameExists usernameExists = response.readEntity(UsernameExists.class);
-        assertEquals("username", usernameExists.getUsername());
-        assertFalse(usernameExists.isExists());
+        UsernameCheck usernameCheck = response.readEntity(UsernameCheck.class);
+        assertEquals("username", usernameCheck.getUsername());
+        assertFalse(usernameCheck.isExists());
+        assertTrue(usernameCheck.isValid());
+        assertNull(usernameCheck.getMessage());
+    }
+
+    @Test
+    public void testUsernameInvalid() {
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(userService.usernameExists(eq("user<>name"))).thenReturn(false);
+        when(getServiceFactory().getUserService()).thenReturn(userService);
+        when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
+
+        Response response = target("/user/check")
+                .queryParam("username", "user<>name")
+                .request()
+                .header(AUTHORIZATION, "Bearer token")
+                .get();
+
+        assertEquals(OK.getStatusCode(), response.getStatus());
+        assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
+
+        UsernameCheck usernameCheck = response.readEntity(UsernameCheck.class);
+        assertEquals("user<>name", usernameCheck.getUsername());
+        assertFalse(usernameCheck.isExists());
+        assertFalse(usernameCheck.isValid());
+        assertEquals(INVALID_USERNAME_MESSAGE, usernameCheck.getMessage());
     }
 
     @Test
@@ -103,7 +133,7 @@ public class UsernameExistsIT extends ResourceTest {
         when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
-        Response response = target("/user/exists")
+        Response response = target("/user/check")
                 .request()
                 .header(AUTHORIZATION, "Bearer token")
                 .get();
@@ -124,7 +154,7 @@ public class UsernameExistsIT extends ResourceTest {
         when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
-        Response response = target("/user/exists")
+        Response response = target("/user/check")
                 .queryParam("username", "")
                 .request()
                 .header(AUTHORIZATION, "Bearer token")
@@ -146,7 +176,7 @@ public class UsernameExistsIT extends ResourceTest {
         when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
-        Response response = target("/user/exists")
+        Response response = target("/user/check")
                 .queryParam("username", " ")
                 .request()
                 .header(AUTHORIZATION, "Bearer token")

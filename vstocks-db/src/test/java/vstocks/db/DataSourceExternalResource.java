@@ -22,7 +22,7 @@ public class DataSourceExternalResource extends ExternalResource implements Supp
     @Override
     public void before() {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(DB_URL.getString());
+        config.setJdbcUrl(DB_URL.getString() + "test");
         config.setDriverClassName(DB_DRIVER.getString());
         config.setUsername(DB_USER.getString());
         config.setPassword(DB_PASS.getString());

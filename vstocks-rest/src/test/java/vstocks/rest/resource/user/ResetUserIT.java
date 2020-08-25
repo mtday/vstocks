@@ -3,6 +3,7 @@ package vstocks.rest.resource.user;
 import org.junit.Test;
 import vstocks.db.UserService;
 import vstocks.model.ErrorResponse;
+import vstocks.model.UserReset;
 import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.client.Entity;
@@ -15,7 +16,7 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static vstocks.rest.security.JwtTokenFilter.INVALID_JWT_MESSAGE;
 
@@ -47,14 +48,41 @@ public class ResetUserIT extends ResourceTest {
     }
 
     @Test
-    public void testResetUser() {
+    public void testResetUserSuccess() {
         UserService userService = mock(UserService.class);
         when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
+        when(userService.reset(eq(getUser().getId()))).thenReturn(1);
+
         Response response = target("/user/reset").request().header(AUTHORIZATION, "Bearer token").put(Entity.text(""));
         assertEquals(OK.getStatusCode(), response.getStatus());
+        assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
+
+        UserReset userReset = response.readEntity(UserReset.class);
+        assertEquals(getUser(), userReset.getUser());
+        assertTrue(userReset.isReset());
+
+        verify(userService, times(1)).reset(eq(getUser().getId()));
+    }
+
+    @Test
+    public void testResetUserFail() {
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(getServiceFactory().getUserService()).thenReturn(userService);
+        when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
+
+        when(userService.reset(eq(getUser().getId()))).thenReturn(0); // 0 means no update
+
+        Response response = target("/user/reset").request().header(AUTHORIZATION, "Bearer token").put(Entity.text(""));
+        assertEquals(OK.getStatusCode(), response.getStatus());
+        assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
+
+        UserReset userReset = response.readEntity(UserReset.class);
+        assertEquals(getUser(), userReset.getUser());
+        assertFalse(userReset.isReset());
 
         verify(userService, times(1)).reset(eq(getUser().getId()));
     }
