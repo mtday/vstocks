@@ -12,7 +12,7 @@ import javax.ws.rs.*;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-@Path("/market/{marketId}/stocks")
+@Path("/market/{market}/stocks")
 @Singleton
 public class GetStocksForMarket extends BaseResource {
     private final ServiceFactory serviceFactory;
@@ -24,12 +24,12 @@ public class GetStocksForMarket extends BaseResource {
 
     @GET
     @Produces(APPLICATION_JSON)
-    public Results<PricedStock> getAllStocks(@PathParam("marketId") String marketId,
+    public Results<PricedStock> getAllStocks(@PathParam("market") String marketStr,
                                              @QueryParam("pageNum") Integer pageNum,
                                              @QueryParam("pageSize") Integer pageSize,
                                              @QueryParam("sort") String sort) {
-        Market market = Market.from(marketId)
-                .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
+        Market market = Market.from(marketStr)
+                .orElseThrow(() -> new NotFoundException("Market " + marketStr + " not found"));
         return serviceFactory.getPricedStockService().getForMarket(market, getPage(pageNum, pageSize), getSort(sort));
     }
 }

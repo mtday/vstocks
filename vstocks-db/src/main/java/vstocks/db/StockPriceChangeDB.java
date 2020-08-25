@@ -84,6 +84,12 @@ class StockPriceChangeDB extends BaseDB {
         return new StockPriceChangeCollection().setChanges(changes);
     }
 
+    public Results<StockPriceChange> getForMarket(Connection connection, Market market, Page page, List<Sort> sort) {
+        String sql = format("SELECT * FROM stock_price_changes WHERE market = ? %s LIMIT ? OFFSET ?", getSort(sort));
+        String count = "SELECT COUNT(*) FROM stock_price_changes WHERE market = ?";
+        return results(connection, ROW_MAPPER, page, sql, count, market);
+    }
+
     public Results<StockPriceChange> getAll(Connection connection, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM stock_price_changes %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM stock_price_changes";

@@ -37,9 +37,9 @@ public class GetStockIT extends ResourceTest {
 
     @Test
     public void testStockMissing() {
-        PricedStockService pricedStockDb = mock(PricedStockService.class);
-        when(pricedStockDb.get(eq(TWITTER), eq("missing"))).thenReturn(empty());
-        when(getServiceFactory().getPricedStockService()).thenReturn(pricedStockDb);
+        PricedStockService pricedStockService = mock(PricedStockService.class);
+        when(pricedStockService.get(eq(TWITTER), eq("missing"))).thenReturn(empty());
+        when(getServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         Response response = target("/market/twitter/stock/missing").request().get();
 
@@ -55,9 +55,9 @@ public class GetStockIT extends ResourceTest {
     public void testMarketExists() {
         Instant now = Instant.now().truncatedTo(SECONDS);
         PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setName("name").setSymbol("symbol").setTimestamp(now).setPrice(10);
-        PricedStockService pricedStockDb = mock(PricedStockService.class);
-        when(pricedStockDb.get(eq(TWITTER), eq("symbol"))).thenReturn(Optional.of(pricedStock));
-        when(getServiceFactory().getPricedStockService()).thenReturn(pricedStockDb);
+        PricedStockService pricedStockService = mock(PricedStockService.class);
+        when(pricedStockService.get(eq(TWITTER), eq("symbol"))).thenReturn(Optional.of(pricedStock));
+        when(getServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         Response response = target("/market/twitter/stock/symbol").request().get();
 

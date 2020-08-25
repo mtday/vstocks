@@ -136,6 +136,35 @@ public class StockPriceChangeServiceImplIT extends BaseServiceImplIT {
     }
 
     @Test
+    public void testGetForMarketNone() {
+        Results<StockPriceChange> results =
+                stockPriceChangeService.getForMarket(stock1.getMarket(), new Page(), emptyList());
+        validateResults(results);
+    }
+
+    @Test
+    public void testGetForMarketSome() {
+        assertEquals(1, stockPriceChangeService.add(stockPriceChange11));
+        assertEquals(1, stockPriceChangeService.add(stockPriceChange12));
+
+        Results<StockPriceChange> results =
+                stockPriceChangeService.getForMarket(stock1.getMarket(), new Page(), emptyList());
+        validateResults(results, stockPriceChange11, stockPriceChange12);
+    }
+
+    @Test
+    public void testGetForMarketSomeSort() {
+        assertEquals(1, stockPriceChangeService.add(stockPriceChange11));
+        assertEquals(1, stockPriceChangeService.add(stockPriceChange12));
+        assertEquals(1, stockPriceChangeService.add(stockPriceChange21));
+        assertEquals(1, stockPriceChangeService.add(stockPriceChange22));
+
+        List<Sort> sort = asList(CHANGE.toSort(DESC), TIMESTAMP.toSort());
+        Results<StockPriceChange> results = stockPriceChangeService.getForMarket(stock1.getMarket(), new Page(), sort);
+        validateResults(results, stockPriceChange11, stockPriceChange21, stockPriceChange12, stockPriceChange22);
+    }
+
+    @Test
     public void testGetAllNone() {
         Results<StockPriceChange> results = stockPriceChangeService.getAll(new Page(), emptyList());
         validateResults(results);

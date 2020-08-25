@@ -26,10 +26,10 @@ import static vstocks.model.Market.TWITTER;
 public class BuyStockIT extends ResourceTest {
     @Test
     public void testMarketMissing() {
-        UserStockService userStockDb = mock(UserStockService.class);
-        when(getServiceFactory().getUserStockService()).thenReturn(userStockDb);
-        PricedUserStockService pricedUserStockDb = mock(PricedUserStockService.class);
-        when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockDb);
+        UserStockService userStockService = mock(UserStockService.class);
+        when(getServiceFactory().getUserStockService()).thenReturn(userStockService);
+        PricedUserStockService pricedUserStockService = mock(PricedUserStockService.class);
+        when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockService);
 
         Response response = target("/market/missing/stock/symbol/buy/10").request().post(entity("", APPLICATION_JSON_TYPE));
 
@@ -40,18 +40,18 @@ public class BuyStockIT extends ResourceTest {
         assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
         assertEquals("Market missing not found", error.getMessage());
 
-        verify(userStockDb, times(0)).buyStock(any(), any(), any(), anyInt());
-        verify(pricedUserStockDb, times(0)).get(any(), any(), any());
+        verify(userStockService, times(0)).buyStock(any(), any(), any(), anyInt());
+        verify(pricedUserStockService, times(0)).get(any(), any(), any());
     }
 
     @Test
     public void testStockMissing() {
         User user = getUser();
-        UserStockService userStockDb = mock(UserStockService.class);
-        when(userStockDb.buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10))).thenReturn(0);
-        when(getServiceFactory().getUserStockService()).thenReturn(userStockDb);
-        PricedUserStockService pricedUserStockDb = mock(PricedUserStockService.class);
-        when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockDb);
+        UserStockService userStockService = mock(UserStockService.class);
+        when(userStockService.buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10))).thenReturn(0);
+        when(getServiceFactory().getUserStockService()).thenReturn(userStockService);
+        PricedUserStockService pricedUserStockService = mock(PricedUserStockService.class);
+        when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockService);
 
         Response response = target("/market/twitter/stock/symbol/buy/10").request().post(entity("", APPLICATION_JSON_TYPE));
 
@@ -62,21 +62,21 @@ public class BuyStockIT extends ResourceTest {
         assertEquals(BAD_REQUEST.getStatusCode(), error.getStatus());
         assertEquals("Failed to buy 10 shares of Twitter/symbol stock", error.getMessage());
 
-        verify(userStockDb, times(1)).buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10));
-        verify(pricedUserStockDb, times(0)).get(any(), any(), any());
+        verify(userStockService, times(1)).buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10));
+        verify(pricedUserStockService, times(0)).get(any(), any(), any());
     }
 
     @Test
     public void testBuySuccessStockFound() {
         User user = getUser();
-        UserStockService userStockDb = mock(UserStockService.class);
-        when(userStockDb.buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10))).thenReturn(1);
-        when(getServiceFactory().getUserStockService()).thenReturn(userStockDb);
+        UserStockService userStockService = mock(UserStockService.class);
+        when(userStockService.buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10))).thenReturn(1);
+        when(getServiceFactory().getUserStockService()).thenReturn(userStockService);
         Instant now = Instant.now().truncatedTo(SECONDS);
         PricedUserStock pricedUserStock = new PricedUserStock().setUserId(user.getId()).setMarket(TWITTER).setSymbol("symbol").setShares(10).setTimestamp(now).setPrice(10);
-        PricedUserStockService pricedUserStockDb = mock(PricedUserStockService.class);
-        when(pricedUserStockDb.get(eq(user.getId()), eq(TWITTER), eq("symbol"))).thenReturn(Optional.of(pricedUserStock));
-        when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockDb);
+        PricedUserStockService pricedUserStockService = mock(PricedUserStockService.class);
+        when(pricedUserStockService.get(eq(user.getId()), eq(TWITTER), eq("symbol"))).thenReturn(Optional.of(pricedUserStock));
+        when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockService);
 
         Response response = target("/market/twitter/stock/symbol/buy/10").request().post(entity("", APPLICATION_JSON_TYPE));
 
@@ -91,19 +91,19 @@ public class BuyStockIT extends ResourceTest {
         assertEquals(pricedUserStock.getTimestamp(), fetched.getTimestamp());
         assertEquals(pricedUserStock.getPrice(), fetched.getPrice());
 
-        verify(userStockDb, times(1)).buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10));
-        verify(pricedUserStockDb, times(1)).get(eq(user.getId()), eq(TWITTER), eq("symbol"));
+        verify(userStockService, times(1)).buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10));
+        verify(pricedUserStockService, times(1)).get(eq(user.getId()), eq(TWITTER), eq("symbol"));
     }
 
     @Test
     public void testBuySuccessStockNotFound() {
         User user = getUser();
-        UserStockService userStockDb = mock(UserStockService.class);
-        when(userStockDb.buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10))).thenReturn(1);
-        when(getServiceFactory().getUserStockService()).thenReturn(userStockDb);
-        PricedUserStockService pricedUserStockDb = mock(PricedUserStockService.class);
-        when(pricedUserStockDb.get(eq(user.getId()), eq(TWITTER), eq("symbol"))).thenReturn(empty());
-        when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockDb);
+        UserStockService userStockService = mock(UserStockService.class);
+        when(userStockService.buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10))).thenReturn(1);
+        when(getServiceFactory().getUserStockService()).thenReturn(userStockService);
+        PricedUserStockService pricedUserStockService = mock(PricedUserStockService.class);
+        when(pricedUserStockService.get(eq(user.getId()), eq(TWITTER), eq("symbol"))).thenReturn(empty());
+        when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockService);
 
         Response response = target("/market/twitter/stock/symbol/buy/10").request().post(entity("", APPLICATION_JSON_TYPE));
 
@@ -114,7 +114,7 @@ public class BuyStockIT extends ResourceTest {
         assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
         assertEquals("Stock Twitter/symbol not found", error.getMessage());
 
-        verify(userStockDb, times(1)).buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10));
-        verify(pricedUserStockDb, times(1)).get(eq(user.getId()), eq(TWITTER), eq("symbol"));
+        verify(userStockService, times(1)).buyStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10));
+        verify(pricedUserStockService, times(1)).get(eq(user.getId()), eq(TWITTER), eq("symbol"));
     }
 }

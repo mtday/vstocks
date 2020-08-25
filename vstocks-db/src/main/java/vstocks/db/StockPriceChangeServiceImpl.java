@@ -29,6 +29,11 @@ public class StockPriceChangeServiceImpl extends BaseService implements StockPri
     }
 
     @Override
+    public Results<StockPriceChange> getForMarket(Market market, Page page, List<Sort> sort) {
+        return withConnection(conn -> stockPriceChangeDB.getForMarket(conn, market, page, sort));
+    }
+
+    @Override
     public Results<StockPriceChange> getAll(Page page, List<Sort> sort) {
         return withConnection(conn -> stockPriceChangeDB.getAll(conn, page, sort));
     }

@@ -12,6 +12,8 @@ public interface StockPriceChangeService {
 
     StockPriceChangeCollection getLatest(Market market, String symbol);
 
+    Results<StockPriceChange> getForMarket(Market market, Page page, List<Sort> sort);
+
     Results<StockPriceChange> getAll(Page page, List<Sort> sort);
 
     int add(StockPriceChange stockPriceChange);

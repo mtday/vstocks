@@ -90,6 +90,7 @@ public class Application extends ResourceConfig {
 
         // market/stock
         register(BuyStock.class);
+        register(GetBestStocksForMarket.class);
         register(GetStock.class);
         register(GetStocksForMarket.class);
         register(SearchStocks.class);
@@ -105,6 +106,9 @@ public class Application extends ResourceConfig {
         register(GetMarketStandings.class);
         register(GetMarketTotalStandings.class);
         register(GetTotalStandings.class);
+
+        // dashboard/stocks
+        register(GetBestStocks.class);
 
         // dashboard/overall
         register(GetOverallCreditValue.class);
