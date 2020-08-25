@@ -30,7 +30,8 @@ public class MarketRankCollectionTest {
             .setRank(18);
 
     private final List<MarketRank> ranks = asList(marketRank1, marketRank2);
-    private final Map<DeltaInterval, Delta> deltas = Delta.getDeltas(ranks, MarketRank::getTimestamp, r -> -r.getRank());
+    private final Map<DeltaInterval, Delta> deltas =
+            Delta.getDeltas(ranks, MarketRank::getTimestamp, MarketRank::getRank);
 
     @Test
     public void testGettersAndSetters() {

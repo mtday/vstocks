@@ -49,6 +49,30 @@ CREATE INDEX idx_stock_prices_symbol ON stock_prices (symbol);
 CREATE INDEX idx_stock_prices_timestamp ON stock_prices (timestamp);
 
 
+CREATE SEQUENCE stock_price_changes_batch_sequence;
+CREATE TABLE stock_price_changes (
+    batch              BIGINT       NOT NULL,
+    market             TEXT         NOT NULL,
+    symbol             TEXT         NOT NULL,
+    timestamp          TIMESTAMP(0) NOT NULL,
+    price              BIGINT       NOT NULL,
+    change             BIGINT       NOT NULL,
+    percent            FLOAT        NOT NULL,
+
+    CONSTRAINT stock_price_changes_pk PRIMARY KEY (batch, market, symbol),
+    CONSTRAINT stock_price_changes_fk_stock FOREIGN KEY (market, symbol)
+        REFERENCES stocks (market, symbol) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX idx_stock_price_changes_batch ON stock_price_changes (batch);
+CREATE INDEX idx_stock_price_changes_market ON stock_price_changes (market);
+CREATE INDEX idx_stock_price_changes_symbol ON stock_price_changes (symbol);
+CREATE INDEX idx_stock_price_changes_timestamp ON stock_price_changes (timestamp);
+CREATE INDEX idx_stock_price_changes_price ON stock_price_changes (price);
+CREATE INDEX idx_stock_price_changes_change ON stock_price_changes (change);
+CREATE INDEX idx_stock_price_changes_percent ON stock_price_changes (percent);
+
+
 CREATE TABLE activity_logs (
     id                 TEXT         NOT NULL,
     user_id            TEXT         NOT NULL,

@@ -5,6 +5,7 @@ import static java.util.Locale.ENGLISH;
 public enum DatabaseField {
     ACHIEVEMENT_ID,
     BATCH,
+    CHANGE,
     COUNT,
     CREDITS,
     DESCRIPTION,
@@ -14,6 +15,7 @@ public enum DatabaseField {
     ID,
     MARKET,
     NAME,
+    PERCENT,
     PRICE,
     RANK,
     SHARES,

@@ -29,7 +29,7 @@ public class PortfolioPerformanceTest {
             .setRank(18);
     private final List<TotalRank> totalRanks = asList(totalRank1, totalRank2);
     private final Map<DeltaInterval, Delta> totalRankDeltas =
-            Delta.getDeltas(totalRanks, TotalRank::getTimestamp, r -> -r.getRank());
+            Delta.getDeltas(totalRanks, TotalRank::getTimestamp, TotalRank::getRank);
     private final TotalRankCollection totalRankCollection = new TotalRankCollection()
             .setRanks(totalRanks)
             .setDeltas(totalRankDeltas);
@@ -46,7 +46,7 @@ public class PortfolioPerformanceTest {
             .setRank(18);
     private final List<CreditRank> creditRanks = asList(creditRank1, creditRank2);
     private final Map<DeltaInterval, Delta> creditRankDeltas =
-            Delta.getDeltas(creditRanks, CreditRank::getTimestamp, r -> -r.getRank());
+            Delta.getDeltas(creditRanks, CreditRank::getTimestamp, CreditRank::getRank);
     private final CreditRankCollection creditRankCollection = new CreditRankCollection()
             .setRanks(creditRanks)
             .setDeltas(creditRankDeltas);
@@ -63,7 +63,7 @@ public class PortfolioPerformanceTest {
             .setRank(18);
     private final List<MarketTotalRank> marketTotalRanks = asList(marketTotalRank1, marketTotalRank2);
     private final Map<DeltaInterval, Delta> marketTotalRankDeltas =
-            Delta.getDeltas(marketTotalRanks, MarketTotalRank::getTimestamp, r -> -r.getRank());
+            Delta.getDeltas(marketTotalRanks, MarketTotalRank::getTimestamp, MarketTotalRank::getRank);
     private final MarketTotalRankCollection marketTotalRankCollection = new MarketTotalRankCollection()
             .setRanks(marketTotalRanks)
             .setDeltas(marketTotalRankDeltas);
@@ -82,7 +82,7 @@ public class PortfolioPerformanceTest {
             .setRank(18);
     private final List<MarketRank> marketRanks = asList(marketRank1, marketRank2);
     private final Map<DeltaInterval, Delta> marketRankDeltas =
-            Delta.getDeltas(marketRanks, MarketRank::getTimestamp, r -> -r.getRank());
+            Delta.getDeltas(marketRanks, MarketRank::getTimestamp, MarketRank::getRank);
     private final MarketRankCollection marketRankCollection = new MarketRankCollection()
             .setRanks(marketRanks)
             .setDeltas(marketRankDeltas);

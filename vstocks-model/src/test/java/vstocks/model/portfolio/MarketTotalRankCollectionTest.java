@@ -28,7 +28,7 @@ public class MarketTotalRankCollectionTest {
 
     private final List<MarketTotalRank> ranks = asList(marketTotalRank1, marketTotalRank2);
     private final Map<DeltaInterval, Delta> deltas =
-            Delta.getDeltas(ranks, MarketTotalRank::getTimestamp, r -> -r.getRank());
+            Delta.getDeltas(ranks, MarketTotalRank::getTimestamp, MarketTotalRank::getRank);
 
     @Test
     public void testGettersAndSetters() {

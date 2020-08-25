@@ -27,7 +27,8 @@ public class CreditRankCollectionTest {
             .setRank(18);
 
     private final List<CreditRank> ranks = asList(creditRank1, creditRank2);
-    private final Map<DeltaInterval, Delta> deltas = Delta.getDeltas(ranks, CreditRank::getTimestamp, r -> -r.getRank());
+    private final Map<DeltaInterval, Delta> deltas =
+            Delta.getDeltas(ranks, CreditRank::getTimestamp, CreditRank::getRank);
 
     @Test
     public void testGettersAndSetters() {

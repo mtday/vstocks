@@ -127,7 +127,7 @@ public class DeltaTest {
         Delta delta = new Delta().setInterval(DAY3).setChange(5).setPercent(5.25f);
 
         assertEquals(DAY3, delta.getInterval());
-        assertEquals(5, delta.getChange());
+        assertEquals(5, delta.getChange(), 0.001);
         assertEquals(5.25f, delta.getPercent(), 0.001);
     }
 
