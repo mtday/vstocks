@@ -49,6 +49,7 @@ public class StockUpdateTask extends HourlyTask {
                     LOGGER.error("Failed to close stock update runnable", e);
                 }
             }
+            environment.getServiceFactory().getStockPriceChangeService().generate();
             LOGGER.info("Done updating stock prices");
         } catch (Throwable e) {
             LOGGER.error("Unexpected error", e);

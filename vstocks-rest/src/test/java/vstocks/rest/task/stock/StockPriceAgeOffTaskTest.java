@@ -2,6 +2,7 @@ package vstocks.rest.task.stock;
 
 import org.junit.Test;
 import vstocks.db.ServiceFactory;
+import vstocks.db.StockPriceChangeService;
 import vstocks.db.StockPriceService;
 import vstocks.rest.Environment;
 
@@ -24,9 +25,11 @@ public class StockPriceAgeOffTaskTest {
     @Test
     public void testRun() {
         StockPriceService stockPriceService = mock(StockPriceService.class);
+        StockPriceChangeService stockPriceChangeService = mock(StockPriceChangeService.class);
 
         ServiceFactory serviceFactory = mock(ServiceFactory.class);
         when(serviceFactory.getStockPriceService()).thenReturn(stockPriceService);
+        when(serviceFactory.getStockPriceChangeService()).thenReturn(stockPriceChangeService);
 
         Environment environment = mock(Environment.class);
         when(environment.getServiceFactory()).thenReturn(serviceFactory);

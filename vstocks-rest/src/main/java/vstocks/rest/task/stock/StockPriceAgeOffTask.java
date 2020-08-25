@@ -24,5 +24,6 @@ public class StockPriceAgeOffTask extends HourlyTask {
         int days = DATA_HISTORY_DAYS.getInt();
         Instant cutoff = Instant.now().truncatedTo(DAYS).minus(days, DAYS);
         environment.getServiceFactory().getStockPriceService().ageOff(cutoff);
+        environment.getServiceFactory().getStockPriceChangeService().ageOff(cutoff);
     }
 }

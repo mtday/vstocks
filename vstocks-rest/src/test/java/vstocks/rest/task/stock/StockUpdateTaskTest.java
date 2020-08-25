@@ -2,10 +2,7 @@ package vstocks.rest.task.stock;
 
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
-import vstocks.db.OwnedStockService;
-import vstocks.db.ServiceFactory;
-import vstocks.db.StockPriceService;
-import vstocks.db.StockService;
+import vstocks.db.*;
 import vstocks.model.Market;
 import vstocks.model.PricedStock;
 import vstocks.model.Stock;
@@ -93,10 +90,13 @@ public class StockUpdateTaskTest {
             return 2;
         });
 
+        StockPriceChangeService stockPriceChangeService = mock(StockPriceChangeService.class);
+
         ServiceFactory serviceFactory = mock(ServiceFactory.class);
         when(serviceFactory.getOwnedStockService()).thenReturn(ownedStockService);
         when(serviceFactory.getStockService()).thenReturn(stockService);
         when(serviceFactory.getStockPriceService()).thenReturn(stockPriceService);
+        when(serviceFactory.getStockPriceChangeService()).thenReturn(stockPriceChangeService);
 
         Environment environment = mock(Environment.class);
         when(environment.getRemoteStockServiceFactory()).thenReturn(remoteStockServiceFactory);

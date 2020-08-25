@@ -10,6 +10,7 @@ public interface ServiceFactory {
     PricedUserStockService getPricedUserStockService();
     StockService getStockService();
     StockPriceService getStockPriceService();
+    StockPriceChangeService getStockPriceChangeService();
     UserAchievementService getUserAchievementService();
     UserCreditsService getUserCreditsService();
     UserService getUserService();
