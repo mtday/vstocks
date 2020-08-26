@@ -31,9 +31,12 @@ public class SearchStocksIT extends ResourceTest {
         assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse error = response.readEntity(ErrorResponse.class);
-        assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
-        assertEquals("Market missing not found", error.getMessage());
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":404,\"message\":\"Market missing not found\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
+        assertEquals(NOT_FOUND.getStatusCode(), errorResponse.getStatus());
+        assertEquals("Market missing not found", errorResponse.getMessage());
     }
 
     @Test
@@ -43,9 +46,12 @@ public class SearchStocksIT extends ResourceTest {
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse error = response.readEntity(ErrorResponse.class);
-        assertEquals(BAD_REQUEST.getStatusCode(), error.getStatus());
-        assertEquals("Missing required 'q' query parameter", error.getMessage());
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":400,\"message\":\"Missing required 'q' query parameter\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
+        assertEquals(BAD_REQUEST.getStatusCode(), errorResponse.getStatus());
+        assertEquals("Missing required 'q' query parameter", errorResponse.getMessage());
     }
 
     @Test
@@ -59,15 +65,37 @@ public class SearchStocksIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        assertTrue(response.readEntity(new PricedStockListGenericType()).isEmpty());
+        String json = response.readEntity(String.class);
+        assertEquals("[]", json);
+
+        List<PricedStock> fetched = convert(json, new PricedStockListTypeRef());
+        assertTrue(fetched.isEmpty());
     }
 
     @Test
     public void testSearchStocksSome() {
-        Instant now = Instant.now().truncatedTo(SECONDS);
-        PricedStock pricedStock1 = new PricedStock().setMarket(TWITTER).setSymbol("symbol1").setName("name1").setTimestamp(now).setPrice(10);
-        PricedStock pricedStock2 = new PricedStock().setMarket(TWITTER).setSymbol("symbol2").setName("name2").setTimestamp(now).setPrice(11);
-        PricedStock pricedStock3 = new PricedStock().setMarket(TWITTER).setSymbol("symbol3").setName("name3").setTimestamp(now).setPrice(12);
+        Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z").truncatedTo(SECONDS);
+        PricedStock pricedStock1 = new PricedStock()
+                .setMarket(TWITTER)
+                .setSymbol("symbol1")
+                .setName("name1")
+                .setProfileImage("link1")
+                .setTimestamp(timestamp)
+                .setPrice(10);
+        PricedStock pricedStock2 = new PricedStock()
+                .setMarket(TWITTER)
+                .setSymbol("symbol2")
+                .setName("name2")
+                .setProfileImage("link2")
+                .setTimestamp(timestamp)
+                .setPrice(11);
+        PricedStock pricedStock3 = new PricedStock()
+                .setMarket(TWITTER)
+                .setSymbol("symbol3")
+                .setName("name3")
+                .setProfileImage("link3")
+                .setTimestamp(timestamp)
+                .setPrice(12);
 
         RemoteStockService remoteStockService = mock(RemoteStockService.class);
         when(remoteStockService.search(eq("searchterm"), eq(20))).thenReturn(asList(pricedStock1, pricedStock2, pricedStock3));
@@ -78,7 +106,16 @@ public class SearchStocksIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        List<PricedStock> results = response.readEntity(new PricedStockListGenericType());
+        String json = response.readEntity(String.class);
+        String price1json = "{\"market\":\"Twitter\",\"symbol\":\"symbol1\",\"timestamp\":\"2020-12-03T10:15:30Z\","
+                + "\"name\":\"name1\",\"profileImage\":\"link1\",\"price\":10}";
+        String price2json = "{\"market\":\"Twitter\",\"symbol\":\"symbol2\",\"timestamp\":\"2020-12-03T10:15:30Z\","
+                + "\"name\":\"name2\",\"profileImage\":\"link2\",\"price\":11}";
+        String price3json = "{\"market\":\"Twitter\",\"symbol\":\"symbol3\",\"timestamp\":\"2020-12-03T10:15:30Z\","
+                + "\"name\":\"name3\",\"profileImage\":\"link3\",\"price\":12}";
+        assertEquals("[" + price1json + "," + price2json + "," + price3json + "]", json);
+
+        List<PricedStock> results = convert(json, new PricedStockListTypeRef());
         assertEquals(3, results.size());
         assertTrue(results.contains(pricedStock1));
         assertTrue(results.contains(pricedStock2));

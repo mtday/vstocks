@@ -22,12 +22,15 @@ public class GetAllMarketsIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        List<Market> results = response.readEntity(new MarketListGenericType());
-        assertEquals(5, results.size());
-        assertTrue(results.contains(TWITTER));
-        assertTrue(results.contains(YOUTUBE));
-        assertTrue(results.contains(INSTAGRAM));
-        assertTrue(results.contains(TWITCH));
-        assertTrue(results.contains(FACEBOOK));
+        String json = response.readEntity(String.class);
+        assertEquals("[\"Twitter\",\"YouTube\",\"Instagram\",\"Twitch\",\"Facebook\"]", json);
+
+        List<Market> fetched = convert(json, new MarketListTypeRef());
+        assertEquals(5, fetched.size());
+        assertTrue(fetched.contains(TWITTER));
+        assertTrue(fetched.contains(YOUTUBE));
+        assertTrue(fetched.contains(INSTAGRAM));
+        assertTrue(fetched.contains(TWITCH));
+        assertTrue(fetched.contains(FACEBOOK));
     }
 }

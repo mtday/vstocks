@@ -32,9 +32,12 @@ public class GetStocksForMarketIT extends ResourceTest {
         assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse error = response.readEntity(ErrorResponse.class);
-        assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
-        assertEquals("Market missing not found", error.getMessage());
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":404,\"message\":\"Market missing not found\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
+        assertEquals(NOT_FOUND.getStatusCode(), errorResponse.getStatus());
+        assertEquals("Market missing not found", errorResponse.getMessage());
     }
 
     @Test
@@ -48,7 +51,10 @@ public class GetStocksForMarketIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        Results<PricedStock> results = response.readEntity(new PricedStockResultsGenericType());
+        String json = response.readEntity(String.class);
+        assertEquals("{\"page\":{\"page\":1,\"size\":25},\"total\":0,\"results\":[]}", json);
+
+        Results<PricedStock> results = convert(json, new PricedStockResultsTypeRef());
         assertEquals(1, results.getPage().getPage());
         assertEquals(25, results.getPage().getSize());
         assertEquals(0, results.getTotal());
@@ -57,10 +63,28 @@ public class GetStocksForMarketIT extends ResourceTest {
 
     @Test
     public void testGetForMarketsOnePage() {
-        Instant now = Instant.now().truncatedTo(SECONDS);
-        PricedStock pricedStock1 = new PricedStock().setMarket(TWITTER).setSymbol("symbol1").setName("name1").setTimestamp(now).setPrice(10);
-        PricedStock pricedStock2 = new PricedStock().setMarket(TWITTER).setSymbol("symbol2").setName("name2").setTimestamp(now).setPrice(11);
-        PricedStock pricedStock3 = new PricedStock().setMarket(TWITTER).setSymbol("symbol3").setName("name3").setTimestamp(now).setPrice(12);
+        Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z").truncatedTo(SECONDS);
+        PricedStock pricedStock1 = new PricedStock()
+                .setMarket(TWITTER)
+                .setSymbol("symbol1")
+                .setName("name1")
+                .setProfileImage("link1")
+                .setTimestamp(timestamp)
+                .setPrice(10);
+        PricedStock pricedStock2 = new PricedStock()
+                .setMarket(TWITTER)
+                .setSymbol("symbol2")
+                .setName("name2")
+                .setProfileImage("link2")
+                .setTimestamp(timestamp)
+                .setPrice(11);
+        PricedStock pricedStock3 = new PricedStock()
+                .setMarket(TWITTER)
+                .setSymbol("symbol3")
+                .setName("name3")
+                .setProfileImage("link3")
+                .setTimestamp(timestamp)
+                .setPrice(12);
 
         Results<PricedStock> results = new Results<PricedStock>().setPage(new Page()).setTotal(3)
                 .setResults(asList(pricedStock1, pricedStock2, pricedStock3));
@@ -73,7 +97,18 @@ public class GetStocksForMarketIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        Results<PricedStock> fetched = response.readEntity(new PricedStockResultsGenericType());
+        String json = response.readEntity(String.class);
+        String price1json = "{\"market\":\"Twitter\",\"symbol\":\"symbol1\",\"timestamp\":\"2020-12-03T10:15:30Z\","
+                + "\"name\":\"name1\",\"profileImage\":\"link1\",\"price\":10}";
+        String price2json = "{\"market\":\"Twitter\",\"symbol\":\"symbol2\",\"timestamp\":\"2020-12-03T10:15:30Z\","
+                + "\"name\":\"name2\",\"profileImage\":\"link2\",\"price\":11}";
+        String price3json = "{\"market\":\"Twitter\",\"symbol\":\"symbol3\",\"timestamp\":\"2020-12-03T10:15:30Z\","
+                + "\"name\":\"name3\",\"profileImage\":\"link3\",\"price\":12}";
+        String expected = "{\"page\":{\"page\":1,\"size\":25},\"total\":3,\"results\":["
+                + price1json + "," + price2json + "," + price3json + "]}";
+        assertEquals(expected, json);
+
+        Results<PricedStock> fetched = convert(json, new PricedStockResultsTypeRef());
         assertEquals(1, fetched.getPage().getPage());
         assertEquals(25, fetched.getPage().getSize());
         assertEquals(3, fetched.getTotal());

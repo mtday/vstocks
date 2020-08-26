@@ -19,8 +19,7 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.Response.Status.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static vstocks.model.Market.TWITTER;
 
@@ -37,9 +36,12 @@ public class SellStockIT extends ResourceTest {
         assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse error = response.readEntity(ErrorResponse.class);
-        assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
-        assertEquals("Market missing not found", error.getMessage());
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":404,\"message\":\"Market missing not found\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
+        assertEquals(NOT_FOUND.getStatusCode(), errorResponse.getStatus());
+        assertEquals("Market missing not found", errorResponse.getMessage());
 
         verify(userStockService, times(0)).sellStock(any(), any(), any(), anyInt());
         verify(pricedUserStockService, times(0)).get(any(), any(), any());
@@ -59,9 +61,12 @@ public class SellStockIT extends ResourceTest {
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse error = response.readEntity(ErrorResponse.class);
-        assertEquals(BAD_REQUEST.getStatusCode(), error.getStatus());
-        assertEquals("Failed to sell 10 shares of Twitter/symbol stock", error.getMessage());
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":400,\"message\":\"Failed to sell 10 shares of Twitter/symbol stock\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
+        assertEquals(BAD_REQUEST.getStatusCode(), errorResponse.getStatus());
+        assertEquals("Failed to sell 10 shares of Twitter/symbol stock", errorResponse.getMessage());
 
         verify(userStockService, times(1)).sellStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10));
         verify(pricedUserStockService, times(0)).get(any(), any(), any());
@@ -69,13 +74,20 @@ public class SellStockIT extends ResourceTest {
 
     @Test
     public void testSellSuccessStockFound() {
+        Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z").truncatedTo(SECONDS);
+        PricedUserStock pricedUserStock = new PricedUserStock()
+                .setUserId(getUser().getId())
+                .setMarket(TWITTER)
+                .setSymbol("symbol")
+                .setShares(10)
+                .setTimestamp(timestamp)
+                .setPrice(10);
+
         User user = getUser();
         UserStockService userStockService = mock(UserStockService.class);
         when(userStockService.sellStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10))).thenReturn(1);
         when(getServiceFactory().getUserStockService()).thenReturn(userStockService);
         PricedUserStockService pricedUserStockService = mock(PricedUserStockService.class);
-        Instant now = Instant.now().truncatedTo(SECONDS);
-        PricedUserStock pricedUserStock = new PricedUserStock().setUserId("TW:12345").setMarket(TWITTER).setSymbol("symbol").setShares(10).setTimestamp(now).setPrice(10);
         when(pricedUserStockService.get(eq(user.getId()), eq(TWITTER), eq("symbol"))).thenReturn(Optional.of(pricedUserStock));
         when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockService);
 
@@ -84,7 +96,11 @@ public class SellStockIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        PricedUserStock fetched = response.readEntity(PricedUserStock.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"market\":\"Twitter\","
+                + "\"symbol\":\"symbol\",\"timestamp\":\"2020-12-03T10:15:30Z\",\"shares\":10,\"price\":10}", json);
+
+        PricedUserStock fetched = convert(json, PricedUserStock.class);
         assertEquals(pricedUserStock.getUserId(), fetched.getUserId());
         assertEquals(pricedUserStock.getMarket(), fetched.getMarket());
         assertEquals(pricedUserStock.getSymbol(), fetched.getSymbol());
@@ -111,7 +127,13 @@ public class SellStockIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        PricedUserStock fetched = response.readEntity(PricedUserStock.class);
+        String json = response.readEntity(String.class);
+        // includes `now` as a timestamp
+        assertTrue(json.startsWith("{\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"market\":\"Twitter\","
+                + "\"symbol\":\"symbol\",\"timestamp\":\""));
+        assertTrue(json.endsWith("\",\"shares\":0,\"price\":1}"));
+
+        PricedUserStock fetched = convert(json, PricedUserStock.class);
         assertEquals(user.getId(), fetched.getUserId());
         assertEquals(TWITTER, fetched.getMarket());
         assertEquals("symbol", fetched.getSymbol());

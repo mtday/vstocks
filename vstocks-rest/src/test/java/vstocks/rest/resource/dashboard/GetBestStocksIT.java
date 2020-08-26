@@ -34,7 +34,10 @@ public class GetBestStocksIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        Results<StockPriceChange> results = response.readEntity(new StockPriceChangeResultsGenericType());
+        String json = response.readEntity(String.class);
+        assertEquals("{\"page\":{\"page\":1,\"size\":25},\"total\":0,\"results\":[]}", json);
+
+        Results<StockPriceChange> results = convert(json, new StockPriceChangeResultsTypeRef());
         assertEquals(1, results.getPage().getPage());
         assertEquals(25, results.getPage().getSize());
         assertEquals(0, results.getTotal());
@@ -43,25 +46,28 @@ public class GetBestStocksIT extends ResourceTest {
 
     @Test
     public void testGetBestOnePage() {
-        Instant now = Instant.now().truncatedTo(SECONDS);
+        Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z").truncatedTo(SECONDS);
         StockPriceChange stockPriceChange1 = new StockPriceChange()
+                .setBatch(1)
                 .setMarket(TWITTER)
                 .setSymbol("symbol1")
-                .setTimestamp(now)
+                .setTimestamp(timestamp)
                 .setPrice(10)
                 .setChange(1)
                 .setPercent(10f);
         StockPriceChange stockPriceChange2 = new StockPriceChange()
+                .setBatch(1)
                 .setMarket(TWITTER)
                 .setSymbol("symbol2")
-                .setTimestamp(now)
+                .setTimestamp(timestamp)
                 .setPrice(20)
                 .setChange(1)
                 .setPercent(5f);
         StockPriceChange stockPriceChange3 = new StockPriceChange()
+                .setBatch(1)
                 .setMarket(TWITTER)
                 .setSymbol("symbol3")
-                .setTimestamp(now)
+                .setTimestamp(timestamp)
                 .setPrice(10)
                 .setChange(0)
                 .setPercent(0f);
@@ -77,7 +83,18 @@ public class GetBestStocksIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        Results<StockPriceChange> fetched = response.readEntity(new StockPriceChangeResultsGenericType());
+        String json = response.readEntity(String.class);
+        String change1json = "{\"batch\":1,\"market\":\"Twitter\",\"symbol\":\"symbol1\","
+                + "\"timestamp\":\"2020-12-03T10:15:30Z\",\"price\":10,\"change\":1,\"percent\":10.0}";
+        String change2json = "{\"batch\":1,\"market\":\"Twitter\",\"symbol\":\"symbol2\","
+                + "\"timestamp\":\"2020-12-03T10:15:30Z\",\"price\":20,\"change\":1,\"percent\":5.0}";
+        String change3json = "{\"batch\":1,\"market\":\"Twitter\",\"symbol\":\"symbol3\","
+                + "\"timestamp\":\"2020-12-03T10:15:30Z\",\"price\":10,\"change\":0,\"percent\":0.0}";
+        String expectedJson = "{\"page\":{\"page\":1,\"size\":25},\"total\":3,\"results\":["
+                + change1json + "," + change2json + "," + change3json + "]}";
+        assertEquals(expectedJson, json);
+
+        Results<StockPriceChange> fetched = convert(json, new StockPriceChangeResultsTypeRef());
         assertEquals(1, fetched.getPage().getPage());
         assertEquals(25, fetched.getPage().getSize());
         assertEquals(3, fetched.getTotal());

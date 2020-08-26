@@ -5,7 +5,6 @@ import java.util.Objects;
 import static vstocks.model.SortDirection.ASC;
 
 public class Sort {
-
     private DatabaseField field;
     private SortDirection direction = ASC;
 

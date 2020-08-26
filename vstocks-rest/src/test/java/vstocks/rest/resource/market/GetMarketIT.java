@@ -22,9 +22,12 @@ public class GetMarketIT extends ResourceTest {
         assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse error = response.readEntity(ErrorResponse.class);
-        assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
-        assertEquals("Market missing not found", error.getMessage());
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":404,\"message\":\"Market missing not found\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
+        assertEquals(NOT_FOUND.getStatusCode(), errorResponse.getStatus());
+        assertEquals("Market missing not found", errorResponse.getMessage());
     }
 
     @Test
@@ -34,7 +37,10 @@ public class GetMarketIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        Market fetched = response.readEntity(Market.class);
+        String json = response.readEntity(String.class);
+        assertEquals("\"Twitter\"", json);
+
+        Market fetched = convert(json, Market.class);
         assertEquals(TWITTER, fetched);
     }
 
@@ -45,7 +51,10 @@ public class GetMarketIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        Market fetched = response.readEntity(Market.class);
+        String json = response.readEntity(String.class);
+        assertEquals("\"Twitter\"", json);
+
+        Market fetched = convert(json, Market.class);
         assertEquals(TWITTER, fetched);
     }
 }

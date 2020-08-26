@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
@@ -38,7 +39,10 @@ public class GetMarketRankIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -55,7 +59,10 @@ public class GetMarketRankIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -66,17 +73,21 @@ public class GetMarketRankIT extends ResourceTest {
         when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getServiceFactory().getUserService()).thenReturn(userService);
 
-        Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
+        Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z").truncatedTo(SECONDS);
         MarketRank marketRank1 = new MarketRank()
-                .setBatch(1)
+                .setBatch(2)
                 .setUserId(getUser().getId())
+                .setMarket(TWITTER)
                 .setTimestamp(timestamp)
-                .setRank(20);
+                .setRank(20)
+                .setValue(10);
         MarketRank marketRank2 = new MarketRank()
                 .setBatch(1)
                 .setUserId(getUser().getId())
+                .setMarket(TWITTER)
                 .setTimestamp(timestamp.minusSeconds(10))
-                .setRank(18);
+                .setRank(18)
+                .setValue(9);
 
         List<MarketRank> ranks = asList(marketRank1, marketRank2);
         Map<DeltaInterval, Delta> deltas = Delta.getDeltas(ranks, MarketRank::getTimestamp, MarketRank::getRank);
@@ -96,6 +107,24 @@ public class GetMarketRankIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        assertEquals(collection, response.readEntity(MarketRankCollection.class));
+        String json = response.readEntity(String.class);
+        String rank1json = "{\"batch\":2,\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"market\":\"Twitter\","
+                + "\"timestamp\":\"2020-12-03T10:15:30Z\",\"rank\":20,\"value\":10}";
+        String rank2json = "{\"batch\":1,\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"market\":\"Twitter\","
+                + "\"timestamp\":\"2020-12-03T10:15:20Z\",\"rank\":18,\"value\":9}";
+        String deltajson = String.join(",", asList(
+                "\"6h\":{\"interval\":\"6h\",\"change\":2,\"percent\":11.111112}",
+                "\"12h\":{\"interval\":\"12h\",\"change\":2,\"percent\":11.111112}",
+                "\"1d\":{\"interval\":\"1d\",\"change\":2,\"percent\":11.111112}",
+                "\"3d\":{\"interval\":\"3d\",\"change\":2,\"percent\":11.111112}",
+                "\"7d\":{\"interval\":\"7d\",\"change\":2,\"percent\":11.111112}",
+                "\"14d\":{\"interval\":\"14d\",\"change\":2,\"percent\":11.111112}",
+                "\"30d\":{\"interval\":\"30d\",\"change\":2,\"percent\":11.111112}"
+        ));
+        String expected = "{\"ranks\":[" + rank1json + "," + rank2json + "],\"deltas\":{" + deltajson + "}}";
+        assertEquals(expected, json);
+
+        MarketRankCollection fetched = convert(json, MarketRankCollection.class);
+        assertEquals(collection, fetched);
     }
 }

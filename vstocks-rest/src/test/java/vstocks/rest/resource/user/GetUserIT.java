@@ -29,7 +29,10 @@ public class GetUserIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -43,7 +46,10 @@ public class GetUserIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -60,12 +66,12 @@ public class GetUserIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        User user = getUser();
-        User fetched = response.readEntity(User.class);
-        assertEquals(user.getId(), fetched.getId());
-        assertEquals(user.getEmail(), fetched.getEmail());
-        assertEquals(user.getUsername(), fetched.getUsername());
-        assertEquals(user.getDisplayName(), fetched.getDisplayName());
-        assertEquals(user.getProfileImage(), fetched.getProfileImage());
+        String json = response.readEntity(String.class);
+        assertEquals("{\"id\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"email\":\"user@domain.com\","
+                + "\"username\":\"username\",\"displayName\":\"Display Name\","
+                + "\"profileImage\":\"https://domain.com/user/profile-image.png\"}", json);
+
+        User fetched = convert(json, User.class);
+        assertEquals(getUser(), fetched);
     }
 }

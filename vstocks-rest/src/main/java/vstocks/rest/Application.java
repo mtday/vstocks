@@ -204,7 +204,7 @@ public class Application extends ResourceConfig {
                 .setIncludeBackgroundTasks(true);
     }
 
-    private static ObjectMapper getObjectMapper() {
+    public static ObjectMapper getObjectMapper() {
         return new ObjectMapper()
                 .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                 .registerModule(new JavaTimeModule());

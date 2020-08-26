@@ -1,13 +1,24 @@
 package vstocks.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Arrays;
 import java.util.Optional;
 
 public enum Market {
+    @JsonProperty("Twitter")
     TWITTER("Twitter"),
+
+    @JsonProperty("YouTube")
     YOUTUBE("YouTube"),
+
+    @JsonProperty("Instagram")
     INSTAGRAM("Instagram"),
+
+    @JsonProperty("Twitch")
     TWITCH("Twitch"),
+
+    @JsonProperty("Facebook")
     FACEBOOK("Facebook");
 
     private final String displayName;

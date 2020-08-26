@@ -38,7 +38,10 @@ public class GetOverallMarketValueIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -55,7 +58,10 @@ public class GetOverallMarketValueIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -68,9 +74,11 @@ public class GetOverallMarketValueIT extends ResourceTest {
 
         Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
         OverallMarketValue overallMarketValue1 = new OverallMarketValue()
+                .setMarket(TWITTER)
                 .setTimestamp(timestamp)
                 .setValue(20);
         OverallMarketValue overallMarketValue2 = new OverallMarketValue()
+                .setMarket(TWITTER)
                 .setTimestamp(timestamp.minusSeconds(10))
                 .setValue(18);
 
@@ -94,6 +102,22 @@ public class GetOverallMarketValueIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        assertEquals(collection, response.readEntity(OverallMarketValueCollection.class));
+        String json = response.readEntity(String.class);
+        String value1json = "{\"market\":\"Twitter\",\"timestamp\":\"2020-12-03T10:15:30Z\",\"value\":20}";
+        String value2json = "{\"market\":\"Twitter\",\"timestamp\":\"2020-12-03T10:15:20Z\",\"value\":18}";
+        String deltajson = String.join(",", asList(
+                "\"6h\":{\"interval\":\"6h\",\"change\":2,\"percent\":11.111112}",
+                "\"12h\":{\"interval\":\"12h\",\"change\":2,\"percent\":11.111112}",
+                "\"1d\":{\"interval\":\"1d\",\"change\":2,\"percent\":11.111112}",
+                "\"3d\":{\"interval\":\"3d\",\"change\":2,\"percent\":11.111112}",
+                "\"7d\":{\"interval\":\"7d\",\"change\":2,\"percent\":11.111112}",
+                "\"14d\":{\"interval\":\"14d\",\"change\":2,\"percent\":11.111112}",
+                "\"30d\":{\"interval\":\"30d\",\"change\":2,\"percent\":11.111112}"
+        ));
+        String expected = "{\"values\":[" + value1json + "," + value2json + "],\"deltas\":{" + deltajson + "}}";
+        assertEquals(expected, json);
+
+        OverallMarketValueCollection fetched = convert(json, OverallMarketValueCollection.class);
+        assertEquals(collection, fetched);
     }
 }

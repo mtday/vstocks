@@ -28,7 +28,10 @@ public class ResetUserIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -42,7 +45,10 @@ public class ResetUserIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -60,7 +66,12 @@ public class ResetUserIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        UserReset userReset = response.readEntity(UserReset.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"user\":{\"id\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"email\":\"user@domain.com\","
+                + "\"username\":\"username\",\"displayName\":\"Display Name\","
+                + "\"profileImage\":\"https://domain.com/user/profile-image.png\"},\"reset\":true}", json);
+
+        UserReset userReset = convert(json, UserReset.class);
         assertEquals(getUser(), userReset.getUser());
         assertTrue(userReset.isReset());
 
@@ -80,7 +91,12 @@ public class ResetUserIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        UserReset userReset = response.readEntity(UserReset.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"user\":{\"id\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"email\":\"user@domain.com\","
+                + "\"username\":\"username\",\"displayName\":\"Display Name\","
+                + "\"profileImage\":\"https://domain.com/user/profile-image.png\"},\"reset\":false}", json);
+
+        UserReset userReset = convert(json, UserReset.class);
         assertEquals(getUser(), userReset.getUser());
         assertFalse(userReset.isReset());
 

@@ -35,7 +35,10 @@ public class GetUserAchievementsIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -49,7 +52,10 @@ public class GetUserAchievementsIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -70,7 +76,11 @@ public class GetUserAchievementsIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        assertTrue(response.readEntity(new UserAchievementListGenericType()).isEmpty());
+        String json = response.readEntity(String.class);
+        assertEquals("[]", json);
+
+        List<UserAchievement> fetched = convert(json, new UserAchievementListTypeRef());
+        assertTrue(fetched.isEmpty());
 
         verify(userAchievementService, times(1)).getForUser(eq(getUser().getId()));
     }
@@ -82,10 +92,11 @@ public class GetUserAchievementsIT extends ResourceTest {
         when(getServiceFactory().getUserService()).thenReturn(userService);
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
+        Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z").truncatedTo(SECONDS);
         UserAchievement userAchievement = new UserAchievement()
                 .setUserId(getUser().getId())
                 .setAchievementId("achievement-id")
-                .setTimestamp(Instant.now().truncatedTo(SECONDS))
+                .setTimestamp(timestamp)
                 .setDescription("description");
 
         UserAchievementService userAchievementService = mock(UserAchievementService.class);
@@ -97,12 +108,16 @@ public class GetUserAchievementsIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        List<UserAchievement> userAchievements = response.readEntity(new UserAchievementListGenericType());
-        assertEquals(1, userAchievements.size());
-        assertEquals(userAchievement.getUserId(), userAchievements.get(0).getUserId());
-        assertEquals(userAchievement.getAchievementId(), userAchievements.get(0).getAchievementId());
-        assertEquals(userAchievement.getTimestamp(), userAchievements.get(0).getTimestamp());
-        assertEquals(userAchievement.getDescription(), userAchievements.get(0).getDescription());
+        String json = response.readEntity(String.class);
+        assertEquals("[{\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"achievementId\":\"achievement-id\","
+                + "\"timestamp\":\"2020-12-03T10:15:30Z\",\"description\":\"description\"}]", json);
+
+        List<UserAchievement> fetched = convert(json, new UserAchievementListTypeRef());
+        assertEquals(1, fetched.size());
+        assertEquals(userAchievement.getUserId(), fetched.get(0).getUserId());
+        assertEquals(userAchievement.getAchievementId(), fetched.get(0).getAchievementId());
+        assertEquals(userAchievement.getTimestamp(), fetched.get(0).getTimestamp());
+        assertEquals(userAchievement.getDescription(), fetched.get(0).getDescription());
 
         verify(userAchievementService, times(1)).getForUser(eq(getUser().getId()));
     }

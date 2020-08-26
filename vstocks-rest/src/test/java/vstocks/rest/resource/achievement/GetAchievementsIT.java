@@ -2,7 +2,6 @@ package vstocks.rest.resource.achievement;
 
 import org.junit.Test;
 import vstocks.model.Achievement;
-import vstocks.model.AchievementCategory;
 import vstocks.rest.ResourceTest;
 
 import javax.ws.rs.core.Response;
@@ -16,6 +15,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+import static vstocks.model.AchievementCategory.BEGINNER;
 
 public class GetAchievementsIT extends ResourceTest {
     @Test
@@ -27,7 +27,11 @@ public class GetAchievementsIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        assertTrue(response.readEntity(new AchievementListGenericType()).isEmpty());
+        String json = response.readEntity(String.class);
+        assertEquals("[]", json);
+
+        List<Achievement> achievements = convert(json, new AchievementListTypeRef());
+        assertTrue(achievements.isEmpty());
     }
 
     @Test
@@ -35,7 +39,7 @@ public class GetAchievementsIT extends ResourceTest {
         Achievement achievement = new Achievement()
                 .setId("id")
                 .setName("name")
-                .setCategory(AchievementCategory.BEGINNER)
+                .setCategory(BEGINNER)
                 .setOrder(5)
                 .setDescription("description");
         when(getAchievementService().getAchievements()).thenReturn(singleton(achievement));
@@ -45,7 +49,11 @@ public class GetAchievementsIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        List<Achievement> achievements = response.readEntity(new AchievementListGenericType());
+        String json = response.readEntity(String.class);
+        assertEquals("[{\"id\":\"id\",\"name\":\"name\",\"category\":\"Beginner\",\"description\":\"description\","
+                + "\"order\":5}]", json);
+
+        List<Achievement> achievements = convert(json, new AchievementListTypeRef());
         assertEquals(1, achievements.size());
         assertEquals(achievement.getId(), achievements.get(0).getId());
         assertEquals(achievement.getName(), achievements.get(0).getName());

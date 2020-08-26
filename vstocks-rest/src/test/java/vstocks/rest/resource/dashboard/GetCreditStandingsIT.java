@@ -3,10 +3,7 @@ package vstocks.rest.resource.dashboard;
 import org.junit.Test;
 import vstocks.db.UserService;
 import vstocks.db.portfolio.CreditRankService;
-import vstocks.model.ErrorResponse;
-import vstocks.model.Page;
-import vstocks.model.Results;
-import vstocks.model.User;
+import vstocks.model.*;
 import vstocks.model.portfolio.RankedUser;
 import vstocks.rest.ResourceTest;
 
@@ -38,7 +35,10 @@ public class GetCreditStandingsIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -52,7 +52,10 @@ public class GetCreditStandingsIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -83,7 +86,11 @@ public class GetCreditStandingsIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        assertEquals(results, response.readEntity(new RankedUserResultsGenericType()));
+        String json = response.readEntity(String.class);
+        assertEquals("{\"page\":{\"page\":2,\"size\":15},\"total\":0,\"results\":[]}", json);
+
+        Results<RankedUser> fetched = convert(json, new RankedUserResultsTypeRef());
+        assertEquals(results, fetched);
     }
 
     @Test
@@ -94,17 +101,30 @@ public class GetCreditStandingsIT extends ResourceTest {
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
-        Instant now = Instant.now().truncatedTo(SECONDS);
+        Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z").truncatedTo(SECONDS);
+        User user1 = new User()
+                .setId("u1")
+                .setEmail("user1@domain.com")
+                .setUsername("user1")
+                .setDisplayName("User1")
+                .setProfileImage("link1");
+        User user2 = new User()
+                .setId("u2")
+                .setEmail("user2@domain.com")
+                .setUsername("user2")
+                .setDisplayName("User2")
+                .setProfileImage("link2");
+
         RankedUser rankedUser1 = new RankedUser()
-                .setUser(new User().setId("u1").setEmail("user1@domain.com").setUsername("user1"))
+                .setUser(user1)
                 .setBatch(1)
-                .setTimestamp(now)
+                .setTimestamp(timestamp)
                 .setRank(1)
                 .setValue(10);
         RankedUser rankedUser2 = new RankedUser()
-                .setUser(new User().setId("u2").setEmail("user2@domain.com").setUsername("user2"))
+                .setUser(user2)
                 .setBatch(1)
-                .setTimestamp(now)
+                .setTimestamp(timestamp)
                 .setRank(2)
                 .setValue(9);
 
@@ -120,6 +140,20 @@ public class GetCreditStandingsIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        assertEquals(results, response.readEntity(new RankedUserResultsGenericType()));
+        String json = response.readEntity(String.class);
+        String user1json = "{\"id\":\"u1\",\"email\":\"user1@domain.com\",\"username\":\"user1\","
+                + "\"displayName\":\"User1\",\"profileImage\":\"link1\"}";
+        String user2json = "{\"id\":\"u2\",\"email\":\"user2@domain.com\",\"username\":\"user2\","
+                + "\"displayName\":\"User2\",\"profileImage\":\"link2\"}";
+        String rankedUser1json = "{\"user\":" + user1json + ",\"batch\":1,\"timestamp\":\"2020-12-03T10:15:30Z\","
+                + "\"rank\":1,\"value\":10}";
+        String rankedUser2json = "{\"user\":" + user2json + ",\"batch\":1,\"timestamp\":\"2020-12-03T10:15:30Z\","
+                + "\"rank\":2,\"value\":9}";
+        String expectedJson = "{\"page\":{\"page\":1,\"size\":25},\"total\":2,\"results\":["
+                + rankedUser1json + "," + rankedUser2json + "]}";
+        assertEquals(expectedJson, json);
+
+        Results<RankedUser> fetched = convert(json, new RankedUserResultsTypeRef());
+        assertEquals(results, fetched);
     }
 }

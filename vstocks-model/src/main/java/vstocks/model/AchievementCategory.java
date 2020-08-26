@@ -1,15 +1,30 @@
 package vstocks.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Arrays;
 import java.util.Optional;
 
 public enum AchievementCategory {
+    @JsonProperty("Beginner")
     BEGINNER("Beginner"),
+
+    @JsonProperty("Easy")
     EASY("Easy"),
+
+    @JsonProperty("Medium")
     MEDIUM("Medium"),
+
+    @JsonProperty("Hard")
     HARD("Hard"),
+
+    @JsonProperty("Expert")
     EXPERT("Expert"),
+
+    @JsonProperty("Social")
     SOCIAL("Social"),
+
+    @JsonProperty("Challenge")
     CHALLENGE("Challenge"),
     ;
 

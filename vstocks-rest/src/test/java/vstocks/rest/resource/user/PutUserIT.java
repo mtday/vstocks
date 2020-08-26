@@ -34,7 +34,10 @@ public class PutUserIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -49,7 +52,10 @@ public class PutUserIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -73,14 +79,15 @@ public class PutUserIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
+        String json = response.readEntity(String.class);
+        assertEquals("{\"id\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"email\":\"user@domain.com\","
+                + "\"username\":\"username\",\"displayName\":\"Display Name\","
+                + "\"profileImage\":\"https://domain.com/user/profile-image.png\"}", json);
+
         // None of the fields have been updated, the original user from the db was returned
         User user = getUser();
-        User fetched = response.readEntity(User.class);
-        assertEquals(user.getId(), fetched.getId());
-        assertEquals(user.getEmail(), fetched.getEmail());
-        assertEquals(user.getUsername(), fetched.getUsername());
-        assertEquals(user.getDisplayName(), fetched.getDisplayName());
-        assertEquals(user.getProfileImage(), fetched.getProfileImage());
+        User fetched = convert(json, User.class);
+        assertEquals(user, fetched);
 
         verify(userService, times(1)).update(argThat(update -> {
             return Objects.equals(user.getId(), update.getId()) // not updated
@@ -110,9 +117,14 @@ public class PutUserIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
+        String json = response.readEntity(String.class);
+        assertEquals("{\"id\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"email\":\"user@domain.com\","
+                + "\"username\":\"updated\",\"displayName\":\"updated\","
+                + "\"profileImage\":\"https://domain.com/user/profile-image.png\"}", json);
+
         // Some of the fields have been updated, the updated user was returned
         User user = getUser();
-        User fetched = response.readEntity(User.class);
+        User fetched = convert(json, User.class);
         assertEquals(user.getId(), fetched.getId()); // still original value
         assertEquals(user.getEmail(), fetched.getEmail()); // still original value
         assertEquals(updateUser.getUsername(), fetched.getUsername()); // updated value
@@ -147,7 +159,11 @@ public class PutUserIT extends ResourceTest {
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":400,\"message\":\"The specified name contains invalid characters. Only alphanumeric "
+                + "characters, along with underscores, dashes, and single quote characters are allowed.\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(BAD_REQUEST.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_DISPLAY_NAME_MESSAGE, errorResponse.getMessage());
     }
@@ -174,8 +190,13 @@ public class PutUserIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
+        String json = response.readEntity(String.class);
+        assertEquals("{\"id\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"email\":\"user@domain.com\","
+                + "\"username\":\"updated\",\"displayName\":\"Invalid<>\","
+                + "\"profileImage\":\"https://domain.com/user/profile-image.png\"}", json);
+
         // Some of the fields have been updated, the updated user was returned
-        User fetched = response.readEntity(User.class);
+        User fetched = convert(json, User.class);
         assertEquals(user.getId(), fetched.getId()); // still original value
         assertEquals(user.getEmail(), fetched.getEmail()); // still original value
         assertEquals(updateUser.getUsername(), fetched.getUsername()); // updated value
@@ -210,7 +231,11 @@ public class PutUserIT extends ResourceTest {
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":400,\"message\":\"The specified username contains invalid characters. Only "
+                + "alphanumeric characters, along with underscores and dashes are allowed.\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(BAD_REQUEST.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_USERNAME_MESSAGE, errorResponse.getMessage());
     }
@@ -237,8 +262,13 @@ public class PutUserIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
+        String json = response.readEntity(String.class);
+        assertEquals("{\"id\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"email\":\"user@domain.com\","
+                + "\"username\":\"Invalid<>\",\"displayName\":\"updated\","
+                + "\"profileImage\":\"https://domain.com/user/profile-image.png\"}", json);
+
         // Some of the fields have been updated, the updated user was returned
-        User fetched = response.readEntity(User.class);
+        User fetched = convert(json, User.class);
         assertEquals(user.getId(), fetched.getId()); // still original value
         assertEquals(user.getEmail(), fetched.getEmail()); // still original value
         assertEquals(user.getUsername(), fetched.getUsername()); // still the original invalid value

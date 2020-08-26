@@ -30,7 +30,10 @@ public class CheckUsernameIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -48,21 +51,24 @@ public class CheckUsernameIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
 
     @Test
-    public void testUsernameExists() {
+    public void testUsernameExistsMatchesCurrentUser() {
         UserService userService = mock(UserService.class);
         when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(userService.usernameExists(eq("username"))).thenReturn(true);
         when(getServiceFactory().getUserService()).thenReturn(userService);
+
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
         Response response = target("/user/check")
-                .queryParam("username", "username")
+                .queryParam("username", getUser().getUsername())
                 .request()
                 .header(AUTHORIZATION, "Bearer token")
                 .get();
@@ -70,8 +76,39 @@ public class CheckUsernameIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        UsernameCheck usernameCheck = response.readEntity(UsernameCheck.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"username\":\"username\",\"exists\":false,\"valid\":true,\"message\":null}", json);
+
+        UsernameCheck usernameCheck = convert(json, UsernameCheck.class);
         assertEquals("username", usernameCheck.getUsername());
+        assertFalse(usernameCheck.isExists()); // it technically exists, but we return false anyway
+        assertTrue(usernameCheck.isValid());
+        assertNull(usernameCheck.getMessage());
+    }
+
+    @Test
+    public void testUsernameExists() {
+        UserService userService = mock(UserService.class);
+        when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
+        when(userService.usernameExists(eq("existing"))).thenReturn(true);
+        when(getServiceFactory().getUserService()).thenReturn(userService);
+        when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
+
+        Response response = target("/user/check")
+                .queryParam("username", "existing")
+                .request()
+                .header(AUTHORIZATION, "Bearer token")
+                .get();
+
+        assertEquals(OK.getStatusCode(), response.getStatus());
+        assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
+
+        String json = response.readEntity(String.class);
+        assertEquals("{\"username\":\"existing\",\"exists\":true,\"valid\":true,"
+                + "\"message\":\"The specified username is already taken.\"}", json);
+
+        UsernameCheck usernameCheck = convert(json, UsernameCheck.class);
+        assertEquals("existing", usernameCheck.getUsername());
         assertTrue(usernameCheck.isExists());
         assertTrue(usernameCheck.isValid());
         assertEquals(USERNAME_EXISTS_MESSAGE, usernameCheck.getMessage());
@@ -94,7 +131,10 @@ public class CheckUsernameIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        UsernameCheck usernameCheck = response.readEntity(UsernameCheck.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"username\":\"username\",\"exists\":false,\"valid\":true,\"message\":null}", json);
+
+        UsernameCheck usernameCheck = convert(json, UsernameCheck.class);
         assertEquals("username", usernameCheck.getUsername());
         assertFalse(usernameCheck.isExists());
         assertTrue(usernameCheck.isValid());
@@ -118,7 +158,12 @@ public class CheckUsernameIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        UsernameCheck usernameCheck = response.readEntity(UsernameCheck.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"username\":\"user<>name\",\"exists\":false,\"valid\":false,\"message\":\"The specified "
+                + "username contains invalid characters. Only alphanumeric characters, along with underscores and "
+                + "dashes are allowed.\"}", json);
+
+        UsernameCheck usernameCheck = convert(json, UsernameCheck.class);
         assertEquals("user<>name", usernameCheck.getUsername());
         assertFalse(usernameCheck.isExists());
         assertFalse(usernameCheck.isValid());
@@ -141,7 +186,10 @@ public class CheckUsernameIT extends ResourceTest {
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":400,\"message\":\"Missing or invalid username parameter\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(BAD_REQUEST.getStatusCode(), errorResponse.getStatus());
         assertEquals("Missing or invalid username parameter", errorResponse.getMessage());
     }
@@ -163,7 +211,10 @@ public class CheckUsernameIT extends ResourceTest {
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":400,\"message\":\"Missing or invalid username parameter\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(BAD_REQUEST.getStatusCode(), errorResponse.getStatus());
         assertEquals("Missing or invalid username parameter", errorResponse.getMessage());
     }
@@ -185,7 +236,10 @@ public class CheckUsernameIT extends ResourceTest {
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":400,\"message\":\"Missing or invalid username parameter\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(BAD_REQUEST.getStatusCode(), errorResponse.getStatus());
         assertEquals("Missing or invalid username parameter", errorResponse.getMessage());
     }

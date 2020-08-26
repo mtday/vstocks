@@ -36,7 +36,10 @@ public class GetActiveUserCountIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -50,7 +53,10 @@ public class GetActiveUserCountIT extends ResourceTest {
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":401,\"message\":\"Missing or invalid JWT authorization bearer token\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
         assertEquals(UNAUTHORIZED.getStatusCode(), errorResponse.getStatus());
         assertEquals(INVALID_JWT_MESSAGE, errorResponse.getMessage());
     }
@@ -63,9 +69,9 @@ public class GetActiveUserCountIT extends ResourceTest {
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
-        Instant now = Instant.now().truncatedTo(SECONDS);
-        ActiveUserCount userCount1 = new ActiveUserCount().setTimestamp(now.minusSeconds(10)).setCount(1234L);
-        ActiveUserCount userCount2 = new ActiveUserCount().setTimestamp(now.minusSeconds(20)).setCount(1230L);
+        Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z").truncatedTo(SECONDS);
+        ActiveUserCount userCount1 = new ActiveUserCount().setTimestamp(timestamp).setCount(1234L);
+        ActiveUserCount userCount2 = new ActiveUserCount().setTimestamp(timestamp.minusSeconds(10)).setCount(1230L);
         List<ActiveUserCount> activeUserCounts = asList(userCount1, userCount2);
 
         ActiveUserCountCollection activeUserCountCollection = new ActiveUserCountCollection()
@@ -81,6 +87,22 @@ public class GetActiveUserCountIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        assertEquals(activeUserCountCollection, response.readEntity(ActiveUserCountCollection.class));
+        String json = response.readEntity(String.class);
+        String value1json = "{\"timestamp\":\"2020-12-03T10:15:30Z\",\"count\":1234}";
+        String value2json = "{\"timestamp\":\"2020-12-03T10:15:20Z\",\"count\":1230}";
+        String deltajson = String.join(",", asList(
+                "\"6h\":{\"interval\":\"6h\",\"change\":4,\"percent\":0.32520324}",
+                "\"12h\":{\"interval\":\"12h\",\"change\":4,\"percent\":0.32520324}",
+                "\"1d\":{\"interval\":\"1d\",\"change\":4,\"percent\":0.32520324}",
+                "\"3d\":{\"interval\":\"3d\",\"change\":4,\"percent\":0.32520324}",
+                "\"7d\":{\"interval\":\"7d\",\"change\":4,\"percent\":0.32520324}",
+                "\"14d\":{\"interval\":\"14d\",\"change\":4,\"percent\":0.32520324}",
+                "\"30d\":{\"interval\":\"30d\",\"change\":4,\"percent\":0.32520324}"
+        ));
+        String expected = "{\"counts\":[" + value1json + "," + value2json + "],\"deltas\":{" + deltajson + "}}";
+        assertEquals(expected, json);
+
+        ActiveUserCountCollection fetched = convert(json, ActiveUserCountCollection.class);
+        assertEquals(activeUserCountCollection, fetched);
     }
 }

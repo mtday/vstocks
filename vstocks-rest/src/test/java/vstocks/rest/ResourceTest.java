@@ -1,5 +1,7 @@
 package vstocks.rest;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.pac4j.core.profile.CommonProfile;
@@ -10,7 +12,7 @@ import vstocks.model.portfolio.RankedUser;
 import vstocks.rest.security.JwtSecurity;
 import vstocks.service.remote.RemoteStockServiceFactory;
 
-import javax.ws.rs.core.GenericType;
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.logging.LogManager;
@@ -24,6 +26,7 @@ public abstract class ResourceTest extends JerseyTest {
         LogManager.getLogManager().reset();
     }
 
+    private ObjectMapper objectMapper;
     private ServiceFactory serviceFactory;
     private RemoteStockServiceFactory remoteStockServiceFactory;
     private AchievementService achievementService;
@@ -31,6 +34,7 @@ public abstract class ResourceTest extends JerseyTest {
 
     @Override
     protected ResourceConfig configure() {
+        objectMapper = Application.getObjectMapper();
         serviceFactory = mock(ServiceFactory.class);
         remoteStockServiceFactory = mock(RemoteStockServiceFactory.class);
         achievementService = mock(AchievementService.class);
@@ -70,6 +74,10 @@ public abstract class ResourceTest extends JerseyTest {
         return commonProfile;
     }
 
+    public ObjectMapper getObjectMapper() {
+        return objectMapper;
+    }
+
     public ServiceFactory getServiceFactory() {
         return serviceFactory;
     }
@@ -86,12 +94,28 @@ public abstract class ResourceTest extends JerseyTest {
         return jwtSecurity;
     }
 
-    public static class AchievementListGenericType extends GenericType<List<Achievement>> {}
-    public static class MarketListGenericType extends GenericType<List<Market>> {}
-    public static class PricedStockResultsGenericType extends GenericType<Results<PricedStock>> {}
-    public static class PricedStockListGenericType extends GenericType<List<PricedStock>> {}
-    public static class PricedUserStockResultsGenericType extends GenericType<Results<PricedUserStock>> {}
-    public static class RankedUserResultsGenericType extends GenericType<Results<RankedUser>> {}
-    public static class StockPriceChangeResultsGenericType extends GenericType<Results<StockPriceChange>> {}
-    public static class UserAchievementListGenericType extends GenericType<List<UserAchievement>> {}
+    public <T> T convert(String json, TypeReference<T> typeReference) {
+        try {
+            return objectMapper.readValue(json, typeReference);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public <T> T convert(String json, Class<T> clazz) {
+        try {
+            return objectMapper.readValue(json, clazz);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static class AchievementListTypeRef extends TypeReference<List<Achievement>> {};
+    public static class MarketListTypeRef extends TypeReference<List<Market>> {}
+    public static class PricedStockResultsTypeRef extends TypeReference<Results<PricedStock>> {}
+    public static class PricedStockListTypeRef extends TypeReference<List<PricedStock>> {}
+    public static class PricedUserStockResultsTypeRef extends TypeReference<Results<PricedUserStock>> {}
+    public static class RankedUserResultsTypeRef extends TypeReference<Results<RankedUser>> {}
+    public static class StockPriceChangeResultsTypeRef extends TypeReference<Results<StockPriceChange>> {}
+    public static class UserAchievementListTypeRef extends TypeReference<List<UserAchievement>> {}
 }

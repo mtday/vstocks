@@ -30,9 +30,12 @@ public class GetStockIT extends ResourceTest {
         assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse error = response.readEntity(ErrorResponse.class);
-        assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
-        assertEquals("Market missing not found", error.getMessage());
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":404,\"message\":\"Market missing not found\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
+        assertEquals(NOT_FOUND.getStatusCode(), errorResponse.getStatus());
+        assertEquals("Market missing not found", errorResponse.getMessage());
     }
 
     @Test
@@ -46,15 +49,24 @@ public class GetStockIT extends ResourceTest {
         assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        ErrorResponse error = response.readEntity(ErrorResponse.class);
-        assertEquals(NOT_FOUND.getStatusCode(), error.getStatus());
-        assertEquals("Stock Twitter/missing not found", error.getMessage());
+        String json = response.readEntity(String.class);
+        assertEquals("{\"status\":404,\"message\":\"Stock Twitter/missing not found\"}", json);
+
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
+        assertEquals(NOT_FOUND.getStatusCode(), errorResponse.getStatus());
+        assertEquals("Stock Twitter/missing not found", errorResponse.getMessage());
     }
 
     @Test
     public void testMarketExists() {
-        Instant now = Instant.now().truncatedTo(SECONDS);
-        PricedStock pricedStock = new PricedStock().setMarket(TWITTER).setName("name").setSymbol("symbol").setTimestamp(now).setPrice(10);
+        Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z").truncatedTo(SECONDS);
+        PricedStock pricedStock = new PricedStock()
+                .setMarket(TWITTER)
+                .setName("name")
+                .setSymbol("symbol")
+                .setTimestamp(timestamp)
+                .setPrice(10);
+
         PricedStockService pricedStockService = mock(PricedStockService.class);
         when(pricedStockService.get(eq(TWITTER), eq("symbol"))).thenReturn(Optional.of(pricedStock));
         when(getServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
@@ -64,7 +76,11 @@ public class GetStockIT extends ResourceTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
-        PricedStock fetched = response.readEntity(PricedStock.class);
+        String json = response.readEntity(String.class);
+        assertEquals("{\"market\":\"Twitter\",\"symbol\":\"symbol\",\"timestamp\":\"2020-12-03T10:15:30Z\","
+                + "\"name\":\"name\",\"profileImage\":null,\"price\":10}", json);
+
+        PricedStock fetched = convert(json, PricedStock.class);
         assertEquals(pricedStock.getMarket(), fetched.getMarket());
         assertEquals(pricedStock.getName(), fetched.getName());
         assertEquals(pricedStock.getSymbol(), fetched.getSymbol());
