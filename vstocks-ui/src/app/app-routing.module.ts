@@ -16,7 +16,6 @@ import { UserDashboardComponent    } from './pages/user/dashboard/dashboard.comp
 import { UserLoginComponent        } from './pages/user/login/login.component';
 import { UserPortfolioComponent    } from './pages/user/portfolio/portfolio.component';
 import { UserProfileComponent      } from './pages/user/profile/profile.component';
-import { UserStandingsComponent    } from './pages/user/standings/standings.component';
 
 const routes: Routes = [
   // Pages (Public)
@@ -35,7 +34,6 @@ const routes: Routes = [
   { path: 'user/login',        component: UserLoginComponent        },
   { path: 'user/portfolio',    component: UserPortfolioComponent    },
   { path: 'user/profile',      component: UserProfileComponent      },
-  { path: 'user/standings',    component: UserStandingsComponent    },
 ];
 
 @NgModule({

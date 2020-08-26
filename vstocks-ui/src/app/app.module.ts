@@ -29,7 +29,6 @@ import { UserDashboardComponent    } from './pages/user/dashboard/dashboard.comp
 import { UserLoginComponent        } from './pages/user/login/login.component';
 import { UserPortfolioComponent    } from './pages/user/portfolio/portfolio.component';
 import { UserProfileComponent      } from './pages/user/profile/profile.component';
-import { UserStandingsComponent    } from './pages/user/standings/standings.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +53,6 @@ import { UserStandingsComponent    } from './pages/user/standings/standings.comp
     UserLoginComponent,
     UserPortfolioComponent,
     UserProfileComponent,
-    UserStandingsComponent,
   ],
   imports: [
     AppRoutingModule,

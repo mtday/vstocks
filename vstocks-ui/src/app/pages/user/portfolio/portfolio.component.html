@@ -1,1 +1,28 @@
 <p>portfolio works!</p>
+
+
+<div *ngIf="userCredits">
+    Credit Balance: {{userCredits.credits}}
+</div>
+
+<div *ngIf="creditRanks">
+    <div>Credit Ranks</div>
+    <table>
+        <tr *ngFor="let creditRank of creditRanks.ranks">
+            <td>{{creditRank.batch}}</td>
+            <td>{{creditRank.rank}}</td>
+            <td>{{creditRank.value}}</td>
+        </tr>
+    </table>
+
+    <div>Credit Rank Deltas</div>
+    <table>
+        <tr *ngFor="let creditRankDelta of creditRanks.deltas | keyvalue">
+            <td>{{creditRankDelta.key}}</td>
+            <td>{{creditRankDelta.value.interval}}</td>
+            <td>{{creditRankDelta.value.change}}</td>
+            <td>{{creditRankDelta.value.percent}}</td>
+        </tr>
+    </table>
+
+</div>
