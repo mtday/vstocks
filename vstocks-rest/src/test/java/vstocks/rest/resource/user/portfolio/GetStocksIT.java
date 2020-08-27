@@ -110,9 +110,12 @@ public class GetStocksIT extends ResourceTest {
                 .setUserId(getUser().getId())
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
+                .setName("name")
+                .setProfileImage("link")
                 .setTimestamp(timestamp)
                 .setShares(10)
-                .setPrice(20);
+                .setPrice(20)
+                .setValue(10 * 20);
         Results<PricedUserStock> results = new Results<PricedUserStock>()
                 .setTotal(1)
                 .setPage(new Page())
@@ -131,7 +134,8 @@ public class GetStocksIT extends ResourceTest {
         String json = response.readEntity(String.class);
         assertEquals("{\"page\":{\"page\":1,\"size\":25},\"total\":1,\"results\":["
                 + "{\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"market\":\"Twitter\",\"symbol\":\"symbol\","
-                + "\"timestamp\":\"2020-12-03T10:15:30Z\",\"shares\":10,\"price\":20}]}", json);
+                + "\"name\":\"name\",\"profileImage\":\"link\",\"timestamp\":\"2020-12-03T10:15:30Z\","
+                + "\"shares\":10,\"price\":20,\"value\":200}]}", json);
 
         Results<PricedUserStock> fetched = convert(json, new PricedUserStockResultsTypeRef());
         assertEquals(results, fetched);

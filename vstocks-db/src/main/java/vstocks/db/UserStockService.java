@@ -17,13 +17,13 @@ public interface UserStockService {
 
     int consume(Consumer<UserStock> consumer, List<Sort> sort);
 
-    int buyStock(String userId, Market market, String symbol, int shares);
+    int buyStock(String userId, Market market, String symbol, long shares);
 
-    int sellStock(String userId, Market market, String symbol, int shares);
+    int sellStock(String userId, Market market, String symbol, long shares);
 
     int add(UserStock userStock);
 
-    int update(String userId, Market market, String symbol, int delta);
+    int update(String userId, Market market, String symbol, long delta);
 
     int deleteForUser(String userId);
 

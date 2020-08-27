@@ -48,7 +48,7 @@ public class UserStockServiceImpl extends BaseService implements UserStockServic
     }
 
     @Override
-    public int buyStock(String userId, Market market, String symbol, int shares) {
+    public int buyStock(String userId, Market market, String symbol, long shares) {
         if (shares <= 0) {
             return 0;
         }
@@ -80,7 +80,7 @@ public class UserStockServiceImpl extends BaseService implements UserStockServic
     }
 
     @Override
-    public int sellStock(String userId, Market market, String symbol, int shares) {
+    public int sellStock(String userId, Market market, String symbol, long shares) {
         if (shares <= 0) {
             return 0;
         }
@@ -117,7 +117,7 @@ public class UserStockServiceImpl extends BaseService implements UserStockServic
     }
 
     @Override
-    public int update(String userId, Market market, String symbol, int delta) {
+    public int update(String userId, Market market, String symbol, long delta) {
         return withConnection(conn -> userStockDB.update(conn, userId, market, symbol, delta));
     }
 

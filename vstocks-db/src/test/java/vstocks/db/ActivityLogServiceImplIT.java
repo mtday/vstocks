@@ -52,7 +52,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
             .setTimestamp(now)
             .setMarket(stock1.getMarket())
             .setSymbol(stock1.getSymbol())
-            .setShares(1)
+            .setShares(1L)
             .setPrice(10L);
     private final ActivityLog activityLog12 = new ActivityLog()
             .setId("id12")
@@ -61,7 +61,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
             .setTimestamp(now)
             .setMarket(stock2.getMarket())
             .setSymbol(stock2.getSymbol())
-            .setShares(1)
+            .setShares(1L)
             .setPrice(10L);
     private final ActivityLog activityLog21 = new ActivityLog()
             .setId("id21")
@@ -70,7 +70,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
             .setTimestamp(now)
             .setMarket(stock1.getMarket())
             .setSymbol(stock1.getSymbol())
-            .setShares(1)
+            .setShares(1L)
             .setPrice(10L);
     private final ActivityLog activityLog22 = new ActivityLog()
             .setId("id22")
@@ -79,7 +79,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
             .setTimestamp(now)
             .setMarket(stock2.getMarket())
             .setSymbol(stock2.getSymbol())
-            .setShares(1)
+            .setShares(1L)
             .setPrice(10L);
 
     @Before
@@ -316,7 +316,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
                 .setTimestamp(now)
                 .setMarket(stock1.getMarket())
                 .setSymbol(stock1.getSymbol())
-                .setShares(1)
+                .setShares(1L)
                 .setPrice(-5L);
         assertEquals(1, activityLogService.add(activityLog));
 
@@ -333,7 +333,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
                 .setTimestamp(now)
                 .setMarket(stock1.getMarket())
                 .setSymbol(stock1.getSymbol())
-                .setShares(1)
+                .setShares(1L)
                 .setPrice(-15L);
         assertEquals(1, activityLogService.add(activityLog)); // not protected at this level
 

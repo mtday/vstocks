@@ -1,4 +1,25 @@
 
+export class Achievement {
+    id: string;
+    name: string;
+    category: string;
+    description: string;
+    order: number;
+}
+
+
+export class ActivityLog {
+    id: string;
+    userId: string;
+    type: string;
+    timestamp: string;
+    market: string;
+    symbol: string;
+    shares: number;
+    price: number;
+}
+
+
 export class Delta {
     interval: string;
     change: number;
@@ -6,9 +27,115 @@ export class Delta {
 }
 
 
+export class ErrorResponse {
+    status: number;
+    message: string;
+}
+
+
 export class Page {
     page: number;
     size: number;
+}
+
+
+export class PricedStock {
+    market: string;
+    symbol: string;
+    name: string;
+    profileImage: string;
+    timestamp: string;
+    price: number;
+}
+
+
+export class PricedUserStock {
+    userId: string;
+    market: string;
+    symbol: string;
+    name: string;
+    profileImage: string;
+    timestamp: string;
+    shares: number;
+    price: number;
+}
+
+
+export class Results<T> {
+    total: number;
+    page: Page;
+    results: T[];
+}
+
+
+export enum DatabaseField {
+    ACHIEVEMENT_ID,
+    BATCH,
+    CHANGE,
+    COUNT,
+    CREDITS,
+    DESCRIPTION,
+    DIFFICULTY,
+    DISPLAY_NAME,
+    EMAIL,
+    ID,
+    MARKET,
+    NAME,
+    PERCENT,
+    PRICE,
+    RANK,
+    SHARES,
+    SYMBOL,
+    TIMESTAMP,
+    TOTAL,
+    TYPE,
+    USERNAME,
+    USER_ID,
+    USERS,
+    VALUE
+}
+
+
+export enum SortDirection {
+    ASC,
+    DESC
+}
+
+export class Sort {
+    field: DatabaseField;
+    direction: SortDirection;
+}
+
+
+export class Stock {
+    market: string;
+    symbol: string;
+    name: string;
+    profileImage: string;
+}
+
+
+export class StockPrice {
+    market: string;
+    symbol: string;
+    timestamp: string;
+    price: number;
+}
+
+
+export class StockPriceChange {
+    batch: number;
+    market: string;
+    symbol: string;
+    timestamp: string;
+    price: number;
+    change: number;
+    percent: number;
+}
+
+
+export class StockPriceChangeCollection {
+    changes: StockPriceChange[];
 }
 
 
@@ -19,15 +146,17 @@ export class User {
 }
 
 
-export class UserCredits {
+export class UserAchievement {
     userId: string;
-    credits: number;
+    achievementId: string;
+    timestamp: string;
+    description: string;
 }
 
 
-export class UserReset {
-    user: User;
-    reset: boolean;
+export class UserCredits {
+    userId: string;
+    credits: number;
 }
 
 
@@ -38,6 +167,22 @@ export class UsernameCheck {
     message: string;
 }
 
+
+export class UserReset {
+    user: User;
+    reset: boolean;
+}
+
+
+export class UserStock {
+    userId: string;
+    market: string;
+    symbol: string;
+    shares: number;
+}
+
+
+// portfolio
 
 export class CreditRank {
     batch: number;
@@ -99,3 +244,114 @@ export class TotalRankCollection {
     ranks: TotalRank[];
     deltas: Delta[];
 }
+
+
+export class RankedUser {
+    user: User[];
+    batch: number;
+    timestamp: string;
+    rank: number;
+    value: number;
+}
+
+
+// system
+
+
+export class ActiveTransactionCount {
+    timestamp: string;
+    count: number;
+}
+
+
+export class ActiveTransactionCountCollection {
+    counts: ActiveTransactionCount[];
+    deltas: Delta[];
+}
+
+
+export class ActiveUserCount {
+    timestamp: string;
+    count: number;
+}
+
+
+export class ActiveUserCountCollection {
+    counts: ActiveUserCount[];
+    deltas: Delta[];
+}
+
+
+export class TotalTransactionCount {
+    timestamp: string;
+    count: number;
+}
+
+
+export class TotalTransactionCountCollection {
+    counts: TotalTransactionCount[];
+    deltas: Delta[];
+}
+
+
+export class TotalUserCount {
+    timestamp: string;
+    count: number;
+}
+
+
+export class TotalUserCountCollection {
+    counts: TotalUserCount[];
+    deltas: Delta[];
+}
+
+
+export class OverallCreditValue {
+    timestamp: string;
+    value: number;
+}
+
+
+export class OverallCreditValueCollection {
+    values: OverallCreditValue[];
+    deltas: Delta[];
+}
+
+
+export class OverallMarketTotalValue {
+    timestamp: string;
+    value: number;
+}
+
+
+export class OverallMarketTotalValueCollection {
+    values: OverallMarketTotalValue[];
+    deltas: Delta[];
+}
+
+
+export class OverallMarketValue {
+    market: string;
+    timestamp: string;
+    value: number;
+}
+
+
+export class OverallMarketValueCollection {
+    market: string;
+    values: OverallMarketValue[];
+    deltas: Delta[];
+}
+
+
+export class OverallTotalValue {
+    timestamp: string;
+    value: number;
+}
+
+
+export class OverallTotalValueCollection {
+    values: OverallMarketValue[];
+    deltas: Delta[];
+}
+

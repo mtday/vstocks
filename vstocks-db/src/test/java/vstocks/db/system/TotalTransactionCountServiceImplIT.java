@@ -56,7 +56,7 @@ public class TotalTransactionCountServiceImplIT extends BaseServiceImplIT {
             .setTimestamp(now)
             .setMarket(stock1.getMarket())
             .setSymbol(stock1.getSymbol())
-            .setShares(1)
+            .setShares(1L)
             .setPrice(10L);
     private final ActivityLog activityLog12 = new ActivityLog()
             .setId("id12")
@@ -65,7 +65,7 @@ public class TotalTransactionCountServiceImplIT extends BaseServiceImplIT {
             .setTimestamp(now)
             .setMarket(stock2.getMarket())
             .setSymbol(stock2.getSymbol())
-            .setShares(1)
+            .setShares(1L)
             .setPrice(10L);
     private final ActivityLog activityLog21 = new ActivityLog()
             .setId("id21")
@@ -74,7 +74,7 @@ public class TotalTransactionCountServiceImplIT extends BaseServiceImplIT {
             .setTimestamp(now)
             .setMarket(stock1.getMarket())
             .setSymbol(stock1.getSymbol())
-            .setShares(1)
+            .setShares(1L)
             .setPrice(10L);
     private final ActivityLog activityLog22 = new ActivityLog()
             .setId("id22")
@@ -83,7 +83,7 @@ public class TotalTransactionCountServiceImplIT extends BaseServiceImplIT {
             .setTimestamp(now)
             .setMarket(stock2.getMarket())
             .setSymbol(stock2.getSymbol())
-            .setShares(1)
+            .setShares(1L)
             .setPrice(10L);
 
     private final TotalTransactionCount totalTransactionCount1 = new TotalTransactionCount()

@@ -38,12 +38,12 @@ public class PricedUserStockServiceImplIT extends BaseServiceImplIT {
             .setMarket(TWITTER)
             .setSymbol("sym1")
             .setName("name1")
-            .setProfileImage("link");
+            .setProfileImage("link1");
     private final Stock stock2 = new Stock()
             .setMarket(TWITTER)
             .setSymbol("sym2")
             .setName("name2")
-            .setProfileImage("link");
+            .setProfileImage("link2");
 
     private final StockPrice stockPrice11 = new StockPrice()
             .setMarket(stock1.getMarket())
@@ -91,30 +91,42 @@ public class PricedUserStockServiceImplIT extends BaseServiceImplIT {
             .setUserId(userStock11.getUserId())
             .setMarket(userStock11.getMarket())
             .setSymbol(userStock11.getSymbol())
+            .setName(stock1.getName())
+            .setProfileImage(stock1.getProfileImage())
             .setShares(userStock11.getShares())
             .setTimestamp(stockPrice11.getTimestamp())
-            .setPrice(stockPrice11.getPrice());
+            .setPrice(stockPrice11.getPrice())
+            .setValue(userStock11.getShares() * stockPrice11.getPrice());
     private final PricedUserStock pricedUserStock12 = new PricedUserStock()
             .setUserId(userStock12.getUserId())
             .setMarket(userStock12.getMarket())
             .setSymbol(userStock12.getSymbol())
+            .setName(stock2.getName())
+            .setProfileImage(stock2.getProfileImage())
             .setShares(userStock12.getShares())
             .setTimestamp(stockPrice21.getTimestamp())
-            .setPrice(stockPrice21.getPrice());
+            .setPrice(stockPrice21.getPrice())
+            .setValue(userStock12.getShares() * stockPrice21.getPrice());
     private final PricedUserStock pricedUserStock21 = new PricedUserStock()
             .setUserId(userStock21.getUserId())
             .setMarket(userStock21.getMarket())
             .setSymbol(userStock21.getSymbol())
+            .setName(stock1.getName())
+            .setProfileImage(stock1.getProfileImage())
             .setShares(userStock21.getShares())
             .setTimestamp(stockPrice11.getTimestamp())
-            .setPrice(stockPrice11.getPrice());
+            .setPrice(stockPrice11.getPrice())
+            .setValue(userStock21.getShares() * stockPrice11.getPrice());
     private final PricedUserStock pricedUserStock22 = new PricedUserStock()
             .setUserId(userStock22.getUserId())
             .setMarket(userStock22.getMarket())
             .setSymbol(userStock22.getSymbol())
+            .setName(stock2.getName())
+            .setProfileImage(stock2.getProfileImage())
             .setShares(userStock22.getShares())
             .setTimestamp(stockPrice21.getTimestamp())
-            .setPrice(stockPrice21.getPrice());
+            .setPrice(stockPrice21.getPrice())
+            .setValue(userStock22.getShares() * stockPrice21.getPrice());
 
     @Before
     public void setup() {
@@ -184,8 +196,7 @@ public class PricedUserStockServiceImplIT extends BaseServiceImplIT {
     @Test
     public void testGetForUserNone() {
         Results<PricedUserStock> results = pricedUserStockService.getForUser(user1.getId(), new Page(), emptyList());
-        assertEquals(0, results.getTotal());
-        assertTrue(results.getResults().isEmpty());
+        validateResults(results);
     }
 
     @Test
@@ -212,6 +223,42 @@ public class PricedUserStockServiceImplIT extends BaseServiceImplIT {
 
         List<Sort> sort = asList(SYMBOL.toSort(DESC), PRICE.toSort());
         Results<PricedUserStock> results = pricedUserStockService.getForUser(user1.getId(), new Page(), sort);
+        validateResults(results, pricedUserStock12, pricedUserStock11);
+    }
+
+    @Test
+    public void testGetForUserMarketNone() {
+        Results<PricedUserStock> results =
+                pricedUserStockService.getForUserMarket(user1.getId(), stock1.getMarket(), new Page(), emptyList());
+        validateResults(results);
+    }
+
+    @Test
+    public void testGetForUserMarketSomeNoSort() {
+        assertEquals(1, userStockService.add(userStock11));
+        assertEquals(1, userStockService.add(userStock12));
+        assertEquals(1, stockPriceService.add(stockPrice11));
+        assertEquals(1, stockPriceService.add(stockPrice12));
+        assertEquals(1, stockPriceService.add(stockPrice21));
+        assertEquals(1, stockPriceService.add(stockPrice22));
+
+        Results<PricedUserStock> results =
+                pricedUserStockService.getForUserMarket(user1.getId(), stock1.getMarket(), new Page(), emptyList());
+        validateResults(results, pricedUserStock11, pricedUserStock12);
+    }
+
+    @Test
+    public void testGetForUserMarketSomeWithSort() {
+        assertEquals(1, userStockService.add(userStock11));
+        assertEquals(1, userStockService.add(userStock12));
+        assertEquals(1, stockPriceService.add(stockPrice11));
+        assertEquals(1, stockPriceService.add(stockPrice12));
+        assertEquals(1, stockPriceService.add(stockPrice21));
+        assertEquals(1, stockPriceService.add(stockPrice22));
+
+        List<Sort> sort = asList(SYMBOL.toSort(DESC), PRICE.toSort());
+        Results<PricedUserStock> results =
+                pricedUserStockService.getForUserMarket(user1.getId(), stock1.getMarket(), new Page(), sort);
         validateResults(results, pricedUserStock12, pricedUserStock11);
     }
 

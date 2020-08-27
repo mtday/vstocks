@@ -24,6 +24,11 @@ public class PricedUserStockServiceImpl extends BaseService implements PricedUse
     }
 
     @Override
+    public Results<PricedUserStock> getForUserMarket(String userId, Market market, Page page, List<Sort> sort) {
+        return withConnection(conn -> pricedUserStockJoin.getForUserMarket(conn, userId, market, page, sort));
+    }
+
+    @Override
     public Results<PricedUserStock> getForStock(Market market, String symbol, Page page, List<Sort> sort) {
         return withConnection(conn -> pricedUserStockJoin.getForStock(conn, market, symbol, page, sort));
     }

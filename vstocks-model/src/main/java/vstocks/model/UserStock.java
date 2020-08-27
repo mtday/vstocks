@@ -6,7 +6,7 @@ public class UserStock {
     private String userId;
     private Market market;
     private String symbol;
-    private int shares;
+    private long shares;
 
     public UserStock() {
     }
@@ -38,11 +38,11 @@ public class UserStock {
         return this;
     }
 
-    public int getShares() {
+    public long getShares() {
         return shares;
     }
 
-    public UserStock setShares(int shares) {
+    public UserStock setShares(long shares) {
         this.shares = shares;
         return this;
     }

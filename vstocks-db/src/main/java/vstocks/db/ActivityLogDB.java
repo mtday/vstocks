@@ -25,7 +25,7 @@ class ActivityLogDB extends BaseDB {
                 .setTimestamp(rs.getTimestamp("timestamp").toInstant());
         ofNullable(rs.getString("market")).map(Market::valueOf).ifPresent(activityLog::setMarket);
         ofNullable(rs.getString("symbol")).ifPresent(activityLog::setSymbol);
-        int shares = rs.getInt("shares");
+        long shares = rs.getInt("shares");
         activityLog.setShares(rs.wasNull() ? null : shares);
         long price = rs.getLong("price");
         activityLog.setPrice(rs.wasNull() ? null : price);
@@ -49,7 +49,7 @@ class ActivityLogDB extends BaseDB {
             ps.setNull(++index, VARCHAR);
         }
         if (activityLog.getShares() != null) {
-            ps.setInt(++index, activityLog.getShares());
+            ps.setLong(++index, activityLog.getShares());
         } else {
             ps.setNull(++index, INTEGER);
         }

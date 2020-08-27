@@ -80,7 +80,7 @@ CREATE TABLE activity_logs (
     timestamp          TIMESTAMP(0) NOT NULL,
     market             TEXT,
     symbol             TEXT,
-    shares             INTEGER,
+    shares             BIGINT,
     price              BIGINT,
 
     CONSTRAINT activity_logs_pk PRIMARY KEY (id),
@@ -115,7 +115,7 @@ CREATE TABLE user_stocks (
     user_id            TEXT    NOT NULL,
     market             TEXT    NOT NULL,
     symbol             TEXT    NOT NULL,
-    shares             INTEGER NOT NULL,
+    shares             BIGINT  NOT NULL,
 
     CONSTRAINT user_stocks_pk PRIMARY KEY (user_id, market, symbol),
     CONSTRAINT user_stocks_fk_user_id FOREIGN KEY (user_id)

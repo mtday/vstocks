@@ -43,7 +43,7 @@ public class SellStockIT extends ResourceTest {
         assertEquals(NOT_FOUND.getStatusCode(), errorResponse.getStatus());
         assertEquals("Market missing not found", errorResponse.getMessage());
 
-        verify(userStockService, times(0)).sellStock(any(), any(), any(), anyInt());
+        verify(userStockService, times(0)).sellStock(any(), any(), any(), anyLong());
         verify(pricedUserStockService, times(0)).get(any(), any(), any());
     }
 
@@ -51,7 +51,7 @@ public class SellStockIT extends ResourceTest {
     public void testStockMissing() {
         User user = getUser();
         UserStockService userStockService = mock(UserStockService.class);
-        when(userStockService.sellStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10))).thenReturn(0);
+        when(userStockService.sellStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10L))).thenReturn(0);
         when(getServiceFactory().getUserStockService()).thenReturn(userStockService);
         PricedUserStockService pricedUserStockService = mock(PricedUserStockService.class);
         when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockService);
@@ -68,7 +68,7 @@ public class SellStockIT extends ResourceTest {
         assertEquals(BAD_REQUEST.getStatusCode(), errorResponse.getStatus());
         assertEquals("Failed to sell 10 shares of Twitter/symbol stock", errorResponse.getMessage());
 
-        verify(userStockService, times(1)).sellStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10));
+        verify(userStockService, times(1)).sellStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10L));
         verify(pricedUserStockService, times(0)).get(any(), any(), any());
     }
 
@@ -79,13 +79,16 @@ public class SellStockIT extends ResourceTest {
                 .setUserId(getUser().getId())
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setShares(10)
+                .setName("name")
+                .setProfileImage("image")
                 .setTimestamp(timestamp)
-                .setPrice(10);
+                .setShares(10)
+                .setPrice(10)
+                .setValue(10 * 10);
 
         User user = getUser();
         UserStockService userStockService = mock(UserStockService.class);
-        when(userStockService.sellStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10))).thenReturn(1);
+        when(userStockService.sellStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10L))).thenReturn(1);
         when(getServiceFactory().getUserStockService()).thenReturn(userStockService);
         PricedUserStockService pricedUserStockService = mock(PricedUserStockService.class);
         when(pricedUserStockService.get(eq(user.getId()), eq(TWITTER), eq("symbol"))).thenReturn(Optional.of(pricedUserStock));
@@ -98,7 +101,8 @@ public class SellStockIT extends ResourceTest {
 
         String json = response.readEntity(String.class);
         assertEquals("{\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"market\":\"Twitter\","
-                + "\"symbol\":\"symbol\",\"timestamp\":\"2020-12-03T10:15:30Z\",\"shares\":10,\"price\":10}", json);
+                + "\"symbol\":\"symbol\",\"name\":\"name\",\"profileImage\":\"image\","
+                + "\"timestamp\":\"2020-12-03T10:15:30Z\",\"shares\":10,\"price\":10,\"value\":100}", json);
 
         PricedUserStock fetched = convert(json, PricedUserStock.class);
         assertEquals(pricedUserStock.getUserId(), fetched.getUserId());
@@ -108,7 +112,7 @@ public class SellStockIT extends ResourceTest {
         assertEquals(pricedUserStock.getTimestamp(), fetched.getTimestamp());
         assertEquals(pricedUserStock.getPrice(), fetched.getPrice());
 
-        verify(userStockService, times(1)).sellStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10));
+        verify(userStockService, times(1)).sellStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10L));
         verify(pricedUserStockService, times(1)).get(eq(user.getId()), eq(TWITTER), eq("symbol"));
     }
 
@@ -116,7 +120,7 @@ public class SellStockIT extends ResourceTest {
     public void testSellSuccessStockNotFound() {
         User user = getUser();
         UserStockService userStockService = mock(UserStockService.class);
-        when(userStockService.sellStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10))).thenReturn(1);
+        when(userStockService.sellStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10L))).thenReturn(1);
         when(getServiceFactory().getUserStockService()).thenReturn(userStockService);
         PricedUserStockService pricedUserStockService = mock(PricedUserStockService.class);
         when(pricedUserStockService.get(eq(user.getId()), eq(TWITTER), eq("symbol"))).thenReturn(empty());
@@ -124,24 +128,17 @@ public class SellStockIT extends ResourceTest {
 
         Response response = target("/market/twitter/stock/symbol/sell/10").request().post(entity("", APPLICATION_JSON_TYPE));
 
-        assertEquals(OK.getStatusCode(), response.getStatus());
+        assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
         String json = response.readEntity(String.class);
-        // includes `now` as a timestamp
-        assertTrue(json.startsWith("{\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"market\":\"Twitter\","
-                + "\"symbol\":\"symbol\",\"timestamp\":\""));
-        assertTrue(json.endsWith("\",\"shares\":0,\"price\":1}"));
+        assertEquals("{\"status\":404,\"message\":\"Stock Twitter/symbol not found\"}", json);
 
-        PricedUserStock fetched = convert(json, PricedUserStock.class);
-        assertEquals(user.getId(), fetched.getUserId());
-        assertEquals(TWITTER, fetched.getMarket());
-        assertEquals("symbol", fetched.getSymbol());
-        assertEquals(0, fetched.getShares());
-        assertNotNull(fetched.getTimestamp());
-        assertEquals(1, fetched.getPrice());
+        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
+        assertEquals(NOT_FOUND.getStatusCode(), errorResponse.getStatus());
+        assertEquals("Stock Twitter/symbol not found", errorResponse.getMessage());
 
-        verify(userStockService, times(1)).sellStock(eq(user.getId()), eq(TWITTER), eq("symbol"), eq(10));
-        verify(pricedUserStockService, times(1)).get(eq(user.getId()), eq(TWITTER), eq("symbol"));
+        verify(userStockService, times(1)).sellStock(any(), any(), any(), anyLong());
+        verify(pricedUserStockService, times(1)).get(any(), any(), any());
     }
 }

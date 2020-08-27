@@ -18,14 +18,14 @@ class UserStockDB extends BaseDB {
                     .setUserId(rs.getString("user_id"))
                     .setMarket(Market.valueOf(rs.getString("market")))
                     .setSymbol(rs.getString("symbol"))
-                    .setShares(rs.getInt("shares"));
+                    .setShares(rs.getLong("shares"));
 
     private static final RowSetter<UserStock> INSERT_ROW_SETTER = (ps, userStock) -> {
         int index = 0;
         ps.setString(++index, userStock.getUserId());
         ps.setString(++index, userStock.getMarket().name());
         ps.setString(++index, userStock.getSymbol());
-        ps.setInt(++index, userStock.getShares());
+        ps.setLong(++index, userStock.getShares());
     };
 
     @Override
@@ -66,7 +66,7 @@ class UserStockDB extends BaseDB {
         return update(connection, INSERT_ROW_SETTER, sql, userStock);
     }
 
-    public int update(Connection connection, String userId, Market market, String symbol, int delta) {
+    public int update(Connection connection, String userId, Market market, String symbol, long delta) {
         // Need to do updates instead of inserts.
         if (delta > 0) {
             // delta > 0 means buying the stock

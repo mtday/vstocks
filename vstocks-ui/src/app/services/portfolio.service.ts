@@ -6,6 +6,10 @@ import {
   CreditRankCollection,
   MarketRankCollection,
   MarketTotalRankCollection,
+  Page,
+  PricedUserStock,
+  Results,
+  Sort,
   TotalRankCollection,
   UserCredits,
 } from '../models/models';
@@ -22,8 +26,23 @@ export class PortfolioService {
     return this.http.get<UserCredits>('/api/user/portfolio/credits');
   }
 
+  getStocks(page: Page, sort: Sort[]): Observable<Results<PricedUserStock>> {
+    const params: HttpParams = new HttpParams();
+    if (page) {
+      params.append("pageNum", page.page.toString());
+      params.append("pageSize", page.size.toString());
+    }
+    return this.http.get<Results<PricedUserStock>>('/api/user/portfolio/stocks', { params: params });
+  }
+
+  // ranks
+
   getCreditRank(): Observable<CreditRankCollection> {
     return this.http.get<CreditRankCollection>('/api/user/portfolio/rank/credits');
+  }
+
+  getMarketRanks(): Observable<MarketRankCollection[]> {
+    return this.http.get<MarketRankCollection[]>('/api/user/portfolio/rank/markets/');
   }
 
   getMarketRank(market: string): Observable<MarketRankCollection> {

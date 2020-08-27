@@ -139,7 +139,7 @@ public class FirstStockActivityIT extends BaseAchievementProviderIT {
                 .setTimestamp(Instant.now().truncatedTo(SECONDS))
                 .setMarket(stock.getMarket())
                 .setSymbol(stock.getSymbol())
-                .setShares(activityType == STOCK_BUY ? 5 : -5) // negative when selling
+                .setShares(activityType == STOCK_BUY ? 5L : -5L) // negative when selling
                 .setPrice(10L);
 
         getDBFactory().getActivityLogService().add(activityLog);

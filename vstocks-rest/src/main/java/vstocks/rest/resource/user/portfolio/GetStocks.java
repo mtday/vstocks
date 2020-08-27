@@ -1,6 +1,7 @@
 package vstocks.rest.resource.user.portfolio;
 
 import vstocks.db.ServiceFactory;
+import vstocks.model.Page;
 import vstocks.model.PricedUserStock;
 import vstocks.model.Results;
 import vstocks.model.User;
@@ -36,6 +37,7 @@ public class GetStocks extends BaseResource {
                                               @QueryParam("pageSize") Integer pageSize,
                                               @QueryParam("sort") String sort) {
         User user = getUser(securityContext);
-        return serviceFactory.getPricedUserStockService().getForUser(user.getId(), getPage(pageNum, pageSize), getSort(sort));
+        Page page = getPage(pageNum, pageSize);
+        return serviceFactory.getPricedUserStockService().getForUser(user.getId(), page, getSort(sort));
     }
 }

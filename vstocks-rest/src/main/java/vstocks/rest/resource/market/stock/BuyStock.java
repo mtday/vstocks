@@ -31,7 +31,7 @@ public class BuyStock extends BaseResource {
     @Pac4JSecurity(authorizers = "isAuthenticated")
     public PricedUserStock buyStock(@PathParam("market") String marketId,
                                     @PathParam("symbol") String symbol,
-                                    @PathParam("shares") int shares,
+                                    @PathParam("shares") long shares,
                                     @Pac4JProfile CommonProfile profile) {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));

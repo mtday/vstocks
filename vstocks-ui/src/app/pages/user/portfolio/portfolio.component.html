@@ -5,6 +5,32 @@
     Credit Balance: {{userCredits.credits}}
 </div>
 
+<div *ngIf="pricedUserStocks" style="padding-top:30px;">
+    <div>Priced User Stocks</div>
+    <table>
+        <tr>
+            <td>Market</td>
+            <td>Symbol</td>
+            <td>Name</td>
+            <td>Profile Image</td>
+            <td>Timestamp</td>
+            <td>Shares</td>
+            <td>Price</td>
+            <td>Value</td>
+        </tr>
+        <tr *ngFor="let pricedUserStock of pricedUserStocks.results">
+            <td>{{pricedUserStock.market}}</td>
+            <td>{{pricedUserStock.symbol}}</td>
+            <td>{{pricedUserStock.name}}</td>
+            <td>{{pricedUserStock.profileImage}}</td>
+            <td>{{pricedUserStock.timestamp}}</td>
+            <td>{{pricedUserStock.shares}}</td>
+            <td>{{pricedUserStock.price}}</td>
+            <td>{{pricedUserStock.shares * pricedUserStock.price}}</td>
+        </tr>
+    </table>
+</div>
+
 <div *ngIf="totalRanks" style="padding-top:30px;">
     <div>Total Ranks</div>
     <table>

@@ -272,7 +272,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(stock1.getMarket(), activityLog.getMarket());
         assertEquals(stock1.getSymbol(), activityLog.getSymbol());
         assertEquals(stockPrice1.getPrice(), (long) activityLog.getPrice());
-        assertEquals(1, (int) activityLog.getShares());
+        assertEquals(1, (long) activityLog.getShares());
     }
 
     @Test
@@ -305,7 +305,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(stock1.getMarket(), activityLog.getMarket());
         assertEquals(stock1.getSymbol(), activityLog.getSymbol());
         assertEquals(stockPrice1.getPrice(), (long) activityLog.getPrice());
-        assertEquals(1, (int) activityLog.getShares());
+        assertEquals(1, (long) activityLog.getShares());
     }
 
     @Test
@@ -400,7 +400,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(stock1.getMarket(), activityLog.getMarket());
         assertEquals(stock1.getSymbol(), activityLog.getSymbol());
         assertEquals(stockPrice1.getPrice(), (long) activityLog.getPrice());
-        assertEquals(-1, (int) activityLog.getShares());
+        assertEquals(-1, (long) activityLog.getShares());
     }
 
     @Test
@@ -431,7 +431,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
         assertEquals(stock1.getMarket(), activityLog.getMarket());
         assertEquals(stock1.getSymbol(), activityLog.getSymbol());
         assertEquals(stockPrice1.getPrice(), (long) activityLog.getPrice());
-        assertEquals(-userStock11.getShares(), (int) activityLog.getShares());
+        assertEquals(-userStock11.getShares(), (long) activityLog.getShares());
     }
 
     @Test

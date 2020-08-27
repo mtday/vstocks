@@ -6,6 +6,8 @@ import {
   CreditRankCollection,
   MarketRankCollection,
   MarketTotalRankCollection,
+  PricedUserStock,
+  Results,
   TotalRankCollection,
 } from 'src/app/models/models';
 
@@ -16,9 +18,10 @@ import {
 })
 export class UserPortfolioComponent implements OnInit {
   public userCredits: UserCredits;
+  public pricedUserStocks: Results<PricedUserStock>;
 
   public creditRanks: CreditRankCollection;
-  public marketRanks: MarketRankCollection;
+  public marketRanks: MarketRankCollection[];
   public marketTotalRanks: MarketTotalRankCollection;
   public totalRanks: TotalRankCollection;
 
@@ -26,7 +29,10 @@ export class UserPortfolioComponent implements OnInit {
 
   ngOnInit(): void {
     this.portfolioService.getCreditBalance().subscribe(userCredits => this.userCredits = userCredits);
+    this.portfolioService.getStocks(null, null).subscribe(pricedUserStocks => this.pricedUserStocks = pricedUserStocks);
+
     this.portfolioService.getCreditRank().subscribe(creditRanks => this.creditRanks = creditRanks);
+    this.portfolioService.getMarketRanks().subscribe(marketRanks => this.marketRanks = marketRanks);
     this.portfolioService.getMarketTotalRank().subscribe(marketTotalRanks => this.marketTotalRanks = marketTotalRanks);
     this.portfolioService.getTotalRank().subscribe(totalRanks => this.totalRanks = totalRanks);
   }

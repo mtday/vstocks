@@ -11,9 +11,7 @@ import vstocks.rest.resource.BaseResource;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
-import java.time.Instant;
 
-import static java.time.temporal.ChronoUnit.SECONDS;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.WILDCARD;
 
@@ -33,7 +31,7 @@ public class SellStock extends BaseResource {
     @Pac4JSecurity(authorizers = "isAuthenticated")
     public PricedUserStock sellStock(@PathParam("market") String marketId,
                                      @PathParam("symbol") String symbol,
-                                     @PathParam("shares") int shares,
+                                     @PathParam("shares") long shares,
                                      @Pac4JProfile CommonProfile profile) {
         Market market = Market.from(marketId)
                 .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
@@ -41,10 +39,7 @@ public class SellStock extends BaseResource {
         if (serviceFactory.getUserStockService().sellStock(userId, market, symbol, shares) == 0) {
             throw new BadRequestException("Failed to sell " + shares + " shares of " + market + "/" + symbol + " stock");
         }
-        return serviceFactory.getPricedUserStockService().get(userId, market, symbol).orElseGet(() -> {
-            // Not found likely means the user sold all their shares of stock.
-            Instant instant = Instant.now().truncatedTo(SECONDS);
-            return new PricedUserStock().setUserId(userId).setMarket(market).setSymbol(symbol).setShares(0).setTimestamp(instant).setPrice(1);
-        });
+        return serviceFactory.getPricedUserStockService().get(userId, market, symbol)
+                .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + symbol + " not found"));
     }
 }

@@ -21,9 +21,12 @@ public class PricedUserStockTest {
                 .setUserId(userId)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
+                .setName("Name")
+                .setProfileImage("link")
                 .setTimestamp(now)
                 .setShares(10)
                 .setPrice(20)
+                .setValue(10 * 20)
                 .asUserStock();
 
         assertEquals(userId, userStock.getUserId());
@@ -33,14 +36,37 @@ public class PricedUserStockTest {
     }
 
     @Test
+    public void testAsStock() {
+        Stock stock = new PricedUserStock()
+                .setUserId(userId)
+                .setMarket(TWITTER)
+                .setSymbol("symbol")
+                .setName("Name")
+                .setProfileImage("link")
+                .setTimestamp(now)
+                .setShares(10)
+                .setPrice(20)
+                .setValue(10 * 20)
+                .asStock();
+
+        assertEquals(TWITTER, stock.getMarket());
+        assertEquals("symbol", stock.getSymbol());
+        assertEquals("Name", stock.getName());
+        assertEquals("link", stock.getProfileImage());
+    }
+
+    @Test
     public void testAsStockPrice() {
         StockPrice stockPrice = new PricedUserStock()
                 .setUserId(userId)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
+                .setName("Name")
+                .setProfileImage("link")
                 .setTimestamp(now)
                 .setShares(10)
                 .setPrice(20)
+                .setValue(10 * 20)
                 .asStockPrice();
 
         assertEquals(TWITTER, stockPrice.getMarket());
@@ -55,16 +81,22 @@ public class PricedUserStockTest {
                 .setUserId(userId)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
+                .setName("Name")
+                .setProfileImage("link")
                 .setTimestamp(now)
                 .setShares(10)
-                .setPrice(20);
+                .setPrice(20)
+                .setValue(10 * 20);
 
         assertEquals(userId, pricedUserStock.getUserId());
         assertEquals(TWITTER, pricedUserStock.getMarket());
         assertEquals("symbol", pricedUserStock.getSymbol());
+        assertEquals("Name", pricedUserStock.getName());
+        assertEquals("link", pricedUserStock.getProfileImage());
         assertEquals(now, pricedUserStock.getTimestamp());
         assertEquals(10, pricedUserStock.getShares());
         assertEquals(20, pricedUserStock.getPrice());
+        assertEquals(10 * 20, pricedUserStock.getValue());
     }
 
     @Test
@@ -73,16 +105,22 @@ public class PricedUserStockTest {
                 .setUserId(userId)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
+                .setName("Name")
+                .setProfileImage("link")
                 .setTimestamp(now)
                 .setShares(10)
-                .setPrice(20);
+                .setPrice(20)
+                .setValue(10 * 20);
         PricedUserStock pricedUserStock2 = new PricedUserStock()
                 .setUserId(userId)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
+                .setName("Name")
+                .setProfileImage("link")
                 .setTimestamp(now)
                 .setShares(10)
-                .setPrice(20);
+                .setPrice(20)
+                .setValue(10 * 20);
         assertEquals(pricedUserStock1, pricedUserStock2);
     }
 
@@ -92,10 +130,13 @@ public class PricedUserStockTest {
                 .setUserId(userId)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
+                .setName("Name")
+                .setProfileImage("link")
                 .setTimestamp(timestamp)
                 .setShares(10)
-                .setPrice(20);
-        assertEquals(887503681, new PricedUserStock().hashCode());
+                .setPrice(20)
+                .setValue(10 * 20);
+        assertEquals(-196513505, new PricedUserStock().hashCode());
         assertNotEquals(0, pricedUserStock.hashCode()); // enums make the value inconsistent
     }
 
@@ -105,10 +146,14 @@ public class PricedUserStockTest {
                 .setUserId(userId)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
+                .setName("Name")
+                .setProfileImage("link")
                 .setTimestamp(now)
                 .setShares(10)
-                .setPrice(20);
-        assertEquals("PricedUserStock{userId='" + userId + "', market=Twitter, symbol='symbol', timestamp=" + now
-                + ", shares=10, price=20}", pricedUserStock.toString());
+                .setPrice(20)
+                .setValue(10 * 20);
+        assertEquals("PricedUserStock{userId='" + userId + "', market=Twitter, symbol='symbol', name='Name', "
+                + "profileImage='link', timestamp=" + now + ", shares=10, price=20, value=200}",
+                pricedUserStock.toString());
     }
 }

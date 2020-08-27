@@ -24,7 +24,7 @@ public class ActivityLogTest {
                 .setTimestamp(now)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setShares(10)
+                .setShares(10L)
                 .setPrice(20L);
 
         assertEquals("id", activityLog.getId());
@@ -33,7 +33,7 @@ public class ActivityLogTest {
         assertEquals(now, activityLog.getTimestamp());
         assertEquals(TWITTER, activityLog.getMarket());
         assertEquals("symbol", activityLog.getSymbol());
-        assertEquals(10, (int) activityLog.getShares());
+        assertEquals(10, (long) activityLog.getShares());
         assertEquals(20, (long) activityLog.getPrice());
     }
 
@@ -64,7 +64,7 @@ public class ActivityLogTest {
                 .setTimestamp(now)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setShares(10)
+                .setShares(10L)
                 .setPrice(20L);
         ActivityLog activityLog2 = new ActivityLog()
                 .setId("id")
@@ -73,7 +73,7 @@ public class ActivityLogTest {
                 .setTimestamp(now)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setShares(10)
+                .setShares(10L)
                 .setPrice(20L);
         assertEquals(activityLog1, activityLog2);
     }
@@ -87,7 +87,7 @@ public class ActivityLogTest {
                 .setTimestamp(now)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setShares(10)
+                .setShares(10L)
                 .setPrice(20L);
         assertEquals(-1807454463, new ActivityLog().hashCode());
         assertNotEquals(0, activityLog.hashCode()); // enums make the value inconsistent
@@ -102,7 +102,7 @@ public class ActivityLogTest {
                 .setTimestamp(now)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
-                .setShares(10)
+                .setShares(10L)
                 .setPrice(20L);
         assertEquals("ActivityLog{id='id', userId='" + userId + "', type=STOCK_SELL, timestamp=" + now
                 + ", market=Twitter, symbol='symbol', shares=10, price=20}", activityLog.toString());

@@ -10,7 +10,7 @@ public class ActivityLog {
     private Instant timestamp;
     private Market market;
     private String symbol;
-    private Integer shares;
+    private Long shares;
     private Long price;
 
     public ActivityLog() {
@@ -70,11 +70,11 @@ public class ActivityLog {
         return this;
     }
 
-    public Integer getShares() {
+    public Long getShares() {
         return shares;
     }
 
-    public ActivityLog setShares(Integer shares) {
+    public ActivityLog setShares(Long shares) {
         this.shares = shares;
         return this;
     }

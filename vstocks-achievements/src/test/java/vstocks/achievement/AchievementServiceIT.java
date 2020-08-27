@@ -78,7 +78,7 @@ public class AchievementServiceIT {
                 .setTimestamp(now)
                 .setMarket(stock.getMarket())
                 .setSymbol(stock.getSymbol())
-                .setShares(5)
+                .setShares(5L)
                 .setPrice(stockPrice.getPrice());
 
         assertEquals(1, serviceFactory.getUserService().add(user));
