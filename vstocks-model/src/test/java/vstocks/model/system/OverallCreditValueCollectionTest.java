@@ -2,15 +2,14 @@ package vstocks.model.system;
 
 import org.junit.Test;
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static vstocks.model.Delta.getDeltas;
 
 public class OverallCreditValueCollectionTest {
     private final Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
@@ -21,8 +20,7 @@ public class OverallCreditValueCollectionTest {
             .setValue(18);
 
     private final List<OverallCreditValue> values = asList(overallCreditValue1, overallCreditValue2);
-    private final Map<DeltaInterval, Delta> deltas =
-            Delta.getDeltas(values, OverallCreditValue::getTimestamp, OverallCreditValue::getValue);
+    private final List<Delta> deltas = getDeltas(values, OverallCreditValue::getTimestamp, OverallCreditValue::getValue);
 
     @Test
     public void testGettersAndSetters() {

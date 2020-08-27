@@ -1,8 +1,6 @@
 package vstocks.model.system;
 
-import vstocks.model.Market;
-
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 public class SystemCounts {
@@ -10,8 +8,8 @@ public class SystemCounts {
     private TotalUserCountCollection totalUserCounts;
     private ActiveTransactionCountCollection activeTransactionCounts;
     private TotalTransactionCountCollection totalTransactionCounts;
-    private Map<Market, ActiveMarketTransactionCountCollection> activeMarketTransactionCounts;
-    private Map<Market, TotalMarketTransactionCountCollection> totalMarketTransactionCounts;
+    private List<ActiveMarketTransactionCountCollection> activeMarketTransactionCounts;
+    private List<TotalMarketTransactionCountCollection> totalMarketTransactionCounts;
 
     public SystemCounts() {
     }
@@ -52,20 +50,20 @@ public class SystemCounts {
         return this;
     }
 
-    public Map<Market, ActiveMarketTransactionCountCollection> getActiveMarketTransactionCounts() {
+    public List<ActiveMarketTransactionCountCollection> getActiveMarketTransactionCounts() {
         return activeMarketTransactionCounts;
     }
 
-    public SystemCounts setActiveMarketTransactionCounts(Map<Market, ActiveMarketTransactionCountCollection> activeMarketTransactionCounts) {
+    public SystemCounts setActiveMarketTransactionCounts(List<ActiveMarketTransactionCountCollection> activeMarketTransactionCounts) {
         this.activeMarketTransactionCounts = activeMarketTransactionCounts;
         return this;
     }
 
-    public Map<Market, TotalMarketTransactionCountCollection> getTotalMarketTransactionCounts() {
+    public List<TotalMarketTransactionCountCollection> getTotalMarketTransactionCounts() {
         return totalMarketTransactionCounts;
     }
 
-    public SystemCounts setTotalMarketTransactionCounts(Map<Market, TotalMarketTransactionCountCollection> totalMarketTransactionCounts) {
+    public SystemCounts setTotalMarketTransactionCounts(List<TotalMarketTransactionCountCollection> totalMarketTransactionCounts) {
         this.totalMarketTransactionCounts = totalMarketTransactionCounts;
         return this;
     }

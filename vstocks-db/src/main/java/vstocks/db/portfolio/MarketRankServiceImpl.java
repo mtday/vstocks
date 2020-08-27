@@ -12,7 +12,6 @@ import vstocks.model.portfolio.RankedUser;
 import javax.sql.DataSource;
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 public class MarketRankServiceImpl extends BaseService implements MarketRankService {
     private final MarketRankDB marketRankDB = new MarketRankDB();
@@ -37,7 +36,7 @@ public class MarketRankServiceImpl extends BaseService implements MarketRankServ
     }
 
     @Override
-    public Map<Market, MarketRankCollection> getLatest(String userId) {
+    public List<MarketRankCollection> getLatest(String userId) {
         return withConnection(conn -> marketRankDB.getLatest(conn, userId));
     }
 

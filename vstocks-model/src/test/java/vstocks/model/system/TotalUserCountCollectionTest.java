@@ -2,15 +2,14 @@ package vstocks.model.system;
 
 import org.junit.Test;
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static vstocks.model.Delta.getDeltas;
 
 public class TotalUserCountCollectionTest {
     private final Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
@@ -23,8 +22,7 @@ public class TotalUserCountCollectionTest {
             .setCount(18);
 
     private final List<TotalUserCount> counts = asList(totalUserCount1, totalUserCount2);
-    private final Map<DeltaInterval, Delta> deltas =
-            Delta.getDeltas(counts, TotalUserCount::getTimestamp, TotalUserCount::getCount);
+    private final List<Delta> deltas = getDeltas(counts, TotalUserCount::getTimestamp, TotalUserCount::getCount);
 
     @Test
     public void testGettersAndSetters() {

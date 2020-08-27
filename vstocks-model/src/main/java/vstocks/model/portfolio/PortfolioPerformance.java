@@ -1,15 +1,13 @@
 package vstocks.model.portfolio;
 
-import vstocks.model.Market;
-
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 public class PortfolioPerformance {
     private TotalRankCollection totalRanks;
     private CreditRankCollection creditRanks;
     private MarketTotalRankCollection marketTotalRanks;
-    private Map<Market, MarketRankCollection> marketRanks;
+    private List<MarketRankCollection> marketRanks;
 
     public PortfolioPerformance() {
     }
@@ -41,11 +39,11 @@ public class PortfolioPerformance {
         return this;
     }
 
-    public Map<Market, MarketRankCollection> getMarketRanks() {
+    public List<MarketRankCollection> getMarketRanks() {
         return marketRanks;
     }
 
-    public PortfolioPerformance setMarketRanks(Map<Market, MarketRankCollection> marketRanks) {
+    public PortfolioPerformance setMarketRanks(List<MarketRankCollection> marketRanks) {
         this.marketRanks = marketRanks;
         return this;
     }

@@ -1,15 +1,13 @@
 package vstocks.model.system;
 
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class ActiveTransactionCountCollection {
     private List<ActiveTransactionCount> counts;
-    private Map<DeltaInterval, Delta> deltas;
+    private List<Delta> deltas;
 
     public ActiveTransactionCountCollection() {
     }
@@ -23,11 +21,11 @@ public class ActiveTransactionCountCollection {
         return this;
     }
 
-    public Map<DeltaInterval, Delta> getDeltas() {
+    public List<Delta> getDeltas() {
         return deltas;
     }
 
-    public ActiveTransactionCountCollection setDeltas(Map<DeltaInterval, Delta> deltas) {
+    public ActiveTransactionCountCollection setDeltas(List<Delta> deltas) {
         this.deltas = deltas;
         return this;
     }

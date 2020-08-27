@@ -2,11 +2,9 @@ package vstocks.model.portfolio;
 
 import org.junit.Test;
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -28,7 +26,7 @@ public class TotalRankCollectionTest {
             .setRank(18);
 
     private final List<TotalRank> ranks = asList(totalRank1, totalRank2);
-    private final Map<DeltaInterval, Delta> deltas = getDeltas(ranks, TotalRank::getTimestamp, TotalRank::getRank);
+    private final List<Delta> deltas = getDeltas(ranks, TotalRank::getTimestamp, TotalRank::getRank);
 
     @Test
     public void testGettersAndSetters() {

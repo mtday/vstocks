@@ -2,15 +2,14 @@ package vstocks.model.portfolio;
 
 import org.junit.Test;
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static vstocks.model.Delta.getDeltas;
 
 public class CreditRankCollectionTest {
     private final Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
@@ -27,8 +26,7 @@ public class CreditRankCollectionTest {
             .setRank(18);
 
     private final List<CreditRank> ranks = asList(creditRank1, creditRank2);
-    private final Map<DeltaInterval, Delta> deltas =
-            Delta.getDeltas(ranks, CreditRank::getTimestamp, CreditRank::getRank);
+    private final List<Delta> deltas = getDeltas(ranks, CreditRank::getTimestamp, CreditRank::getRank);
 
     @Test
     public void testGettersAndSetters() {

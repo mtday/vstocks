@@ -1,17 +1,26 @@
 package vstocks.model.system;
 
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
+import vstocks.model.Market;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class OverallMarketValueCollection {
+    private Market market;
     private List<OverallMarketValue> values;
-    private Map<DeltaInterval, Delta> deltas;
+    private List<Delta> deltas;
 
     public OverallMarketValueCollection() {
+    }
+
+    public Market getMarket() {
+        return market;
+    }
+
+    public OverallMarketValueCollection setMarket(Market market) {
+        this.market = market;
+        return this;
     }
 
     public List<OverallMarketValue> getValues() {
@@ -23,11 +32,11 @@ public class OverallMarketValueCollection {
         return this;
     }
 
-    public Map<DeltaInterval, Delta> getDeltas() {
+    public List<Delta> getDeltas() {
         return deltas;
     }
 
-    public OverallMarketValueCollection setDeltas(Map<DeltaInterval, Delta> deltas) {
+    public OverallMarketValueCollection setDeltas(List<Delta> deltas) {
         this.deltas = deltas;
         return this;
     }
@@ -37,19 +46,21 @@ public class OverallMarketValueCollection {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OverallMarketValueCollection that = (OverallMarketValueCollection) o;
-        return Objects.equals(values, that.values) &&
+        return market == that.market &&
+                Objects.equals(values, that.values) &&
                 Objects.equals(deltas, that.deltas);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(values, deltas);
+        return Objects.hash(market, values, deltas);
     }
 
     @Override
     public String toString() {
         return "OverallMarketValueCollection{" +
-                "values=" + values +
+                "market=" + market +
+                ", values=" + values +
                 ", deltas=" + deltas +
                 '}';
     }

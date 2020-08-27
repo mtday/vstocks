@@ -5,9 +5,44 @@
     Credit Balance: {{userCredits.credits}}
 </div>
 
-<div *ngIf="creditRanks">
+<div *ngIf="totalRanks" style="padding-top:30px;">
+    <div>Total Ranks</div>
+    <table>
+        <tr>
+            <td>Batch</td>
+            <td>Rank</td>
+            <td>Value</td>
+        </tr>
+        <tr *ngFor="let totalRank of totalRanks.ranks">
+            <td>{{totalRank.batch}}</td>
+            <td>{{totalRank.rank}}</td>
+            <td>{{totalRank.value}}</td>
+        </tr>
+    </table>
+
+    <div>Total Rank Deltas</div>
+    <table>
+        <tr>
+            <td>Interval</td>
+            <td>Change</td>
+            <td>Percent</td>
+        </tr>
+        <tr *ngFor="let totalRankDelta of totalRanks.deltas">
+            <td>{{totalRankDelta.value.interval}}</td>
+            <td>{{totalRankDelta.value.change}}</td>
+            <td>{{totalRankDelta.value.percent}}</td>
+        </tr>
+    </table>
+</div>
+
+<div *ngIf="creditRanks" style="padding-top:30px;">
     <div>Credit Ranks</div>
     <table>
+        <tr>
+            <td>Batch</td>
+            <td>Rank</td>
+            <td>Value</td>
+        </tr>
         <tr *ngFor="let creditRank of creditRanks.ranks">
             <td>{{creditRank.batch}}</td>
             <td>{{creditRank.rank}}</td>
@@ -17,12 +52,46 @@
 
     <div>Credit Rank Deltas</div>
     <table>
-        <tr *ngFor="let creditRankDelta of creditRanks.deltas | keyvalue">
-            <td>{{creditRankDelta.key}}</td>
+        <tr>
+            <td>Interval</td>
+            <td>Change</td>
+            <td>Percent</td>
+        </tr>
+        <tr *ngFor="let creditRankDelta of creditRanks.deltas">
             <td>{{creditRankDelta.value.interval}}</td>
             <td>{{creditRankDelta.value.change}}</td>
             <td>{{creditRankDelta.value.percent}}</td>
         </tr>
     </table>
-
 </div>
+
+<div *ngIf="marketTotalRanks" style="padding-top:30px;">
+    <div>Market Total Ranks</div>
+    <table>
+        <tr>
+            <td>Batch</td>
+            <td>Rank</td>
+            <td>Value</td>
+        </tr>
+        <tr *ngFor="let marketTotalRank of marketTotalRanks.ranks">
+            <td>{{marketTotalRank.batch}}</td>
+            <td>{{marketTotalRank.rank}}</td>
+            <td>{{marketTotalRank.value}}</td>
+        </tr>
+    </table>
+
+    <div>Market Total Rank Deltas</div>
+    <table>
+        <tr>
+            <td>Interval</td>
+            <td>Change</td>
+            <td>Percent</td>
+        </tr>
+        <tr *ngFor="let marketTotalRankDelta of marketTotalRanks.deltas">
+            <td>{{marketTotalRankDelta.value.interval}}</td>
+            <td>{{marketTotalRankDelta.value.change}}</td>
+            <td>{{marketTotalRankDelta.value.percent}}</td>
+        </tr>
+    </table>
+</div>
+

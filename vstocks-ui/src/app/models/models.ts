@@ -50,7 +50,7 @@ export class CreditRank {
 
 export class CreditRankCollection {
     ranks: CreditRank[];
-    deltas: Map<string, Delta>;
+    deltas: Delta[];
 }
 
 
@@ -65,8 +65,9 @@ export class MarketRank {
 
 
 export class MarketRankCollection {
+    market: string;
     ranks: MarketRank[];
-    deltas: Map<string, Delta>;
+    deltas: Delta[];
 }
 
 
@@ -81,7 +82,7 @@ export class MarketTotalRank {
 
 export class MarketTotalRankCollection {
     ranks: MarketTotalRank[];
-    deltas: Map<string, Delta>;
+    deltas: Delta[];
 }
 
 
@@ -96,5 +97,5 @@ export class TotalRank {
 
 export class TotalRankCollection {
     ranks: TotalRank[];
-    deltas: Map<string, Delta>;
+    deltas: Delta[];
 }

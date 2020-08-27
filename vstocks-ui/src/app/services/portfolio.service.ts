@@ -27,7 +27,7 @@ export class PortfolioService {
   }
 
   getMarketRank(market: string): Observable<MarketRankCollection> {
-    return this.http.get<MarketRankCollection>('/api/user/portfolio/rank/credits/' + market);
+    return this.http.get<MarketRankCollection>('/api/user/portfolio/rank/market/' + market);
   }
 
   getMarketTotalRank(): Observable<MarketTotalRankCollection> {

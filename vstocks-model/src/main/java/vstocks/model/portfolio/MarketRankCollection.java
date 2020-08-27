@@ -1,17 +1,26 @@
 package vstocks.model.portfolio;
 
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
+import vstocks.model.Market;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class MarketRankCollection {
+    private Market market;
     private List<MarketRank> ranks;
-    private Map<DeltaInterval, Delta> deltas;
+    private List<Delta> deltas;
 
     public MarketRankCollection() {
+    }
+
+    public Market getMarket() {
+        return market;
+    }
+
+    public MarketRankCollection setMarket(Market market) {
+        this.market = market;
+        return this;
     }
 
     public List<MarketRank> getRanks() {
@@ -23,11 +32,11 @@ public class MarketRankCollection {
         return this;
     }
 
-    public Map<DeltaInterval, Delta> getDeltas() {
+    public List<Delta> getDeltas() {
         return deltas;
     }
 
-    public MarketRankCollection setDeltas(Map<DeltaInterval, Delta> deltas) {
+    public MarketRankCollection setDeltas(List<Delta> deltas) {
         this.deltas = deltas;
         return this;
     }
@@ -37,19 +46,21 @@ public class MarketRankCollection {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MarketRankCollection that = (MarketRankCollection) o;
-        return Objects.equals(ranks, that.ranks) &&
+        return market == that.market &&
+                Objects.equals(ranks, that.ranks) &&
                 Objects.equals(deltas, that.deltas);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ranks, deltas);
+        return Objects.hash(market, ranks, deltas);
     }
 
     @Override
     public String toString() {
         return "MarketRankCollection{" +
-                "ranks=" + ranks +
+                "market=" + market +
+                ", ranks=" + ranks +
                 ", deltas=" + deltas +
                 '}';
     }

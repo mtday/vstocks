@@ -1,17 +1,26 @@
 package vstocks.model.system;
 
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
+import vstocks.model.Market;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class ActiveMarketTransactionCountCollection {
+    private Market market;
     private List<ActiveMarketTransactionCount> counts;
-    private Map<DeltaInterval, Delta> deltas;
+    private List<Delta> deltas;
 
     public ActiveMarketTransactionCountCollection() {
+    }
+
+    public Market getMarket() {
+        return market;
+    }
+
+    public ActiveMarketTransactionCountCollection setMarket(Market market) {
+        this.market = market;
+        return this;
     }
 
     public List<ActiveMarketTransactionCount> getCounts() {
@@ -23,11 +32,11 @@ public class ActiveMarketTransactionCountCollection {
         return this;
     }
 
-    public Map<DeltaInterval, Delta> getDeltas() {
+    public List<Delta> getDeltas() {
         return deltas;
     }
 
-    public ActiveMarketTransactionCountCollection setDeltas(Map<DeltaInterval, Delta> deltas) {
+    public ActiveMarketTransactionCountCollection setDeltas(List<Delta> deltas) {
         this.deltas = deltas;
         return this;
     }

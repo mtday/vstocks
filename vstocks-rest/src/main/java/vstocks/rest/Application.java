@@ -30,17 +30,14 @@ import vstocks.rest.resource.system.GetActiveTransactionCount;
 import vstocks.rest.resource.system.GetActiveUserCount;
 import vstocks.rest.resource.system.GetTotalTransactionCount;
 import vstocks.rest.resource.system.GetTotalUserCount;
+import vstocks.rest.resource.user.CheckUsername;
 import vstocks.rest.resource.user.GetUser;
 import vstocks.rest.resource.user.PutUser;
 import vstocks.rest.resource.user.ResetUser;
-import vstocks.rest.resource.user.CheckUsername;
 import vstocks.rest.resource.user.achievement.GetUserAchievements;
 import vstocks.rest.resource.user.portfolio.GetCreditBalance;
 import vstocks.rest.resource.user.portfolio.GetStocks;
-import vstocks.rest.resource.user.portfolio.rank.GetCreditRank;
-import vstocks.rest.resource.user.portfolio.rank.GetMarketRank;
-import vstocks.rest.resource.user.portfolio.rank.GetMarketTotalRank;
-import vstocks.rest.resource.user.portfolio.rank.GetTotalRank;
+import vstocks.rest.resource.user.portfolio.rank.*;
 import vstocks.rest.security.AccessLogFilter;
 import vstocks.rest.security.JwtSecurity;
 import vstocks.rest.security.JwtTokenFilter;
@@ -134,6 +131,7 @@ public class Application extends ResourceConfig {
         // user/portfolio
         register(GetCreditRank.class);
         register(GetMarketRank.class);
+        register(GetMarketRanks.class);
         register(GetMarketTotalRank.class);
         register(GetTotalRank.class);
         register(GetCreditBalance.class);

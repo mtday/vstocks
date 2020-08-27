@@ -65,6 +65,7 @@ class OverallMarketValueDB extends BaseDB {
         consume(connection, ROW_MAPPER, values::add, sql, earliest, market);
 
         return new OverallMarketValueCollection()
+                .setMarket(market)
                 .setValues(values)
                 .setDeltas(getDeltas(values, OverallMarketValue::getTimestamp, OverallMarketValue::getValue));
     }

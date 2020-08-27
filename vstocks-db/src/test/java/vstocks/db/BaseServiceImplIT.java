@@ -6,9 +6,13 @@ import vstocks.model.DeltaInterval;
 import vstocks.model.Results;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 
 public abstract class BaseServiceImplIT {
@@ -73,15 +77,13 @@ public abstract class BaseServiceImplIT {
         }
     }
 
-    public Map<DeltaInterval, Delta> getZeroDeltas() {
+    public List<Delta> getZeroDeltas() {
         return getDeltas(0, 0f);
     }
 
-    public Map<DeltaInterval, Delta> getDeltas(long change, float percent) {
-        Map<DeltaInterval, Delta> deltas = new TreeMap<>();
-        Arrays.stream(DeltaInterval.values())
+    public List<Delta> getDeltas(long change, float percent) {
+        return Arrays.stream(DeltaInterval.values())
                 .map(interval -> new Delta().setInterval(interval).setChange(change).setPercent(percent))
-                .forEach(delta -> deltas.put(delta.getInterval(), delta));
-        return deltas;
+                .collect(toList());
     }
 }

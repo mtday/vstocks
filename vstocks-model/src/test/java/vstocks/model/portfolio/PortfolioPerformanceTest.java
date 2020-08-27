@@ -2,16 +2,14 @@ package vstocks.model.portfolio;
 
 import org.junit.Test;
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
-import vstocks.model.Market;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonMap;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
+import static vstocks.model.Delta.getDeltas;
 import static vstocks.model.Market.TWITTER;
 
 public class PortfolioPerformanceTest {
@@ -28,8 +26,7 @@ public class PortfolioPerformanceTest {
             .setTimestamp(timestamp.minusSeconds(10))
             .setRank(18);
     private final List<TotalRank> totalRanks = asList(totalRank1, totalRank2);
-    private final Map<DeltaInterval, Delta> totalRankDeltas =
-            Delta.getDeltas(totalRanks, TotalRank::getTimestamp, TotalRank::getRank);
+    private final List<Delta> totalRankDeltas = getDeltas(totalRanks, TotalRank::getTimestamp, TotalRank::getRank);
     private final TotalRankCollection totalRankCollection = new TotalRankCollection()
             .setRanks(totalRanks)
             .setDeltas(totalRankDeltas);
@@ -45,8 +42,7 @@ public class PortfolioPerformanceTest {
             .setTimestamp(timestamp.minusSeconds(10))
             .setRank(18);
     private final List<CreditRank> creditRanks = asList(creditRank1, creditRank2);
-    private final Map<DeltaInterval, Delta> creditRankDeltas =
-            Delta.getDeltas(creditRanks, CreditRank::getTimestamp, CreditRank::getRank);
+    private final List<Delta> creditRankDeltas = getDeltas(creditRanks, CreditRank::getTimestamp, CreditRank::getRank);
     private final CreditRankCollection creditRankCollection = new CreditRankCollection()
             .setRanks(creditRanks)
             .setDeltas(creditRankDeltas);
@@ -62,8 +58,8 @@ public class PortfolioPerformanceTest {
             .setTimestamp(timestamp.minusSeconds(10))
             .setRank(18);
     private final List<MarketTotalRank> marketTotalRanks = asList(marketTotalRank1, marketTotalRank2);
-    private final Map<DeltaInterval, Delta> marketTotalRankDeltas =
-            Delta.getDeltas(marketTotalRanks, MarketTotalRank::getTimestamp, MarketTotalRank::getRank);
+    private final List<Delta> marketTotalRankDeltas =
+            getDeltas(marketTotalRanks, MarketTotalRank::getTimestamp, MarketTotalRank::getRank);
     private final MarketTotalRankCollection marketTotalRankCollection = new MarketTotalRankCollection()
             .setRanks(marketTotalRanks)
             .setDeltas(marketTotalRankDeltas);
@@ -81,12 +77,12 @@ public class PortfolioPerformanceTest {
             .setTimestamp(timestamp.minusSeconds(10))
             .setRank(18);
     private final List<MarketRank> marketRanks = asList(marketRank1, marketRank2);
-    private final Map<DeltaInterval, Delta> marketRankDeltas =
-            Delta.getDeltas(marketRanks, MarketRank::getTimestamp, MarketRank::getRank);
+    private final List<Delta> marketRankDeltas = getDeltas(marketRanks, MarketRank::getTimestamp, MarketRank::getRank);
     private final MarketRankCollection marketRankCollection = new MarketRankCollection()
+            .setMarket(TWITTER)
             .setRanks(marketRanks)
             .setDeltas(marketRankDeltas);
-    private final Map<Market, MarketRankCollection> marketRankMap = singletonMap(TWITTER, marketRankCollection);
+    private final List<MarketRankCollection> marketRankMap = singletonList(marketRankCollection);
 
     @Test
     public void testGettersAndSetters() {

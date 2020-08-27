@@ -91,15 +91,15 @@ public class GetTotalUserCountIT extends ResourceTest {
         String value1json = "{\"timestamp\":\"2020-12-03T10:15:30Z\",\"count\":1234}";
         String value2json = "{\"timestamp\":\"2020-12-03T10:15:20Z\",\"count\":1230}";
         String deltajson = String.join(",", asList(
-                "\"6h\":{\"interval\":\"6h\",\"change\":4,\"percent\":0.32520324}",
-                "\"12h\":{\"interval\":\"12h\",\"change\":4,\"percent\":0.32520324}",
-                "\"1d\":{\"interval\":\"1d\",\"change\":4,\"percent\":0.32520324}",
-                "\"3d\":{\"interval\":\"3d\",\"change\":4,\"percent\":0.32520324}",
-                "\"7d\":{\"interval\":\"7d\",\"change\":4,\"percent\":0.32520324}",
-                "\"14d\":{\"interval\":\"14d\",\"change\":4,\"percent\":0.32520324}",
-                "\"30d\":{\"interval\":\"30d\",\"change\":4,\"percent\":0.32520324}"
+                "{\"interval\":\"6h\",\"change\":4,\"percent\":0.32520324}",
+                "{\"interval\":\"12h\",\"change\":4,\"percent\":0.32520324}",
+                "{\"interval\":\"1d\",\"change\":4,\"percent\":0.32520324}",
+                "{\"interval\":\"3d\",\"change\":4,\"percent\":0.32520324}",
+                "{\"interval\":\"7d\",\"change\":4,\"percent\":0.32520324}",
+                "{\"interval\":\"14d\",\"change\":4,\"percent\":0.32520324}",
+                "{\"interval\":\"30d\",\"change\":4,\"percent\":0.32520324}"
         ));
-        String expected = "{\"counts\":[" + value1json + "," + value2json + "],\"deltas\":{" + deltajson + "}}";
+        String expected = "{\"counts\":[" + value1json + "," + value2json + "],\"deltas\":[" + deltajson + "]}";
         assertEquals(expected, json);
 
         TotalUserCountCollection fetched = convert(json, TotalUserCountCollection.class);

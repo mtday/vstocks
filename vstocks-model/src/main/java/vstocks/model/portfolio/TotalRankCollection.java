@@ -1,15 +1,13 @@
 package vstocks.model.portfolio;
 
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class TotalRankCollection {
     private List<TotalRank> ranks;
-    private Map<DeltaInterval, Delta> deltas;
+    private List<Delta> deltas;
 
     public TotalRankCollection() {
     }
@@ -23,11 +21,11 @@ public class TotalRankCollection {
         return this;
     }
 
-    public Map<DeltaInterval, Delta> getDeltas() {
+    public List<Delta> getDeltas() {
         return deltas;
     }
 
-    public TotalRankCollection setDeltas(Map<DeltaInterval, Delta> deltas) {
+    public TotalRankCollection setDeltas(List<Delta> deltas) {
         this.deltas = deltas;
         return this;
     }

@@ -2,15 +2,14 @@ package vstocks.model.system;
 
 import org.junit.Test;
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static vstocks.model.Delta.getDeltas;
 import static vstocks.model.Market.TWITTER;
 
 public class TotalMarketTransactionCountCollectionTest {
@@ -27,12 +26,13 @@ public class TotalMarketTransactionCountCollectionTest {
 
     private final List<TotalMarketTransactionCount> counts =
             asList(totalMarketTransactionCount1, totalMarketTransactionCount2);
-    private final Map<DeltaInterval, Delta> deltas =
-            Delta.getDeltas(counts, TotalMarketTransactionCount::getTimestamp, TotalMarketTransactionCount::getCount);
+    private final List<Delta> deltas =
+            getDeltas(counts, TotalMarketTransactionCount::getTimestamp, TotalMarketTransactionCount::getCount);
 
     @Test
     public void testGettersAndSetters() {
         TotalMarketTransactionCountCollection collection = new TotalMarketTransactionCountCollection()
+                .setMarket(TWITTER)
                 .setCounts(counts)
                 .setDeltas(deltas);
 
@@ -43,9 +43,11 @@ public class TotalMarketTransactionCountCollectionTest {
     @Test
     public void testEquals() {
         TotalMarketTransactionCountCollection collection1 = new TotalMarketTransactionCountCollection()
+                .setMarket(TWITTER)
                 .setCounts(counts)
                 .setDeltas(deltas);
         TotalMarketTransactionCountCollection collection2 = new TotalMarketTransactionCountCollection()
+                .setMarket(TWITTER)
                 .setCounts(counts)
                 .setDeltas(deltas);
 
@@ -55,6 +57,7 @@ public class TotalMarketTransactionCountCollectionTest {
     @Test
     public void testHashCode() {
         TotalMarketTransactionCountCollection collection = new TotalMarketTransactionCountCollection()
+                .setMarket(TWITTER)
                 .setCounts(counts)
                 .setDeltas(deltas);
         assertNotEquals(0, collection.hashCode()); // enums make the value inconsistent
@@ -63,9 +66,10 @@ public class TotalMarketTransactionCountCollectionTest {
     @Test
     public void testToString() {
         TotalMarketTransactionCountCollection collection = new TotalMarketTransactionCountCollection()
+                .setMarket(TWITTER)
                 .setCounts(counts)
                 .setDeltas(deltas);
-        assertEquals("TotalMarketTransactionCountCollection{counts=" + counts + ", deltas=" + deltas + "}",
-                collection.toString());
+        assertEquals("TotalMarketTransactionCountCollection{market=Twitter, counts="
+                        + counts + ", deltas=" + deltas + "}", collection.toString());
     }
 }

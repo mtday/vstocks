@@ -1,10 +1,7 @@
 package vstocks.model;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
@@ -17,10 +14,10 @@ public class Delta {
     public Delta() {
     }
 
-    public static <T> Map<DeltaInterval, Delta> getDeltas(List<T> values,
-                                                          Function<T, Instant> timestampFn,
-                                                          Function<T, Long> valueFn) {
-        Map<DeltaInterval, Delta> deltas = new TreeMap<>();
+    public static <T> List<Delta> getDeltas(List<T> values,
+                                            Function<T, Instant> timestampFn,
+                                            Function<T, Long> valueFn) {
+        List<Delta> deltas = new ArrayList<>(DeltaInterval.values().length);
         for (DeltaInterval interval : DeltaInterval.values()) {
             Instant earliest = interval.getEarliest();
             List<T> sinceEarliest = values.stream()
@@ -38,7 +35,7 @@ public class Delta {
                 // We do this == comparison to prevent floating point precision errors in the tests
                 delta.setPercent(firstValue == lastValue ? 0 : (float) (firstValue - lastValue) / lastValue * 100f);
             }
-            deltas.put(interval, delta);
+            deltas.add(delta);
         }
         return deltas;
     }

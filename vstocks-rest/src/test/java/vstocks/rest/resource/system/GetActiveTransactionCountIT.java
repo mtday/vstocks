@@ -99,15 +99,15 @@ public class GetActiveTransactionCountIT extends ResourceTest {
         String value1json = "{\"timestamp\":\"2020-12-03T10:15:30Z\",\"count\":12}";
         String value2json = "{\"timestamp\":\"2020-12-03T10:15:20Z\",\"count\":13}";
         String deltajson = String.join(",", asList(
-                "\"6h\":{\"interval\":\"6h\",\"change\":-1,\"percent\":-7.692308}",
-                "\"12h\":{\"interval\":\"12h\",\"change\":-1,\"percent\":-7.692308}",
-                "\"1d\":{\"interval\":\"1d\",\"change\":-1,\"percent\":-7.692308}",
-                "\"3d\":{\"interval\":\"3d\",\"change\":-1,\"percent\":-7.692308}",
-                "\"7d\":{\"interval\":\"7d\",\"change\":-1,\"percent\":-7.692308}",
-                "\"14d\":{\"interval\":\"14d\",\"change\":-1,\"percent\":-7.692308}",
-                "\"30d\":{\"interval\":\"30d\",\"change\":-1,\"percent\":-7.692308}"
+                "{\"interval\":\"6h\",\"change\":-1,\"percent\":-7.692308}",
+                "{\"interval\":\"12h\",\"change\":-1,\"percent\":-7.692308}",
+                "{\"interval\":\"1d\",\"change\":-1,\"percent\":-7.692308}",
+                "{\"interval\":\"3d\",\"change\":-1,\"percent\":-7.692308}",
+                "{\"interval\":\"7d\",\"change\":-1,\"percent\":-7.692308}",
+                "{\"interval\":\"14d\",\"change\":-1,\"percent\":-7.692308}",
+                "{\"interval\":\"30d\",\"change\":-1,\"percent\":-7.692308}"
         ));
-        String expected = "{\"counts\":[" + value1json + "," + value2json + "],\"deltas\":{" + deltajson + "}}";
+        String expected = "{\"counts\":[" + value1json + "," + value2json + "],\"deltas\":[" + deltajson + "]}";
         assertEquals(expected, json);
 
         ActiveTransactionCountCollection fetched = convert(json, ActiveTransactionCountCollection.class);

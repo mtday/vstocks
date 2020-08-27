@@ -10,7 +10,6 @@ import vstocks.model.portfolio.RankedUser;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 public interface MarketRankService {
     long setCurrentBatch(long batch);
@@ -19,7 +18,7 @@ public interface MarketRankService {
 
     MarketRankCollection getLatest(String userId, Market market);
 
-    Map<Market, MarketRankCollection> getLatest(String userId);
+    List<MarketRankCollection> getLatest(String userId);
 
     Results<MarketRank> getAll(Market market, Page page, List<Sort> sort);
 

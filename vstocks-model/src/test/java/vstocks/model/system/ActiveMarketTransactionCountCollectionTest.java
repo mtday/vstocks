@@ -2,15 +2,14 @@ package vstocks.model.system;
 
 import org.junit.Test;
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static vstocks.model.Delta.getDeltas;
 import static vstocks.model.Market.TWITTER;
 
 public class ActiveMarketTransactionCountCollectionTest {
@@ -27,8 +26,8 @@ public class ActiveMarketTransactionCountCollectionTest {
 
     private final List<ActiveMarketTransactionCount> counts =
             asList(activeMarketTransactionCount1, activeMarketTransactionCount2);
-    private final Map<DeltaInterval, Delta> deltas =
-            Delta.getDeltas(counts, ActiveMarketTransactionCount::getTimestamp, ActiveMarketTransactionCount::getCount);
+    private final List<Delta> deltas =
+            getDeltas(counts, ActiveMarketTransactionCount::getTimestamp, ActiveMarketTransactionCount::getCount);
 
     @Test
     public void testGettersAndSetters() {

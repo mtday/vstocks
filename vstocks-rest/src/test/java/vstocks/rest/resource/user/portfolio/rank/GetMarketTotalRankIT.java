@@ -4,7 +4,6 @@ import org.junit.Test;
 import vstocks.db.UserService;
 import vstocks.db.portfolio.MarketTotalRankService;
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
 import vstocks.model.ErrorResponse;
 import vstocks.model.portfolio.MarketTotalRank;
 import vstocks.model.portfolio.MarketTotalRankCollection;
@@ -13,7 +12,6 @@ import vstocks.rest.ResourceTest;
 import javax.ws.rs.core.Response;
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -28,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static vstocks.model.Delta.getDeltas;
 import static vstocks.rest.security.JwtTokenFilter.INVALID_JWT_MESSAGE;
 
 public class GetMarketTotalRankIT extends ResourceTest {
@@ -87,7 +86,7 @@ public class GetMarketTotalRankIT extends ResourceTest {
                 .setValue(9);
 
         List<MarketTotalRank> ranks = asList(marketTotalRank1, marketTotalRank2);
-        Map<DeltaInterval, Delta> deltas = Delta.getDeltas(ranks, MarketTotalRank::getTimestamp, MarketTotalRank::getRank);
+        List<Delta> deltas = getDeltas(ranks, MarketTotalRank::getTimestamp, MarketTotalRank::getRank);
         MarketTotalRankCollection collection = new MarketTotalRankCollection().setRanks(ranks).setDeltas(deltas);
 
         MarketTotalRankService marketTotalRankService = mock(MarketTotalRankService.class);
@@ -110,15 +109,15 @@ public class GetMarketTotalRankIT extends ResourceTest {
         String rank2json = "{\"batch\":1,\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\","
                 + "\"timestamp\":\"2020-12-03T10:15:20Z\",\"rank\":18,\"value\":9}";
         String deltajson = String.join(",", asList(
-                "\"6h\":{\"interval\":\"6h\",\"change\":2,\"percent\":11.111112}",
-                "\"12h\":{\"interval\":\"12h\",\"change\":2,\"percent\":11.111112}",
-                "\"1d\":{\"interval\":\"1d\",\"change\":2,\"percent\":11.111112}",
-                "\"3d\":{\"interval\":\"3d\",\"change\":2,\"percent\":11.111112}",
-                "\"7d\":{\"interval\":\"7d\",\"change\":2,\"percent\":11.111112}",
-                "\"14d\":{\"interval\":\"14d\",\"change\":2,\"percent\":11.111112}",
-                "\"30d\":{\"interval\":\"30d\",\"change\":2,\"percent\":11.111112}"
+                "{\"interval\":\"6h\",\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"12h\",\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"1d\",\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"3d\",\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"7d\",\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"14d\",\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"30d\",\"change\":2,\"percent\":11.111112}"
         ));
-        String expected = "{\"ranks\":[" + rank1json + "," + rank2json + "],\"deltas\":{" + deltajson + "}}";
+        String expected = "{\"ranks\":[" + rank1json + "," + rank2json + "],\"deltas\":[" + deltajson + "]}";
         assertEquals(expected, json);
 
         MarketTotalRankCollection fetched = convert(json, MarketTotalRankCollection.class);

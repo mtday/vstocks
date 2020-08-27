@@ -1,17 +1,26 @@
 package vstocks.model.system;
 
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
+import vstocks.model.Market;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class TotalMarketTransactionCountCollection {
+    private Market market;
     private List<TotalMarketTransactionCount> counts;
-    private Map<DeltaInterval, Delta> deltas;
+    private List<Delta> deltas;
 
     public TotalMarketTransactionCountCollection() {
+    }
+
+    public Market getMarket() {
+        return market;
+    }
+
+    public TotalMarketTransactionCountCollection setMarket(Market market) {
+        this.market = market;
+        return this;
     }
 
     public List<TotalMarketTransactionCount> getCounts() {
@@ -23,11 +32,11 @@ public class TotalMarketTransactionCountCollection {
         return this;
     }
 
-    public Map<DeltaInterval, Delta> getDeltas() {
+    public List<Delta> getDeltas() {
         return deltas;
     }
 
-    public TotalMarketTransactionCountCollection setDeltas(Map<DeltaInterval, Delta> deltas) {
+    public TotalMarketTransactionCountCollection setDeltas(List<Delta> deltas) {
         this.deltas = deltas;
         return this;
     }
@@ -37,19 +46,21 @@ public class TotalMarketTransactionCountCollection {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TotalMarketTransactionCountCollection that = (TotalMarketTransactionCountCollection) o;
-        return Objects.equals(counts, that.counts) &&
+        return market == that.market &&
+                Objects.equals(counts, that.counts) &&
                 Objects.equals(deltas, that.deltas);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(counts, deltas);
+        return Objects.hash(market, counts, deltas);
     }
 
     @Override
     public String toString() {
         return "TotalMarketTransactionCountCollection{" +
-                "counts=" + counts +
+                "market=" + market +
+                ", counts=" + counts +
                 ", deltas=" + deltas +
                 '}';
     }

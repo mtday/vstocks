@@ -4,7 +4,6 @@ import org.junit.Test;
 import vstocks.db.UserService;
 import vstocks.db.system.OverallMarketTotalValueService;
 import vstocks.model.Delta;
-import vstocks.model.DeltaInterval;
 import vstocks.model.ErrorResponse;
 import vstocks.model.system.OverallMarketTotalValue;
 import vstocks.model.system.OverallMarketTotalValueCollection;
@@ -13,7 +12,6 @@ import vstocks.rest.ResourceTest;
 import javax.ws.rs.core.Response;
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
@@ -27,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static vstocks.model.Delta.getDeltas;
 import static vstocks.rest.security.JwtTokenFilter.INVALID_JWT_MESSAGE;
 
 public class GetOverallMarketTotalValueIT extends ResourceTest {
@@ -80,8 +79,7 @@ public class GetOverallMarketTotalValueIT extends ResourceTest {
                 .setValue(18);
 
         List<OverallMarketTotalValue> values = asList(overallMarketTotalValue1, overallMarketTotalValue2);
-        Map<DeltaInterval, Delta> deltas =
-                Delta.getDeltas(values, OverallMarketTotalValue::getTimestamp, OverallMarketTotalValue::getValue);
+        List<Delta> deltas = getDeltas(values, OverallMarketTotalValue::getTimestamp, OverallMarketTotalValue::getValue);
         OverallMarketTotalValueCollection collection =
                 new OverallMarketTotalValueCollection().setValues(values).setDeltas(deltas);
 
@@ -103,15 +101,15 @@ public class GetOverallMarketTotalValueIT extends ResourceTest {
         String value1json = "{\"timestamp\":\"2020-12-03T10:15:30Z\",\"value\":20}";
         String value2json = "{\"timestamp\":\"2020-12-03T10:15:20Z\",\"value\":18}";
         String deltajson = String.join(",", asList(
-                "\"6h\":{\"interval\":\"6h\",\"change\":2,\"percent\":11.111112}",
-                "\"12h\":{\"interval\":\"12h\",\"change\":2,\"percent\":11.111112}",
-                "\"1d\":{\"interval\":\"1d\",\"change\":2,\"percent\":11.111112}",
-                "\"3d\":{\"interval\":\"3d\",\"change\":2,\"percent\":11.111112}",
-                "\"7d\":{\"interval\":\"7d\",\"change\":2,\"percent\":11.111112}",
-                "\"14d\":{\"interval\":\"14d\",\"change\":2,\"percent\":11.111112}",
-                "\"30d\":{\"interval\":\"30d\",\"change\":2,\"percent\":11.111112}"
+                "{\"interval\":\"6h\",\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"12h\",\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"1d\",\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"3d\",\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"7d\",\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"14d\",\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"30d\",\"change\":2,\"percent\":11.111112}"
         ));
-        String expected = "{\"values\":[" + value1json + "," + value2json + "],\"deltas\":{" + deltajson + "}}";
+        String expected = "{\"values\":[" + value1json + "," + value2json + "],\"deltas\":[" + deltajson + "]}";
         assertEquals(expected, json);
 
         OverallMarketTotalValueCollection fetched = convert(json, OverallMarketTotalValueCollection.class);

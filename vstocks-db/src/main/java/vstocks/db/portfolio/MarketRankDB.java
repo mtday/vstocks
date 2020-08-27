@@ -91,14 +91,15 @@ class MarketRankDB extends BaseDB {
         consume(connection, ROW_MAPPER, ranks::add, sql, earliest, userId, market);
 
         return new MarketRankCollection()
+                .setMarket(market)
                 .setRanks(ranks)
                 .setDeltas(Delta.getDeltas(ranks, MarketRank::getTimestamp, MarketRank::getRank));
     }
 
-    public Map<Market, MarketRankCollection> getLatest(Connection connection, String userId) {
-        Map<Market, MarketRankCollection> results = new TreeMap<>();
+    public List<MarketRankCollection> getLatest(Connection connection, String userId) {
+        List<MarketRankCollection> results = new ArrayList<>(Market.values().length);
         for (Market market : Market.values()) {
-            results.put(market, getLatest(connection, userId, market));
+            results.add(getLatest(connection, userId, market));
         }
         return results;
     }

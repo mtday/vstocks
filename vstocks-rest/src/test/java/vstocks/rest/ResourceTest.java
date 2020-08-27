@@ -8,6 +8,7 @@ import org.pac4j.core.profile.CommonProfile;
 import vstocks.achievement.AchievementService;
 import vstocks.db.ServiceFactory;
 import vstocks.model.*;
+import vstocks.model.portfolio.MarketRankCollection;
 import vstocks.model.portfolio.RankedUser;
 import vstocks.rest.security.JwtSecurity;
 import vstocks.service.remote.RemoteStockServiceFactory;
@@ -112,6 +113,7 @@ public abstract class ResourceTest extends JerseyTest {
 
     public static class AchievementListTypeRef extends TypeReference<List<Achievement>> {};
     public static class MarketListTypeRef extends TypeReference<List<Market>> {}
+    public static class MarketRankCollectionListTypeRef extends TypeReference<List<MarketRankCollection>> {}
     public static class PricedStockResultsTypeRef extends TypeReference<Results<PricedStock>> {}
     public static class PricedStockListTypeRef extends TypeReference<List<PricedStock>> {}
     public static class PricedUserStockResultsTypeRef extends TypeReference<Results<PricedUserStock>> {}

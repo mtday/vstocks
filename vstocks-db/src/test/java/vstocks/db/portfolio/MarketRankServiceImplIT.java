@@ -10,13 +10,11 @@ import vstocks.model.portfolio.MarketRankCollection;
 import vstocks.model.portfolio.RankedUser;
 
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static vstocks.model.DatabaseField.RANK;
 import static vstocks.model.DatabaseField.USER_ID;
 import static vstocks.model.Market.TWITTER;
@@ -210,11 +208,11 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetLatestNone() {
-        Map<Market, MarketRankCollection> latestMap = marketRankService.getLatest(user1.getId());
-        assertEquals(Market.values().length, latestMap.size());
-        latestMap.values().forEach(latest -> {
-            assertTrue(latest.getRanks().isEmpty());
-            assertEquals(getZeroDeltas(), latest.getDeltas());
+        List<MarketRankCollection> latest = marketRankService.getLatest(user1.getId());
+        assertEquals(Market.values().length, latest.size());
+        latest.forEach(collection -> {
+            assertTrue(collection.getRanks().isEmpty());
+            assertEquals(getZeroDeltas(), collection.getDeltas());
         });
     }
 
@@ -223,17 +221,21 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, marketRankService.add(marketRank11));
         assertEquals(1, marketRankService.add(marketRank12));
 
-        Map<Market, MarketRankCollection> latestMap = marketRankService.getLatest(user1.getId());
-        assertEquals(Market.values().length, latestMap.size());
-        latestMap.entrySet().stream()
-                .filter(entry -> entry.getKey() != TWITTER)
-                .map(Map.Entry::getValue)
-                .forEach(latest -> {
-                    assertTrue(latest.getRanks().isEmpty());
-                    assertEquals(getZeroDeltas(), latest.getDeltas());
+        List<MarketRankCollection> latest = marketRankService.getLatest(user1.getId());
+        assertEquals(Market.values().length, latest.size());
+        latest.stream()
+                .filter(collection -> collection.getMarket() != TWITTER)
+                .forEach(collection -> {
+                    assertNotNull(collection.getMarket());
+                    assertTrue(collection.getRanks().isEmpty());
+                    assertEquals(getZeroDeltas(), collection.getDeltas());
                 });
 
-        MarketRankCollection twitterRanks = latestMap.get(TWITTER);
+        MarketRankCollection twitterRanks = latest.stream()
+                .filter(collection -> collection.getMarket() == TWITTER)
+                .findFirst()
+                .orElse(null);
+        assertNotNull(twitterRanks);
         validateResults(twitterRanks.getRanks(), marketRank11, marketRank12);
         assertEquals(getDeltas(-1, -50f), twitterRanks.getDeltas());
     }
