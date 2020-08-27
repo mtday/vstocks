@@ -3,8 +3,8 @@ DROP TABLE IF EXISTS flyway_schema_history;
 
 -- system metric tables
 
-DROP TABLE IF EXISTS transaction_counts;
-DROP TABLE IF EXISTS market_transaction_counts;
+DROP TABLE IF EXISTS active_transaction_counts;
+DROP TABLE IF EXISTS total_transaction_counts;
 DROP TABLE IF EXISTS total_user_counts;
 DROP TABLE IF EXISTS active_user_counts;
 

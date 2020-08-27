@@ -101,13 +101,13 @@ public class GetOverallCreditValueIT extends ResourceTest {
         String value1json = "{\"timestamp\":\"2020-12-03T10:15:30Z\",\"value\":20}";
         String value2json = "{\"timestamp\":\"2020-12-03T10:15:20Z\",\"value\":18}";
         String deltajson = String.join(",", asList(
-                "{\"interval\":\"6h\",\"change\":2,\"percent\":11.111112}",
-                "{\"interval\":\"12h\",\"change\":2,\"percent\":11.111112}",
-                "{\"interval\":\"1d\",\"change\":2,\"percent\":11.111112}",
-                "{\"interval\":\"3d\",\"change\":2,\"percent\":11.111112}",
-                "{\"interval\":\"7d\",\"change\":2,\"percent\":11.111112}",
-                "{\"interval\":\"14d\",\"change\":2,\"percent\":11.111112}",
-                "{\"interval\":\"30d\",\"change\":2,\"percent\":11.111112}"
+                "{\"interval\":\"6h\",\"oldest\":18,\"newest\":20,\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"12h\",\"oldest\":18,\"newest\":20,\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"1d\",\"oldest\":18,\"newest\":20,\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"3d\",\"oldest\":18,\"newest\":20,\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"7d\",\"oldest\":18,\"newest\":20,\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"14d\",\"oldest\":18,\"newest\":20,\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"30d\",\"oldest\":18,\"newest\":20,\"change\":2,\"percent\":11.111112}"
         ));
         String expected = "{\"values\":[" + value1json + "," + value2json + "],\"deltas\":[" + deltajson + "]}";
         assertEquals(expected, json);

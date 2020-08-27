@@ -95,7 +95,7 @@ public class TotalUserCountServiceImplIT extends BaseServiceImplIT {
 
         TotalUserCountCollection latest = totalUserCountService.getLatest();
         validateResults(latest.getCounts(), totalUserCount1, totalUserCount2);
-        assertEquals(getDeltas(-1, -50f), latest.getDeltas());
+        assertEquals(getDeltas(2L, 1L, -1, -50f), latest.getDeltas());
     }
 
     @Test

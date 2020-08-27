@@ -84,7 +84,7 @@ public class OverallCreditValueServiceImplIT extends BaseServiceImplIT {
 
         OverallCreditValueCollection latest = overallCreditValueService.getLatest();
         validateResults(latest.getValues(), overallCreditValue1, overallCreditValue2);
-        assertEquals(getDeltas(1, 11.111112f), latest.getDeltas());
+        assertEquals(getDeltas(9L, 10L, 1, 11.111112f), latest.getDeltas());
     }
 
     @Test

@@ -133,7 +133,7 @@ public class TotalRankServiceImplIT extends BaseServiceImplIT {
 
         TotalRankCollection latest = totalRankService.getLatest(user1.getId());
         validateResults(latest.getRanks(), totalRank11, totalRank12);
-        assertEquals(getDeltas(-1, -50f), latest.getDeltas());
+        assertEquals(getDeltas(2L, 1L, 1, 50f), latest.getDeltas());
     }
 
     @Test

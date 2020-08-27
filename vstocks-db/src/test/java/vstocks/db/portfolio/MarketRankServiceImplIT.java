@@ -203,7 +203,7 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
 
         MarketRankCollection latest = marketRankService.getLatest(user1.getId(), TWITTER);
         validateResults(latest.getRanks(), marketRank11, marketRank12);
-        assertEquals(getDeltas(-1, -50f), latest.getDeltas());
+        assertEquals(getDeltas(2L, 1L, 1, 50f), latest.getDeltas());
     }
 
     @Test
@@ -237,7 +237,7 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
                 .orElse(null);
         assertNotNull(twitterRanks);
         validateResults(twitterRanks.getRanks(), marketRank11, marketRank12);
-        assertEquals(getDeltas(-1, -50f), twitterRanks.getDeltas());
+        assertEquals(getDeltas(2L, 1L, 1, 50f), twitterRanks.getDeltas());
     }
 
     @Test

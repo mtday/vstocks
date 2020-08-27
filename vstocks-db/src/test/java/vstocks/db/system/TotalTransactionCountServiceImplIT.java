@@ -153,7 +153,7 @@ public class TotalTransactionCountServiceImplIT extends BaseServiceImplIT {
 
         TotalTransactionCountCollection latest = totalTransactionCountService.getLatest();
         validateResults(latest.getCounts(), totalTransactionCount1, totalTransactionCount2);
-        assertEquals(getDeltas(-1, -50f), latest.getDeltas());
+        assertEquals(getDeltas(2L, 1L, -1, -50f), latest.getDeltas());
     }
 
     @Test

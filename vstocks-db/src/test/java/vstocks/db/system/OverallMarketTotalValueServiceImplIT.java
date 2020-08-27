@@ -152,7 +152,7 @@ public class OverallMarketTotalValueServiceImplIT extends BaseServiceImplIT {
 
         OverallMarketTotalValueCollection latest = overallMarketTotalValueService.getLatest();
         validateResults(latest.getValues(), overallMarketTotalValue1, overallMarketTotalValue2);
-        assertEquals(getDeltas(1, 11.111112f), latest.getDeltas());
+        assertEquals(getDeltas(9L, 10L, 1, 11.111112f), latest.getDeltas());
     }
 
     @Test

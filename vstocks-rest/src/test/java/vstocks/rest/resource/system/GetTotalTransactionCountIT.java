@@ -99,13 +99,13 @@ public class GetTotalTransactionCountIT extends ResourceTest {
         String value1json = "{\"timestamp\":\"2020-12-03T10:15:30Z\",\"count\":12}";
         String value2json = "{\"timestamp\":\"2020-12-03T10:15:20Z\",\"count\":13}";
         String deltajson = String.join(",", asList(
-                "{\"interval\":\"6h\",\"change\":-1,\"percent\":-7.692308}",
-                "{\"interval\":\"12h\",\"change\":-1,\"percent\":-7.692308}",
-                "{\"interval\":\"1d\",\"change\":-1,\"percent\":-7.692308}",
-                "{\"interval\":\"3d\",\"change\":-1,\"percent\":-7.692308}",
-                "{\"interval\":\"7d\",\"change\":-1,\"percent\":-7.692308}",
-                "{\"interval\":\"14d\",\"change\":-1,\"percent\":-7.692308}",
-                "{\"interval\":\"30d\",\"change\":-1,\"percent\":-7.692308}"
+                "{\"interval\":\"6h\",\"oldest\":13,\"newest\":12,\"change\":-1,\"percent\":-7.692308}",
+                "{\"interval\":\"12h\",\"oldest\":13,\"newest\":12,\"change\":-1,\"percent\":-7.692308}",
+                "{\"interval\":\"1d\",\"oldest\":13,\"newest\":12,\"change\":-1,\"percent\":-7.692308}",
+                "{\"interval\":\"3d\",\"oldest\":13,\"newest\":12,\"change\":-1,\"percent\":-7.692308}",
+                "{\"interval\":\"7d\",\"oldest\":13,\"newest\":12,\"change\":-1,\"percent\":-7.692308}",
+                "{\"interval\":\"14d\",\"oldest\":13,\"newest\":12,\"change\":-1,\"percent\":-7.692308}",
+                "{\"interval\":\"30d\",\"oldest\":13,\"newest\":12,\"change\":-1,\"percent\":-7.692308}"
         ));
         String expected = "{\"counts\":[" + value1json + "," + value2json + "],\"deltas\":[" + deltajson + "]}";
         assertEquals(expected, json);

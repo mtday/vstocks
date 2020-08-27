@@ -133,7 +133,7 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
 
         CreditRankCollection latest = creditRankService.getLatest(user1.getId());
         validateResults(latest.getRanks(), creditRank11, creditRank12);
-        assertEquals(getDeltas(-1, -50f), latest.getDeltas());
+        assertEquals(getDeltas(2L, 1L, 1, 50f), latest.getDeltas());
     }
 
     @Test

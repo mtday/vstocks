@@ -13,6 +13,8 @@ import org.pac4j.jax.rs.features.JaxRsConfigProvider;
 import org.pac4j.jax.rs.features.Pac4JSecurityFeature;
 import org.pac4j.jax.rs.jersey.features.Pac4JValueFactoryProvider;
 import org.pac4j.jax.rs.servlet.features.ServletJaxRsContextFactoryProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import vstocks.achievement.AchievementService;
 import vstocks.db.ServiceFactory;
 import vstocks.db.ServiceFactoryImpl;
@@ -71,6 +73,8 @@ import static vstocks.config.Config.*;
 
 @ApplicationPath("/")
 public class Application extends ResourceConfig {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
+
     public Application() {
         this(getEnvironment());
     }
@@ -220,6 +224,7 @@ public class Application extends ResourceConfig {
         config.setConnectionTimeout(DB_CONNECTION_TIMEOUT.getLong());
         config.setAutoCommit(false);
 
+        LOGGER.info("Connecting to database: {}", config.getJdbcUrl());
         HikariDataSource dataSource = new HikariDataSource(config);
         Flyway.configure().dataSource(dataSource).load().migrate();
         return dataSource;

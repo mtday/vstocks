@@ -136,13 +136,13 @@ public class GetMarketRanksIT extends ResourceTest {
         String twitterRank2json = "{\"batch\":1,\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\","
                 + "\"market\":\"Twitter\",\"timestamp\":\"2020-12-03T10:15:20Z\",\"rank\":18,\"value\":9}";
         String twitterDeltajson = String.join(",", asList(
-                "{\"interval\":\"6h\",\"change\":2,\"percent\":11.111112}",
-                "{\"interval\":\"12h\",\"change\":2,\"percent\":11.111112}",
-                "{\"interval\":\"1d\",\"change\":2,\"percent\":11.111112}",
-                "{\"interval\":\"3d\",\"change\":2,\"percent\":11.111112}",
-                "{\"interval\":\"7d\",\"change\":2,\"percent\":11.111112}",
-                "{\"interval\":\"14d\",\"change\":2,\"percent\":11.111112}",
-                "{\"interval\":\"30d\",\"change\":2,\"percent\":11.111112}"
+                "{\"interval\":\"6h\",\"oldest\":18,\"newest\":20,\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"12h\",\"oldest\":18,\"newest\":20,\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"1d\",\"oldest\":18,\"newest\":20,\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"3d\",\"oldest\":18,\"newest\":20,\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"7d\",\"oldest\":18,\"newest\":20,\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"14d\",\"oldest\":18,\"newest\":20,\"change\":2,\"percent\":11.111112}",
+                "{\"interval\":\"30d\",\"oldest\":18,\"newest\":20,\"change\":2,\"percent\":11.111112}"
         ));
         String twitterExpected = "{\"market\":\"Twitter\",\"ranks\":[" + twitterRank1json + "," + twitterRank2json
                 + "],\"deltas\":[" + twitterDeltajson + "]}";
@@ -152,13 +152,13 @@ public class GetMarketRanksIT extends ResourceTest {
         String youtubeRank2json = "{\"batch\":1,\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\","
                 + "\"market\":\"YouTube\",\"timestamp\":\"2020-12-03T10:15:20Z\",\"rank\":19,\"value\":10}";
         String youtubeDeltajson = String.join(",", asList(
-                "{\"interval\":\"6h\",\"change\":2,\"percent\":10.526316}",
-                "{\"interval\":\"12h\",\"change\":2,\"percent\":10.526316}",
-                "{\"interval\":\"1d\",\"change\":2,\"percent\":10.526316}",
-                "{\"interval\":\"3d\",\"change\":2,\"percent\":10.526316}",
-                "{\"interval\":\"7d\",\"change\":2,\"percent\":10.526316}",
-                "{\"interval\":\"14d\",\"change\":2,\"percent\":10.526316}",
-                "{\"interval\":\"30d\",\"change\":2,\"percent\":10.526316}"
+                "{\"interval\":\"6h\",\"oldest\":19,\"newest\":21,\"change\":2,\"percent\":10.526316}",
+                "{\"interval\":\"12h\",\"oldest\":19,\"newest\":21,\"change\":2,\"percent\":10.526316}",
+                "{\"interval\":\"1d\",\"oldest\":19,\"newest\":21,\"change\":2,\"percent\":10.526316}",
+                "{\"interval\":\"3d\",\"oldest\":19,\"newest\":21,\"change\":2,\"percent\":10.526316}",
+                "{\"interval\":\"7d\",\"oldest\":19,\"newest\":21,\"change\":2,\"percent\":10.526316}",
+                "{\"interval\":\"14d\",\"oldest\":19,\"newest\":21,\"change\":2,\"percent\":10.526316}",
+                "{\"interval\":\"30d\",\"oldest\":19,\"newest\":21,\"change\":2,\"percent\":10.526316}"
         ));
         String youtubeExpected = "{\"market\":\"YouTube\",\"ranks\":[" + youtubeRank1json + "," + youtubeRank2json
                 + "],\"deltas\":[" + youtubeDeltajson + "]}";

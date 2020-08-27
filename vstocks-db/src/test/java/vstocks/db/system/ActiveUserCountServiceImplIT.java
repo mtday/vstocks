@@ -108,7 +108,7 @@ public class ActiveUserCountServiceImplIT extends BaseServiceImplIT {
 
         ActiveUserCountCollection latest = activeUserCountService.getLatest();
         validateResults(latest.getCounts(), activeUserCount1, activeUserCount2);
-        assertEquals(getDeltas(-1, -50f), latest.getDeltas());
+        assertEquals(getDeltas(2L, 1L, -1, -50f), latest.getDeltas());
     }
 
     @Test

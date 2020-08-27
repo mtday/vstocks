@@ -31,7 +31,6 @@ public class StockUpdateTask extends HourlyTask {
     @Override
     public void run() {
         try {
-            LOGGER.info("Updating all stock prices");
             RemoteStockServiceFactory remoteStockServiceFactory = environment.getRemoteStockServiceFactory();
             ServiceFactory serviceFactory = environment.getServiceFactory();
 
@@ -50,7 +49,6 @@ public class StockUpdateTask extends HourlyTask {
                 }
             }
             environment.getServiceFactory().getStockPriceChangeService().generate();
-            LOGGER.info("Done updating stock prices");
         } catch (Throwable e) {
             LOGGER.error("Unexpected error", e);
         }

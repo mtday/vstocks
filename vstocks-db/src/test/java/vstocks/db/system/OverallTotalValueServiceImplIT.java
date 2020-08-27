@@ -84,7 +84,7 @@ public class OverallTotalValueServiceImplIT extends BaseServiceImplIT {
 
         OverallTotalValueCollection latest = overallTotalValueService.getLatest();
         validateResults(latest.getValues(), overallTotalValue1, overallTotalValue2);
-        assertEquals(getDeltas(1, 11.111112f), latest.getDeltas());
+        assertEquals(getDeltas(9L, 10L, 1, 11.111112f), latest.getDeltas());
     }
 
     @Test

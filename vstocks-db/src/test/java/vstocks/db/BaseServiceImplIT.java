@@ -78,12 +78,17 @@ public abstract class BaseServiceImplIT {
     }
 
     public List<Delta> getZeroDeltas() {
-        return getDeltas(0, 0f);
+        return getDeltas(null, null, 0, 0f);
     }
 
-    public List<Delta> getDeltas(long change, float percent) {
+    public List<Delta> getDeltas(Long oldest, Long newest, long change, float percent) {
         return Arrays.stream(DeltaInterval.values())
-                .map(interval -> new Delta().setInterval(interval).setChange(change).setPercent(percent))
+                .map(interval -> new Delta()
+                        .setInterval(interval)
+                        .setOldest(oldest)
+                        .setNewest(newest)
+                        .setChange(change)
+                        .setPercent(percent))
                 .collect(toList());
     }
 }

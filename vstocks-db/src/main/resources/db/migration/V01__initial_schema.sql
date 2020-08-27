@@ -296,19 +296,6 @@ CREATE INDEX idx_total_user_counts_timestamp ON total_user_counts (timestamp);
 CREATE INDEX idx_total_user_counts_count ON total_user_counts (count);
 
 
-CREATE TABLE market_transaction_counts (
-    market             TEXT         NOT NULL,
-    timestamp          TIMESTAMP(0) NOT NULL,
-    count              BIGINT       NOT NULL,
-
-    CONSTRAINT market_transaction_counts_pk PRIMARY KEY (market, timestamp)
-);
-
-CREATE INDEX idx_market_transaction_counts_market ON market_transaction_counts (market);
-CREATE INDEX idx_market_transaction_counts_timestamp ON market_transaction_counts (timestamp);
-CREATE INDEX idx_market_transaction_counts_count ON market_transaction_counts (count);
-
-
 CREATE TABLE active_transaction_counts (
     timestamp          TIMESTAMP(0) NOT NULL,
     count              BIGINT       NOT NULL,

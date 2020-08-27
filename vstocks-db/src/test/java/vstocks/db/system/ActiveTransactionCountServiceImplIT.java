@@ -153,7 +153,7 @@ public class ActiveTransactionCountServiceImplIT extends BaseServiceImplIT {
 
         ActiveTransactionCountCollection latest = activeTransactionCountService.getLatest();
         validateResults(latest.getCounts(), activeTransactionCount1, activeTransactionCount2);
-        assertEquals(getDeltas(-1, -50f), latest.getDeltas());
+        assertEquals(getDeltas(2L, 1L, -1, -50f), latest.getDeltas());
     }
 
     @Test

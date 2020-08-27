@@ -18,6 +18,7 @@ import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.util.Arrays.asList;
 import static vstocks.model.DatabaseField.*;
+import static vstocks.model.Delta.getReverseDeltas;
 import static vstocks.model.SortDirection.DESC;
 
 class MarketRankDB extends BaseDB {
@@ -93,7 +94,7 @@ class MarketRankDB extends BaseDB {
         return new MarketRankCollection()
                 .setMarket(market)
                 .setRanks(ranks)
-                .setDeltas(Delta.getDeltas(ranks, MarketRank::getTimestamp, MarketRank::getRank));
+                .setDeltas(getReverseDeltas(ranks, MarketRank::getTimestamp, MarketRank::getRank));
     }
 
     public List<MarketRankCollection> getLatest(Connection connection, String userId) {

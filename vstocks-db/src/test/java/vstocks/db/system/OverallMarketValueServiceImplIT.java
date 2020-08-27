@@ -155,7 +155,7 @@ public class OverallMarketValueServiceImplIT extends BaseServiceImplIT {
 
         OverallMarketValueCollection latest = overallMarketValueService.getLatest(TWITTER);
         validateResults(latest.getValues(), overallMarketValue1, overallMarketValue2);
-        assertEquals(getDeltas(1, 11.111112f), latest.getDeltas());
+        assertEquals(getDeltas(9L, 10L, 1, 11.111112f), latest.getDeltas());
     }
 
     @Test
@@ -185,7 +185,7 @@ public class OverallMarketValueServiceImplIT extends BaseServiceImplIT {
 
         OverallMarketValueCollection twitterRanks = latestMap.get(TWITTER);
         validateResults(twitterRanks.getValues(), overallMarketValue1, overallMarketValue2);
-        assertEquals(getDeltas(1, 11.111112f), twitterRanks.getDeltas());
+        assertEquals(getDeltas(9L, 10L, 1, 11.111112f), twitterRanks.getDeltas());
     }
 
     @Test
