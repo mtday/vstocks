@@ -112,6 +112,7 @@ public abstract class ResourceTest extends JerseyTest {
     }
 
     public static class AchievementListTypeRef extends TypeReference<List<Achievement>> {};
+    public static class ActivityLogResultsTypeRef extends TypeReference<Results<ActivityLog>> {};
     public static class MarketListTypeRef extends TypeReference<List<Market>> {}
     public static class MarketRankCollectionListTypeRef extends TypeReference<List<MarketRankCollection>> {}
     public static class PricedStockResultsTypeRef extends TypeReference<Results<PricedStock>> {}

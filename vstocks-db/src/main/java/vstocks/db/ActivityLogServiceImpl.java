@@ -5,6 +5,7 @@ import vstocks.model.*;
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class ActivityLogServiceImpl extends BaseService implements ActivityLogService {
@@ -25,8 +26,8 @@ public class ActivityLogServiceImpl extends BaseService implements ActivityLogSe
     }
 
     @Override
-    public Results<ActivityLog> getForUser(String userId, ActivityType type, Page page, List<Sort> sort) {
-        return withConnection(conn -> activityLogDB.getForUser(conn, userId, type, page, sort));
+    public Results<ActivityLog> getForUser(String userId, Set<ActivityType> types, Page page, List<Sort> sort) {
+        return withConnection(conn -> activityLogDB.getForUser(conn, userId, types, page, sort));
     }
 
     @Override

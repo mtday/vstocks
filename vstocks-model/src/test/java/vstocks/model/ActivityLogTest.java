@@ -25,7 +25,8 @@ public class ActivityLogTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setShares(10L)
-                .setPrice(20L);
+                .setPrice(20L)
+                .setValue(10L * 20L);
 
         assertEquals("id", activityLog.getId());
         assertEquals(userId, activityLog.getUserId());
@@ -35,6 +36,7 @@ public class ActivityLogTest {
         assertEquals("symbol", activityLog.getSymbol());
         assertEquals(10, (long) activityLog.getShares());
         assertEquals(20, (long) activityLog.getPrice());
+        assertEquals(200, (long) activityLog.getValue());
     }
 
     @Test
@@ -53,6 +55,7 @@ public class ActivityLogTest {
         assertNull(activityLog.getSymbol());
         assertNull(activityLog.getShares());
         assertNull(activityLog.getPrice());
+        assertNull(activityLog.getValue());
     }
 
     @Test
@@ -65,7 +68,8 @@ public class ActivityLogTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setShares(10L)
-                .setPrice(20L);
+                .setPrice(20L)
+                .setValue(10L * 20L);
         ActivityLog activityLog2 = new ActivityLog()
                 .setId("id")
                 .setUserId(generateId("user@domain.com"))
@@ -74,7 +78,8 @@ public class ActivityLogTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setShares(10L)
-                .setPrice(20L);
+                .setPrice(20L)
+                .setValue(10L * 20L);
         assertEquals(activityLog1, activityLog2);
     }
 
@@ -88,8 +93,9 @@ public class ActivityLogTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setShares(10L)
-                .setPrice(20L);
-        assertEquals(-1807454463, new ActivityLog().hashCode());
+                .setPrice(20L)
+                .setValue(10L * 20L);
+        assertEquals(-196513505, new ActivityLog().hashCode());
         assertNotEquals(0, activityLog.hashCode()); // enums make the value inconsistent
     }
 
@@ -103,8 +109,9 @@ public class ActivityLogTest {
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setShares(10L)
-                .setPrice(20L);
+                .setPrice(20L)
+                .setValue(10L * 20L);
         assertEquals("ActivityLog{id='id', userId='" + userId + "', type=STOCK_SELL, timestamp=" + now
-                + ", market=Twitter, symbol='symbol', shares=10, price=20}", activityLog.toString());
+                + ", market=Twitter, symbol='symbol', shares=10, price=20, value=200}", activityLog.toString());
     }
 }

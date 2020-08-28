@@ -67,7 +67,8 @@ public class UserStockServiceImpl extends BaseService implements UserStockServic
                             .setMarket(market)
                             .setSymbol(symbol)
                             .setPrice(price)
-                            .setShares(shares);
+                            .setShares(shares)
+                            .setValue(price * shares);
                     if (activityLogDB.add(conn, activityLog) > 0) {
                         // everything successful
                         return 1;
@@ -99,7 +100,8 @@ public class UserStockServiceImpl extends BaseService implements UserStockServic
                             .setMarket(market)
                             .setSymbol(symbol)
                             .setPrice(price)
-                            .setShares(-shares);
+                            .setShares(-shares)
+                            .setValue(price * -shares);
                     if (activityLogDB.add(conn, activityLog) > 0) {
                         // everything successful
                         return 1;

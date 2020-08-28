@@ -82,6 +82,7 @@ CREATE TABLE activity_logs (
     symbol             TEXT,
     shares             BIGINT,
     price              BIGINT,
+    value              BIGINT,
 
     CONSTRAINT activity_logs_pk PRIMARY KEY (id),
     CONSTRAINT activity_logs_fk_user_id FOREIGN KEY (user_id)
@@ -96,6 +97,9 @@ CREATE INDEX idx_activity_logs_type ON activity_logs (type);
 CREATE INDEX idx_activity_logs_market ON activity_logs (market);
 CREATE INDEX idx_activity_logs_symbol ON activity_logs (symbol);
 CREATE INDEX idx_activity_logs_timestamp ON activity_logs (timestamp);
+CREATE INDEX idx_activity_logs_shares ON activity_logs (shares);
+CREATE INDEX idx_activity_logs_price ON activity_logs (price);
+CREATE INDEX idx_activity_logs_value ON activity_logs (value);
 
 
 CREATE TABLE user_credits (

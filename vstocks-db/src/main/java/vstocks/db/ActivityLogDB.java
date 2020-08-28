@@ -6,14 +6,15 @@ import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
-import static java.sql.Types.INTEGER;
-import static java.sql.Types.VARCHAR;
+import static java.sql.Types.*;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 import static vstocks.model.DatabaseField.*;
+import static vstocks.model.DatabaseField.TIMESTAMP;
 import static vstocks.model.SortDirection.DESC;
 
 class ActivityLogDB extends BaseDB {
@@ -29,6 +30,8 @@ class ActivityLogDB extends BaseDB {
         activityLog.setShares(rs.wasNull() ? null : shares);
         long price = rs.getLong("price");
         activityLog.setPrice(rs.wasNull() ? null : price);
+        long value = rs.getLong("value");
+        activityLog.setValue(rs.wasNull() ? null : value);
         return activityLog;
     };
 
@@ -51,12 +54,17 @@ class ActivityLogDB extends BaseDB {
         if (activityLog.getShares() != null) {
             ps.setLong(++index, activityLog.getShares());
         } else {
-            ps.setNull(++index, INTEGER);
+            ps.setNull(++index, BIGINT);
         }
         if (activityLog.getPrice() != null) {
             ps.setLong(++index, activityLog.getPrice());
         } else {
-            ps.setNull(++index, INTEGER);
+            ps.setNull(++index, BIGINT);
+        }
+        if (activityLog.getValue() != null) {
+            ps.setLong(++index, activityLog.getValue());
+        } else {
+            ps.setNull(++index, BIGINT);
         }
     };
 
@@ -75,10 +83,14 @@ class ActivityLogDB extends BaseDB {
         return results(connection, ROW_MAPPER, page, sql, count, userId);
     }
 
-    public Results<ActivityLog> getForUser(Connection connection, String userId, ActivityType type, Page page, List<Sort> sort) {
-        String sql = format("SELECT * FROM activity_logs WHERE user_id = ? AND type = ? %s LIMIT ? OFFSET ?", getSort(sort));
-        String count = "SELECT COUNT(*) FROM activity_logs WHERE user_id = ? AND type = ?";
-        return results(connection, ROW_MAPPER, page, sql, count, userId, type);
+    public Results<ActivityLog> getForUser(Connection connection,
+                                           String userId,
+                                           Set<ActivityType> types,
+                                           Page page,
+                                           List<Sort> sort) {
+        String sql = format("SELECT * FROM activity_logs WHERE user_id = ? AND type = ANY(?) %s LIMIT ? OFFSET ?", getSort(sort));
+        String count = "SELECT COUNT(*) FROM activity_logs WHERE user_id = ? AND type = ANY(?)";
+        return results(connection, ROW_MAPPER, page, sql, count, userId, types);
     }
 
     public Results<ActivityLog> getForStock(Connection connection, Market market, String symbol, Page page, List<Sort> sort) {
@@ -109,8 +121,8 @@ class ActivityLogDB extends BaseDB {
     }
 
     public int add(Connection connection, ActivityLog activityLog) {
-        String sql = "INSERT INTO activity_logs (id, user_id, type, timestamp, market, symbol, shares, price) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO activity_logs (id, user_id, type, timestamp, market, symbol, shares, price, value) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         return update(connection, INSERT_ROW_SETTER, sql, activityLog);
     }
 

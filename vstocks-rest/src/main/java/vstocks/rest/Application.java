@@ -42,6 +42,7 @@ import vstocks.rest.resource.user.ResetUser;
 import vstocks.rest.resource.user.achievement.GetUserAchievements;
 import vstocks.rest.resource.user.portfolio.GetCreditBalance;
 import vstocks.rest.resource.user.portfolio.GetStocks;
+import vstocks.rest.resource.user.portfolio.market.GetMarketActivity;
 import vstocks.rest.resource.user.portfolio.market.stock.BuyStock;
 import vstocks.rest.resource.user.portfolio.market.stock.SellStock;
 import vstocks.rest.resource.user.portfolio.rank.*;
@@ -140,6 +141,7 @@ public class Application extends ResourceConfig {
         register(GetStocks.class);
 
         // user/portfolio/market
+        register(GetMarketActivity.class);
         register(BuyStock.class);
         register(SellStock.class);
 

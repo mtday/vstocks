@@ -10,6 +10,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singleton;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static vstocks.model.ActivityType.*;
@@ -53,7 +54,8 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
             .setMarket(stock1.getMarket())
             .setSymbol(stock1.getSymbol())
             .setShares(1L)
-            .setPrice(10L);
+            .setPrice(10L)
+            .setValue(10L);
     private final ActivityLog activityLog12 = new ActivityLog()
             .setId("id12")
             .setUserId(user1.getId())
@@ -62,7 +64,8 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
             .setMarket(stock2.getMarket())
             .setSymbol(stock2.getSymbol())
             .setShares(1L)
-            .setPrice(10L);
+            .setPrice(10L)
+            .setValue(10L);
     private final ActivityLog activityLog21 = new ActivityLog()
             .setId("id21")
             .setUserId(user2.getId())
@@ -71,7 +74,8 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
             .setMarket(stock1.getMarket())
             .setSymbol(stock1.getSymbol())
             .setShares(1L)
-            .setPrice(10L);
+            .setPrice(10L)
+            .setValue(10L);
     private final ActivityLog activityLog22 = new ActivityLog()
             .setId("id22")
             .setUserId(user2.getId())
@@ -80,7 +84,8 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
             .setMarket(stock2.getMarket())
             .setSymbol(stock2.getSymbol())
             .setShares(1L)
-            .setPrice(10L);
+            .setPrice(10L)
+            .setValue(10L);
 
     @Before
     public void setup() {
@@ -141,7 +146,8 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetForUserAndTypeNone() {
-        Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), USER_LOGIN, new Page(), emptyList());
+        Results<ActivityLog> results =
+                activityLogService.getForUser(user1.getId(), singleton(USER_LOGIN), new Page(), emptyList());
         validateResults(results);
     }
 
@@ -150,7 +156,8 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog12));
 
-        Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), STOCK_SELL, new Page(), emptyList());
+        Results<ActivityLog> results =
+                activityLogService.getForUser(user1.getId(), singleton(STOCK_SELL), new Page(), emptyList());
         validateResults(results, activityLog11, activityLog12);
     }
 
@@ -160,7 +167,8 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activityLogService.add(activityLog12));
 
         List<Sort> sort = asList(SYMBOL.toSort(DESC), ID.toSort());
-        Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), STOCK_SELL, new Page(), sort);
+        Results<ActivityLog> results =
+                activityLogService.getForUser(user1.getId(), singleton(STOCK_SELL), new Page(), sort);
         validateResults(results, activityLog12, activityLog11);
     }
 
@@ -317,7 +325,8 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
                 .setMarket(stock1.getMarket())
                 .setSymbol(stock1.getSymbol())
                 .setShares(1L)
-                .setPrice(-5L);
+                .setPrice(-5L)
+                .setValue(-5L);
         assertEquals(1, activityLogService.add(activityLog));
 
         ActivityLog fetched = activityLogService.get(activityLog.getId()).orElse(null);
@@ -334,7 +343,8 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
                 .setMarket(stock1.getMarket())
                 .setSymbol(stock1.getSymbol())
                 .setShares(1L)
-                .setPrice(-15L);
+                .setPrice(-15L)
+                .setValue(-15L);
         assertEquals(1, activityLogService.add(activityLog)); // not protected at this level
 
         ActivityLog fetched = activityLogService.get(activityLog.getId()).orElse(null);

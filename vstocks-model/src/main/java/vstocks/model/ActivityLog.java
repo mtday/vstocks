@@ -12,6 +12,7 @@ public class ActivityLog {
     private String symbol;
     private Long shares;
     private Long price;
+    private Long value;
 
     public ActivityLog() {
     }
@@ -88,6 +89,15 @@ public class ActivityLog {
         return this;
     }
 
+    public Long getValue() {
+        return value;
+    }
+
+    public ActivityLog setValue(Long value) {
+        this.value = value;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -100,12 +110,13 @@ public class ActivityLog {
                 market == that.market &&
                 Objects.equals(symbol, that.symbol) &&
                 Objects.equals(shares, that.shares) &&
-                Objects.equals(price, that.price);
+                Objects.equals(price, that.price) &&
+                Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, type, timestamp, market, symbol, shares, price);
+        return Objects.hash(id, userId, type, timestamp, market, symbol, shares, price, value);
     }
 
     @Override
@@ -119,6 +130,7 @@ public class ActivityLog {
                 ", symbol='" + symbol + '\'' +
                 ", shares=" + shares +
                 ", price=" + price +
+                ", value=" + value +
                 '}';
     }
 }
