@@ -24,7 +24,10 @@ import vstocks.rest.resource.achievement.GetAchievements;
 import vstocks.rest.resource.dashboard.*;
 import vstocks.rest.resource.market.GetAllMarkets;
 import vstocks.rest.resource.market.GetMarket;
-import vstocks.rest.resource.market.stock.*;
+import vstocks.rest.resource.market.stock.GetBestStocksForMarket;
+import vstocks.rest.resource.market.stock.GetStock;
+import vstocks.rest.resource.market.stock.GetStocksForMarket;
+import vstocks.rest.resource.market.stock.SearchStocks;
 import vstocks.rest.resource.security.Callback;
 import vstocks.rest.resource.security.Login;
 import vstocks.rest.resource.security.Logout;
@@ -39,6 +42,8 @@ import vstocks.rest.resource.user.ResetUser;
 import vstocks.rest.resource.user.achievement.GetUserAchievements;
 import vstocks.rest.resource.user.portfolio.GetCreditBalance;
 import vstocks.rest.resource.user.portfolio.GetStocks;
+import vstocks.rest.resource.user.portfolio.market.stock.BuyStock;
+import vstocks.rest.resource.user.portfolio.market.stock.SellStock;
 import vstocks.rest.resource.user.portfolio.rank.*;
 import vstocks.rest.security.AccessLogFilter;
 import vstocks.rest.security.JwtSecurity;
@@ -90,12 +95,10 @@ public class Application extends ResourceConfig {
         register(GetMarket.class);
 
         // market/stock
-        register(BuyStock.class);
         register(GetBestStocksForMarket.class);
         register(GetStock.class);
         register(GetStocksForMarket.class);
         register(SearchStocks.class);
-        register(SellStock.class);
 
         // security
         register(Callback.class);
@@ -133,13 +136,19 @@ public class Application extends ResourceConfig {
         register(GetUserAchievements.class);
 
         // user/portfolio
+        register(GetCreditBalance.class);
+        register(GetStocks.class);
+
+        // user/portfolio/market
+        register(BuyStock.class);
+        register(SellStock.class);
+
+        // user/portfolio/rank
         register(GetCreditRank.class);
         register(GetMarketRank.class);
         register(GetMarketRanks.class);
         register(GetMarketTotalRank.class);
         register(GetTotalRank.class);
-        register(GetCreditBalance.class);
-        register(GetStocks.class);
 
         register(BadRequestExceptionMapper.class);
         register(NotFoundExceptionMapper.class);

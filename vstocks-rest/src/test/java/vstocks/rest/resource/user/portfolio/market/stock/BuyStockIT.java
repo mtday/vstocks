@@ -1,4 +1,4 @@
-package vstocks.rest.resource.market.stock;
+package vstocks.rest.resource.user.portfolio.market.stock;
 
 import org.junit.Test;
 import vstocks.db.PricedUserStockService;
@@ -31,7 +31,9 @@ public class BuyStockIT extends ResourceTest {
         PricedUserStockService pricedUserStockService = mock(PricedUserStockService.class);
         when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockService);
 
-        Response response = target("/market/missing/stock/symbol/buy/10").request().post(entity("", APPLICATION_JSON_TYPE));
+        Response response = target("/user/portfolio/missing/stock/symbol/buy/10")
+                .request()
+                .post(entity("", APPLICATION_JSON_TYPE));
 
         assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
@@ -56,7 +58,9 @@ public class BuyStockIT extends ResourceTest {
         PricedUserStockService pricedUserStockService = mock(PricedUserStockService.class);
         when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockService);
 
-        Response response = target("/market/twitter/stock/symbol/buy/10").request().post(entity("", APPLICATION_JSON_TYPE));
+        Response response = target("/user/portfolio/twitter/stock/symbol/buy/10")
+                .request()
+                .post(entity("", APPLICATION_JSON_TYPE));
 
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
@@ -96,7 +100,9 @@ public class BuyStockIT extends ResourceTest {
         when(pricedUserStockService.get(eq(user.getId()), eq(TWITTER), eq("symbol"))).thenReturn(Optional.of(pricedUserStock));
         when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockService);
 
-        Response response = target("/market/twitter/stock/symbol/buy/10").request().post(entity("", APPLICATION_JSON_TYPE));
+        Response response = target("/user/portfolio/twitter/stock/symbol/buy/10")
+                .request()
+                .post(entity("", APPLICATION_JSON_TYPE));
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
@@ -128,7 +134,9 @@ public class BuyStockIT extends ResourceTest {
         when(pricedUserStockService.get(eq(user.getId()), eq(TWITTER), eq("symbol"))).thenReturn(empty());
         when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockService);
 
-        Response response = target("/market/twitter/stock/symbol/buy/10").request().post(entity("", APPLICATION_JSON_TYPE));
+        Response response = target("/user/portfolio/twitter/stock/symbol/buy/10")
+                .request()
+                .post(entity("", APPLICATION_JSON_TYPE));
 
         assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
