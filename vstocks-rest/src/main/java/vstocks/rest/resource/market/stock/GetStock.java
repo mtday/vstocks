@@ -23,9 +23,9 @@ public class GetStock extends BaseResource {
 
     @GET
     @Produces(APPLICATION_JSON)
-    public PricedStock getStock(@PathParam("market") String marketId, @PathParam("symbol") String symbol) {
-        Market market = Market.from(marketId)
-                .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
+    public PricedStock getStock(@PathParam("market") String marketStr, @PathParam("symbol") String symbol) {
+        Market market = Market.from(marketStr)
+                .orElseThrow(() -> new NotFoundException("Market " + marketStr + " not found"));
         return serviceFactory.getPricedStockService().get(market, symbol)
                 .orElseThrow(() -> new NotFoundException("Stock " + market + "/" + symbol + " not found"));
     }

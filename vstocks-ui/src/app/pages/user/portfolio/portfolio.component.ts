@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 
 import { PortfolioService } from '../../../services/portfolio.service';
 import {
-  UserCredits,
+  ActivityLog,
   CreditRankCollection,
   MarketRankCollection,
   MarketTotalRankCollection,
   PricedUserStock,
   Results,
   TotalRankCollection,
+  UserCredits,
 } from 'src/app/models/models';
 
 @Component({
@@ -19,6 +20,7 @@ import {
 export class UserPortfolioComponent implements OnInit {
   public userCredits: UserCredits;
   public pricedUserStocks: Results<PricedUserStock>;
+  public marketActivity: Results<ActivityLog>;
 
   public creditRanks: CreditRankCollection;
   public marketRanks: MarketRankCollection[];
@@ -30,6 +32,7 @@ export class UserPortfolioComponent implements OnInit {
   ngOnInit(): void {
     this.portfolioService.getCreditBalance().subscribe(userCredits => this.userCredits = userCredits);
     this.portfolioService.getStocks(null, null).subscribe(pricedUserStocks => this.pricedUserStocks = pricedUserStocks);
+    this.portfolioService.getAllMarketActivity(null, null).subscribe(marketActivity => this.marketActivity = marketActivity);
 
     this.portfolioService.getCreditRank().subscribe(creditRanks => this.creditRanks = creditRanks);
     this.portfolioService.getMarketRanks().subscribe(marketRanks => this.marketRanks = marketRanks);

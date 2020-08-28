@@ -29,12 +29,12 @@ public class SellStock extends BaseResource {
     @Produces(APPLICATION_JSON)
     @Consumes(WILDCARD)
     @Pac4JSecurity(authorizers = "isAuthenticated")
-    public PricedUserStock sellStock(@PathParam("market") String marketId,
+    public PricedUserStock sellStock(@PathParam("market") String marketStr,
                                      @PathParam("symbol") String symbol,
                                      @PathParam("shares") long shares,
                                      @Pac4JProfile CommonProfile profile) {
-        Market market = Market.from(marketId)
-                .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
+        Market market = Market.from(marketStr)
+                .orElseThrow(() -> new NotFoundException("Market " + marketStr + " not found"));
         String userId = getUser(profile).getId();
         if (serviceFactory.getUserStockService().sellStock(userId, market, symbol, shares) == 0) {
             throw new BadRequestException("Failed to sell " + shares + " shares of " + market + "/" + symbol + " stock");

@@ -1,13 +1,19 @@
 package vstocks.rest.resource.user.portfolio.market;
 
 import vstocks.db.ServiceFactory;
-import vstocks.model.*;
+import vstocks.model.ActivityLog;
+import vstocks.model.Page;
+import vstocks.model.Results;
+import vstocks.model.User;
 import vstocks.rest.resource.BaseResource;
 import vstocks.rest.security.JwtTokenRequired;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 import java.util.Set;
@@ -16,13 +22,13 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static vstocks.model.ActivityType.STOCK_BUY;
 import static vstocks.model.ActivityType.STOCK_SELL;
 
-@Path("/user/portfolio/market/{market}/activity")
+@Path("/user/portfolio/market/activity")
 @Singleton
-public class GetMarketActivity extends BaseResource {
+public class GetAllMarketActivity extends BaseResource {
     private final ServiceFactory serviceFactory;
 
     @Inject
-    public GetMarketActivity(ServiceFactory serviceFactory) {
+    public GetAllMarketActivity(ServiceFactory serviceFactory) {
         this.serviceFactory = serviceFactory;
     }
 
@@ -30,15 +36,12 @@ public class GetMarketActivity extends BaseResource {
     @Produces(APPLICATION_JSON)
     @JwtTokenRequired
     public Results<ActivityLog> getMarketActivity(@Context SecurityContext securityContext,
-                                                  @PathParam("market") String marketStr,
                                                   @QueryParam("pageNum") Integer pageNum,
                                                   @QueryParam("pageSize") Integer pageSize,
                                                   @QueryParam("sort") String sort) {
         User user = getUser(securityContext);
         Page page = getPage(pageNum, pageSize);
-        Market market = Market.from(marketStr)
-                .orElseThrow(() -> new NotFoundException("Market " + marketStr + " not found"));
         return serviceFactory.getActivityLogService()
-                .getForUser(user.getId(), market, Set.of(STOCK_BUY, STOCK_SELL), page, getSort(sort));
+                .getForUser(user.getId(), Set.of(STOCK_BUY, STOCK_SELL), page, getSort(sort));
     }
 }

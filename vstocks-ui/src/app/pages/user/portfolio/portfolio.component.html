@@ -26,7 +26,33 @@
             <td>{{pricedUserStock.timestamp}}</td>
             <td>{{pricedUserStock.shares}}</td>
             <td>{{pricedUserStock.price}}</td>
-            <td>{{pricedUserStock.shares * pricedUserStock.price}}</td>
+            <td>{{pricedUserStock.value}}</td>
+        </tr>
+    </table>
+</div>
+
+<div *ngIf="marketActivity" style="padding-top:30px;">
+    <div>Market Activity</div>
+    <table>
+        <tr>
+            <td>ID</td>
+            <td>Type</td>
+            <td>Timestamp</td>
+            <td>Market</td>
+            <td>Symbol</td>
+            <td>Shares</td>
+            <td>Price</td>
+            <td>Value</td>
+        </tr>
+        <tr *ngFor="let activityLog of marketActivity.results">
+            <td>{{activityLog.id}}</td>
+            <td>{{activityLog.type}}</td>
+            <td>{{activityLog.timestamp}}</td>
+            <td>{{activityLog.market}}</td>
+            <td>{{activityLog.symbol}}</td>
+            <td>{{activityLog.shares}}</td>
+            <td>{{activityLog.price}}</td>
+            <td>{{activityLog.value}}</td>
         </tr>
     </table>
 </div>

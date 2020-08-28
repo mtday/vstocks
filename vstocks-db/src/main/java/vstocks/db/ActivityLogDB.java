@@ -93,6 +93,17 @@ class ActivityLogDB extends BaseDB {
         return results(connection, ROW_MAPPER, page, sql, count, userId, types);
     }
 
+    public Results<ActivityLog> getForUser(Connection connection,
+                                           String userId,
+                                           Market market,
+                                           Set<ActivityType> types,
+                                           Page page,
+                                           List<Sort> sort) {
+        String sql = format("SELECT * FROM activity_logs WHERE user_id = ? AND market = ? AND type = ANY(?) %s LIMIT ? OFFSET ?", getSort(sort));
+        String count = "SELECT COUNT(*) FROM activity_logs WHERE user_id = ? AND market = ? AND type = ANY(?)";
+        return results(connection, ROW_MAPPER, page, sql, count, userId, market, types);
+    }
+
     public Results<ActivityLog> getForStock(Connection connection, Market market, String symbol, Page page, List<Sort> sort) {
         String sql = format("SELECT * FROM activity_logs WHERE market = ? AND symbol = ? %s LIMIT ? OFFSET ?", getSort(sort));
         String count = "SELECT COUNT(*) FROM activity_logs WHERE market = ? AND symbol = ?";

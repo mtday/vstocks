@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import {
+  ActivityLog,
   CreditRankCollection,
   MarketRankCollection,
   MarketTotalRankCollection,
@@ -33,6 +34,24 @@ export class PortfolioService {
       params.append("pageSize", page.size.toString());
     }
     return this.http.get<Results<PricedUserStock>>('/api/user/portfolio/stocks', { params: params });
+  }
+
+  getAllMarketActivity(page: Page, sort: Sort[]): Observable<Results<ActivityLog>> {
+    const params: HttpParams = new HttpParams();
+    if (page) {
+      params.append("pageNum", page.page.toString());
+      params.append("pageSize", page.size.toString());
+    }
+    return this.http.get<Results<ActivityLog>>('/api/user/portfolio/market/activity', { params: params });
+  }
+
+  getMarketActivity(market: string, page: Page, sort: Sort[]): Observable<Results<ActivityLog>> {
+    const params: HttpParams = new HttpParams();
+    if (page) {
+      params.append("pageNum", page.page.toString());
+      params.append("pageSize", page.size.toString());
+    }
+    return this.http.get<Results<ActivityLog>>('/api/user/portfolio/market/' + market + '/activity', { params: params });
   }
 
   // ranks

@@ -28,11 +28,11 @@ public class SearchStocks extends BaseResource {
 
     @GET
     @Produces(APPLICATION_JSON)
-    public List<PricedStock> searchStocks(@PathParam("market") String marketId, @QueryParam("q") String search) {
+    public List<PricedStock> searchStocks(@PathParam("market") String marketStr, @QueryParam("q") String search) {
+        Market market = Market.from(marketStr)
+                .orElseThrow(() -> new NotFoundException("Market " + marketStr + " not found"));
         String symbol = ofNullable(search)
                 .orElseThrow(() -> new BadRequestException("Missing required 'q' query parameter"));
-        Market market = Market.from(marketId)
-                .orElseThrow(() -> new NotFoundException("Market " + marketId + " not found"));
         RemoteStockService remoteStockService = remoteStockServiceFactory.getForMarket(market);
         return remoteStockService.search(symbol, SEARCH_RESULT_LIMIT);
     }

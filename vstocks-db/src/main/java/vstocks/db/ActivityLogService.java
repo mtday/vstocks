@@ -14,6 +14,8 @@ public interface ActivityLogService {
 
     Results<ActivityLog> getForUser(String userId, Set<ActivityType> types, Page page, List<Sort> sort);
 
+    Results<ActivityLog> getForUser(String userId, Market market, Set<ActivityType> types, Page page, List<Sort> sort);
+
     Results<ActivityLog> getForStock(Market market, String symbol, Page page, List<Sort> sort);
 
     Results<ActivityLog> getForType(ActivityType type, Page page, List<Sort> sort);

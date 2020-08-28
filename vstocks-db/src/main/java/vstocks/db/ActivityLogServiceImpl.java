@@ -31,6 +31,11 @@ public class ActivityLogServiceImpl extends BaseService implements ActivityLogSe
     }
 
     @Override
+    public Results<ActivityLog> getForUser(String userId, Market market, Set<ActivityType> types, Page page, List<Sort> sort) {
+        return withConnection(conn -> activityLogDB.getForUser(conn, userId, market, types, page, sort));
+    }
+
+    @Override
     public Results<ActivityLog> getForStock(Market market, String symbol, Page page, List<Sort> sort) {
         return withConnection(conn -> activityLogDB.getForStock(conn, market, symbol, page, sort));
     }

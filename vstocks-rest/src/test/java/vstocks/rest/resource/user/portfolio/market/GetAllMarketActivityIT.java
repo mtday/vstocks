@@ -19,7 +19,8 @@ import static java.util.Optional.empty;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.*;
+import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -32,10 +33,10 @@ import static vstocks.model.Market.TWITTER;
 import static vstocks.model.SortDirection.DESC;
 import static vstocks.rest.security.JwtTokenFilter.INVALID_JWT_MESSAGE;
 
-public class GetMarketActivityIT extends ResourceTest {
+public class GetAllMarketActivityIT extends ResourceTest {
     @Test
-    public void testUserPortfolioMarketActivityNoAuthorizationHeader() {
-        Response response = target("/user/portfolio/market/twitter/activity").request().get();
+    public void testUserPortfolioAllMarketActivityNoAuthorizationHeader() {
+        Response response = target("/user/portfolio/market/activity").request().get();
 
         assertEquals(UNAUTHORIZED.getStatusCode(), response.getStatus());
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
@@ -49,10 +50,10 @@ public class GetMarketActivityIT extends ResourceTest {
     }
 
     @Test
-    public void testUserPortfolioMarketActivityNoValidToken() {
+    public void testUserPortfolioAllMarketActivityNoValidToken() {
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(empty());
 
-        Response response = target("/user/portfolio/market/twitter/activity")
+        Response response = target("/user/portfolio/market/activity")
                 .request()
                 .header(AUTHORIZATION, "Bearer token")
                 .get();
@@ -69,31 +70,7 @@ public class GetMarketActivityIT extends ResourceTest {
     }
 
     @Test
-    public void testUserPortfolioMarketActivityMarketMissing() {
-        UserService userService = mock(UserService.class);
-        when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
-        when(getServiceFactory().getUserService()).thenReturn(userService);
-
-        when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
-
-        Response response = target("/user/portfolio/market/missing/activity")
-                .request()
-                .header(AUTHORIZATION, "Bearer token")
-                .get();
-
-        assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());
-        assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
-
-        String json = response.readEntity(String.class);
-        assertEquals("{\"status\":404,\"message\":\"Market missing not found\"}", json);
-
-        ErrorResponse errorResponse = convert(json, ErrorResponse.class);
-        assertEquals(NOT_FOUND.getStatusCode(), errorResponse.getStatus());
-        assertEquals("Market missing not found", errorResponse.getMessage());
-    }
-
-    @Test
-    public void testUserPortfolioMarketActivityPageAndSort() {
+    public void testUserPortfolioAllMarketActivityPageAndSort() {
         UserService userService = mock(UserService.class);
         when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getServiceFactory().getUserService()).thenReturn(userService);
@@ -102,12 +79,12 @@ public class GetMarketActivityIT extends ResourceTest {
         List<Sort> sort = asList(USER_ID.toSort(), PRICE.toSort(DESC));
         Results<ActivityLog> results = new Results<ActivityLog>().setTotal(0).setPage(page).setResults(emptyList());
         ActivityLogService activityLogService = mock(ActivityLogService.class);
-        when(activityLogService.getForUser(eq(getUser().getId()), eq(TWITTER), any(), eq(page), eq(sort))).thenReturn(results);
+        when(activityLogService.getForUser(eq(getUser().getId()), any(), eq(page), eq(sort))).thenReturn(results);
         when(getServiceFactory().getActivityLogService()).thenReturn(activityLogService);
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
-        Response response = target("/user/portfolio/market/twitter/activity")
+        Response response = target("/user/portfolio/market/activity")
                 .queryParam("pageNum", page.getPage())
                 .queryParam("pageSize", page.getSize())
                 .queryParam("sort", "USER_ID,PRICE:DESC")
@@ -126,7 +103,7 @@ public class GetMarketActivityIT extends ResourceTest {
     }
 
     @Test
-    public void testUserPortfolioMarketActivityWithData() {
+    public void testUserPortfolioAllMarketActivityWithData() {
         UserService userService = mock(UserService.class);
         when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getServiceFactory().getUserService()).thenReturn(userService);
@@ -147,12 +124,12 @@ public class GetMarketActivityIT extends ResourceTest {
                 .setPage(new Page())
                 .setResults(singletonList(activityLog));
         ActivityLogService activityLogService = mock(ActivityLogService.class);
-        when(activityLogService.getForUser(eq(getUser().getId()), eq(TWITTER), any(), any(), any())).thenReturn(results);
+        when(activityLogService.getForUser(eq(getUser().getId()), any(), any(), any())).thenReturn(results);
         when(getServiceFactory().getActivityLogService()).thenReturn(activityLogService);
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
-        Response response = target("/user/portfolio/market/twitter/activity")
+        Response response = target("/user/portfolio/market/activity")
                 .request()
                 .header(AUTHORIZATION, "Bearer token")
                 .get();

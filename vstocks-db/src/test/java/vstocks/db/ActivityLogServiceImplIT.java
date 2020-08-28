@@ -7,6 +7,7 @@ import vstocks.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -16,6 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static vstocks.model.ActivityType.*;
 import static vstocks.model.DatabaseField.*;
 import static vstocks.model.Market.TWITTER;
+import static vstocks.model.Market.YOUTUBE;
 import static vstocks.model.SortDirection.DESC;
 import static vstocks.model.User.generateId;
 
@@ -45,6 +47,11 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
             .setSymbol("sym2")
             .setName("name2")
             .setProfileImage("link2");
+    private final Stock stock3 = new Stock()
+            .setMarket(YOUTUBE)
+            .setSymbol("sym3")
+            .setName("name3")
+            .setProfileImage("link3");
 
     private final ActivityLog activityLog11 = new ActivityLog()
             .setId("id11")
@@ -66,6 +73,16 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
             .setShares(1L)
             .setPrice(10L)
             .setValue(10L);
+    private final ActivityLog activityLog13 = new ActivityLog()
+            .setId("id13")
+            .setUserId(user1.getId())
+            .setType(STOCK_BUY)
+            .setTimestamp(now)
+            .setMarket(stock3.getMarket())
+            .setSymbol(stock3.getSymbol())
+            .setShares(2L)
+            .setPrice(20L)
+            .setValue(40L);
     private final ActivityLog activityLog21 = new ActivityLog()
             .setId("id21")
             .setUserId(user2.getId())
@@ -86,6 +103,16 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
             .setShares(1L)
             .setPrice(10L)
             .setValue(10L);
+    private final ActivityLog activityLog23 = new ActivityLog()
+            .setId("id23")
+            .setUserId(user2.getId())
+            .setType(STOCK_BUY)
+            .setTimestamp(now)
+            .setMarket(stock3.getMarket())
+            .setSymbol(stock3.getSymbol())
+            .setShares(2L)
+            .setPrice(20L)
+            .setValue(40L);
 
     @Before
     public void setup() {
@@ -97,6 +124,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, userService.add(user2));
         assertEquals(1, stockService.add(stock1));
         assertEquals(1, stockService.add(stock2));
+        assertEquals(1, stockService.add(stock3));
     }
 
     @After
@@ -129,19 +157,23 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
     public void testGetForUserSomeNoSort() {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog12));
+        assertEquals(1, activityLogService.add(activityLog13));
+        assertEquals(1, activityLogService.add(activityLog21));
 
         Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
-        validateResults(results, activityLog11, activityLog12);
+        validateResults(results, activityLog11, activityLog12, activityLog13);
     }
 
     @Test
     public void testGetForUserSomeWithSort() {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog12));
+        assertEquals(1, activityLogService.add(activityLog13));
+        assertEquals(1, activityLogService.add(activityLog21));
 
         List<Sort> sort = asList(SYMBOL.toSort(DESC), ID.toSort());
         Results<ActivityLog> results = activityLogService.getForUser(user1.getId(), new Page(), sort);
-        validateResults(results, activityLog12, activityLog11);
+        validateResults(results, activityLog13, activityLog12, activityLog11);
     }
 
     @Test
@@ -152,9 +184,11 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
     }
 
     @Test
-    public void testGetForUserAndTypeSomeNoSort() {
+    public void testGetForUserAndSingleTypeSomeNoSort() {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog12));
+        assertEquals(1, activityLogService.add(activityLog13));
+        assertEquals(1, activityLogService.add(activityLog21));
 
         Results<ActivityLog> results =
                 activityLogService.getForUser(user1.getId(), singleton(STOCK_SELL), new Page(), emptyList());
@@ -162,9 +196,11 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
     }
 
     @Test
-    public void testGetForUserAndTypeSomeWithSort() {
+    public void testGetForUserAndSingleTypeSomeWithSort() {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog12));
+        assertEquals(1, activityLogService.add(activityLog13));
+        assertEquals(1, activityLogService.add(activityLog21));
 
         List<Sort> sort = asList(SYMBOL.toSort(DESC), ID.toSort());
         Results<ActivityLog> results =
@@ -173,27 +209,59 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
     }
 
     @Test
+    public void testGetForUserAndMultipleTypeSomeNoSort() {
+        assertEquals(1, activityLogService.add(activityLog11));
+        assertEquals(1, activityLogService.add(activityLog12));
+        assertEquals(1, activityLogService.add(activityLog13));
+        assertEquals(1, activityLogService.add(activityLog21));
+
+        Results<ActivityLog> results =
+                activityLogService.getForUser(user1.getId(), Set.of(STOCK_BUY, STOCK_SELL), new Page(), emptyList());
+        validateResults(results, activityLog11, activityLog12, activityLog13);
+    }
+
+    @Test
+    public void testGetForUserAndMultipleTypeSomeWithSort() {
+        assertEquals(1, activityLogService.add(activityLog11));
+        assertEquals(1, activityLogService.add(activityLog12));
+        assertEquals(1, activityLogService.add(activityLog13));
+        assertEquals(1, activityLogService.add(activityLog21));
+
+        List<Sort> sort = asList(SYMBOL.toSort(DESC), ID.toSort());
+        Results<ActivityLog> results =
+                activityLogService.getForUser(user1.getId(), Set.of(STOCK_BUY, STOCK_SELL), new Page(), sort);
+        validateResults(results, activityLog13, activityLog12, activityLog11);
+    }
+
+    @Test
     public void testGetForStockNone() {
-        Results<ActivityLog> results = activityLogService.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptyList());
+        Results<ActivityLog> results =
+                activityLogService.getForStock(stock1.getMarket(), stock1.getSymbol(), new Page(), emptyList());
         validateResults(results);
     }
 
     @Test
     public void testGetForStockSomeNoSort() {
         assertEquals(1, activityLogService.add(activityLog11));
+        assertEquals(1, activityLogService.add(activityLog13));
         assertEquals(1, activityLogService.add(activityLog21));
+        assertEquals(1, activityLogService.add(activityLog23));
 
-        Results<ActivityLog> results = activityLogService.getForStock(TWITTER, stock1.getSymbol(), new Page(), emptyList());
+        Results<ActivityLog> results =
+                activityLogService.getForStock(stock1.getMarket(), stock1.getSymbol(), new Page(), emptyList());
         validateResults(results, activityLog11, activityLog21);
     }
 
     @Test
     public void testGetForStockSomeWithSort() {
         assertEquals(1, activityLogService.add(activityLog11));
+        assertEquals(1, activityLogService.add(activityLog13));
         assertEquals(1, activityLogService.add(activityLog21));
+        assertEquals(1, activityLogService.add(activityLog23));
 
         List<Sort> sort = asList(USER_ID.toSort(DESC), ID.toSort());
-        Results<ActivityLog> results = activityLogService.getForStock(TWITTER, stock1.getSymbol(), new Page(), sort);
+        Results<ActivityLog> results =
+                activityLogService.getForStock(stock1.getMarket(), stock1.getSymbol(), new Page(), sort);
         validateResults(results, activityLog21, activityLog11);
     }
 
@@ -207,6 +275,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
     public void testGetForTypeSomeNoSort() {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog21));
+        assertEquals(1, activityLogService.add(activityLog13));
 
         Results<ActivityLog> results = activityLogService.getForType(STOCK_SELL, new Page(), emptyList());
         validateResults(results, activityLog11, activityLog21);
@@ -216,6 +285,7 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
     public void testGetForTypeSomeWithSort() {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog21));
+        assertEquals(1, activityLogService.add(activityLog13));
 
         List<Sort> sort = asList(USER_ID.toSort(DESC), ID.toSort());
         Results<ActivityLog> results = activityLogService.getForType(STOCK_SELL, new Page(), sort);
@@ -231,20 +301,28 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
     @Test
     public void testGetAllSomeNoSort() {
         assertEquals(1, activityLogService.add(activityLog11));
+        assertEquals(1, activityLogService.add(activityLog12));
+        assertEquals(1, activityLogService.add(activityLog13));
         assertEquals(1, activityLogService.add(activityLog21));
+        assertEquals(1, activityLogService.add(activityLog22));
+        assertEquals(1, activityLogService.add(activityLog23));
 
         Results<ActivityLog> results = activityLogService.getAll(new Page(), emptyList());
-        validateResults(results, activityLog11, activityLog21);
+        validateResults(results, activityLog11, activityLog12, activityLog13, activityLog21, activityLog22, activityLog23);
     }
 
     @Test
     public void testGetAllSomeWithSort() {
         assertEquals(1, activityLogService.add(activityLog11));
+        assertEquals(1, activityLogService.add(activityLog12));
+        assertEquals(1, activityLogService.add(activityLog13));
         assertEquals(1, activityLogService.add(activityLog21));
+        assertEquals(1, activityLogService.add(activityLog22));
+        assertEquals(1, activityLogService.add(activityLog23));
 
-        List<Sort> sort = asList(USER_ID.toSort(DESC), ID.toSort());
+        List<Sort> sort = asList(VALUE.toSort(DESC), ID.toSort());
         Results<ActivityLog> results = activityLogService.getAll(new Page(), sort);
-        validateResults(results, activityLog21, activityLog11);
+        validateResults(results, activityLog13, activityLog23, activityLog11, activityLog12, activityLog21, activityLog22);
     }
 
     @Test
