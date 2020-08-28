@@ -3,6 +3,8 @@ package vstocks.service.remote.youtube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.Thumbnail;
 import com.google.api.services.youtube.model.ThumbnailDetails;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import vstocks.model.PricedStock;
 import vstocks.service.StockUpdateRunnable;
 import vstocks.service.remote.RemoteStockService;
@@ -18,6 +20,7 @@ import static java.util.stream.Collectors.toList;
 import static vstocks.model.Market.YOUTUBE;
 
 public class YouTubeRemoteStockService implements RemoteStockService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(YouTubeRemoteStockService.class);
     private final YouTubeService youTubeService;
 
     public YouTubeRemoteStockService() {
@@ -30,6 +33,7 @@ public class YouTubeRemoteStockService implements RemoteStockService {
 
     static int getPrice(Channel channel) {
         double subscribers = channel.getStatistics().getSubscriberCount().doubleValue();
+        LOGGER.info("YouTube channel {} has {} subscribers", channel.getSnippet().getTitle(), subscribers);
         // Scale the number of subscribers into the range of (-0.8, 4), using the arbitrary estimation of
         // 0 and 100_000_000 as the minimum and maximum number of subscribers for an account.
         // The -0.8f determines how slowly the price ramps up at the beginning. We need it to scale up slowly

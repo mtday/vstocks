@@ -6,7 +6,7 @@ import vstocks.db.ServiceFactory;
 import vstocks.model.Market;
 import vstocks.model.PricedStock;
 import vstocks.rest.Environment;
-import vstocks.rest.task.HourlyTask;
+import vstocks.rest.task.TenMinuteTask;
 import vstocks.service.StockUpdateRunnable;
 import vstocks.service.remote.RemoteStockService;
 import vstocks.service.remote.RemoteStockServiceFactory;
@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 
 import static java.util.Collections.emptyList;
 
-public class StockUpdateTask extends HourlyTask {
+public class StockUpdateTask extends TenMinuteTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(StockUpdateTask.class);
 
     private final Environment environment;

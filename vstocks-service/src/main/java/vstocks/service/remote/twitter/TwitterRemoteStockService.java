@@ -44,7 +44,8 @@ public class TwitterRemoteStockService implements RemoteStockService {
     }
 
     static int getPrice(User user) {
-        double followers = (float) user.getFollowersCount();
+        double followers = (double) user.getFollowersCount();
+        LOGGER.info("Twitter user {} has {} followers", user.getScreenName(), user.getFollowersCount());
         // Scale the number of followers into the range of (-0.8, 4), using the arbitrary estimation of
         // 0 and 30_000_000 as the minimum and maximum number of followers for an account.
         // The -0.8f determines how slowly the price ramps up at the beginning. We need it to scale up slowly
