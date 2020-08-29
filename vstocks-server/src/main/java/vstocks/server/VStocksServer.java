@@ -61,7 +61,15 @@ public class VStocksServer {
         servletContextHandler.setClassLoader(Thread.currentThread().getContextClassLoader());
         servletContextHandler.setSessionHandler(new SessionHandler());
         servletContextHandler.setBaseResource(Resource.newResource(Paths.get(uiPath)));
-        servletContextHandler.addServlet(new ServletHolder("default", DefaultServlet.class), contextPath);
+        servletContextHandler.addServlet(new ServletHolder("default", new DefaultServlet() {
+            @Override
+            public Resource getResource(String path) {
+                // Any resource that does not have a file extension returns "/index.html". This allows refreshes
+                // on any url within the Angular frontend.
+                int dot = path.lastIndexOf('.');
+                return dot < 0 ? super.getResource("/index.html") : super.getResource(path);
+            }
+        }), contextPath);
 
         ServletHolder servletHolder = servletContextHandler.addServlet(ServletContainer.class, "/api/*");
         servletHolder.setInitOrder(1);
