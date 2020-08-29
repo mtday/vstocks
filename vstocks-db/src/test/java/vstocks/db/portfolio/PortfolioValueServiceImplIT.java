@@ -5,12 +5,13 @@ import org.junit.Before;
 import org.junit.Test;
 import vstocks.db.*;
 import vstocks.model.*;
-import vstocks.model.portfolio.PortfolioValue;
+import vstocks.model.portfolio.*;
 
-import java.util.Map;
+import java.util.List;
 
 import static org.junit.Assert.*;
-import static vstocks.model.Market.*;
+import static vstocks.model.Market.TWITTER;
+import static vstocks.model.Market.YOUTUBE;
 import static vstocks.model.User.generateId;
 
 public class PortfolioValueServiceImplIT extends BaseServiceImplIT {
@@ -19,6 +20,11 @@ public class PortfolioValueServiceImplIT extends BaseServiceImplIT {
     private UserStockService userStockService;
     private StockService stockService;
     private StockPriceService stockPriceService;
+    private CreditRankService creditRankService;
+    private MarketRankService marketRankService;
+    private MarketTotalRankService marketTotalRankService;
+    private TotalRankService totalRankService;
+    private PortfolioValueSummaryService portfolioValueSummaryService;
     private PortfolioValueService portfolioValueService;
 
     private final User user = new User()
@@ -74,6 +80,74 @@ public class PortfolioValueServiceImplIT extends BaseServiceImplIT {
             .setSymbol(stock2.getSymbol())
             .setShares(20);
 
+    private final CreditRank creditRank1 = new CreditRank()
+            .setBatch(2)
+            .setUserId(user.getId())
+            .setTimestamp(now)
+            .setRank(1)
+            .setValue(10);
+    private final CreditRank creditRank2 = new CreditRank()
+            .setBatch(1)
+            .setUserId(user.getId())
+            .setTimestamp(now.minusSeconds(10))
+            .setRank(2)
+            .setValue(9);
+
+    private final MarketRank marketRank11 = new MarketRank()
+            .setBatch(2)
+            .setUserId(user.getId())
+            .setMarket(TWITTER)
+            .setTimestamp(now)
+            .setRank(1)
+            .setValue(10);
+    private final MarketRank marketRank12 = new MarketRank()
+            .setBatch(1)
+            .setUserId(user.getId())
+            .setMarket(TWITTER)
+            .setTimestamp(now.minusSeconds(10))
+            .setRank(2)
+            .setValue(9);
+    private final MarketRank marketRank21 = new MarketRank()
+            .setBatch(2)
+            .setUserId(user.getId())
+            .setMarket(YOUTUBE)
+            .setTimestamp(now)
+            .setRank(7)
+            .setValue(10);
+    private final MarketRank marketRank22 = new MarketRank()
+            .setBatch(1)
+            .setUserId(user.getId())
+            .setMarket(YOUTUBE)
+            .setTimestamp(now.minusSeconds(10))
+            .setRank(9)
+            .setValue(9);
+
+    private final MarketTotalRank marketTotalRank1 = new MarketTotalRank()
+            .setBatch(2)
+            .setUserId(user.getId())
+            .setTimestamp(now)
+            .setRank(4)
+            .setValue(10);
+    private final MarketTotalRank marketTotalRank2 = new MarketTotalRank()
+            .setBatch(1)
+            .setUserId(user.getId())
+            .setTimestamp(now.minusSeconds(10))
+            .setRank(3)
+            .setValue(9);
+
+    private final TotalRank totalRank1 = new TotalRank()
+            .setBatch(2)
+            .setUserId(user.getId())
+            .setTimestamp(now)
+            .setRank(5)
+            .setValue(10);
+    private final TotalRank totalRank2 = new TotalRank()
+            .setBatch(1)
+            .setUserId(user.getId())
+            .setTimestamp(now.minusSeconds(10))
+            .setRank(7)
+            .setValue(9);
+
     @Before
     public void setup() {
         userService = new UserServiceImpl(dataSourceExternalResource.get());
@@ -81,6 +155,11 @@ public class PortfolioValueServiceImplIT extends BaseServiceImplIT {
         userCreditsService = new UserCreditsServiceImpl(dataSourceExternalResource.get());
         stockService = new StockServiceImpl(dataSourceExternalResource.get());
         stockPriceService = new StockPriceServiceImpl(dataSourceExternalResource.get());
+        creditRankService = new CreditRankServiceImpl(dataSourceExternalResource.get());
+        marketRankService = new MarketRankServiceImpl(dataSourceExternalResource.get());
+        marketTotalRankService = new MarketTotalRankServiceImpl(dataSourceExternalResource.get());
+        totalRankService = new TotalRankServiceImpl(dataSourceExternalResource.get());
+        portfolioValueSummaryService = new PortfolioValueSummaryServiceImpl(dataSourceExternalResource.get());
         portfolioValueService = new PortfolioValueServiceImpl(dataSourceExternalResource.get());
 
         assertEquals(1, userService.add(user));
@@ -90,10 +169,29 @@ public class PortfolioValueServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, stockPriceService.add(stockPrice12));
         assertEquals(1, stockPriceService.add(stockPrice21));
         assertEquals(1, stockPriceService.add(stockPrice22));
+        assertEquals(1, userCreditsService.delete(user.getId()));
+        assertEquals(1, userCreditsService.add(userCredits));
+        assertEquals(1, userStockService.add(userStock1));
+        assertEquals(1, userStockService.add(userStock2));
+        assertEquals(1, creditRankService.add(creditRank1));
+        assertEquals(1, creditRankService.add(creditRank2));
+        assertEquals(1, marketRankService.add(marketRank11));
+        assertEquals(1, marketRankService.add(marketRank12));
+        assertEquals(1, marketRankService.add(marketRank21));
+        assertEquals(1, marketRankService.add(marketRank22));
+        assertEquals(1, marketTotalRankService.add(marketTotalRank1));
+        assertEquals(1, marketTotalRankService.add(marketTotalRank2));
+        assertEquals(1, totalRankService.add(totalRank1));
+        assertEquals(1, totalRankService.add(totalRank2));
+
     }
 
     @After
     public void cleanup() {
+        creditRankService.truncate();
+        marketRankService.truncate();
+        marketTotalRankService.truncate();
+        totalRankService.truncate();
         userCreditsService.truncate();
         userStockService.truncate();
         stockPriceService.truncate();
@@ -108,33 +206,22 @@ public class PortfolioValueServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetForUser() {
-        assertEquals(1, userCreditsService.delete(user.getId()));
-        assertEquals(1, userCreditsService.add(userCredits));
-        assertEquals(1, userStockService.add(userStock1));
-        assertEquals(1, userStockService.add(userStock2));
-
         PortfolioValue fetched = portfolioValueService.getForUser(user.getId()).orElse(null);
         assertNotNull(fetched);
 
-        PortfolioValue expected = new PortfolioValue()
-                .setUserId(user.getId())
-                .setCredits(userCredits.getCredits())
-                .setMarketTotal(
-                        (userStock1.getShares() * stockPrice11.getPrice()) +
-                        (userStock2.getShares() * stockPrice21.getPrice())
-                ).setMarketValues(
-                        Map.of(
-                                TWITTER, userStock1.getShares() * stockPrice11.getPrice(),
-                                YOUTUBE, userStock2.getShares() * stockPrice21.getPrice(),
-                                INSTAGRAM, 0L,
-                                TWITCH, 0L,
-                                FACEBOOK, 0L
-                        )
-                ).setTotal(
-                        userCredits.getCredits() +
-                        (userStock1.getShares() * stockPrice11.getPrice()) +
-                        (userStock2.getShares() * stockPrice21.getPrice())
-                );
-        assertEquals(expected, fetched);
+        PortfolioValueSummary summary = portfolioValueSummaryService.getForUser(user.getId()).orElse(null);
+        assertEquals(summary, fetched.getSummary());
+
+        CreditRankCollection creditRanks = creditRankService.getLatest(user.getId());
+        assertEquals(creditRanks, fetched.getCreditRanks());
+
+        List<MarketRankCollection> marketRanks = marketRankService.getLatest(user.getId());
+        assertEquals(marketRanks, fetched.getMarketRanks());
+
+        MarketTotalRankCollection marketTotalRanks = marketTotalRankService.getLatest(user.getId());
+        assertEquals(marketTotalRanks, fetched.getMarketTotalRanks());
+
+        TotalRankCollection totalRanks = totalRankService.getLatest(user.getId());
+        assertEquals(totalRanks, fetched.getTotalRanks());
     }
 }

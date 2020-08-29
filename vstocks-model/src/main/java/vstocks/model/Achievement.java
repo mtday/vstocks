@@ -71,7 +71,7 @@ public class Achievement {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, category, description, order);
+        return Objects.hash(id, name, category.name(), description, order);
     }
 
     @Override

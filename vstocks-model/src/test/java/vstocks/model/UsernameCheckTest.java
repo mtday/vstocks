@@ -42,7 +42,6 @@ public class UsernameCheckTest {
                 .setExists(true)
                 .setValid(true)
                 .setMessage("message");
-        assertEquals(2150625, new UsernameCheck().hashCode());
         assertEquals(712407314, usernameCheck.hashCode());
     }
 

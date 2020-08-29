@@ -29,7 +29,6 @@ public class OverallTotalValueTest {
     @Test
     public void testHashCode() {
         OverallTotalValue overallTotalValue = new OverallTotalValue().setTimestamp(timestamp).setValue(20);
-        assertEquals(961, new OverallTotalValue().hashCode());
         assertEquals(-1722900141, overallTotalValue.hashCode());
     }
 

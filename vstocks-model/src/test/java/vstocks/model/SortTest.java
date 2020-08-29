@@ -69,8 +69,7 @@ public class SortTest {
     @Test
     public void testHashCode() {
         Sort sort = new Sort().setField(CREDITS).setDirection(DESC);
-        assertNotEquals(0, new Sort().hashCode()); // enums make the value inconsistent
-        assertNotEquals(0, sort.hashCode()); // enums make the value inconsistent
+        assertEquals(-1687369448, sort.hashCode());
     }
 
     @Test

@@ -3,7 +3,6 @@ package vstocks.model;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static vstocks.model.Market.TWITTER;
 
 public class StockTest {
@@ -43,8 +42,7 @@ public class StockTest {
                 .setSymbol("symbol")
                 .setName("name")
                 .setProfileImage("link");
-        assertEquals(923521, new Stock().hashCode());
-        assertNotEquals(0, stock.hashCode()); // enums make the value inconsistent
+        assertEquals(-1972120907, stock.hashCode());
     }
 
     @Test

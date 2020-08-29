@@ -1,0 +1,47 @@
+
+<div class="portfolio-value-box" *ngIf="portfolioValue">
+    <div class="portfolio-value-box-header">
+        Portfolio Value
+    </div>
+
+    <div class="portfolio-value-box-body">
+        <table>
+            <tr>
+                <td class="portfolio-value-label">
+                    Credits:
+                </td>
+                <td class="portfolio-value-number">
+                    {{portfolioValue.summary.credits | number}}
+                    <small class="currency">&#267;</small>
+                </td>
+            </tr>
+            <tr>
+                <td class="portfolio-value-label">
+                    Total Stock Value:
+                </td>
+                <td class="portfolio-value-number">
+                    {{portfolioValue.summary.marketTotal | number}}
+                    <small class="currency">&#267;</small>
+                <td>
+            </tr>
+            <tr *ngFor="let marketValue of portfolioValue.summary.marketValues">
+                <td class="portfolio-value-market-label">
+                    {{marketValue.market}}:
+                </td>
+                <td class="portfolio-value-market-number">
+                    {{marketValue.value | number}}
+                    <small class="currency">&#267;</small>
+                <td>
+            </tr>
+            <tr>
+                <td class="portfolio-value-label">
+                    Total Value:
+                </td>
+                <td class="portfolio-value-number">
+                    {{portfolioValue.summary.total | number}}
+                    <small class="currency">&#267;</small>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

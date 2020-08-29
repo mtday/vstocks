@@ -96,7 +96,7 @@ public class StockPriceChange {
 
     @Override
     public int hashCode() {
-        return Objects.hash(batch, market, symbol, timestamp, price, change, percent);
+        return Objects.hash(batch, market.name(), symbol, timestamp, price, change, percent);
     }
 
     @Override

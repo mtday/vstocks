@@ -99,7 +99,7 @@ public class PricedStock {
 
     @Override
     public int hashCode() {
-        return Objects.hash(market, symbol, timestamp, name, profileImage, price);
+        return Objects.hash(market.name(), symbol, timestamp, name, profileImage, price);
     }
 
     @Override

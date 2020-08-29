@@ -3,6 +3,8 @@ package vstocks.model;
 import java.time.Instant;
 import java.util.Objects;
 
+import static java.util.Optional.ofNullable;
+
 public class ActivityLog {
     private String id;
     private String userId;
@@ -116,7 +118,8 @@ public class ActivityLog {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, type, timestamp, market, symbol, shares, price, value);
+        return Objects.hash(id, userId, type.name(), timestamp, ofNullable(market).map(Market::name).orElse(null),
+                symbol, shares, price, value);
     }
 
     @Override

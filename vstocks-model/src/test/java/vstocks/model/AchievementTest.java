@@ -3,7 +3,6 @@ package vstocks.model;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static vstocks.model.AchievementCategory.BEGINNER;
 
 public class AchievementTest {
@@ -48,8 +47,7 @@ public class AchievementTest {
                 .setCategory(BEGINNER)
                 .setDescription("description")
                 .setOrder(10);
-        assertEquals(28629151, new Achievement().hashCode());
-        assertNotEquals(0, achievement.hashCode()); // enums make the value inconsistent
+        assertEquals(243300655, achievement.hashCode());
     }
 
     @Test

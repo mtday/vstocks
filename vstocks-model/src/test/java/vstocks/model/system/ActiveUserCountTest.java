@@ -37,7 +37,6 @@ public class ActiveUserCountTest {
         ActiveUserCount activeUserCount = new ActiveUserCount()
                 .setTimestamp(timestamp)
                 .setCount(20);
-        assertEquals(961, new ActiveUserCount().hashCode());
         assertEquals(-1722900141, activeUserCount.hashCode());
     }
 

@@ -160,8 +160,8 @@ public class MarketTotalRankServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGenerateTie() {
-        userStockService.add(userStock11);
-        userStockService.add(userStock21);
+        assertEquals(1, userStockService.add(userStock11));
+        assertEquals(1, userStockService.add(userStock21));
 
         assertEquals(2, marketTotalRankService.generate());
 
@@ -174,8 +174,8 @@ public class MarketTotalRankServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGenerateNoTie() {
-        userStockService.add(userStock12);
-        userStockService.add(userStock22);
+        assertEquals(1, userStockService.add(userStock12));
+        assertEquals(1, userStockService.add(userStock22));
 
         assertEquals(2, marketTotalRankService.generate());
 
@@ -195,11 +195,20 @@ public class MarketTotalRankServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetLatestSome() {
+        assertEquals(1, userStockService.add(userStock11));
+        assertEquals(1, userStockService.add(userStock21));
         assertEquals(1, marketTotalRankService.add(marketTotalRank11));
         assertEquals(1, marketTotalRankService.add(marketTotalRank12));
 
         MarketTotalRankCollection latest = marketTotalRankService.getLatest(user1.getId());
-        validateResults(latest.getRanks(), marketTotalRank11, marketTotalRank12);
+        assertEquals(3, latest.getRanks().size());
+        assertEquals(marketTotalRank11, latest.getRanks().get(1));
+        assertEquals(marketTotalRank12, latest.getRanks().get(2));
+
+        // This is the derived latest rank
+        MarketTotalRank derived = latest.getRanks().get(0);
+        assertEquals(110, derived.getValue());
+
         assertEquals(getDeltas(2L, 1L, 1, 50f), latest.getDeltas());
     }
 

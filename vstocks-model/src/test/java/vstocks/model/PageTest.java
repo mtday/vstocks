@@ -32,7 +32,6 @@ public class PageTest {
     @Test
     public void testHashCode() {
         Page page = new Page().setPage(5).setSize(30);
-        assertEquals(1017, new Page().hashCode());
         assertEquals(1146, page.hashCode());
     }
 

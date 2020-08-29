@@ -8,9 +8,7 @@ import vstocks.model.Page;
 import vstocks.model.Results;
 import vstocks.model.Sort;
 import vstocks.model.User;
-import vstocks.model.portfolio.CreditRank;
-import vstocks.model.portfolio.CreditRankCollection;
-import vstocks.model.portfolio.RankedUser;
+import vstocks.model.portfolio.*;
 
 import java.util.List;
 
@@ -132,7 +130,14 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, creditRankService.add(creditRank12));
 
         CreditRankCollection latest = creditRankService.getLatest(user1.getId());
-        validateResults(latest.getRanks(), creditRank11, creditRank12);
+        assertEquals(3, latest.getRanks().size());
+        assertEquals(creditRank11, latest.getRanks().get(1));
+        assertEquals(creditRank12, latest.getRanks().get(2));
+
+        // This is the derived latest rank
+        CreditRank derived = latest.getRanks().get(0);
+        assertEquals(10_000, derived.getValue());
+
         assertEquals(getDeltas(2L, 1L, 1, 50f), latest.getDeltas());
     }
 

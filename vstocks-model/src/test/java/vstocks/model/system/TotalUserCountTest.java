@@ -37,7 +37,6 @@ public class TotalUserCountTest {
         TotalUserCount totalUserCount = new TotalUserCount()
                 .setTimestamp(timestamp)
                 .setCount(20);
-        assertEquals(961, new TotalUserCount().hashCode());
         assertEquals(-1722900141, totalUserCount.hashCode());
     }
 

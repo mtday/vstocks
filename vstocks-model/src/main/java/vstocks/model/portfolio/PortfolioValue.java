@@ -1,90 +1,88 @@
 package vstocks.model.portfolio;
 
-import vstocks.model.Market;
-
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 public class PortfolioValue {
-    private String userId;
-    private long credits;
-    private long marketTotal;
-    private Map<Market, Long> marketValues;
-    private long total;
+    private PortfolioValueSummary summary;
+    private CreditRankCollection creditRanks;
+    private MarketTotalRankCollection marketTotalRanks;
+    private List<MarketRankCollection> marketRanks;
+    private TotalRankCollection totalRanks;
 
     public PortfolioValue() {
     }
 
-    public String getUserId() {
-        return userId;
+    public PortfolioValueSummary getSummary() {
+        return summary;
     }
 
-    public PortfolioValue setUserId(String userId) {
-        this.userId = userId;
+    public PortfolioValue setSummary(PortfolioValueSummary summary) {
+        this.summary = summary;
         return this;
     }
 
-    public long getCredits() {
-        return credits;
+    public CreditRankCollection getCreditRanks() {
+        return creditRanks;
     }
 
-    public PortfolioValue setCredits(long credits) {
-        this.credits = credits;
+    public PortfolioValue setCreditRanks(CreditRankCollection creditRanks) {
+        this.creditRanks = creditRanks;
         return this;
     }
 
-    public long getMarketTotal() {
-        return marketTotal;
+    public MarketTotalRankCollection getMarketTotalRanks() {
+        return marketTotalRanks;
     }
 
-    public PortfolioValue setMarketTotal(long marketTotal) {
-        this.marketTotal = marketTotal;
+    public PortfolioValue setMarketTotalRanks(MarketTotalRankCollection marketTotalRanks) {
+        this.marketTotalRanks = marketTotalRanks;
         return this;
     }
 
-    public Map<Market, Long> getMarketValues() {
-        return marketValues;
+    public List<MarketRankCollection> getMarketRanks() {
+        return marketRanks;
     }
 
-    public PortfolioValue setMarketValues(Map<Market, Long> marketValues) {
-        this.marketValues = marketValues;
+    public PortfolioValue setMarketRanks(List<MarketRankCollection> marketRanks) {
+        this.marketRanks = marketRanks;
         return this;
     }
 
-    public long getTotal() {
-        return total;
+    public TotalRankCollection getTotalRanks() {
+        return totalRanks;
     }
 
-    public PortfolioValue setTotal(long total) {
-        this.total = total;
+    public PortfolioValue setTotalRanks(TotalRankCollection totalRanks) {
+        this.totalRanks = totalRanks;
         return this;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof PortfolioValue)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         PortfolioValue that = (PortfolioValue) o;
-        return getCredits() == that.getCredits() &&
-                getMarketTotal() == that.getMarketTotal() &&
-                getTotal() == that.getTotal() &&
-                Objects.equals(getUserId(), that.getUserId()) &&
-                Objects.equals(getMarketValues(), that.getMarketValues());
+        return Objects.equals(summary, that.summary) &&
+                Objects.equals(creditRanks, that.creditRanks) &&
+                Objects.equals(marketTotalRanks, that.marketTotalRanks) &&
+                Objects.equals(marketRanks, that.marketRanks) &&
+                Objects.equals(totalRanks, that.totalRanks);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUserId(), getCredits(), getMarketTotal(), getMarketValues(), getTotal());
+        return Objects.hash(summary, creditRanks, marketTotalRanks, marketRanks, totalRanks);
     }
 
     @Override
     public String toString() {
         return "PortfolioValue{" +
-                "userId='" + userId + '\'' +
-                ", credits=" + credits +
-                ", marketTotal=" + marketTotal +
-                ", marketValues=" + marketValues +
-                ", total=" + total +
+                "summary=" + summary +
+                ", creditRanks=" + creditRanks +
+                ", marketTotalRanks=" + marketTotalRanks +
+                ", marketRanks=" + marketRanks +
+                ", totalRanks=" + totalRanks +
                 '}';
     }
 }

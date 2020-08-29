@@ -85,7 +85,7 @@ public class MarketRank {
 
     @Override
     public int hashCode() {
-        return Objects.hash(batch, userId, market, timestamp, rank, value);
+        return Objects.hash(batch, userId, market.name(), timestamp, rank, value);
     }
 
     @Override

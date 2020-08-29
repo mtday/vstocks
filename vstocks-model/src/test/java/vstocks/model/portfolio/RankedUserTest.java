@@ -59,7 +59,6 @@ public class RankedUserTest {
                 .setTimestamp(timestamp)
                 .setRank(20)
                 .setValue(10);
-        assertEquals(28629151, new RankedUser().hashCode());
         assertEquals(-1707035543, rankedUser.hashCode());
     }
 

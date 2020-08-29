@@ -54,7 +54,6 @@ public class UserTest {
                 .setUsername("username")
                 .setDisplayName("displayName")
                 .setProfileImage("link");
-        assertEquals(28629151, new User().hashCode());
         assertEquals(-1831566276, user.hashCode());
     }
 

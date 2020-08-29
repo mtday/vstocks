@@ -5,9 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import vstocks.db.*;
 import vstocks.model.*;
-import vstocks.model.portfolio.MarketRank;
-import vstocks.model.portfolio.MarketRankCollection;
-import vstocks.model.portfolio.RankedUser;
+import vstocks.model.portfolio.*;
 
 import java.util.List;
 
@@ -163,8 +161,8 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGenerateTie() {
-        userStockService.add(userStock11);
-        userStockService.add(userStock21);
+        assertEquals(1, userStockService.add(userStock11));
+        assertEquals(1, userStockService.add(userStock21));
 
         assertEquals(2 * Market.values().length, marketRankService.generate());
 
@@ -177,8 +175,8 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGenerateNoTie() {
-        userStockService.add(userStock12);
-        userStockService.add(userStock22);
+        assertEquals(1, userStockService.add(userStock12));
+        assertEquals(1, userStockService.add(userStock22));
 
         assertEquals(2 * Market.values().length, marketRankService.generate());
 
@@ -218,6 +216,9 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
 
     @Test
     public void testGetLatestSome() {
+        assertEquals(1, userStockService.add(userStock11));
+        assertEquals(1, userStockService.add(userStock21));
+
         assertEquals(1, marketRankService.add(marketRank11));
         assertEquals(1, marketRankService.add(marketRank12));
 
@@ -236,7 +237,15 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
                 .findFirst()
                 .orElse(null);
         assertNotNull(twitterRanks);
-        validateResults(twitterRanks.getRanks(), marketRank11, marketRank12);
+
+        assertEquals(3, twitterRanks.getRanks().size());
+        assertEquals(marketRank11, twitterRanks.getRanks().get(1));
+        assertEquals(marketRank12, twitterRanks.getRanks().get(2));
+
+        // This is the derived latest rank
+        MarketRank derived = twitterRanks.getRanks().get(0);
+        assertEquals(110, derived.getValue());
+
         assertEquals(getDeltas(2L, 1L, 1, 50f), twitterRanks.getDeltas());
     }
 

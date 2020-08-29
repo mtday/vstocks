@@ -1,28 +1,7 @@
 
 
 <div class="portfolio-container">
-    <div class="portfolio-box" *ngIf="portfolioValue">
-        <div class="portfolio-box-header">
-            Portfolio Value
-        </div>
-
-        <div class="portfolio-box-body">
-            <table>
-                <tr>
-                    <td class="portfolio-value-label">Total Value:</td>
-                    <td>{{portfolioValue.total}}</td>
-                </tr>
-                <tr>
-                    <td class="portfolio-value-label">Credits:</td>
-                    <td>{{portfolioValue.credits}}</td>
-                </tr>
-                <tr>
-                    <td class="portfolio-value-label">Stock Value:</td>
-                    <td>{{portfolioValue.marketTotal}}</td>
-                </tr>
-            </table>
-        </div>
-    </div>
+    <app-portfolio-value></app-portfolio-value>
 
     <div class="portfolio-box">
         <div class="portfolio-box-header">

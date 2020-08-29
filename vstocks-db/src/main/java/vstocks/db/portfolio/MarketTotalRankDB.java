@@ -4,7 +4,10 @@ import vstocks.db.BaseDB;
 import vstocks.db.RowMapper;
 import vstocks.db.RowSetter;
 import vstocks.db.UserDB;
-import vstocks.model.*;
+import vstocks.model.DeltaInterval;
+import vstocks.model.Page;
+import vstocks.model.Results;
+import vstocks.model.Sort;
 import vstocks.model.portfolio.MarketTotalRank;
 import vstocks.model.portfolio.MarketTotalRankCollection;
 import vstocks.model.portfolio.RankedUser;
@@ -82,6 +85,24 @@ class MarketTotalRankDB extends BaseDB {
         String sql = "SELECT * FROM market_total_ranks WHERE timestamp >= ? AND user_id = ? ORDER BY timestamp DESC";
         List<MarketTotalRank> ranks = new ArrayList<>();
         consume(connection, ROW_MAPPER, ranks::add, sql, earliest, userId);
+
+        // Make sure the most recent rank has an up-to-date timestamp and value so that the generated deltas have
+        // up-to-date values.
+        if (!ranks.isEmpty()) {
+            MarketTotalRank latest = ranks.iterator().next();
+            String latestSql = "SELECT ? AS batch, user_id, timestamp, ? AS rank, value FROM ("
+                    + "  SELECT user_id, NOW() AS timestamp, SUM(value) AS value FROM ("
+                    + "    SELECT DISTINCT ON (us.market, us.symbol)"
+                    + "      us.user_id, us.market, us.symbol, us.shares * sp.price AS value"
+                    + "    FROM user_stocks us"
+                    + "    JOIN stock_prices sp ON (us.market = sp.market AND us.symbol = sp.symbol)"
+                    + "    WHERE us.user_id = ?"
+                    + "    ORDER BY us.market, us.symbol, sp.timestamp DESC"
+                    + "  ) AS priced_stocks GROUP BY user_id ORDER BY value DESC"
+                    + ") AS ordered_values";
+            getOne(connection, ROW_MAPPER, latestSql, latest.getBatch() + 1, latest.getRank(), userId)
+                    .ifPresent(rank -> ranks.add(0, rank));
+        }
 
         return new MarketTotalRankCollection()
                 .setRanks(ranks)

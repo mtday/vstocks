@@ -6,7 +6,6 @@ import java.time.Instant;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static vstocks.model.Market.TWITTER;
 
 public class StockPriceChangeTest {
@@ -63,8 +62,7 @@ public class StockPriceChangeTest {
                 .setPrice(20)
                 .setChange(2)
                 .setPercent(2.5f);
-        assertEquals(1742810335, new StockPriceChange().hashCode());
-        assertNotEquals(0, stockPriceChange.hashCode()); // enums make the value inconsistent
+        assertEquals(-1073702763, stockPriceChange.hashCode());
     }
 
     @Test

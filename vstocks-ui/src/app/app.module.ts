@@ -30,6 +30,9 @@ import { UserLoginComponent        } from './pages/user/login/login.component';
 import { UserPortfolioComponent    } from './pages/user/portfolio/portfolio.component';
 import { UserProfileComponent      } from './pages/user/profile/profile.component';
 
+// Components
+import { PortfolioValueComponent   } from './pages/user/portfolio/portfolio-value/portfolio-value.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -38,7 +41,7 @@ import { UserProfileComponent      } from './pages/user/profile/profile.componen
     HeaderComponent,
     FooterComponent,
 
-    // pages (Public)
+    // Pages (Public)
     PublicDashboardComponent,
     PublicHomeComponent,
     PublicStandingsComponent,
@@ -53,6 +56,9 @@ import { UserProfileComponent      } from './pages/user/profile/profile.componen
     UserLoginComponent,
     UserPortfolioComponent,
     UserProfileComponent,
+
+    // Components
+    PortfolioValueComponent,
   ],
   imports: [
     AppRoutingModule,

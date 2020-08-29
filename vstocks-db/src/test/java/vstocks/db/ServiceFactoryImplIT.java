@@ -37,6 +37,7 @@ public class ServiceFactoryImplIT {
         assertNotNull(serviceFactory.getMarketRankService());
         assertNotNull(serviceFactory.getMarketTotalRankService());
         assertNotNull(serviceFactory.getTotalRankService());
+        assertNotNull(serviceFactory.getPortfolioValueSummaryService());
         assertNotNull(serviceFactory.getPortfolioValueService());
 
         // system services

@@ -29,7 +29,6 @@ public class OverallCreditValueTest {
     @Test
     public void testHashCode() {
         OverallCreditValue overallCreditValue = new OverallCreditValue().setTimestamp(timestamp).setValue(20);
-        assertEquals(961, new OverallCreditValue().hashCode());
         assertEquals(-1722900141, overallCreditValue.hashCode());
     }
 

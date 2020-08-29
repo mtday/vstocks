@@ -53,7 +53,7 @@ public class MarketRankCollection {
 
     @Override
     public int hashCode() {
-        return Objects.hash(market, ranks, deltas);
+        return Objects.hash(market.name(), ranks, deltas);
     }
 
     @Override

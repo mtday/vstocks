@@ -38,7 +38,6 @@ public class ResultsTest {
                 .setPage(new Page().setPage(5).setSize(30))
                 .setTotal(10)
                 .setResults(asList("1", "2"));
-        assertEquals(1007129, new Results<>().hashCode());
         assertEquals(1133937, results.hashCode());
     }
 

@@ -51,7 +51,6 @@ public class TotalRankTest {
                 .setTimestamp(timestamp)
                 .setRank(20)
                 .setValue(10);
-        assertEquals(28629151, new TotalRank().hashCode());
         assertEquals(-1522145070, totalRank.hashCode());
     }
 

@@ -29,7 +29,6 @@ public class OverallMarketTotalValueTest {
     @Test
     public void testHashCode() {
         OverallMarketTotalValue overallMarketTotalValue = new OverallMarketTotalValue().setTimestamp(timestamp).setValue(20);
-        assertEquals(961, new OverallMarketTotalValue().hashCode());
         assertEquals(-1722900141, overallMarketTotalValue.hashCode());
     }
 

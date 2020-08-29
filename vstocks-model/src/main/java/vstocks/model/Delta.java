@@ -133,7 +133,7 @@ public class Delta {
 
     @Override
     public int hashCode() {
-        return Objects.hash(interval, oldest, newest, change, percent);
+        return Objects.hash(interval.name(), oldest, newest, change, percent);
     }
 
     @Override

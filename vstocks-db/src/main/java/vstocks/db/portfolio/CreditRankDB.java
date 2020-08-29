@@ -1,10 +1,10 @@
 package vstocks.db.portfolio;
 
-import vstocks.db.BaseDB;
-import vstocks.db.RowMapper;
-import vstocks.db.RowSetter;
-import vstocks.db.UserDB;
-import vstocks.model.*;
+import vstocks.db.*;
+import vstocks.model.DeltaInterval;
+import vstocks.model.Page;
+import vstocks.model.Results;
+import vstocks.model.Sort;
 import vstocks.model.portfolio.CreditRank;
 import vstocks.model.portfolio.CreditRankCollection;
 import vstocks.model.portfolio.RankedUser;
@@ -73,6 +73,16 @@ class CreditRankDB extends BaseDB {
         String sql = "SELECT * FROM credit_ranks WHERE timestamp >= ? AND user_id = ? ORDER BY timestamp DESC";
         List<CreditRank> ranks = new ArrayList<>();
         consume(connection, ROW_MAPPER, ranks::add, sql, earliest, userId);
+
+        // Make sure the most recent rank has an up-to-date timestamp and value so that the generated deltas have
+        // up-to-date values.
+        if (!ranks.isEmpty()) {
+            CreditRank latest = ranks.iterator().next();
+            String latestSql = "SELECT ? AS batch, user_id, NOW() AS timestamp, ? AS rank, credits AS value "
+                    + "FROM user_credits WHERE user_id = ?";
+            getOne(connection, ROW_MAPPER, latestSql, latest.getBatch() + 1, latest.getRank(), userId)
+                    .ifPresent(rank -> ranks.add(0, rank));
+        }
 
         return new CreditRankCollection()
                 .setRanks(ranks)

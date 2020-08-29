@@ -14,6 +14,7 @@ import static vstocks.model.User.generateId;
 public class ActivityLogTest {
     private final String userId = generateId("user@domain.com");
     private final Instant now = Instant.now().truncatedTo(SECONDS);
+    private final Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z");
 
     @Test
     public void testGettersAndSettersAll() {
@@ -89,14 +90,13 @@ public class ActivityLogTest {
                 .setId("id")
                 .setUserId(userId)
                 .setType(STOCK_SELL)
-                .setTimestamp(now)
+                .setTimestamp(timestamp)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
                 .setShares(10L)
                 .setPrice(20L)
                 .setValue(10L * 20L);
-        assertEquals(-196513505, new ActivityLog().hashCode());
-        assertNotEquals(0, activityLog.hashCode()); // enums make the value inconsistent
+        assertEquals(2099534374, activityLog.hashCode());
     }
 
     @Test

@@ -8,9 +8,7 @@ import vstocks.model.Page;
 import vstocks.model.Results;
 import vstocks.model.Sort;
 import vstocks.model.User;
-import vstocks.model.portfolio.RankedUser;
-import vstocks.model.portfolio.TotalRank;
-import vstocks.model.portfolio.TotalRankCollection;
+import vstocks.model.portfolio.*;
 
 import java.util.List;
 
@@ -132,7 +130,14 @@ public class TotalRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, totalRankService.add(totalRank12));
 
         TotalRankCollection latest = totalRankService.getLatest(user1.getId());
-        validateResults(latest.getRanks(), totalRank11, totalRank12);
+        assertEquals(3, latest.getRanks().size());
+        assertEquals(totalRank11, latest.getRanks().get(1));
+        assertEquals(totalRank12, latest.getRanks().get(2));
+
+        // This is the derived latest rank
+        TotalRank derived = latest.getRanks().get(0);
+        assertEquals(10_000, derived.getValue());
+
         assertEquals(getDeltas(2L, 1L, 1, 50f), latest.getDeltas());
     }
 

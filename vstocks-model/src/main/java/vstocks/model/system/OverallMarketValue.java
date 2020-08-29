@@ -52,7 +52,7 @@ public class OverallMarketValue {
 
     @Override
     public int hashCode() {
-        return Objects.hash(market, timestamp, value);
+        return Objects.hash(market.name(), timestamp, value);
     }
 
     @Override

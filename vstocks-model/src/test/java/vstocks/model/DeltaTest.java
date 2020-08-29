@@ -18,7 +18,6 @@ import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.HOURS;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static vstocks.model.DeltaInterval.*;
 
 public class DeltaTest {
@@ -361,8 +360,7 @@ public class DeltaTest {
     @Test
     public void testHashCode() {
         Delta delta = new Delta().setInterval(DAY3).setOldest(10L).setNewest(15L).setChange(5).setPercent(5.25f);
-        assertEquals(28629151, new Delta().hashCode());
-        assertNotEquals(0, delta.hashCode()); // enums make the value inconsistent
+        assertEquals(-480996874, delta.hashCode());
     }
 
     @Test

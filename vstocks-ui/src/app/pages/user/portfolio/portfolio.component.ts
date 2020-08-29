@@ -6,7 +6,6 @@ import {
   CreditRankCollection,
   MarketRankCollection,
   MarketTotalRankCollection,
-  PortfolioValue,
   PricedUserStock,
   Results,
   TotalRankCollection,
@@ -18,7 +17,6 @@ import {
   styleUrls: ['./portfolio.component.scss']
 })
 export class UserPortfolioComponent implements OnInit {
-  public portfolioValue: PortfolioValue;
   public pricedUserStocks: Results<PricedUserStock>;
   public marketActivity: Results<ActivityLog>;
 
@@ -30,7 +28,6 @@ export class UserPortfolioComponent implements OnInit {
   constructor(private portfolioService: PortfolioService) { }
 
   ngOnInit(): void {
-    this.portfolioService.getPortfolioValue().subscribe(portfolioValue => this.portfolioValue = portfolioValue);
     this.portfolioService.getStocks(null, null).subscribe(pricedUserStocks => this.pricedUserStocks = pricedUserStocks);
     this.portfolioService.getAllMarketActivity(null, null).subscribe(marketActivity => this.marketActivity = marketActivity);
 

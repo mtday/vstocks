@@ -12,7 +12,9 @@ import vstocks.model.portfolio.RankedUser;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static java.lang.String.format;
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -90,6 +92,24 @@ class MarketRankDB extends BaseDB {
                 + "ORDER BY timestamp DESC";
         List<MarketRank> ranks = new ArrayList<>();
         consume(connection, ROW_MAPPER, ranks::add, sql, earliest, userId, market);
+
+        // Make sure the most recent rank has an up-to-date timestamp and value so that the generated deltas have
+        // up-to-date values.
+        if (!ranks.isEmpty()) {
+            MarketRank latest = ranks.iterator().next();
+            String latestSql = "SELECT ? AS batch, user_id, market, timestamp, ? AS rank, value FROM ("
+                    + "  SELECT user_id, market, NOW() AS timestamp, SUM(value) AS value FROM ("
+                    + "    SELECT DISTINCT ON (us.market, us.symbol)"
+                    + "      us.user_id, us.market, us.symbol, us.shares * sp.price AS value"
+                    + "    FROM user_stocks us"
+                    + "    JOIN stock_prices sp ON (us.market = sp.market AND us.symbol = sp.symbol)"
+                    + "    WHERE us.user_id = ? AND us.market = ?"
+                    + "    ORDER BY us.market, us.symbol, sp.timestamp DESC"
+                    + "  ) AS priced_stocks GROUP BY user_id, market ORDER BY value DESC"
+                    + ") AS ordered_values";
+            getOne(connection, ROW_MAPPER, latestSql, latest.getBatch() + 1, latest.getRank(), userId, market)
+                    .ifPresent(rank -> ranks.add(0, rank));
+        }
 
         return new MarketRankCollection()
                 .setMarket(market)

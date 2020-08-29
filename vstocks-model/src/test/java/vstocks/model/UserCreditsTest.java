@@ -26,7 +26,6 @@ public class UserCreditsTest {
     public void testHashCode() {
         String userId = User.generateId("user@domain.com");
         UserCredits userCredits = new UserCredits().setUserId(userId).setCredits(10);
-        assertEquals(961, new UserCredits().hashCode());
         assertEquals(-551449595, userCredits.hashCode());
     }
 

@@ -60,7 +60,7 @@ public class Stock {
 
     @Override
     public int hashCode() {
-        return Objects.hash(market, symbol, name, profileImage);
+        return Objects.hash(market.name(), symbol, name, profileImage);
     }
 
     @Override

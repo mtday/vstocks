@@ -31,7 +31,6 @@ public class UserResetTest {
     @Test
     public void testHashCode() {
         UserReset userReset = new UserReset().setUser(user).setReset(true);
-        assertEquals(2198, new UserReset().hashCode());
         assertEquals(-628430147, userReset.hashCode());
     }
 

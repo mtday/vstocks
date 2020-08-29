@@ -7,7 +7,6 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static vstocks.model.Market.TWITTER;
 
 public class StockPriceChangeCollectionTest {
@@ -49,7 +48,7 @@ public class StockPriceChangeCollectionTest {
     @Test
     public void testHashCode() {
         StockPriceChangeCollection collection = new StockPriceChangeCollection().setChanges(changes);
-        assertNotEquals(0, collection.hashCode()); // enums make the value inconsistent
+        assertEquals(1743763369, collection.hashCode());
     }
 
     @Test

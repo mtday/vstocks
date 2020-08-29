@@ -37,7 +37,6 @@ public class ActiveTransactionCountTest {
         ActiveTransactionCount activeTransactionCount = new ActiveTransactionCount()
                 .setTimestamp(timestamp)
                 .setCount(20);
-        assertEquals(961, new ActiveTransactionCount().hashCode());
         assertEquals(-1722900141, activeTransactionCount.hashCode());
     }
 

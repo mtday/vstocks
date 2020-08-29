@@ -60,7 +60,7 @@ public class UserStock {
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, market, symbol, shares);
+        return Objects.hash(userId, market.name(), symbol, shares);
     }
 
     @Override

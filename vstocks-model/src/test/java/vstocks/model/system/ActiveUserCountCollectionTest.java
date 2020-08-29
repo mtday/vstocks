@@ -8,7 +8,6 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static vstocks.model.Delta.getDeltas;
 
 public class ActiveUserCountCollectionTest {
@@ -43,7 +42,7 @@ public class ActiveUserCountCollectionTest {
     @Test
     public void testHashCode() {
         ActiveUserCountCollection collection = new ActiveUserCountCollection().setCounts(counts).setDeltas(deltas);
-        assertNotEquals(0, collection.hashCode()); // enums make the value inconsistent
+        assertEquals(-259824333, collection.hashCode());
     }
 
     @Test

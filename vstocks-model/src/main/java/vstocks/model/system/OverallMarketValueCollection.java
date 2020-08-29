@@ -53,7 +53,7 @@ public class OverallMarketValueCollection {
 
     @Override
     public int hashCode() {
-        return Objects.hash(market, values, deltas);
+        return Objects.hash(market.name(), values, deltas);
     }
 
     @Override

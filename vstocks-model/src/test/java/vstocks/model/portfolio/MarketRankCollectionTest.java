@@ -8,7 +8,6 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static vstocks.model.Delta.getDeltas;
 import static vstocks.model.Market.TWITTER;
 
@@ -54,7 +53,7 @@ public class MarketRankCollectionTest {
     public void testHashCode() {
         MarketRankCollection collection =
                 new MarketRankCollection().setMarket(TWITTER).setRanks(ranks).setDeltas(deltas);
-        assertNotEquals(0, collection.hashCode()); // enums make the value inconsistent
+        assertEquals(-482827212, collection.hashCode());
     }
 
     @Test

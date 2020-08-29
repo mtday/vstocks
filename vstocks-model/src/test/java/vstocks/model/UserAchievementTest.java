@@ -40,7 +40,6 @@ public class UserAchievementTest {
                 .setAchievementId("achievementId")
                 .setTimestamp(Instant.parse("2020-08-10T01:02:03.00Z"))
                 .setDescription("description");
-        assertEquals(923521, new UserAchievement().hashCode());
         assertEquals(-502597578, userAchievement.hashCode());
     }
 

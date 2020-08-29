@@ -39,15 +39,6 @@ export class Page {
 }
 
 
-export class PortfolioValue {
-    userId: string;
-    credits: number;
-    marketTotal: number;
-    marketValues: Map<string, number>;
-    total: number;
-}
-
-
 export class PricedStock {
     market: string;
     symbol: string;
@@ -261,6 +252,30 @@ export class RankedUser {
     timestamp: string;
     rank: number;
     value: number;
+}
+
+
+export class MarketValue {
+    market: string;
+    value: number;
+}
+
+
+export class PortfolioValueSummary {
+    userId: string;
+    credits: number;
+    marketTotal: number;
+    marketValues: MarketValue[];
+    total: number;
+}
+
+
+export class PortfolioValue {
+    summary: PortfolioValueSummary;
+    creditRanks: CreditRankCollection;
+    marketTotalRanks: MarketTotalRankCollection;
+    marketRanks: MarketRankCollection[];
+    totalRanks: TotalRankCollection;
 }
 
 
