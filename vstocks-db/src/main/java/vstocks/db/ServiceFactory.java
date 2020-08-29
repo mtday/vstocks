@@ -22,6 +22,7 @@ public interface ServiceFactory {
     MarketRankService getMarketRankService();
     MarketTotalRankService getMarketTotalRankService();
     TotalRankService getTotalRankService();
+    PortfolioValueService getPortfolioValueService();
 
     // system services
 

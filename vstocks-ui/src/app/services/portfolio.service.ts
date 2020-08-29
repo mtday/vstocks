@@ -8,11 +8,11 @@ import {
   MarketRankCollection,
   MarketTotalRankCollection,
   Page,
+  PortfolioValue,
   PricedUserStock,
   Results,
   Sort,
   TotalRankCollection,
-  UserCredits,
 } from '../models/models';
 
 
@@ -23,8 +23,8 @@ export class PortfolioService {
 
   constructor(private http: HttpClient) {}
 
-  getCreditBalance(): Observable<UserCredits> {
-    return this.http.get<UserCredits>('/api/user/portfolio/credits');
+  getPortfolioValue(): Observable<PortfolioValue> {
+    return this.http.get<PortfolioValue>('/api/user/portfolio/value');
   }
 
   getStocks(page: Page, sort: Sort[]): Observable<Results<PricedUserStock>> {

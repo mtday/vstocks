@@ -1,7 +1,7 @@
 
 
 <div class="portfolio-container">
-    <div class="portfolio-box">
+    <div class="portfolio-box" *ngIf="portfolioValue">
         <div class="portfolio-box-header">
             Portfolio Value
         </div>
@@ -10,21 +10,15 @@
             <table>
                 <tr>
                     <td class="portfolio-value-label">Total Value:</td>
-                    <td>
-                        22,456
-                    </td>
+                    <td>{{portfolioValue.total}}</td>
                 </tr>
                 <tr>
                     <td class="portfolio-value-label">Credits:</td>
-                    <td>
-                        12,456
-                    </td>
+                    <td>{{portfolioValue.credits}}</td>
                 </tr>
                 <tr>
                     <td class="portfolio-value-label">Stock Value:</td>
-                    <td>
-                        10,456
-                    </td>
+                    <td>{{portfolioValue.marketTotal}}</td>
                 </tr>
             </table>
         </div>
@@ -63,8 +57,8 @@
 
 
 <!--
-<div *ngIf="userCredits">
-    Credit Balance: {{userCredits.credits}}
+<div *ngIf="portfolioValue">
+    Credit Balance: {{portfolioValue.credits}}
 </div>
 
 <div *ngIf="pricedUserStocks" style="padding-top:30px;">
