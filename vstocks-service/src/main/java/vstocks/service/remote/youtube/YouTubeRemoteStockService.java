@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vstocks.model.PricedStock;
 import vstocks.service.StockUpdateRunnable;
+import vstocks.service.remote.PriceCalculator;
 import vstocks.service.remote.RemoteStockService;
 
 import java.time.Instant;
@@ -22,44 +23,24 @@ import static vstocks.model.Market.YOUTUBE;
 public class YouTubeRemoteStockService implements RemoteStockService {
     private static final Logger LOGGER = LoggerFactory.getLogger(YouTubeRemoteStockService.class);
     private final YouTubeService youTubeService;
+    private final PriceCalculator<Channel> priceCalculator;
 
     public YouTubeRemoteStockService() {
-        this(new YouTubeService());
+        this(new YouTubeService(), new YouTubePriceCalculator());
     }
 
-    YouTubeRemoteStockService(YouTubeService youTubeService) {
+    YouTubeRemoteStockService(YouTubeService youTubeService, PriceCalculator<Channel> priceCalculator) {
         this.youTubeService = youTubeService;
+        this.priceCalculator = priceCalculator;
     }
 
-    static int getPrice(Channel channel) {
-        double subscribers = channel.getStatistics().getSubscriberCount().doubleValue();
-        LOGGER.info("YouTube channel {} has {} subscribers", channel.getSnippet().getTitle(), subscribers);
-        // Scale the number of subscribers into the range of (-0.8, 4), using the arbitrary estimation of
-        // 0 and 100_000_000 as the minimum and maximum number of subscribers for an account.
-        // The -0.8f determines how slowly the price ramps up at the beginning. We need it to scale up slowly
-        // to prevent users from "gaming" the system by mass subscribing in concert to impact the price.
-        float scaledMin = -0.8f, scaledMax = 4f;
-        int max = 100_000_000;
-        double scaledFollowers = subscribers * (scaledMax - scaledMin) / max;
-
-        // Use a logistic function to apply a sigmoid shape to the price.
-        double f = 1 / (1 + Math.pow(Math.E, -scaledFollowers));
-
-        // Shift the sigmoid up by 0.5 to make the min ~0.0 and the max ~1.0
-        f = f - 0.5;
-
-        // Scale the price onto the sigmoid function result.
-        int maxPrice = 5_000;
-        return (int) (f * maxPrice * 2) + 1; // Add 1 so we don't get any 0 prices.
-    }
-
-    static PricedStock toPricedStock(Channel channel) {
+    static PricedStock toPricedStock(Channel channel, PriceCalculator<Channel> priceCalculator) {
         PricedStock pricedStock = new PricedStock()
                 .setMarket(YOUTUBE)
                 .setSymbol(channel.getId())
                 .setName(channel.getSnippet().getLocalized().getTitle())
                 .setTimestamp(Instant.now())
-                .setPrice(getPrice(channel));
+                .setPrice(priceCalculator.getPrice(channel));
         Stream.of(channel.getSnippet().getThumbnails())
                 .filter(Objects::nonNull)
                 .map(ThumbnailDetails::getDefault)
@@ -75,13 +56,13 @@ public class YouTubeRemoteStockService implements RemoteStockService {
     public StockUpdateRunnable getUpdateRunnable(ExecutorService executorService,
                                                  Consumer<PricedStock> updateConsumer) {
         return new YouTubeStockUpdateRunnable(youTubeService, executorService,
-                channel -> updateConsumer.accept(toPricedStock(channel)));
+                channel -> updateConsumer.accept(toPricedStock(channel, priceCalculator)));
     }
 
     @Override
     public List<PricedStock> search(String search, int limit) {
         return youTubeService.search(search, limit).stream()
-                .map(YouTubeRemoteStockService::toPricedStock)
+                .map(user -> toPricedStock(user, priceCalculator))
                 .collect(toList());
     }
 }

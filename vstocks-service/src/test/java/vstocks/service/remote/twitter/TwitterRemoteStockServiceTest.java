@@ -11,6 +11,7 @@ import twitter4j.conf.Configuration;
 import vstocks.model.PricedStock;
 import vstocks.model.Stock;
 import vstocks.service.StockUpdateRunnable;
+import vstocks.service.remote.PriceCalculator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,7 +31,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static vstocks.model.Market.TWITTER;
-import static vstocks.service.remote.twitter.TwitterRemoteStockService.getPrice;
 import static vstocks.service.remote.twitter.TwitterRemoteStockService.toPricedStock;
 
 public class TwitterRemoteStockServiceTest {
@@ -50,32 +50,6 @@ public class TwitterRemoteStockServiceTest {
         return user;
     };
 
-    @Test
-    public void testGetPrice() {
-        /*
-        Stream.iterate(0, i -> i == 0 ? 5 : (("" + i).contains("5") ? i * 2 : i * 5)).limit(17).forEach(i ->
-                System.out.printf("Price: %d => %d\n", i, getPrice(getUserWithFollowers.apply(i))));
-         */
-
-        assertEquals(1, getPrice(getUserWithFollowers.apply(0)));
-        assertEquals(1, getPrice(getUserWithFollowers.apply(5)));
-        assertEquals(1, getPrice(getUserWithFollowers.apply(10)));
-        assertEquals(1, getPrice(getUserWithFollowers.apply(50)));
-        assertEquals(1, getPrice(getUserWithFollowers.apply(100)));
-        assertEquals(1, getPrice(getUserWithFollowers.apply(500)));
-        assertEquals(1, getPrice(getUserWithFollowers.apply(1_000)));
-        assertEquals(2, getPrice(getUserWithFollowers.apply(5_000)));
-        assertEquals(4, getPrice(getUserWithFollowers.apply(10_000)));
-        assertEquals(20, getPrice(getUserWithFollowers.apply(50_000)));
-        assertEquals(40, getPrice(getUserWithFollowers.apply(100_000)));
-        assertEquals(200, getPrice(getUserWithFollowers.apply(500_000)));
-        assertEquals(400, getPrice(getUserWithFollowers.apply(1_000_000)));
-        assertEquals(1900, getPrice(getUserWithFollowers.apply(5_000_000)));
-        assertEquals(3321, getPrice(getUserWithFollowers.apply(10_000_000)));
-        assertEquals(4997, getPrice(getUserWithFollowers.apply(50_000_000)));
-        assertEquals(5000, getPrice(getUserWithFollowers.apply(100_000_000)));
-    }
-
     private static User getUser(String username, int followers, String name, String link) {
         User user = mock(User.class);
         when(user.getScreenName()).thenReturn(username);
@@ -87,26 +61,28 @@ public class TwitterRemoteStockServiceTest {
 
     @Test
     public void testToPricedStock() {
-        PricedStock pricedStock = toPricedStock(getUser("user", 50_000, "name", "link"));
+        PriceCalculator<User> priceCalculator = user -> 5;
+        PricedStock pricedStock = toPricedStock(getUser("user", 50_000, "name", "link"), priceCalculator);
 
         assertEquals(TWITTER, pricedStock.getMarket());
         assertEquals("user", pricedStock.getSymbol());
         assertEquals("name", pricedStock.getName());
         assertEquals("link", pricedStock.getProfileImage());
         assertNotNull(pricedStock.getTimestamp());
-        assertEquals(20, pricedStock.getPrice());
+        assertEquals(5, pricedStock.getPrice());
     }
 
     @Test
     public void testToPricedStockNullLink() {
-        PricedStock pricedStock = toPricedStock(getUser("user", 50_000, "name", null));
+        PriceCalculator<User> priceCalculator = user -> 5;
+        PricedStock pricedStock = toPricedStock(getUser("user", 50_000, "name", null), priceCalculator);
 
         assertEquals(TWITTER, pricedStock.getMarket());
         assertEquals("user", pricedStock.getSymbol());
         assertEquals("name", pricedStock.getName());
         assertNull(pricedStock.getProfileImage());
         assertNotNull(pricedStock.getTimestamp());
-        assertEquals(20, pricedStock.getPrice());
+        assertEquals(5, pricedStock.getPrice());
     }
 
     @Test
@@ -123,7 +99,8 @@ public class TwitterRemoteStockServiceTest {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
         List<PricedStock> entries = new ArrayList<>();
 
-        TwitterRemoteStockService twitterRemoteStockService = new TwitterRemoteStockService(twitter);
+        PriceCalculator<User> priceCalculator = user -> 5;
+        TwitterRemoteStockService twitterRemoteStockService = new TwitterRemoteStockService(twitter, priceCalculator);
         Future<?> future;
         try (StockUpdateRunnable runnable = twitterRemoteStockService.getUpdateRunnable(executorService, entries::add)) {
             runnable.accept(new Stock().setMarket(TWITTER).setSymbol("user1").setName("name"));
@@ -146,12 +123,12 @@ public class TwitterRemoteStockServiceTest {
         assertEquals("user1", entries.get(0).getSymbol());
         assertEquals("User1", entries.get(0).getName());
         assertEquals("link", entries.get(0).getProfileImage());
-        assertEquals(20, entries.get(0).getPrice());
+        assertEquals(5, entries.get(0).getPrice());
 
         assertEquals("user2", entries.get(1).getSymbol());
         assertEquals("User2", entries.get(1).getName());
         assertEquals("link", entries.get(1).getProfileImage());
-        assertEquals(40, entries.get(1).getPrice());
+        assertEquals(5, entries.get(1).getPrice());
     }
 
     @Test
@@ -168,7 +145,8 @@ public class TwitterRemoteStockServiceTest {
         Twitter twitter = mock(Twitter.class);
         when(twitter.users()).thenReturn(usersResources);
 
-        TwitterRemoteStockService twitterRemoteStockService = new TwitterRemoteStockService(twitter);
+        PriceCalculator<User> priceCalculator = user -> 5;
+        TwitterRemoteStockService twitterRemoteStockService = new TwitterRemoteStockService(twitter, priceCalculator);
         List<PricedStock> stocks = twitterRemoteStockService.search("user", 20);
 
         assertEquals(2, stocks.size());
@@ -176,12 +154,12 @@ public class TwitterRemoteStockServiceTest {
         assertEquals("user1", stocks.get(0).getSymbol());
         assertEquals("User1", stocks.get(0).getName());
         assertEquals("link1", stocks.get(0).getProfileImage());
-        assertEquals(20, stocks.get(0).getPrice());
+        assertEquals(5, stocks.get(0).getPrice());
 
         assertEquals(TWITTER, stocks.get(1).getMarket());
         assertEquals("user2", stocks.get(1).getSymbol());
         assertEquals("User2", stocks.get(1).getName());
         assertEquals("link2", stocks.get(1).getProfileImage());
-        assertEquals(40, stocks.get(1).getPrice());
+        assertEquals(5, stocks.get(1).getPrice());
     }
 }
