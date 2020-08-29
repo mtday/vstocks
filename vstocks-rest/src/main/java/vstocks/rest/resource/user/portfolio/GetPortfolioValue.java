@@ -2,7 +2,7 @@ package vstocks.rest.resource.user.portfolio;
 
 import vstocks.db.ServiceFactory;
 import vstocks.model.User;
-import vstocks.model.UserCredits;
+import vstocks.model.portfolio.PortfolioValue;
 import vstocks.rest.resource.BaseResource;
 import vstocks.rest.security.JwtTokenRequired;
 
@@ -17,22 +17,22 @@ import javax.ws.rs.core.SecurityContext;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-@Path("/user/portfolio/credits")
+@Path("/user/portfolio/value")
 @Singleton
-public class GetCreditBalance extends BaseResource {
+public class GetPortfolioValue extends BaseResource {
     private final ServiceFactory serviceFactory;
 
     @Inject
-    public GetCreditBalance(ServiceFactory serviceFactory) {
+    public GetPortfolioValue(ServiceFactory serviceFactory) {
         this.serviceFactory = serviceFactory;
     }
 
     @GET
     @Produces(APPLICATION_JSON)
     @JwtTokenRequired
-    public UserCredits getCreditBalance(@Context SecurityContext securityContext) {
+    public PortfolioValue getPortfolioValue(@Context SecurityContext securityContext) {
         User user = getUser(securityContext);
-        return serviceFactory.getUserCreditsService().get(user.getId())
-                .orElseThrow(() -> new NotFoundException("Failed to find credit balance for user"));
+        return serviceFactory.getPortfolioValueService().getForUser(user.getId())
+                .orElseThrow(() -> new NotFoundException("Failed to find portfolio value for user"));
     }
 }

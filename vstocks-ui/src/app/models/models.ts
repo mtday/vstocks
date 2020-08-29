@@ -39,6 +39,15 @@ export class Page {
 }
 
 
+export class PortfolioValue {
+    userId: string;
+    credits: number;
+    marketTotal: number;
+    marketValues: Map<string, number>;
+    total: number;
+}
+
+
 export class PricedStock {
     market: string;
     symbol: string;

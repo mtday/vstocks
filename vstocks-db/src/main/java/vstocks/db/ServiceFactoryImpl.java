@@ -24,6 +24,7 @@ public class ServiceFactoryImpl implements ServiceFactory {
     private final MarketRankService marketRankService;
     private final MarketTotalRankService marketTotalRankService;
     private final TotalRankService totalRankService;
+    private final PortfolioValueService portfolioValueService;
 
     // system services
 
@@ -53,6 +54,7 @@ public class ServiceFactoryImpl implements ServiceFactory {
         this.marketRankService = new MarketRankServiceImpl(dataSource);
         this.marketTotalRankService = new MarketTotalRankServiceImpl(dataSource);
         this.totalRankService = new TotalRankServiceImpl(dataSource);
+        this.portfolioValueService = new PortfolioValueServiceImpl(dataSource);
 
         this.activeUserCountService = new ActiveUserCountServiceImpl(dataSource);
         this.totalUserCountService = new TotalUserCountServiceImpl(dataSource);
@@ -137,6 +139,11 @@ public class ServiceFactoryImpl implements ServiceFactory {
     @Override
     public TotalRankService getTotalRankService() {
         return totalRankService;
+    }
+
+    @Override
+    public PortfolioValueService getPortfolioValueService() {
+        return portfolioValueService;
     }
 
     @Override
