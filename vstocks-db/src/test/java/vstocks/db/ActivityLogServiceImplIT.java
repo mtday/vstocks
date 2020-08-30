@@ -209,6 +209,38 @@ public class ActivityLogServiceImplIT extends BaseServiceImplIT {
     }
 
     @Test
+    public void testGetForUserAndMarketAndTypeNone() {
+        Results<ActivityLog> results =
+                activityLogService.getForUser(user1.getId(), TWITTER, singleton(USER_LOGIN), new Page(), emptyList());
+        validateResults(results);
+    }
+
+    @Test
+    public void testGetForUserAndMarketAndSingleTypeSomeNoSort() {
+        assertEquals(1, activityLogService.add(activityLog11));
+        assertEquals(1, activityLogService.add(activityLog12));
+        assertEquals(1, activityLogService.add(activityLog13));
+        assertEquals(1, activityLogService.add(activityLog21));
+
+        Results<ActivityLog> results =
+                activityLogService.getForUser(user1.getId(), TWITTER, singleton(STOCK_SELL), new Page(), emptyList());
+        validateResults(results, activityLog11, activityLog12);
+    }
+
+    @Test
+    public void testGetForUserAndMarketAndSingleTypeSomeWithSort() {
+        assertEquals(1, activityLogService.add(activityLog11));
+        assertEquals(1, activityLogService.add(activityLog12));
+        assertEquals(1, activityLogService.add(activityLog13));
+        assertEquals(1, activityLogService.add(activityLog21));
+
+        List<Sort> sort = asList(SYMBOL.toSort(DESC), ID.toSort());
+        Results<ActivityLog> results =
+                activityLogService.getForUser(user1.getId(), TWITTER, singleton(STOCK_SELL), new Page(), sort);
+        validateResults(results, activityLog12, activityLog11);
+    }
+
+    @Test
     public void testGetForUserAndMultipleTypeSomeNoSort() {
         assertEquals(1, activityLogService.add(activityLog11));
         assertEquals(1, activityLogService.add(activityLog12));

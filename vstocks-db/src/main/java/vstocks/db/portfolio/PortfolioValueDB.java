@@ -1,14 +1,10 @@
 package vstocks.db.portfolio;
 
 import vstocks.db.BaseDB;
-import vstocks.model.Sort;
 import vstocks.model.portfolio.PortfolioValue;
 
 import java.sql.Connection;
-import java.util.List;
 import java.util.Optional;
-
-import static java.util.Collections.emptyList;
 
 class PortfolioValueDB extends BaseDB {
     private final PortfolioValueSummaryDB portfolioValueSummaryDB = new PortfolioValueSummaryDB();
@@ -16,11 +12,6 @@ class PortfolioValueDB extends BaseDB {
     private final MarketRankDB marketRankDB = new MarketRankDB();
     private final MarketTotalRankDB marketTotalRankDB = new MarketTotalRankDB();
     private final TotalRankDB totalRankDB = new TotalRankDB();
-
-    @Override
-    protected List<Sort> getDefaultSort() {
-        return emptyList();
-    }
 
     public Optional<PortfolioValue> getForUser(Connection connection, String userId) {
         return portfolioValueSummaryDB.getForUser(connection, userId).map(summary -> {

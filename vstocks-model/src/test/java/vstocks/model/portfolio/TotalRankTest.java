@@ -24,6 +24,7 @@ public class TotalRankTest {
         assertEquals("userId", totalRank.getUserId());
         assertEquals(now, totalRank.getTimestamp());
         assertEquals(20, totalRank.getRank());
+        assertEquals(10, totalRank.getValue());
     }
 
     @Test

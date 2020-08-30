@@ -76,7 +76,7 @@ public class ActiveUserCountServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activeUserCountService.generate());
 
         Results<ActiveUserCount> results = activeUserCountService.getAll(new Page(), emptyList());
-        assertEquals(1, results.getTotal());
+        assertEquals(Page.from(1, 20, 1, 1), results.getPage());
         assertEquals(1, results.getResults().size());
         assertEquals(0, results.getResults().iterator().next().getCount());
     }
@@ -89,7 +89,7 @@ public class ActiveUserCountServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, activeUserCountService.generate());
 
         Results<ActiveUserCount> results = activeUserCountService.getAll(new Page(), emptyList());
-        assertEquals(1, results.getTotal());
+        assertEquals(Page.from(1, 20, 1, 1), results.getPage());
         assertEquals(1, results.getResults().size());
         assertEquals(2, results.getResults().iterator().next().getCount());
     }

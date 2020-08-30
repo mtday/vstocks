@@ -123,7 +123,7 @@ public class BaseDB {
                                      String query,
                                      String countQuery,
                                      Object... params) {
-        Results<T> results = new Results<T>().setPage(page);
+        Results<T> results = new Results<>();
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             int index = populatePreparedStatement(ps, params);
             ps.setInt(++index, page.getSize());
@@ -137,20 +137,20 @@ public class BaseDB {
         } catch (SQLException sqlException) {
             throw new RuntimeException("Failed to fetch objects from database", sqlException);
         }
+        int totalResults;
         if (page.getPage() != 1 || results.getResults().size() == page.getSize()) {
             try (PreparedStatement ps = connection.prepareStatement(countQuery)) {
                 populatePreparedStatement(ps, params);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        results.setTotal(rs.getInt(1));
-                    }
+                    totalResults = rs.next() ? rs.getInt(1) : 0;
                 }
             } catch (SQLException sqlException) {
                 throw new RuntimeException("Failed to fetch object count from database", sqlException);
             }
         } else {
-            results.setTotal(results.getResults().size());
+            totalResults = results.getResults().size();
         }
+        results.setPage(Page.from(page.getPage(), page.getSize(), results.getResults().size(), totalResults));
         return results;
     }
 

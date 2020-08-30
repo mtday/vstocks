@@ -261,7 +261,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
 
         // Make sure activity log was added
         Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
-        assertEquals(1, activityLogs.getTotal());
+        assertEquals(Page.from(1, 20, 1, 1), activityLogs.getPage());
         assertEquals(1, activityLogs.getResults().size());
 
         ActivityLog activityLog = activityLogs.getResults().iterator().next();
@@ -294,7 +294,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
 
         // Make sure activity log was added
         Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
-        assertEquals(1, activityLogs.getTotal());
+        assertEquals(Page.from(1, 20, 1, 1), activityLogs.getPage());
         assertEquals(1, activityLogs.getResults().size());
 
         ActivityLog activityLog = activityLogs.getResults().iterator().next();
@@ -389,7 +389,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
 
         // Make sure activity log was added
         Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
-        assertEquals(1, activityLogs.getTotal());
+        assertEquals(Page.from(1, 20, 1, 1), activityLogs.getPage());
         assertEquals(1, activityLogs.getResults().size());
 
         ActivityLog activityLog = activityLogs.getResults().iterator().next();
@@ -420,7 +420,7 @@ public class UserStockServiceImplIT extends BaseServiceImplIT {
 
         // Make sure activity log was added
         Results<ActivityLog> activityLogs = activityLogService.getForUser(user1.getId(), new Page(), emptyList());
-        assertEquals(1, activityLogs.getTotal());
+        assertEquals(Page.from(1, 20, 1, 1), activityLogs.getPage());
         assertEquals(1, activityLogs.getResults().size());
 
         ActivityLog activityLog = activityLogs.getResults().iterator().next();

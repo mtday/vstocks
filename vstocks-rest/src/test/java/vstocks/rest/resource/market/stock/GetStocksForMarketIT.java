@@ -19,7 +19,8 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static vstocks.model.Market.TWITTER;
@@ -42,8 +43,9 @@ public class GetStocksForMarketIT extends ResourceTest {
 
     @Test
     public void testGetForMarketsNone() {
+        Results<PricedStock> results = new Results<PricedStock>().setPage(Page.from(1, 20, 0, 0));
         PricedStockService pricedStockService = mock(PricedStockService.class);
-        when(pricedStockService.getForMarket(eq(TWITTER), any(), any())).thenReturn(new Results<>());
+        when(pricedStockService.getForMarket(eq(TWITTER), any(), any())).thenReturn(results);
         when(getServiceFactory().getPricedStockService()).thenReturn(pricedStockService);
 
         Response response = target("/market/twitter/stocks").request().get();
@@ -52,13 +54,11 @@ public class GetStocksForMarketIT extends ResourceTest {
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
         String json = response.readEntity(String.class);
-        assertEquals("{\"page\":{\"page\":1,\"size\":25},\"total\":0,\"results\":[]}", json);
+        assertEquals("{\"page\":{\"page\":1,\"size\":20,\"totalPages\":0,\"firstRow\":null,\"lastRow\":null,"
+                + "\"totalRows\":0},\"results\":[]}", json);
 
-        Results<PricedStock> results = convert(json, new PricedStockResultsTypeRef());
-        assertEquals(1, results.getPage().getPage());
-        assertEquals(25, results.getPage().getSize());
-        assertEquals(0, results.getTotal());
-        assertTrue(results.getResults().isEmpty());
+        Results<PricedStock> fetched = convert(json, new PricedStockResultsTypeRef());
+        assertEquals(results, fetched);
     }
 
     @Test
@@ -86,7 +86,7 @@ public class GetStocksForMarketIT extends ResourceTest {
                 .setTimestamp(timestamp)
                 .setPrice(12);
 
-        Results<PricedStock> results = new Results<PricedStock>().setPage(new Page()).setTotal(3)
+        Results<PricedStock> results = new Results<PricedStock>().setPage(Page.from(1, 20, 3, 3))
                 .setResults(asList(pricedStock1, pricedStock2, pricedStock3));
         PricedStockService pricedStockService = mock(PricedStockService.class);
         when(pricedStockService.getForMarket(eq(TWITTER), any(), any())).thenReturn(results);
@@ -104,14 +104,12 @@ public class GetStocksForMarketIT extends ResourceTest {
                 + "\"name\":\"name2\",\"profileImage\":\"link2\",\"price\":11}";
         String price3json = "{\"market\":\"Twitter\",\"symbol\":\"symbol3\",\"timestamp\":\"2020-12-03T10:15:30Z\","
                 + "\"name\":\"name3\",\"profileImage\":\"link3\",\"price\":12}";
-        String expected = "{\"page\":{\"page\":1,\"size\":25},\"total\":3,\"results\":["
-                + price1json + "," + price2json + "," + price3json + "]}";
+        String expected = "{\"page\":{\"page\":1,\"size\":20,\"totalPages\":1,\"firstRow\":1,\"lastRow\":3,"
+                + "\"totalRows\":3},\"results\":[" + price1json + "," + price2json + "," + price3json + "]}";
         assertEquals(expected, json);
 
         Results<PricedStock> fetched = convert(json, new PricedStockResultsTypeRef());
-        assertEquals(1, fetched.getPage().getPage());
-        assertEquals(25, fetched.getPage().getSize());
-        assertEquals(3, fetched.getTotal());
+        assertEquals(Page.from(1, 20, 3, 3), fetched.getPage());
         assertTrue(fetched.getResults().contains(pricedStock1));
         assertTrue(fetched.getResults().contains(pricedStock2));
         assertTrue(fetched.getResults().contains(pricedStock3));

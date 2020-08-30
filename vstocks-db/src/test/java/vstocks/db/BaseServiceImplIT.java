@@ -3,6 +3,7 @@ package vstocks.db;
 import org.junit.ClassRule;
 import vstocks.model.Delta;
 import vstocks.model.DeltaInterval;
+import vstocks.model.Page;
 import vstocks.model.Results;
 
 import java.time.Instant;
@@ -29,8 +30,8 @@ public abstract class BaseServiceImplIT {
             expectedList.add(t);
         }
 
-        assertEquals(total, results.getTotal());
-        assertEquals(page, results.getPage().getPage());
+        assertEquals(total, (int) results.getPage().getTotalRows());
+        assertEquals(page, (int) results.getPage().getPage());
         assertEquals(expectedList.size(), results.getResults().size());
 
         Iterator<T> expectedIter = expectedList.iterator();
@@ -49,7 +50,9 @@ public abstract class BaseServiceImplIT {
             expectedList.add(t);
         }
 
-        assertEquals(expectedList.size(), results.getTotal());
+        Page page = results.getPage();
+        int pageResults = page.getFirstRow() == null ? 0 : page.getLastRow() - page.getFirstRow() + 1;
+        assertEquals(expectedList.size(), pageResults);
         assertEquals(expectedList.size(), results.getResults().size());
 
         Iterator<T> expectedIter = expectedList.iterator();

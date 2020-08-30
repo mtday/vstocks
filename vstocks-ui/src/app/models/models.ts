@@ -36,6 +36,12 @@ export class ErrorResponse {
 export class Page {
     page: number;
     size: number;
+    totalPages: number;
+    firstRow: number;
+    lastRow: number;
+    totalRows: number;
+    previous: Page;
+    next: Page;
 }
 
 

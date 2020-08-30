@@ -31,6 +31,7 @@ public class OverallMarketValueCollectionTest {
         OverallMarketValueCollection collection =
                 new OverallMarketValueCollection().setMarket(TWITTER).setValues(values).setDeltas(deltas);
 
+        assertEquals(TWITTER, collection.getMarket());
         assertEquals(values, collection.getValues());
         assertEquals(deltas, collection.getDeltas());
     }

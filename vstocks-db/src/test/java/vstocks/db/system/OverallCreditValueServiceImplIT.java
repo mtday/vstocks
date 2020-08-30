@@ -65,7 +65,7 @@ public class OverallCreditValueServiceImplIT extends BaseServiceImplIT {
         assertEquals(1, overallCreditValueService.generate());
 
         Results<OverallCreditValue> results = overallCreditValueService.getAll(new Page(), emptyList());
-        assertEquals(1, results.getTotal());
+        assertEquals(Page.from(1, 20, 1, 1), results.getPage());
         assertEquals(1, results.getResults().size());
         assertEquals(20000, results.getResults().iterator().next().getValue());
     }

@@ -23,6 +23,7 @@ public class StockPriceChangeTest {
                 .setChange(2)
                 .setPercent(2.5f);
 
+        assertEquals(1, stockPriceChange.getBatch());
         assertEquals(TWITTER, stockPriceChange.getMarket());
         assertEquals("symbol", stockPriceChange.getSymbol());
         assertEquals(now, stockPriceChange.getTimestamp());

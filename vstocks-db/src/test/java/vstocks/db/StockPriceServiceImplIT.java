@@ -145,7 +145,7 @@ public class StockPriceServiceImplIT extends BaseServiceImplIT {
     @Test
     public void testGetAllNone() {
         Results<StockPrice> results = stockPriceService.getAll(new Page(), emptyList());
-        assertEquals(0, results.getTotal());
+        assertEquals(Page.from(1, 20, 0, 0), results.getPage());
         assertTrue(results.getResults().isEmpty());
     }
 

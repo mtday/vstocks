@@ -14,11 +14,6 @@ public class StockPriceChangeServiceImpl extends BaseService implements StockPri
     }
 
     @Override
-    public long setCurrentBatch(long batch) {
-        return withConnection(conn -> stockPriceChangeDB.setCurrentBatch(conn, batch));
-    }
-
-    @Override
     public int generate() {
         return withConnection(stockPriceChangeDB::generate);
     }

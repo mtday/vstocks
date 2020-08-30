@@ -6,8 +6,6 @@ import java.time.Instant;
 import java.util.List;
 
 public interface StockPriceChangeService {
-    long setCurrentBatch(long batch);
-
     int generate();
 
     StockPriceChangeCollection getLatest(Market market, String symbol);

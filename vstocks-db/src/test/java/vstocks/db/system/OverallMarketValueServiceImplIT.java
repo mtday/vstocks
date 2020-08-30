@@ -136,7 +136,7 @@ public class OverallMarketValueServiceImplIT extends BaseServiceImplIT {
         assertEquals(Market.values().length, overallMarketValueService.generate());
 
         Results<OverallMarketValue> results = overallMarketValueService.getAll(TWITTER, new Page(), emptyList());
-        assertEquals(1, results.getTotal());
+        assertEquals(Page.from(1, 20, 1, 1), results.getPage());
         assertEquals(1, results.getResults().size());
         assertEquals(740, results.getResults().iterator().next().getValue());
     }

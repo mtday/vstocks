@@ -98,9 +98,9 @@ public class GetMarketActivityIT extends ResourceTest {
         when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getServiceFactory().getUserService()).thenReturn(userService);
 
-        Page page = new Page().setPage(2).setSize(15);
+        Page page = Page.from(2, 15, 0, 0);
         List<Sort> sort = asList(USER_ID.toSort(), PRICE.toSort(DESC));
-        Results<ActivityLog> results = new Results<ActivityLog>().setTotal(0).setPage(page).setResults(emptyList());
+        Results<ActivityLog> results = new Results<ActivityLog>().setPage(page).setResults(emptyList());
         ActivityLogService activityLogService = mock(ActivityLogService.class);
         when(activityLogService.getForUser(eq(getUser().getId()), eq(TWITTER), any(), eq(page), eq(sort))).thenReturn(results);
         when(getServiceFactory().getActivityLogService()).thenReturn(activityLogService);
@@ -119,7 +119,8 @@ public class GetMarketActivityIT extends ResourceTest {
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
         String json = response.readEntity(String.class);
-        assertEquals("{\"page\":{\"page\":2,\"size\":15},\"total\":0,\"results\":[]}", json);
+        assertEquals("{\"page\":{\"page\":2,\"size\":15,\"totalPages\":0,\"firstRow\":null,\"lastRow\":null,"
+                + "\"totalRows\":0},\"results\":[]}", json);
 
         Results<ActivityLog> fetched = convert(json, new ActivityLogResultsTypeRef());
         assertEquals(results, fetched);
@@ -143,8 +144,7 @@ public class GetMarketActivityIT extends ResourceTest {
                 .setPrice(20L)
                 .setValue(10L * 20L);
         Results<ActivityLog> results = new Results<ActivityLog>()
-                .setTotal(1)
-                .setPage(new Page())
+                .setPage(Page.from(1, 20, 1, 1))
                 .setResults(singletonList(activityLog));
         ActivityLogService activityLogService = mock(ActivityLogService.class);
         when(activityLogService.getForUser(eq(getUser().getId()), eq(TWITTER), any(), any(), any())).thenReturn(results);
@@ -161,10 +161,10 @@ public class GetMarketActivityIT extends ResourceTest {
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
         String json = response.readEntity(String.class);
-        assertEquals("{\"page\":{\"page\":1,\"size\":25},\"total\":1,\"results\":[{\"id\":\"id\","
-                + "\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"type\":\"STOCK_BUY\","
-                + "\"timestamp\":\"2020-12-03T10:15:30Z\",\"market\":\"Twitter\",\"symbol\":\"symbol\","
-                + "\"shares\":10,\"price\":20,\"value\":200}]}", json);
+        assertEquals("{\"page\":{\"page\":1,\"size\":20,\"totalPages\":1,\"firstRow\":1,\"lastRow\":1,"
+                + "\"totalRows\":1},\"results\":[{\"id\":\"id\",\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\","
+                + "\"type\":\"STOCK_BUY\",\"timestamp\":\"2020-12-03T10:15:30Z\",\"market\":\"Twitter\","
+                + "\"symbol\":\"symbol\",\"shares\":10,\"price\":20,\"value\":200}]}", json);
 
         Results<ActivityLog> fetched = convert(json, new ActivityLogResultsTypeRef());
         assertEquals(results, fetched);

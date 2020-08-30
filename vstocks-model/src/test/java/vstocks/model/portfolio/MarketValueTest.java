@@ -1,7 +1,6 @@
-package vstocks.model.market;
+package vstocks.model.portfolio;
 
 import org.junit.Test;
-import vstocks.model.portfolio.MarketValue;
 
 import static org.junit.Assert.assertEquals;
 import static vstocks.model.Market.TWITTER;
@@ -25,7 +24,7 @@ public class MarketValueTest {
     @Test
     public void testHashCode() {
         MarketValue marketValue = new MarketValue().setMarket(TWITTER).setValue(10);
-        assertEquals(0, marketValue.hashCode());
+        assertEquals(-1854302248, marketValue.hashCode());
     }
 
     @Test

@@ -35,6 +35,7 @@ public class MarketRankCollectionTest {
         MarketRankCollection collection =
                 new MarketRankCollection().setMarket(TWITTER).setRanks(ranks).setDeltas(deltas);
 
+        assertEquals(TWITTER, collection.getMarket());
         assertEquals(ranks, collection.getRanks());
         assertEquals(deltas, collection.getDeltas());
     }

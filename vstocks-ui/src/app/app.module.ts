@@ -31,7 +31,8 @@ import { UserPortfolioComponent    } from './pages/user/portfolio/portfolio.comp
 import { UserProfileComponent      } from './pages/user/profile/profile.component';
 
 // Components
-import { PortfolioValueComponent   } from './pages/user/portfolio/portfolio-value/portfolio-value.component';
+import { PortfolioActivityComponent } from './pages/user/portfolio/portfolio-activity/portfolio-activity.component';
+import { PortfolioValueComponent    } from './pages/user/portfolio/portfolio-value/portfolio-value.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { PortfolioValueComponent   } from './pages/user/portfolio/portfolio-valu
     UserProfileComponent,
 
     // Components
+    PortfolioActivityComponent,
     PortfolioValueComponent,
   ],
   imports: [

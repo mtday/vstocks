@@ -29,13 +29,16 @@ public abstract class BaseResource {
 
     public static final String USERNAME_EXISTS_MESSAGE = "The specified username is already taken.";
 
-    private static final int DEFAULT_PAGE_SIZE = 25;
-    private static final int MAX_PAGE_SIZE = 50;
+    private static final int DEFAULT_PAGE_SIZE = new Page().getSize();
+    private static final int MAX_PAGE_SIZE = new Page().getSize() * 2;
 
     protected Page getPage(Integer pageNum, Integer pageSize) {
-        return new Page()
-                .setPage(ofNullable(pageNum).orElse(1))
-                .setSize(ofNullable(pageSize).map(size -> Math.min(MAX_PAGE_SIZE, size)).orElse(DEFAULT_PAGE_SIZE));
+        return Page.from(
+                ofNullable(pageNum).orElse(1),
+                ofNullable(pageSize).map(size -> Math.min(MAX_PAGE_SIZE, size)).orElse(DEFAULT_PAGE_SIZE),
+                0,
+                0
+        );
     }
 
     protected List<Sort> getSort(String sortConfig) {

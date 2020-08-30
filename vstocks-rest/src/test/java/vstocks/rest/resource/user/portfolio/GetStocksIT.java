@@ -71,10 +71,10 @@ public class GetStocksIT extends ResourceTest {
         when(userService.get(eq(getUser().getId()))).thenReturn(Optional.of(getUser()));
         when(getServiceFactory().getUserService()).thenReturn(userService);
 
-        Page page = new Page().setPage(2).setSize(15);
+        Page page = Page.from(2, 15, 0, 0);
         List<Sort> sort = asList(USER_ID.toSort(), PRICE.toSort(DESC));
         Results<PricedUserStock> results =
-                new Results<PricedUserStock>().setTotal(0).setPage(page).setResults(emptyList());
+                new Results<PricedUserStock>().setPage(page).setResults(emptyList());
         PricedUserStockService pricedUserStockService = mock(PricedUserStockService.class);
         when(pricedUserStockService.getForUser(eq(getUser().getId()), eq(page), eq(sort))).thenReturn(results);
         when(getServiceFactory().getPricedUserStockService()).thenReturn(pricedUserStockService);
@@ -93,7 +93,8 @@ public class GetStocksIT extends ResourceTest {
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
         String json = response.readEntity(String.class);
-        assertEquals("{\"page\":{\"page\":2,\"size\":15},\"total\":0,\"results\":[]}", json);
+        assertEquals("{\"page\":{\"page\":2,\"size\":15,\"totalPages\":0,\"firstRow\":null,\"lastRow\":null,"
+                + "\"totalRows\":0},\"results\":[]}", json);
 
         Results<PricedUserStock> fetched = convert(json, new PricedUserStockResultsTypeRef());
         assertEquals(results, fetched);
@@ -117,8 +118,7 @@ public class GetStocksIT extends ResourceTest {
                 .setPrice(20)
                 .setValue(10 * 20);
         Results<PricedUserStock> results = new Results<PricedUserStock>()
-                .setTotal(1)
-                .setPage(new Page())
+                .setPage(Page.from(1, 20, 1, 1))
                 .setResults(singletonList(pricedUserStock));
         PricedUserStockService pricedUserStockService = mock(PricedUserStockService.class);
         when(pricedUserStockService.getForUser(eq(getUser().getId()), any(), any())).thenReturn(results);
@@ -132,10 +132,10 @@ public class GetStocksIT extends ResourceTest {
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
         String json = response.readEntity(String.class);
-        assertEquals("{\"page\":{\"page\":1,\"size\":25},\"total\":1,\"results\":["
-                + "{\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\",\"market\":\"Twitter\",\"symbol\":\"symbol\","
-                + "\"name\":\"name\",\"profileImage\":\"link\",\"timestamp\":\"2020-12-03T10:15:30Z\","
-                + "\"shares\":10,\"price\":20,\"value\":200}]}", json);
+        assertEquals("{\"page\":{\"page\":1,\"size\":20,\"totalPages\":1,\"firstRow\":1,\"lastRow\":1,"
+                + "\"totalRows\":1},\"results\":[{\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\","
+                + "\"market\":\"Twitter\",\"symbol\":\"symbol\",\"name\":\"name\",\"profileImage\":\"link\","
+                + "\"timestamp\":\"2020-12-03T10:15:30Z\",\"shares\":10,\"price\":20,\"value\":200}]}", json);
 
         Results<PricedUserStock> fetched = convert(json, new PricedUserStockResultsTypeRef());
         assertEquals(results, fetched);

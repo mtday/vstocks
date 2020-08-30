@@ -44,10 +44,6 @@ class StockPriceChangeDB extends BaseDB {
         return asList(BATCH.toSort(DESC), PERCENT.toSort(DESC), CHANGE.toSort(DESC));
     }
 
-    public long setCurrentBatch(Connection connection, long batch) {
-        return setSequenceValue(connection, BATCH_SEQUENCE, batch);
-    }
-
     public int generate(Connection connection) {
         long batch = getNextSequenceValue(connection, BATCH_SEQUENCE);
         Instant oneDayAgo = Instant.now().minusSeconds(DAYS.toSeconds(1)).truncatedTo(SECONDS);

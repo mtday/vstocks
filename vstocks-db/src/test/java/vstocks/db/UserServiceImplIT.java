@@ -181,35 +181,45 @@ public class UserServiceImplIT extends BaseServiceImplIT {
     public void testGetAllMultiplePagesNoSort() {
         asList(user1, user2, user3, user4, user5).forEach(user -> assertEquals(1, userService.add(user)));
 
-        Page page = new Page().setSize(2);
+        Page page = Page.from(1, 2, 0, 0);
         Results<User> results = userService.getAll(page, emptyList());
         validateResults(results, 5, 1, user1, user2);
 
-        page = page.next();
+        page = results.getPage().next().orElse(null);
+        assertNotNull(page);
         results = userService.getAll(page, emptyList());
         validateResults(results, 5, 2, user3, user4);
 
-        page = page.next();
+        page = results.getPage().next().orElse(null);
+        assertNotNull(page);
         results = userService.getAll(page, emptyList());
         validateResults(results, 5, 3, user5);
+
+        page = results.getPage().next().orElse(null);
+        assertNull(page);
     }
 
     @Test
     public void testGetAllMultiplePagesWithSort() {
         asList(user1, user2, user3, user4, user5).forEach(user -> assertEquals(1, userService.add(user)));
 
-        Page page = new Page().setSize(2);
+        Page page = Page.from(1, 2, 0, 0);
         List<Sort> sort = asList(USERNAME.toSort(DESC), DISPLAY_NAME.toSort());
         Results<User> results = userService.getAll(page, sort);
         validateResults(results, 5, 1, user5, user4);
 
-        page = page.next();
+        page = results.getPage().next().orElse(null);
+        assertNotNull(page);
         results = userService.getAll(page, sort);
         validateResults(results, 5, 2, user3, user2);
 
-        page = page.next();
+        page = results.getPage().next().orElse(null);
+        assertNotNull(page);
         results = userService.getAll(page, sort);
         validateResults(results, 5, 3, user1);
+
+        page = results.getPage().next().orElse(null);
+        assertNull(page);
     }
 
     @Test

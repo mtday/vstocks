@@ -1,0 +1,61 @@
+
+<div class="portfolio-activity-box" *ngIf="portfolioActivity">
+    <div class="portfolio-activity-box-header">
+        Portfolio Activity
+    </div>
+
+    <div class="portfolio-activity-box-body">
+        <span class="portfolio-activity-no-data" *ngIf="portfolioActivity.results.length == 0">
+            No recent activity.
+        </span>
+        <table *ngIf="portfolioActivity.results.length > 0">
+            <tr>
+                <th class="portfolio-activity-table-header">Time</th>
+                <th class="portfolio-activity-table-header">Type</th>
+                <th class="portfolio-activity-table-header">Stock</th>
+                <th class="portfolio-activity-table-header">Shares</th>
+                <th class="portfolio-activity-table-header">Price</th>
+                <th class="portfolio-activity-table-header">Value</th>
+            </tr>
+            <tr *ngFor="let activity of portfolioActivity.results">
+                <td class="portfolio-activity-timestamp">
+                    {{activity.timestamp | date:'M/d h:mma' | lowercase}}
+                </td>
+                <td class="portfolio-activity-type-buy" *ngIf="activity.type == 'STOCK_BUY'">
+                    Buy
+                </td>
+                <td class="portfolio-activity-type-sell" *ngIf="activity.type == 'STOCK_SELL'">
+                    Sell
+                </td>
+                <td class="portfolio-activity-stock">
+                    {{activity.symbol}}
+                </td>
+                <td class="portfolio-activity-shares">
+                    {{activity.shares | number}}
+                </td>
+                <td class="portfolio-activity-price">
+                    {{activity.price | number}}
+                    <small class="currency">&#267;</small>
+                </td>
+                <td class="portfolio-activity-value">
+                    {{activity.value | number}}
+                    <small class="currency">&#267;</small>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6" class="portfolio-activity-page-info">
+                    Page {{portfolioActivity.page.page}}
+                    of {{portfolioActivity.page.totalPages}}
+                    with {{portfolioActivity.page.size}} per page
+                    |
+                    Showing rows
+                    {{portfolioActivity.page.firstRow}}
+                    to
+                    {{portfolioActivity.page.lastRow}}
+                    (of {{portfolioActivity.page.totalRows}} total rows)
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+

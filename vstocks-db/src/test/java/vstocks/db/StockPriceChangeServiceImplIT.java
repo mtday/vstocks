@@ -112,7 +112,7 @@ public class StockPriceChangeServiceImplIT extends BaseServiceImplIT {
         assertEquals(2, stockPriceChangeService.generate());
 
         Results<StockPriceChange> results = stockPriceChangeService.getAll(new Page(), emptyList());
-        assertEquals(2, results.getTotal());
+        assertEquals(Page.from(1, 20, 2, 2), results.getPage());
         assertEquals(2, results.getResults().size());
         assertEquals("21,11", results.getResults().stream().map(r -> "" + r.getPrice()).collect(joining(",")));
         assertEquals("-1,-1", results.getResults().stream().map(r -> "" + r.getChange()).collect(joining(",")));

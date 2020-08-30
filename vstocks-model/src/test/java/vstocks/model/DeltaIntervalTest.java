@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static vstocks.model.DeltaInterval.DAY3;
+import static vstocks.model.DeltaInterval.DAY30;
 
 public class DeltaIntervalTest {
     @Test
@@ -32,5 +33,10 @@ public class DeltaIntervalTest {
         for (DeltaInterval interval : DeltaInterval.values()) {
             assertNotNull(interval.getEarliest());
         }
+    }
+
+    @Test
+    public void testGetLast() {
+        assertEquals(DAY30, DeltaInterval.getLast());
     }
 }

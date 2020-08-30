@@ -98,7 +98,7 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(2, creditRankService.generate());
 
         Results<CreditRank> results = creditRankService.getAll(new Page(), emptyList());
-        assertEquals(2, results.getTotal());
+        assertEquals(Page.from(1, 20, 2, 2), results.getPage());
         assertEquals(2, results.getResults().size());
         assertEquals("1,1", results.getResults().stream().map(r -> "" + r.getRank()).collect(joining(",")));
         assertEquals("10000,10000", results.getResults().stream().map(r -> "" + r.getValue()).collect(joining(",")));
@@ -111,7 +111,7 @@ public class CreditRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(2, creditRankService.generate());
 
         Results<CreditRank> results = creditRankService.getAll(new Page(), emptyList());
-        assertEquals(2, results.getTotal());
+        assertEquals(Page.from(1, 20, 2, 2), results.getPage());
         assertEquals(2, results.getResults().size());
         assertEquals("1,2", results.getResults().stream().map(r -> "" + r.getRank()).collect(joining(",")));
         assertEquals("10010,10000", results.getResults().stream().map(r -> "" + r.getValue()).collect(joining(",")));

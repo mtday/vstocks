@@ -1,0 +1,71 @@
+
+@import '../../../../../variables.scss';
+
+
+.portfolio-activity-box {
+    height: 100%;
+    width: 100%;
+
+    .portfolio-activity-box-header {
+        background-color: $boxHeaderBackgroundColor;
+        border: 1px solid $boxBorderColor;
+        border-radius: 7px 7px 0px 0px;
+        color: $fontColorBright;
+        line-height: 50px;
+        padding: 0 20px;
+    }
+
+    .portfolio-activity-box-body {
+        background-color: $boxBodyBackgroundColor;
+        border: 1px solid $boxBorderColor;
+        padding: 20px;
+
+
+        .portfolio-activity-table-header {
+            color: $fontColorBright;
+            font-style: normal;
+            padding: 0 10px;
+            text-align: center;
+        }
+
+        .portfolio-activity-timestamp {
+            color: $fontColorNormal;
+            padding: 0 10px;
+        }
+
+        .portfolio-activity-type-buy {
+            color: $fontColorNegative;
+            padding: 0 10px;
+            text-align: center;
+        }
+
+        .portfolio-activity-type-sell {
+            color: $fontColorPositive;
+            padding: 0 10px;
+            text-align: center;
+        }
+
+        .portfolio-activity-shares {
+            color: $fontColorNormal;
+            padding: 0 10px;
+            text-align: right;
+        }
+
+        .portfolio-activity-price {
+            color: $fontColorNormal;
+            padding: 0 10px;
+            text-align: right;
+        }
+
+        .portfolio-activity-value {
+            color: $fontColorNormal;
+            padding: 0 10px;
+            text-align: right;
+        }
+
+        .currency {
+            color: $fontColorBright;
+            padding-left: 2px;
+        }
+    }
+}

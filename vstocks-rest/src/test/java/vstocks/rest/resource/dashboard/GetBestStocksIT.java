@@ -25,8 +25,9 @@ import static vstocks.model.Market.TWITTER;
 public class GetBestStocksIT extends ResourceTest {
     @Test
     public void testGetBestNone() {
+        Results<StockPriceChange> results = new Results<StockPriceChange>().setPage(Page.from(1, 20, 0, 0));
         StockPriceChangeService stockPriceChangeService = mock(StockPriceChangeService.class);
-        when(stockPriceChangeService.getAll(any(), any())).thenReturn(new Results<>());
+        when(stockPriceChangeService.getAll(any(), any())).thenReturn(results);
         when(getServiceFactory().getStockPriceChangeService()).thenReturn(stockPriceChangeService);
 
         Response response = target("/dashboard/stocks/best").request().get();
@@ -35,13 +36,11 @@ public class GetBestStocksIT extends ResourceTest {
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
         String json = response.readEntity(String.class);
-        assertEquals("{\"page\":{\"page\":1,\"size\":25},\"total\":0,\"results\":[]}", json);
+        assertEquals("{\"page\":{\"page\":1,\"size\":20,\"totalPages\":0,\"firstRow\":null,\"lastRow\":null,"
+                + "\"totalRows\":0},\"results\":[]}", json);
 
-        Results<StockPriceChange> results = convert(json, new StockPriceChangeResultsTypeRef());
-        assertEquals(1, results.getPage().getPage());
-        assertEquals(25, results.getPage().getSize());
-        assertEquals(0, results.getTotal());
-        assertTrue(results.getResults().isEmpty());
+        Results<StockPriceChange> fetched = convert(json, new StockPriceChangeResultsTypeRef());
+        assertEquals(results, fetched);
     }
 
     @Test
@@ -72,7 +71,7 @@ public class GetBestStocksIT extends ResourceTest {
                 .setChange(0)
                 .setPercent(0f);
 
-        Results<StockPriceChange> results = new Results<StockPriceChange>().setPage(new Page()).setTotal(3)
+        Results<StockPriceChange> results = new Results<StockPriceChange>().setPage(Page.from(1, 20, 3, 3))
                 .setResults(asList(stockPriceChange1, stockPriceChange2, stockPriceChange3));
         StockPriceChangeService stockPriceChangeService = mock(StockPriceChangeService.class);
         when(stockPriceChangeService.getAll(any(), any())).thenReturn(results);
@@ -90,14 +89,12 @@ public class GetBestStocksIT extends ResourceTest {
                 + "\"timestamp\":\"2020-12-03T10:15:30Z\",\"price\":20,\"change\":1,\"percent\":5.0}";
         String change3json = "{\"batch\":1,\"market\":\"Twitter\",\"symbol\":\"symbol3\","
                 + "\"timestamp\":\"2020-12-03T10:15:30Z\",\"price\":10,\"change\":0,\"percent\":0.0}";
-        String expectedJson = "{\"page\":{\"page\":1,\"size\":25},\"total\":3,\"results\":["
-                + change1json + "," + change2json + "," + change3json + "]}";
+        String expectedJson = "{\"page\":{\"page\":1,\"size\":20,\"totalPages\":1,\"firstRow\":1,\"lastRow\":3,"
+                + "\"totalRows\":3},\"results\":[" + change1json + "," + change2json + "," + change3json + "]}";
         assertEquals(expectedJson, json);
 
         Results<StockPriceChange> fetched = convert(json, new StockPriceChangeResultsTypeRef());
-        assertEquals(1, fetched.getPage().getPage());
-        assertEquals(25, fetched.getPage().getSize());
-        assertEquals(3, fetched.getTotal());
+        assertEquals(Page.from(1, 20, 3, 3), fetched.getPage());
         assertTrue(fetched.getResults().contains(stockPriceChange1));
         assertTrue(fetched.getResults().contains(stockPriceChange2));
         assertTrue(fetched.getResults().contains(stockPriceChange3));

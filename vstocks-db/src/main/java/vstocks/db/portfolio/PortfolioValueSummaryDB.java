@@ -3,7 +3,6 @@ package vstocks.db.portfolio;
 import vstocks.db.BaseDB;
 import vstocks.db.RowMapper;
 import vstocks.model.Market;
-import vstocks.model.Sort;
 import vstocks.model.portfolio.MarketValue;
 import vstocks.model.portfolio.PortfolioValueSummary;
 
@@ -12,7 +11,6 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 class PortfolioValueSummaryDB extends BaseDB {
@@ -41,11 +39,6 @@ class PortfolioValueSummaryDB extends BaseDB {
                 .setMarketValues(marketValues)
                 .setTotal(rs.getLong("total"));
     };
-
-    @Override
-    protected List<Sort> getDefaultSort() {
-        return emptyList();
-    }
 
     public Optional<PortfolioValueSummary> getForUser(Connection connection, String userId) {
         String sql = "SELECT uc.user_id, uc.credits, COALESCE(market_values, '') AS market_values, "

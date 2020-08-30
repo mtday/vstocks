@@ -167,7 +167,7 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(2 * Market.values().length, marketRankService.generate());
 
         Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptyList());
-        assertEquals(2, results.getTotal());
+        assertEquals(Page.from(1, 20, 2, 2), results.getPage());
         assertEquals(2, results.getResults().size());
         assertEquals("1,1", results.getResults().stream().map(r -> "" + r.getRank()).collect(joining(",")));
         assertEquals("110,110", results.getResults().stream().map(r -> "" + r.getValue()).collect(joining(",")));
@@ -181,7 +181,7 @@ public class MarketRankServiceImplIT extends BaseServiceImplIT {
         assertEquals(2 * Market.values().length, marketRankService.generate());
 
         Results<MarketRank> results = marketRankService.getAll(TWITTER, new Page(), emptyList());
-        assertEquals(2, results.getTotal());
+        assertEquals(Page.from(1, 20, 2, 2), results.getPage());
         assertEquals(2, results.getResults().size());
         assertEquals("1,2", results.getResults().stream().map(r -> "" + r.getRank()).collect(joining(",")));
         assertEquals("420,210", results.getResults().stream().map(r -> "" + r.getValue()).collect(joining(",")));

@@ -22,6 +22,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -69,9 +70,9 @@ public class GetMarketStandingsIT extends ResourceTest {
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
-        Page page = new Page().setPage(2).setSize(15);
+        Page page = Page.from(2, 15, 0, 0);
 
-        Results<RankedUser> results = new Results<RankedUser>().setTotal(0).setPage(page).setResults(emptyList());
+        Results<RankedUser> results = new Results<RankedUser>().setPage(page).setResults(emptyList());
         MarketRankService marketRankService = mock(MarketRankService.class);
         when(marketRankService.getUsers(eq(TWITTER), eq(page))).thenReturn(results);
         when(getServiceFactory().getMarketRankService()).thenReturn(marketRankService);
@@ -88,7 +89,8 @@ public class GetMarketStandingsIT extends ResourceTest {
         assertEquals(APPLICATION_JSON, response.getHeaderString(CONTENT_TYPE));
 
         String json = response.readEntity(String.class);
-        assertEquals("{\"page\":{\"page\":2,\"size\":15},\"total\":0,\"results\":[]}", json);
+        assertEquals("{\"page\":{\"page\":2,\"size\":15,\"totalPages\":0,\"firstRow\":null,\"lastRow\":null,"
+                + "\"totalRows\":0},\"results\":[]}", json);
 
         Results<RankedUser> fetched = convert(json, new RankedUserResultsTypeRef());
         assertEquals(results, fetched);
@@ -130,10 +132,10 @@ public class GetMarketStandingsIT extends ResourceTest {
                 .setValue(9);
 
         List<RankedUser> rankedUsers = asList(rankedUser1, rankedUser2);
-        Results<RankedUser> results = new Results<RankedUser>().setTotal(2).setPage(new Page()).setResults(rankedUsers);
+        Results<RankedUser> results = new Results<RankedUser>().setPage(Page.from(1, 20, 2, 2)).setResults(rankedUsers);
 
         MarketRankService marketRankService = mock(MarketRankService.class);
-        when(marketRankService.getUsers(eq(TWITTER), eq(new Page()))).thenReturn(results);
+        when(marketRankService.getUsers(eq(TWITTER), any())).thenReturn(results);
         when(getServiceFactory().getMarketRankService()).thenReturn(marketRankService);
 
         Response response = target("/dashboard/standings/market/TWITTER").request().header(AUTHORIZATION, "Bearer token").get();
@@ -150,8 +152,8 @@ public class GetMarketStandingsIT extends ResourceTest {
                 + "\"rank\":1,\"value\":10}";
         String rankedUser2json = "{\"user\":" + user2json + ",\"batch\":1,\"timestamp\":\"2020-12-03T10:15:30Z\","
                 + "\"rank\":2,\"value\":9}";
-        String expectedJson = "{\"page\":{\"page\":1,\"size\":25},\"total\":2,\"results\":["
-                + rankedUser1json + "," + rankedUser2json + "]}";
+        String expectedJson = "{\"page\":{\"page\":1,\"size\":20,\"totalPages\":1,\"firstRow\":1,\"lastRow\":2,"
+                + "\"totalRows\":2},\"results\":[" + rankedUser1json + "," + rankedUser2json + "]}";
         assertEquals(expectedJson, json);
 
         Results<RankedUser> fetched = convert(json, new RankedUserResultsTypeRef());
