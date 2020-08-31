@@ -2,85 +2,66 @@
 
 
 .profile-container {
+    height: 450px;
+    width: 550px;
+    margin: auto;
     padding: 20px;
 
-    .profile-box {
-        height: 450px;
-        width: 550px;
+    div.profile-image {
+        color: $fontColorNormal;
+        padding: 20px;
         margin: auto;
 
-        .profile-box-header {
-            background-color: $boxHeaderBackgroundColor;
-            border: 1px solid $boxBorderColor;
-            border-radius: 7px 7px 0px 0px;
-            color: $fontColorBright;
-            line-height: 50px;
-            padding: 0 20px;
+        img {
+            height: 88px;
+            width: 88px;
         }
+    }
 
-        .profile-box-body {
-            background-color: $boxBodyBackgroundColor;
-            border: 1px solid $boxBorderColor;
-            color: $fontColorNormal;
-            padding: 20px;
+    div.user-info {
+        margin: auto;
+        padding: 20px;
 
-            div.profile-image {
+        table.user-info-table {
+            border: 0;
+            width: 100%;
+
+            td.error-message {
+                color: $fontColorError;
+                padding: 0px 15px 10px 0px;
+                font-style: italic
+            }
+
+            td.field-label {
+                color: $fontColorBright;
+                padding: 5px 15px 5px 0px;
+            }
+
+            td.field-value {
                 color: $fontColorNormal;
-                padding: 20px;
-                margin: auto;
+                width: 100%;
 
-                img {
-                    height: 88px;
-                    width: 88px;
+                input {
+                    font-family: Nunito;
+                    width: 100%;
                 }
             }
 
-            div.user-info {
-                margin: auto;
-                padding: 20px;
+            td.actions {
+                padding-top: 20px;
 
-                table.user-info-table {
-                    border: 0;
-                    width: 100%;
+                div.save-button {
+                    background-color: $buttonColor;
+                    border-radius: 7px;
+                    float: right;
+                    text-align: center;
+                    width: 120px;
 
-                    td.error-message {
-                        color: $fontColorError;
-                        padding: 0px 15px 10px 0px;
-                        font-style: italic
-                    }
-
-                    td.field-label {
-                        color: $fontColorBright;
-                        padding: 5px 15px 5px 0px;
-                    }
-
-                    td.field-value {
-                        color: $fontColorNormal;
-                        width: 100%;
-
-                        input {
-                            font-family: Nunito;
-                            width: 100%;
-                        }
-                    }
-
-                    td.actions {
-                        padding-top: 20px;
-
-                        div.save-button {
-                            background-color: $buttonColor;
-                            border-radius: 7px;
-                            float: right;
-                            text-align: center;
-                            width: 120px;
-
-                            a {
-                                color: white;
-                                display: block;
-                                line-height: 40px;
-                                text-decoration: none;
-                            }
-                        }
+                    a {
+                        color: white;
+                        display: block;
+                        line-height: 40px;
+                        text-decoration: none;
                     }
                 }
             }

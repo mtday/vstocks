@@ -8,61 +8,42 @@ $twitterColor: #008bcf;
 
 
 .login-container {
+    height: 450px;
+    width: 450px;
+    margin: auto;
     padding: 20px;
 
-    .login-box {
-        height: 450px;
-        width: 350px;
-        margin: auto;
+    div.note {
+        color: $fontColorNormal;
+        margin-bottom: 30px;
+    }
 
-        .login-box-header {
-            background-color: $boxHeaderBackgroundColor;
-            border: 1px solid $boxBorderColor;
-            border-radius: 7px 7px 0px 0px;
-            color: $fontColorBright;
-            line-height: 50px;
-            padding: 0 20px;
-        }
+    div.login-button {
+        border-radius: 7px;
+        text-align: center;
+        margin: 20px;
+    }
 
-        .login-box-body {
-            background-color: $boxBodyBackgroundColor;
-            border: 1px solid $boxBorderColor;
-            color: white;
-            padding: 20px;
+    .facebook {
+        background-color: $facebookColor;
+    }
 
-            div.note {
-                color: $fontColorNormal;
-                margin-bottom: 30px;
-            }
+    .google {
+        background-color: $googleColor;
+    }
 
-            div.login-button {
-                border-radius: 7px;
-                text-align: center;
-                margin: 20px;
-            }
+    .twitter {
+        background-color: $twitterColor;
+    }
 
-            .facebook {
-                background-color: $facebookColor;
-            }
+    a {
+        color: white;
+        display: block;
+        line-height: 40px;
+        text-decoration: none;
 
-            .google {
-                background-color: $googleColor;
-            }
-
-            .twitter {
-                background-color: $twitterColor;
-            }
-
-            a {
-                color: white;
-                display: block;
-                line-height: 40px;
-                text-decoration: none;
-
-                label {
-                    margin-right: 10px;
-                }
-            }
+        label {
+            margin-right: 10px;
         }
     }
 }
