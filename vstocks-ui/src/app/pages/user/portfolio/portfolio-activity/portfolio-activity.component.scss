@@ -2,96 +2,75 @@
 @import '../../../../../variables.scss';
 
 
-.portfolio-activity-box {
-    height: 100%;
-    width: 100%;
+.portfolio-activity-table-header {
+    color: $fontColorBright;
+    font-size: $fontSizeSmall;
+    font-style: normal;
+    padding: 0 5px;
+    text-align: center;
+}
 
-    .portfolio-activity-box-header {
-        background-color: $boxHeaderBackgroundColor;
-        border: 1px solid $boxBorderColor;
-        border-radius: 7px 7px 0px 0px;
-        color: $fontColorBright;
-        line-height: 50px;
-        padding: 0 20px;
+.portfolio-activity-type-buy {
+    color: $fontColorNegative;
+    font-size: $fontSizeSmall;
+    padding: 0 5px;
+    text-align: center;
+}
+
+.portfolio-activity-type-sell {
+    color: $fontColorPositive;
+    font-size: $fontSizeSmall;
+    padding: 0 5px;
+    text-align: center;
+}
+
+.portfolio-activity-profile-image {
+    width: 20px;
+    max-width: 20px;
+    min-width: 20px;
+
+    img {
+        height: 20px;
+        width: 20px;
+        max-width: 20px;
+        min-width: 20px;
     }
+}
 
-    .portfolio-activity-box-body {
-        background-color: $boxBodyBackgroundColor;
-        border: 1px solid $boxBorderColor;
-        padding: 20px;
+.portfolio-activity-stock {
+    color: $fontColorNormal;
+    font-size: $fontSizeSmall;
+    margin-left: 26px;
+    padding: 0 5px;
+    text-align: left;
+    white-space: nowrap;
+}
 
+.portfolio-activity-shares {
+    color: $fontColorNormal;
+    font-size: $fontSizeSmall;
+    padding: 0 5px;
+    text-align: right;
+}
 
-        .portfolio-activity-table-header {
-            color: $fontColorBright;
-            font-size: $fontSizeSmall;
-            font-style: normal;
-            padding: 0 5px;
-            text-align: center;
-        }
+.portfolio-activity-price {
+    color: $fontColorNormal;
+    font-size: $fontSizeSmall;
+    padding: 0 5px;
+    text-align: right;
+    white-space: nowrap;
+}
 
-        .portfolio-activity-type-buy {
-            color: $fontColorNegative;
-            font-size: $fontSizeSmall;
-            padding: 0 5px;
-            text-align: center;
-        }
+.portfolio-activity-value {
+    color: $fontColorNormal;
+    font-size: $fontSizeSmall;
+    padding: 0 5px;
+    text-align: right;
+    white-space: nowrap;
+}
 
-        .portfolio-activity-type-sell {
-            color: $fontColorPositive;
-            font-size: $fontSizeSmall;
-            padding: 0 5px;
-            text-align: center;
-        }
-
-        .portfolio-activity-profile-image {
-            width: 20px;
-            max-width: 20px;
-            min-width: 20px;
-
-            img {
-                height: 20px;
-                width: 20px;
-                max-width: 20px;
-                min-width: 20px;
-            }
-        }
-
-        .portfolio-activity-stock {
-            color: $fontColorNormal;
-            font-size: $fontSizeSmall;
-            margin-left: 26px;
-            padding: 0 5px;
-            text-align: left;
-            white-space: nowrap;
-        }
-
-        .portfolio-activity-shares {
-            color: $fontColorNormal;
-            font-size: $fontSizeSmall;
-            padding: 0 5px;
-            text-align: right;
-        }
-
-        .portfolio-activity-price {
-            color: $fontColorNormal;
-            font-size: $fontSizeSmall;
-            padding: 0 5px;
-            text-align: right;
-            white-space: nowrap;
-        }
-
-        .portfolio-activity-value {
-            color: $fontColorNormal;
-            font-size: $fontSizeSmall;
-            padding: 0 5px;
-            text-align: right;
-            white-space: nowrap;
-        }
-
-        .currency {
-            color: $fontColorBright;
-            font-size: $fontSizeSmall;
-            padding-left: 2px;
-        }
-    }
+.currency {
+    color: $fontColorBright;
+    font-size: $fontSizeSmall;
+    padding-left: 2px;
 }

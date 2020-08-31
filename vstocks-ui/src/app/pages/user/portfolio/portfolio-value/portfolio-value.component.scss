@@ -2,49 +2,28 @@
 @import '../../../../../variables.scss';
 
 
-.portfolio-value-box {
-    height: 100%;
-    width: 100%;
+.portfolio-value-label {
+    color: $fontColorBright;
+    padding-right: 10px;
+}
 
-    .portfolio-value-box-header {
-        background-color: $boxHeaderBackgroundColor;
-        border: 1px solid $boxBorderColor;
-        border-radius: 7px 7px 0px 0px;
-        color: $fontColorBright;
-        line-height: 50px;
-        padding: 0 20px;
-    }
+.portfolio-value-number {
+    color: $fontColorNormal;
+    text-align: right;
+}
 
-    .portfolio-value-box-body {
-        background-color: $boxBodyBackgroundColor;
-        border: 1px solid $boxBorderColor;
-        padding: 20px;
+.portfolio-value-market-label {
+    color: $fontColorNormal;
+    padding-left: 20px;
+    padding-right: 10px;
+}
 
+.portfolio-value-market-number {
+    color: $fontColorNormal;
+    text-align: right;
+}
 
-        .portfolio-value-label {
-            color: $fontColorBright;
-            padding-right: 10px;
-        }
-
-        .portfolio-value-number {
-            color: $fontColorNormal;
-            text-align: right;
-        }
-
-        .portfolio-value-market-label {
-            color: $fontColorNormal;
-            padding-left: 20px;
-            padding-right: 10px;
-        }
-
-        .portfolio-value-market-number {
-            color: $fontColorNormal;
-            text-align: right;
-        }
-
-        .currency {
-            color: $fontColorBright;
-            padding-left: 2px;
-        }
-    }
+.currency {
+    color: $fontColorBright;
+    padding-left: 2px;
 }

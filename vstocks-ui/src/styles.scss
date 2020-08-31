@@ -18,3 +18,24 @@ img {
     display: block;
     max-width: 100%;
 }
+
+
+div.box {
+    height: 100%;
+    width: 100%;
+
+    div.box-header {
+        background-color: $boxHeaderBackgroundColor;
+        border: 1px solid $boxBorderColor;
+        border-radius: 7px 7px 0px 0px;
+        color: $fontColorBright;
+        line-height: 50px;
+        padding: 0 20px;
+    }
+
+    div.box-body {
+        background-color: $boxBodyBackgroundColor;
+        border: 1px solid $boxBorderColor;
+        padding: 20px;
+    }
+}
