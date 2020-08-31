@@ -1,7 +1,7 @@
 package vstocks.rest.resource.user.portfolio.market;
 
 import org.junit.Test;
-import vstocks.db.ActivityLogService;
+import vstocks.db.StockActivityLogService;
 import vstocks.db.UserService;
 import vstocks.model.*;
 import vstocks.rest.ResourceTest;
@@ -77,10 +77,10 @@ public class GetAllMarketActivityIT extends ResourceTest {
 
         Page page = Page.from(2, 15, 0, 0);
         List<Sort> sort = asList(USER_ID.toSort(), PRICE.toSort(DESC));
-        Results<ActivityLog> results = new Results<ActivityLog>().setPage(page).setResults(emptyList());
-        ActivityLogService activityLogService = mock(ActivityLogService.class);
-        when(activityLogService.getForUser(eq(getUser().getId()), any(), eq(page), eq(sort))).thenReturn(results);
-        when(getServiceFactory().getActivityLogService()).thenReturn(activityLogService);
+        Results<StockActivityLog> results = new Results<StockActivityLog>().setPage(page).setResults(emptyList());
+        StockActivityLogService stockActivityLogService = mock(StockActivityLogService.class);
+        when(stockActivityLogService.getForUser(eq(getUser().getId()), any(), eq(page), eq(sort))).thenReturn(results);
+        when(getServiceFactory().getStockActivityLogService()).thenReturn(stockActivityLogService);
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
@@ -99,7 +99,7 @@ public class GetAllMarketActivityIT extends ResourceTest {
         assertEquals("{\"page\":{\"page\":2,\"size\":15,\"totalPages\":0,\"firstRow\":null,\"lastRow\":null,"
                 + "\"totalRows\":0},\"results\":[]}", json);
 
-        Results<ActivityLog> fetched = convert(json, new ActivityLogResultsTypeRef());
+        Results<StockActivityLog> fetched = convert(json, new StockActivityLogResultsTypeRef());
         assertEquals(results, fetched);
     }
 
@@ -110,22 +110,24 @@ public class GetAllMarketActivityIT extends ResourceTest {
         when(getServiceFactory().getUserService()).thenReturn(userService);
 
         Instant timestamp = Instant.parse("2020-12-03T10:15:30.00Z").truncatedTo(SECONDS);
-        ActivityLog activityLog = new ActivityLog()
+        StockActivityLog stockActivityLog = new StockActivityLog()
                 .setId("id")
                 .setUserId(getUser().getId())
                 .setType(STOCK_BUY)
                 .setTimestamp(timestamp)
                 .setMarket(TWITTER)
                 .setSymbol("symbol")
+                .setName("name")
+                .setProfileImage("image")
                 .setShares(10L)
                 .setPrice(20L)
                 .setValue(10L * 20L);
-        Results<ActivityLog> results = new Results<ActivityLog>()
+        Results<StockActivityLog> results = new Results<StockActivityLog>()
                 .setPage(Page.from(1, 20, 1, 1))
-                .setResults(singletonList(activityLog));
-        ActivityLogService activityLogService = mock(ActivityLogService.class);
-        when(activityLogService.getForUser(eq(getUser().getId()), any(), any(), any())).thenReturn(results);
-        when(getServiceFactory().getActivityLogService()).thenReturn(activityLogService);
+                .setResults(singletonList(stockActivityLog));
+        StockActivityLogService stockActivityLogService = mock(StockActivityLogService.class);
+        when(stockActivityLogService.getForUser(eq(getUser().getId()), any(), any(), any())).thenReturn(results);
+        when(getServiceFactory().getStockActivityLogService()).thenReturn(stockActivityLogService);
 
         when(getJwtSecurity().validateToken(eq("token"))).thenReturn(Optional.of(getUser().getId()));
 
@@ -141,9 +143,10 @@ public class GetAllMarketActivityIT extends ResourceTest {
         assertEquals("{\"page\":{\"page\":1,\"size\":20,\"totalPages\":1,\"firstRow\":1,\"lastRow\":1,"
                 + "\"totalRows\":1},\"results\":[{\"id\":\"id\",\"userId\":\"cd2bfcff-e5fe-34a1-949d-101994d0987f\","
                 + "\"type\":\"STOCK_BUY\",\"timestamp\":\"2020-12-03T10:15:30Z\",\"market\":\"Twitter\","
-                + "\"symbol\":\"symbol\",\"shares\":10,\"price\":20,\"value\":200}]}", json);
+                + "\"symbol\":\"symbol\",\"name\":\"name\",\"profileImage\":\"image\",\"shares\":10,\"price\":20,"
+                + "\"value\":200}]}", json);
 
-        Results<ActivityLog> fetched = convert(json, new ActivityLogResultsTypeRef());
+        Results<StockActivityLog> fetched = convert(json, new StockActivityLogResultsTypeRef());
         assertEquals(results, fetched);
     }
 }

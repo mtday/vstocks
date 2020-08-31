@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { PortfolioService } from 'src/app/services/portfolio.service';
-import { ActivityLog, Results } from 'src/app/models/models';
+import { Results, StockActivityLog } from 'src/app/models/models';
 
 @Component({
   selector: 'app-portfolio-activity',
@@ -9,7 +9,7 @@ import { ActivityLog, Results } from 'src/app/models/models';
   styleUrls: ['./portfolio-activity.component.scss']
 })
 export class PortfolioActivityComponent implements OnInit {
-  public portfolioActivity: Results<ActivityLog>;
+  public portfolioActivity: Results<StockActivityLog>;
 
   constructor(private portfolioService: PortfolioService) { }
 

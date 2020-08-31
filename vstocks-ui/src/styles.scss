@@ -6,7 +6,8 @@
 body {
     color: $fontColorNormal;
     box-sizing: border-box;
-    font-family: Nunito;
+    font-family: $fontFamily;
+    font-size: $fontSizeNormal;
     list-style: none;
     margin: 0;
     padding: 0;

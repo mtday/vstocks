@@ -121,6 +121,20 @@ export class Stock {
 }
 
 
+export class StockActivityLog {
+    id: string;
+    userId: string;
+    type: string;
+    timestamp: string;
+    market: string;
+    symbol: string;
+    name: string;
+    profileImage: string;
+    shares: number;
+    price: number;
+}
+
+
 export class StockPrice {
     market: string;
     symbol: string;

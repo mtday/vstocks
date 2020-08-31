@@ -29,7 +29,7 @@ public class GetMarketActivity extends BaseResource {
     @GET
     @Produces(APPLICATION_JSON)
     @JwtTokenRequired
-    public Results<ActivityLog> getMarketActivity(@Context SecurityContext securityContext,
+    public Results<StockActivityLog> getMarketActivity(@Context SecurityContext securityContext,
                                                   @PathParam("market") String marketStr,
                                                   @QueryParam("pageNum") Integer pageNum,
                                                   @QueryParam("pageSize") Integer pageSize,
@@ -38,7 +38,7 @@ public class GetMarketActivity extends BaseResource {
         Page page = getPage(pageNum, pageSize);
         Market market = Market.from(marketStr)
                 .orElseThrow(() -> new NotFoundException("Market " + marketStr + " not found"));
-        return serviceFactory.getActivityLogService()
+        return serviceFactory.getStockActivityLogService()
                 .getForUser(user.getId(), market, Set.of(STOCK_BUY, STOCK_SELL), page, getSort(sort));
     }
 }

@@ -10,25 +10,25 @@
         </span>
         <table *ngIf="portfolioActivity.results.length > 0">
             <tr>
-                <th class="portfolio-activity-table-header">Time</th>
-                <th class="portfolio-activity-table-header">Type</th>
+                <th class="portfolio-activity-table-header"></th>
                 <th class="portfolio-activity-table-header">Stock</th>
+                <th class="portfolio-activity-table-header">Type</th>
                 <th class="portfolio-activity-table-header">Shares</th>
                 <th class="portfolio-activity-table-header">Price</th>
                 <th class="portfolio-activity-table-header">Value</th>
             </tr>
             <tr *ngFor="let activity of portfolioActivity.results">
-                <td class="portfolio-activity-timestamp">
-                    {{activity.timestamp | date:'M/d h:mma' | lowercase}}
+                <td class="portfolio-activity-profile-image">
+                    <img *ngIf="activity.profileImage" src="{{activity.profileImage}}">
+                </td>
+                <td class="portfolio-activity-stock">
+                    {{activity.name}}
                 </td>
                 <td class="portfolio-activity-type-buy" *ngIf="activity.type == 'STOCK_BUY'">
                     Buy
                 </td>
                 <td class="portfolio-activity-type-sell" *ngIf="activity.type == 'STOCK_SELL'">
                     Sell
-                </td>
-                <td class="portfolio-activity-stock">
-                    {{activity.symbol}}
                 </td>
                 <td class="portfolio-activity-shares">
                     {{activity.shares | number}}

@@ -1,9 +1,9 @@
 package vstocks.rest.resource.user.portfolio.market;
 
 import vstocks.db.ServiceFactory;
-import vstocks.model.ActivityLog;
 import vstocks.model.Page;
 import vstocks.model.Results;
+import vstocks.model.StockActivityLog;
 import vstocks.model.User;
 import vstocks.rest.resource.BaseResource;
 import vstocks.rest.security.JwtTokenRequired;
@@ -35,13 +35,13 @@ public class GetAllMarketActivity extends BaseResource {
     @GET
     @Produces(APPLICATION_JSON)
     @JwtTokenRequired
-    public Results<ActivityLog> getMarketActivity(@Context SecurityContext securityContext,
-                                                  @QueryParam("pageNum") Integer pageNum,
-                                                  @QueryParam("pageSize") Integer pageSize,
-                                                  @QueryParam("sort") String sort) {
+    public Results<StockActivityLog> getMarketActivity(@Context SecurityContext securityContext,
+                                                       @QueryParam("pageNum") Integer pageNum,
+                                                       @QueryParam("pageSize") Integer pageSize,
+                                                       @QueryParam("sort") String sort) {
         User user = getUser(securityContext);
         Page page = getPage(pageNum, pageSize);
-        return serviceFactory.getActivityLogService()
+        return serviceFactory.getStockActivityLogService()
                 .getForUser(user.getId(), Set.of(STOCK_BUY, STOCK_SELL), page, getSort(sort));
     }
 }

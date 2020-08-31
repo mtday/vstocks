@@ -8,6 +8,7 @@ public interface ServiceFactory {
     OwnedStockService getOwnedStockService();
     PricedStockService getPricedStockService();
     PricedUserStockService getPricedUserStockService();
+    StockActivityLogService getStockActivityLogService();
     StockService getStockService();
     StockPriceService getStockPriceService();
     StockPriceChangeService getStockPriceChangeService();

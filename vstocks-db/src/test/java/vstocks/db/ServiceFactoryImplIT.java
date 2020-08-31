@@ -23,6 +23,7 @@ public class ServiceFactoryImplIT {
         assertNotNull(serviceFactory.getOwnedStockService());
         assertNotNull(serviceFactory.getPricedStockService());
         assertNotNull(serviceFactory.getPricedUserStockService());
+        assertNotNull(serviceFactory.getStockActivityLogService());
         assertNotNull(serviceFactory.getStockService());
         assertNotNull(serviceFactory.getStockPriceService());
         assertNotNull(serviceFactory.getStockPriceChangeService());

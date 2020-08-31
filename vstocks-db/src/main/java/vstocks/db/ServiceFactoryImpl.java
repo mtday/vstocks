@@ -10,6 +10,7 @@ public class ServiceFactoryImpl implements ServiceFactory {
     private final OwnedStockService ownedStockService;
     private final PricedStockService pricedStockService;
     private final PricedUserStockService pricedUserStockService;
+    private final StockActivityLogService stockActivityLogService;
     private final StockService stockService;
     private final StockPriceService stockPriceService;
     private final StockPriceChangeService stockPriceChangeService;
@@ -43,6 +44,7 @@ public class ServiceFactoryImpl implements ServiceFactory {
         this.ownedStockService = new OwnedStockServiceImpl(dataSource);
         this.pricedStockService = new PricedStockServiceImpl(dataSource);
         this.pricedUserStockService = new PricedUserStockServiceImpl(dataSource);
+        this.stockActivityLogService = new StockActivityLogServiceImpl(dataSource);
         this.stockService = new StockServiceImpl(dataSource);
         this.stockPriceService = new StockPriceServiceImpl(dataSource);
         this.stockPriceChangeService = new StockPriceChangeServiceImpl(dataSource);
@@ -86,6 +88,11 @@ public class ServiceFactoryImpl implements ServiceFactory {
     @Override
     public PricedUserStockService getPricedUserStockService() {
         return pricedUserStockService;
+    }
+
+    @Override
+    public StockActivityLogService getStockActivityLogService() {
+        return stockActivityLogService;
     }
 
     @Override
