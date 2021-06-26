@@ -46,7 +46,7 @@ public class MarketTotalRankCollectionTest {
     @Test
     public void testHashCode() {
         MarketTotalRankCollection collection = new MarketTotalRankCollection().setRanks(ranks).setDeltas(deltas);
-        assertEquals(1320410403, collection.hashCode());
+        assertEquals(393638630, collection.hashCode());
     }
 
     @Test

@@ -51,7 +51,7 @@ public class TotalTransactionCountCollectionTest {
         TotalTransactionCountCollection collection = new TotalTransactionCountCollection()
                 .setCounts(counts)
                 .setDeltas(deltas);
-        assertEquals(-259824333, collection.hashCode());
+        assertEquals(-1186596106, collection.hashCode());
     }
 
     @Test

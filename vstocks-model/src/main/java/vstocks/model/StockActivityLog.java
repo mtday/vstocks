@@ -138,7 +138,8 @@ public class StockActivityLog {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, type, timestamp, market, symbol, name, profileImage, shares, price, value);
+        return Objects.hash(id, userId, type.name(), timestamp, market.name(), symbol, name, profileImage, shares,
+                price, value);
     }
 
     @Override

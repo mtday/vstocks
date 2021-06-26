@@ -86,7 +86,7 @@ public class StockActivityLogTest {
                 .setShares(10L)
                 .setPrice(20L)
                 .setValue(10L * 20L);
-        assertEquals(1247904868, stockActivityLog.hashCode());
+        assertEquals(-13831690, stockActivityLog.hashCode());
     }
 
     @Test

@@ -54,7 +54,7 @@ public class MarketRankCollectionTest {
     public void testHashCode() {
         MarketRankCollection collection =
                 new MarketRankCollection().setMarket(TWITTER).setRanks(ranks).setDeltas(deltas);
-        assertEquals(-482827212, collection.hashCode());
+        assertEquals(-1409598985, collection.hashCode());
     }
 
     @Test

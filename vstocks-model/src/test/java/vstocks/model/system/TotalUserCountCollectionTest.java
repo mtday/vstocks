@@ -42,7 +42,7 @@ public class TotalUserCountCollectionTest {
     @Test
     public void testHashCode() {
         TotalUserCountCollection collection = new TotalUserCountCollection().setCounts(counts).setDeltas(deltas);
-        assertEquals(-259824333, collection.hashCode());
+        assertEquals(-1186596106, collection.hashCode());
     }
 
     @Test

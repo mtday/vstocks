@@ -50,7 +50,7 @@ public class OverallMarketValueCollectionTest {
     public void testHashCode() {
         OverallMarketValueCollection collection =
                 new OverallMarketValueCollection().setMarket(TWITTER).setValues(values).setDeltas(deltas);
-        assertEquals(-1131822780, collection.hashCode());
+        assertEquals(-2058594553, collection.hashCode());
     }
 
     @Test

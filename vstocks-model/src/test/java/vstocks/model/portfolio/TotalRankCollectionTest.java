@@ -46,7 +46,7 @@ public class TotalRankCollectionTest {
     @Test
     public void testHashCode() {
         TotalRankCollection collection = new TotalRankCollection().setRanks(ranks).setDeltas(deltas);
-        assertEquals(1320410403, collection.hashCode());
+        assertEquals(393638630, collection.hashCode());
     }
 
     @Test

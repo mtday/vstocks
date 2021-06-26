@@ -46,7 +46,7 @@ public class CreditRankCollectionTest {
     @Test
     public void testHashCode() {
         CreditRankCollection collection = new CreditRankCollection().setRanks(ranks).setDeltas(deltas);
-        assertEquals(1320410403, collection.hashCode());
+        assertEquals(393638630, collection.hashCode());
     }
 
     @Test

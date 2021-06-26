@@ -40,7 +40,7 @@ public class OverallCreditValueCollectionTest {
     @Test
     public void testHashCode() {
         OverallCreditValueCollection collection = new OverallCreditValueCollection().setValues(values).setDeltas(deltas);
-        assertEquals(-259824333, collection.hashCode());
+        assertEquals(-1186596106, collection.hashCode());
     }
 
     @Test

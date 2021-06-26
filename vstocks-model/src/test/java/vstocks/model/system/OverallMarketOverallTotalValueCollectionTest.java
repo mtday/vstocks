@@ -43,7 +43,7 @@ public class OverallMarketOverallTotalValueCollectionTest {
     @Test
     public void testHashCode() {
         OverallMarketTotalValueCollection collection = new OverallMarketTotalValueCollection().setValues(values).setDeltas(deltas);
-        assertEquals(-259824333, collection.hashCode());
+        assertEquals(-1186596106, collection.hashCode());
     }
 
     @Test
